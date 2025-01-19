@@ -1,0 +1,9 @@
+services:
+  postgres:
+    image: postgres:15.4
+    container_name: inhu-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "5432:5432"
