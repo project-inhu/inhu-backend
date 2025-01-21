@@ -96,8 +96,8 @@ CREATE TABLE review_image_tb
 CREATE TABLE review_keyword_mapping_tb
 (
   review_idx         int NOT NULL,
-  review_keyword_idx int NOT NULL,
-  PRIMARY KEY (review_idx, review_keyword_idx)
+  keyword_idx int NOT NULL,
+  PRIMARY KEY (review_idx, keyword_idx)
 );
 
 CREATE TABLE review_tb
@@ -191,7 +191,7 @@ ALTER TABLE review_keyword_mapping_tb
 
 ALTER TABLE review_keyword_mapping_tb
   ADD CONSTRAINT FK_keyword_tb_TO_review_keyword_mapping_tb
-    FOREIGN KEY (review_keyword_idx)
+    FOREIGN KEY (keyword_idx)
     REFERENCES keyword_tb (idx);
 
 ALTER TABLE review_tb
