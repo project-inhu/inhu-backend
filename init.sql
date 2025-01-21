@@ -9,7 +9,7 @@ CREATE TABLE bookmark_tb
   idx        int                      NOT NULL,
   user_idx   int                      NOT NULL,
   place_idx  int                      NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
-  created_at timestamp with time zone NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at timestamp with time zone,
   PRIMARY KEY (idx)
 );
@@ -18,7 +18,7 @@ CREATE TABLE keyword_tb
 (
   idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
   content    varchar                  NOT NULL UNIQUE,
-  created_at timestamp with time zone NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at timestamp with time zone,
   PRIMARY KEY (idx)
 );
@@ -29,7 +29,8 @@ CREATE TABLE place_hours_tb
   place_idx int     NOT NULL,
   day       varchar NOT NULL,
   start_at  time   ,
-  end_at    time   
+  end_at    time   ,
+  PRIMARY KEY (idx)
 );
 
 CREATE TABLE place_image_tb
@@ -49,7 +50,7 @@ CREATE TABLE place_menu_tb
   price       int                     ,
   image_path  varchar                 ,
   is_flexible boolean                 ,
-  created_at  timestamp with time zone NOT NULL,
+  created_at  timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at  timestamp with time zone,
   PRIMARY KEY (idx)
 );
@@ -62,7 +63,7 @@ CREATE TABLE place_tb
   address    varchar                  NOT NULL,
   address_x  numeric                  NOT NULL,
   address_y  numeric                  NOT NULL,
-  created_at timestamp with time zone NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at timestamp with time zone,
   closed_at  timestamp with time zone,
   PRIMARY KEY (idx)
@@ -79,7 +80,7 @@ CREATE TABLE place_type_tb
 (
   idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
   content    varchar                  NOT NULL UNIQUE,
-  created_at timestamp with time zone NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at timestamp with time zone,
   PRIMARY KEY (idx)
 );
@@ -105,7 +106,7 @@ CREATE TABLE review_tb
   user_idx   int                      NOT NULL,
   place_idx  int                      NOT NULL,
   content    varchar                  NOT NULL,
-  created_at timestamp with time zone NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at timestamp with time zone,
   PRIMARY KEY (idx)
 );
@@ -116,7 +117,7 @@ CREATE TABLE service1_result_tb
   user_idx     int                      NOT NULL,
   service1_idx int                      NOT NULL,
   content      varchar                 ,
-  created_at   timestamp with time zone NOT NULL,
+  created_at   timestamp with time zone NOT NULL DEFAULT NOW(),
   PRIMARY KEY (idx)
 );
 
@@ -133,7 +134,7 @@ CREATE TABLE service2_result_tb
   user_idx     int                      NOT NULL,
   service2_idx int                      NOT NULL,
   content      varchar                 ,
-  created_at   timestamp with time zone NOT NULL,
+  created_at   timestamp with time zone NOT NULL DEFAULT NOW(),
   PRIMARY KEY (idx)
 );
 
@@ -155,9 +156,9 @@ CREATE TABLE user_provider_tb
 CREATE TABLE user_tb
 (
   idx                int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
-  nickname           varchar                  NOT NULL UNIQUE,
+  nickname           varchar                  NOT NULL,
   profile_image_path varchar                  NOT NULL,
-  created_at         timestamp with time zone NOT NULL,
+  created_at         timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at         timestamp with time zone,
   PRIMARY KEY (idx)
 );
@@ -167,7 +168,7 @@ CREATE TABLE withdraw_service_result_tb
   idx                  int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
   user_idx             int                      NOT NULL,
   withdraw_service_idx int                      NOT NULL,
-  created_at           timestamp with time zone NOT NULL,
+  created_at           timestamp with time zone NOT NULL DEFAULT NOW(),
   PRIMARY KEY (idx)
 );
 
