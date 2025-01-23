@@ -6,9 +6,9 @@ CREATE DATABASE inhu OWNER inhu_admin;
 
 CREATE TABLE bookmark_tb
 (
-  idx        int                      NOT NULL,
+  idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
   user_idx   int                      NOT NULL,
-  place_idx  int                      NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
+  place_idx  int                      NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at timestamp with time zone,
   PRIMARY KEY (idx)
@@ -35,7 +35,7 @@ CREATE TABLE place_hours_tb
 
 CREATE TABLE place_image_tb
 (
-  idx        int     NOT NULL,
+  idx        int     NOT NULL GENERATED ALWAYS AS IDENTITY,
   place_idx  int     NOT NULL,
   image_path varchar,
   PRIMARY KEY (idx)
@@ -95,7 +95,7 @@ CREATE TABLE review_image_tb
 
 CREATE TABLE review_keyword_mapping_tb
 (
-  review_idx         int NOT NULL,
+  review_idx  int NOT NULL,
   keyword_idx int NOT NULL,
   PRIMARY KEY (review_idx, keyword_idx)
 );
@@ -130,7 +130,7 @@ CREATE TABLE service1_tb
 
 CREATE TABLE service2_result_tb
 (
-  idx          int                      NOT NULL,
+  idx          int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
   user_idx     int                      NOT NULL,
   service2_idx int                      NOT NULL,
   content      varchar                 ,
