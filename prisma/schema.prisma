@@ -8,9 +8,9 @@ datasource db {
 }
 
 model Bookmark {
-  idx       Int       @id
+  idx       Int       @id @default(autoincrement())
   userIdx   Int       @map("user_idx")
-  placeIdx  Int       @unique @default(autoincrement()) @map("place_idx")
+  placeIdx  Int       @map("place_idx")
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
   place     Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_bookmark_tb")
@@ -20,11 +20,11 @@ model Bookmark {
 }
 
 model Keyword {
-  idx                  Int                    @id @default(autoincrement())
-  content              String                 @unique @db.VarChar
-  createdAt            DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt            DateTime?              @map("deleted_at") @db.Timestamptz(6)
-  reviewKeywordMapping ReviewKeywordMapping[]
+  idx                       Int                    @id @default(autoincrement())
+  content                   String                 @unique @db.VarChar
+  createdAt                 DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                 DateTime?              @map("deleted_at") @db.Timestamptz(6)
+  review_keyword_mapping_tb ReviewKeywordMapping[]
 
   @@map("keyword_tb")
 }
@@ -41,7 +41,7 @@ model PlaceHours {
 }
 
 model PlaceImage {
-  idx       Int     @id
+  idx       Int     @id @default(autoincrement())
   placeIdx  Int     @map("place_idx")
   imagePath String? @map("image_path") @db.VarChar
   place     Place   @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_image_tb")
@@ -74,7 +74,7 @@ model Place {
   createdAt        DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt        DateTime?          @map("deleted_at") @db.Timestamptz(6)
   closedAt         DateTime?          @map("closed_at") @db.Timestamptz(6)
-  bookmark         Bookmark?
+  bookmark         Bookmark[]
   placeHours       PlaceHours[]
   placeImage       PlaceImage[]
   placeMenu        PlaceMenu[]
@@ -114,12 +114,12 @@ model ReviewImage {
 }
 
 model ReviewKeywordMapping {
-  reviewIdx        Int     @map("review_idx")
-  reviewKeywordIdx Int     @map("review_keyword_idx")
-  keyword          Keyword @relation(fields: [reviewKeywordIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_keyword_tb_to_review_keyword_mapping_tb")
-  review           Review  @relation(fields: [reviewIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_review_tb_to_review_keyword_mapping_tb")
+  reviewIdx  Int     @map("review_idx")
+  keywordIdx Int     @map("keyword_idx")
+  keyword    Keyword @relation(fields: [keywordIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_keyword_tb_to_review_keyword_mapping_tb")
+  review     Review  @relation(fields: [reviewIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_review_tb_to_review_keyword_mapping_tb")
 
-  @@id([reviewIdx, reviewKeywordIdx])
+  @@id([reviewIdx, keywordIdx])
   @@map("review_keyword_mapping_tb")
 }
 
@@ -159,7 +159,7 @@ model Service1 {
 }
 
 model Service2Result {
-  idx         Int      @id
+  idx         Int      @id @default(autoincrement())
   userIdx     Int      @map("user_idx")
   service2Idx Int      @map("service2_idx")
   content     String?  @db.VarChar
