@@ -6,6 +6,7 @@ import { PlaceModule } from './api/place/place.module';
 import { AuthModule } from './auth/auth.module';
 import { KeywordModule } from './api/keyword/keyword.module';
 import { ConfigModule } from '@nestjs/config';
+import { KeywordModule } from './api/keyword/keyword.module';
 
 @Module({
   imports: [
