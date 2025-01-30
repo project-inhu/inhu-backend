@@ -1,4 +1,4 @@
-import { Body, Controller, Get } from '@nestjs/common';
+import { Query, Controller, Get } from '@nestjs/common';
 import { PlaceService } from './place.service';
 import { AllPlaceResponseDto, GetAllPlaceDto } from './place.dto';
 
@@ -8,7 +8,7 @@ export class PlaceController {
 
     @Get()
     async getAllPlace(
-        @Body() getAllPlaceDto: GetAllPlaceDto
+        @Query() getAllPlaceDto: GetAllPlaceDto
     ): Promise<AllPlaceResponseDto> {
         return this.placeService.getAllPlace(getAllPlaceDto);
     }
