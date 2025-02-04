@@ -27,7 +27,7 @@ export class AuthService {
     // 카카오에서 요구하는 http 요청 형식에 맞게 바꿔줌줌
     const payload = new URLSearchParams({
       grant_type: 'authorization_code',
-      client_id: this.jwtSecret,
+      client_id: this.clientId,
       redirect_uri: this.redirectUrl,
       code: code,
     });
