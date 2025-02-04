@@ -10,12 +10,16 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './gongsil_auth.service';
 import { AuthGuard } from './guards/auth.guard';
+import { ConfigService } from '@nestjs/config';
 import { Public } from './decorators/public.decorator';
 
 @Controller('auth')
 @UseGuards(AuthGuard)
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private configService: ConfigService,
+  ) {}
 
   //@Public()
   // 로그인 페이지로 이동 (인가 코드 받기 위함...)
@@ -23,8 +27,8 @@ export class AuthController {
   @Redirect()
   async kakaoLogin() {
     const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code
-    &client_id=${'f355f7b93ff5945f5349d6d2f7f49b49'}
-    &redirect_uri=${'http://localhost:3000/auth/kakao/callback'}`;
+    &client_id=${this.configService.get<string>('KAKAO_CLIENT_ID')}
+    &redirect_uri=${this.configService.get<string>('KAKAO_REDIRECT_URL')}`;
 
     return { url: kakaoLoginUrl };
   }
