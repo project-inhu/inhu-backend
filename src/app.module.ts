@@ -4,10 +4,18 @@ import { AppService } from './app.service';
 import { PrismaModule } from './common/module/prisma/prisma.module';
 import { PlaceModule } from './api/place/place.module';
 import { ReviewModule } from './api/review/review.module';
-import { GongsilAuthModule } from './api/gongsil_auth/gongsil_auth.module';
-
+import { AuthModule } from './api/gongsil_auth/gongsil_auth.module';
+import { ConfigModule } from '@nestjs/config';
 @Module({
-  imports: [PrismaModule, PlaceModule, ReviewModule, GongsilAuthModule],
+  imports: [
+    PrismaModule,
+    PlaceModule,
+    ReviewModule,
+    AuthModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
