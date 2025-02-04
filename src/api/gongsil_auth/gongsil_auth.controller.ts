@@ -7,11 +7,11 @@ import {
   Redirect,
   Res,
 } from '@nestjs/common';
-import { GongsilAuthService } from './gongsil_auth.service';
+import { AuthService } from './gongsil_auth.service';
 
 @Controller('auth')
-export class GongsilAuthController {
-  constructor(private gongsilAuthService: GongsilAuthService) {}
+export class AuthController {
+  constructor(private authService: AuthService) {}
 
   // 로그인 페이지로 이동 (인가 코드 받기 위함...)
   @Get('login-page')
@@ -29,15 +29,14 @@ export class GongsilAuthController {
 
   @Get('getToken')
   async kakaoGetToken(@Body('code') code: string) {
-    const kakaoToken = await this.gongsilAuthService.getKakaoAccessToken(code);
+    const kakaoToken = await this.authService.getKakaoAccessToken(code);
 
     return { access_token: kakaoToken };
   }
 
   @Get('extractUser')
   async extractUser(@Body('access_token') accessToken: string) {
-    const kakaoUserId =
-      await this.gongsilAuthService.getUserIdFromToken(accessToken);
+    const kakaoUserId = await this.authService.getUserIdFromToken(accessToken);
     return { kakao_user_id: kakaoUserId };
   }
 
@@ -46,7 +45,7 @@ export class GongsilAuthController {
     if (!kakaoUserId) {
       throw new Error();
     }
-    const jwt = await this.gongsilAuthService.generateJwt(kakaoUserId);
+    const jwt = await this.authService.generateJwt(kakaoUserId);
 
     return { jwt };
   }

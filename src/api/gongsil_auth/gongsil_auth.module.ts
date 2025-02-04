@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { GongsilAuthController } from './gongsil_auth.controller';
-import { GongsilAuthService } from './gongsil_auth.service';
+import { AuthController } from './gongsil_auth.controller';
+import { AuthService } from './gongsil_auth.service';
 import { HttpModule } from '@nestjs/axios';
 import { JwtModule } from '@nestjs/jwt';
 
@@ -14,7 +14,7 @@ import { JwtModule } from '@nestjs/jwt';
       },
     }),
   ],
-  controllers: [GongsilAuthController],
-  providers: [GongsilAuthService],
+  controllers: [AuthController],
+  providers: [AuthService],
 })
 export class GongsilAuthModule {}

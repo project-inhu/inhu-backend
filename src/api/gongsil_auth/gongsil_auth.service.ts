@@ -5,7 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { response } from 'express';
 
 @Injectable()
-export class GongsilAuthService {
+export class AuthService {
   constructor(
     private httpService: HttpService,
     private jwtService: JwtService,
