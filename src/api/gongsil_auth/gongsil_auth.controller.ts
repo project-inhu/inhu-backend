@@ -6,13 +6,16 @@ import {
   Query,
   Redirect,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './gongsil_auth.service';
+import { AuthGuard } from './guards/auth.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @UseGuards(AuthGuard)
   // 로그인 페이지로 이동 (인가 코드 받기 위함...)
   @Get('login-page')
   @Redirect()
