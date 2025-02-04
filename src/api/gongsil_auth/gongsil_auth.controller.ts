@@ -1,4 +1,12 @@
-import { Controller, Get, Query, Redirect, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Redirect,
+  Res,
+} from '@nestjs/common';
 import { GongsilAuthService } from './gongsil_auth.service';
 
 @Controller('auth')
@@ -19,7 +27,10 @@ export class GongsilAuthController {
   // redirect url (인가 코드 전달됨)
   @Get('kakao/callback')
   // 인가 코드를 받아 엑세스 토큰 요청
-  async kakaoCallback(@Query('code') code: string) {
+  async kakaoCallback(@Query('code') code: string) {}
+
+  @Post('kakao/getToken')
+  async kakaoGetToken(@Body('code') code: string) {
     const kakaoToken = await this.gongsilAuthService.getKakaoAccessToken(code);
 
     const jwt = await this.gongsilAuthService.generateJwtToken(
