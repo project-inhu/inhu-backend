@@ -2,14 +2,24 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { JwtService } from '@nestjs/jwt';
-import { response } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
+  private jwtSecret: string;
+  private clientId: string;
+  private redirectUrl: string;
+
   constructor(
     private httpService: HttpService,
     private jwtService: JwtService,
-  ) {}
+    private configService: ConfigService,
+  ) {
+    this.jwtSecret = this.configService.get<string>('JWT_SECRET') || '';
+    this.clientId = this.configService.get<string>('KAKAO_CLIENT_ID') || '';
+    this.redirectUrl =
+      this.configService.get<string>('KAKAO_REDIRECT_URL') || '';
+  }
 
   async getKakaoAccessToken(code: string) {
     const tokenUrl = 'https://kauth.kakao.com/oauth/token';
@@ -17,8 +27,8 @@ export class AuthService {
     // 카카오에서 요구하는 http 요청 형식에 맞게 바꿔줌줌
     const payload = new URLSearchParams({
       grant_type: 'authorization_code',
-      client_id: 'f355f7b93ff5945f5349d6d2f7f49b49',
-      redirect_uri: 'http://localhost:3000/auth/kakao/callback',
+      client_id: this.jwtSecret,
+      redirect_uri: this.redirectUrl,
       code: code,
     });
 
@@ -49,7 +59,7 @@ export class AuthService {
       console.log(response.data.id);
       return response.data.id;
     } catch (error) {
-      throw new UnauthorizedException('오잉잉');
+      throw new UnauthorizedException();
     }
   }
 
@@ -58,7 +68,7 @@ export class AuthService {
       sub: kakaoUserId,
     };
     return this.jwtService.sign(payload, {
-      secret: 'gongsil',
+      secret: this.jwtSecret,
       expiresIn: '1m',
     });
   }
