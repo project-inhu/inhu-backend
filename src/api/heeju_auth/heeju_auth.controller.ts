@@ -12,14 +12,14 @@ export class HeejuAuthController {
         }
 
         try {
-            const user = await this.heejuAuthService.loginWithKakao(code);
+            const { accessToken } = await this.heejuAuthService.loginWithKakao(code);
             return {
                 message: "로그인 성공",
-                user
+                accessToken
             }
         } catch (error) {
-            console.error('카카오 로그인 에러:', error.response?.data || error.message || error);
-            throw new BadRequestException('카카오 로그인 실패');
+            console.error('로그인 에러:', error.response?.data || error.message || error);
+            throw new BadRequestException('로그인 실패');
         }
     }
 }

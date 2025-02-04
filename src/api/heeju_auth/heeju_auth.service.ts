@@ -2,14 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { firstValueFrom } from 'rxjs';
+import { JwtService } from '@nestjs/jwt';
 
-// TODO : 로그인시 DB에서 사용자 조회 후 없으면 등록 / JWT 발급 / AuthGuard로 다른 API에서 검증하는 로직
+// TODO : AuthGuard
 
 @Injectable()
 export class HeejuAuthService {
   constructor(
     private httpService: HttpService,
     private prisma: PrismaService,
+    private jwtService : JwtService
   ) {}
 
   async loginWithKakao(code: string): Promise<any> {
@@ -41,10 +43,40 @@ export class HeejuAuthService {
       }),
     );
 
-    const snsId = String(userInfoResponse.data.id); // 카카오 고유 식별값
+      const snsId = String(userInfoResponse.data.id); // 카카오 고유 식별값
+      const nickname = 'random'; // TODO : 랜덤 닉네임 생성 함수 만들기
 
-    return snsId;
-      
-    
+      let userProvider = await this.prisma.userProvider.findFirst({
+          where: { snsId, provider: 0 }, // Q. provider 0인게 카카오 로그인이라고 가정
+          include : {user:true}
+      })
+
+      // 3. 신규유저라면 DB에 저장
+      if (!userProvider) {
+          const newUser = await this.prisma.user.create({
+              data: {
+                  nickname,
+                  createdAt : new Date()
+              }
+          })
+
+          userProvider = await this.prisma.userProvider.create({
+              data: {
+                  snsId,
+                  provider: 0,
+                  idx : newUser.idx
+              },
+              include: {
+                  user: true
+              }
+          })
+      }
+
+      // 4. JWT 발급
+      const payload = { idx: userProvider.idx };
+      const jwtToken = this.jwtService.sign(payload);
+
+      return { accessToken: jwtToken };
+
   }
 }
