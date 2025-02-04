@@ -33,10 +33,20 @@ export class GongsilAuthController {
   async kakaoGetToken(@Body('code') code: string) {
     const kakaoToken = await this.gongsilAuthService.getKakaoAccessToken(code);
 
-    const jwt = await this.gongsilAuthService.generateJwtToken(
-      kakaoToken.access_token,
-    );
-    console.log(jwt);
-    return { jwt };
+    return { kakaoToken };
+  }
+
+  @Post('validateToken')
+  async validateToken(@Body('access_token') accessToken: string) {
+    if (!accessToken) {
+      throw new Error();
+    }
+
+    const userId =
+      await this.gongsilAuthService.getUserIdFromToken(accessToken);
+
+    return {
+      kakao_user_id: userId,
+    };
   }
 }

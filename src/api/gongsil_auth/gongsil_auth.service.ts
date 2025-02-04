@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { JwtService } from '@nestjs/jwt';
+import { response } from 'express';
 
 @Injectable()
 export class GongsilAuthService {
@@ -29,21 +30,26 @@ export class GongsilAuthService {
       );
       return res.data;
     } catch (error) {
-      console.error(
-        '카카오 토큰 요청 실패:',
-        error.response?.data || error.message,
-      );
       throw new UnauthorizedException('토큰 요청 실패');
     }
   }
 
-  async generateJwtToken(accessToken: string): Promise<string> {
-    const payload = {
-      accessToken,
-    };
+  //accessToken으로 사용자 id 조회
+  async getUserIdFromToken(accessToken: string) {
+    const url = 'https://kapi.kakao.com/v1/user/access_token_info';
 
-    return this.jwtService.sign(payload, {
-      expiresIn: '1h',
-    });
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(url, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }),
+      );
+      console.log(response.data.id);
+      return response.data.id;
+    } catch (error) {
+      throw new UnauthorizedException();
+    }
   }
 }
