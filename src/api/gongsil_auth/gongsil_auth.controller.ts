@@ -24,29 +24,30 @@ export class GongsilAuthController {
     return { url: kakaoLoginUrl };
   }
 
-  // redirect url (인가 코드 전달됨)
   @Get('kakao/callback')
-  // 인가 코드를 받아 엑세스 토큰 요청
   async kakaoCallback(@Query('code') code: string) {}
 
-  @Post('kakao/getToken')
+  @Get('getToken')
   async kakaoGetToken(@Body('code') code: string) {
     const kakaoToken = await this.gongsilAuthService.getKakaoAccessToken(code);
 
-    return { kakaoToken };
+    return { access_token: kakaoToken };
   }
 
-  @Post('validateToken')
-  async validateToken(@Body('access_token') accessToken: string) {
-    if (!accessToken) {
+  @Get('extractUser')
+  async extractUser(@Body('access_token') accessToken: string) {
+    const kakaoUserId =
+      await this.gongsilAuthService.getUserIdFromToken(accessToken);
+    return { kakao_user_id: kakaoUserId };
+  }
+
+  @Post('jwt')
+  async generateJwt(@Body('kakao_user_id') kakaoUserId: number) {
+    if (!kakaoUserId) {
       throw new Error();
     }
+    const jwt = await this.gongsilAuthService.generateJwt(kakaoUserId);
 
-    const userId =
-      await this.gongsilAuthService.getUserIdFromToken(accessToken);
-
-    return {
-      kakao_user_id: userId,
-    };
+    return { jwt };
   }
 }

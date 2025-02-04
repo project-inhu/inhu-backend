@@ -49,7 +49,17 @@ export class GongsilAuthService {
       console.log(response.data.id);
       return response.data.id;
     } catch (error) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('오잉잉');
     }
+  }
+
+  async generateJwt(kakaoUserId: number) {
+    const payload = {
+      sub: kakaoUserId,
+    };
+    return this.jwtService.sign(payload, {
+      secret: 'gongsil',
+      expiresIn: '1m',
+    });
   }
 }
