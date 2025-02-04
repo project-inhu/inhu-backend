@@ -2,6 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Controller, Get, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
+import { Public } from './decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -10,6 +11,7 @@ export class AuthController {
     private readonly authService: AuthService,
   ) {}
 
+  @Public()
   @Get('kakao-login')
   kakaoRedirect(
     @Res({
@@ -26,6 +28,7 @@ export class AuthController {
     res.redirect(uri);
   }
 
+  @Public()
   @Get('kakao/callback')
   async kakaoAuth(@Query('code') code: string) {
     const kakaoToken = await this.authService.getKakaoToken(code);
