@@ -3,6 +3,9 @@ import { HeejuAuthController } from './heeju_auth.controller';
 import { HeejuAuthService } from './heeju_auth.service';
 import { HttpModule } from '@nestjs/axios';
 import { JwtModule } from '@nestjs/jwt';
+import { AuthGuard } from './heeju_auth.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { Reflector } from '@nestjs/core';
 
 @Module({
   imports: [HttpModule,
@@ -12,6 +15,13 @@ import { JwtModule } from '@nestjs/jwt';
     }),
   ],
   controllers: [HeejuAuthController],
-  providers: [HeejuAuthService]
+  providers: [
+    HeejuAuthService,
+    {
+      provide: APP_GUARD,
+      useClass : AuthGuard
+    },
+    Reflector
+  ]
 })
 export class HeejuAuthModule {}

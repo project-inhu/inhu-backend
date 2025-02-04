@@ -2,12 +2,14 @@ import { BadRequestException, Body, Controller, Get, Post, Query, Req, UseGuards
 import { HeejuAuthService } from './heeju_auth.service';
 import { AuthGuard } from './heeju_auth.guard';
 import { Request } from 'express';
+import { Public } from './public.decorator';
 type RequestWithUser = Request & { user?: { idx: number } };
 
 @Controller('heeju-auth')
 export class HeejuAuthController {
     constructor(private readonly heejuAuthService: HeejuAuthService) { }
     
+    @Public()
     @Get('kakao/callback')
     async loginWithKakao(@Query('code') code: string) {
         if (!code) {
@@ -26,8 +28,9 @@ export class HeejuAuthController {
         }
     }
 
+    // test
     @Get('test')
-    @UseGuards(AuthGuard)
+    //@UseGuards(AuthGuard) -> Global guard로 설정했기 때문에 생략해도 됨
     async testAuth(@Req() req : RequestWithUser) {
         return {
             message: "test",
