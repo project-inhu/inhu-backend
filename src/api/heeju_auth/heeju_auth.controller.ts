@@ -1,5 +1,8 @@
-import { BadRequestException, Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { HeejuAuthService } from './heeju_auth.service';
+import { AuthGuard } from './heeju_auth.guard';
+import { Request } from 'express';
+type RequestWithUser = Request & { user?: { idx: number } };
 
 @Controller('heeju-auth')
 export class HeejuAuthController {
@@ -22,4 +25,14 @@ export class HeejuAuthController {
             throw new BadRequestException('로그인 실패');
         }
     }
+
+    @Get('test')
+    @UseGuards(AuthGuard)
+    async testAuth(@Req() req : RequestWithUser) {
+        return {
+            message: "test",
+            userIdx : req.user?.idx
+        }
+    }
+
 }
