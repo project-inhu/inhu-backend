@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { HeejuAuthController } from './auth.controller';
+import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { HttpModule } from '@nestjs/axios';
 import { JwtModule } from '@nestjs/jwt';
@@ -14,7 +14,7 @@ import { Reflector } from '@nestjs/core';
       signOptions: { expiresIn: '1h' },
     }),
   ],
-  controllers: [HeejuAuthController],
+  controllers: [AuthController],
   providers: [
     AuthService,
     {
@@ -24,4 +24,4 @@ import { Reflector } from '@nestjs/core';
     Reflector
   ]
 })
-export class HeejuAuthModule {}
+export class AuthModule {}
