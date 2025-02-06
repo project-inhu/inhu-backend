@@ -10,9 +10,9 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
   constructor(
-    private httpService: HttpService,
-    private prisma: PrismaService,
-    private jwtService : JwtService
+    private readonly httpService: HttpService,
+    private readonly prisma: PrismaService,
+    private readonly jwtService : JwtService
   ) {}
 
   async loginWithKakao(code: string): Promise<any> {
