@@ -1,6 +1,5 @@
-import { BadRequestException, Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Query, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthGuard } from './auth.guard';
 import { Request } from 'express';
 import { Public } from './decorators/public.decorator';
 type RequestWithUser = Request & { user?: { idx: number } };
@@ -10,12 +9,23 @@ export class AuthController {
     constructor(private readonly AuthService: AuthService) { }
     
     @Public()
+    @Get('kakao-redirect')
+    redirectToKakaoLogin() {
+        const uri =
+            'https://kauth.kakao.com/oauth/authorize?' +
+            'response_type=code&' +
+            `client_id=${process.env.KAKAO_CLIENT_ID}&` +
+            `redirect_uri=${process.env.KAKAO_REDIRECT_URI}`;
+        return { redirectUri: uri };
+    }
+    
+    @Public()
     @Get('kakao/callback')
     async loginWithKakao(@Query('code') code: string) {
         if (!code) {
             throw new BadRequestException('코드가 존재하지 않음');
         }
-
+        
         try {
             const { accessToken } = await this.AuthService.loginWithKakao(code);
             return {

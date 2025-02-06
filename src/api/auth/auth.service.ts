@@ -4,7 +4,7 @@ import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { firstValueFrom } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 
-// TODO : 기능별로 함수 나누기 / dto 만들기 / repository로 sql 빼기 / 개방 폐쇄 원칙 반영하여 코드 리팩토링 
+// TODO : dto 만들고 return type 명시 / repository로 sql 빼기 / 개방 폐쇄 원칙 반영하여 코드 리팩토링 
 // TODO : 랜덤 닉네임 생성 함수 / user dto 만들때 extends 사용하기
 
 @Injectable()
@@ -12,73 +12,87 @@ export class AuthService {
   constructor(
     private readonly httpService: HttpService,
     private readonly prisma: PrismaService,
-    private readonly jwtService : JwtService
+    private readonly jwtService: JwtService,
   ) {}
 
-  async loginWithKakao(code: string): Promise<any> {
-    const params = new URLSearchParams(); // URLSearchParams 객체 생성
+  async loginWithKakao(code: string): Promise<{ accessToken: string }> {
+    // 1. 카카오 API를 통해 Access Token 가져오기
+    const accessToken = await this.getKakaoAccessToken(code);
+
+    // 2. Access Token으로 카카오 사용자 정보 가져오기
+    const userInfo = await this.getKakaoUserInfo(accessToken);
+
+    // 3. 유저 정보 조회 및 신규 유저 등록
+    const userProvider = await this.findOrCreateUser(userInfo);
+
+    // 4. JWT 발급
+    const jwtToken = this.generateJwtToken(userProvider.idx);
+
+    return { accessToken: jwtToken };
+  }
+
+  private async getKakaoAccessToken(code: string): Promise<string> {
+    const params = new URLSearchParams();
     params.append('grant_type', 'authorization_code');
     params.append('client_id', process.env.KAKAO_CLIENT_ID || '');
     params.append('redirect_uri', process.env.KAKAO_REDIRECT_URI || '');
     params.append('code', code);
 
-    // 1. 카카오 API를 통해 Access Token 가져오기
     const tokenResponse = await firstValueFrom(
       this.httpService.post(
         'https://kauth.kakao.com/oauth/token',
-        params.toString(), // URLSearchParams를 문자열로 변환
-        {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        },
+        params.toString(),
+        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
       ),
     );
 
-    const accessToken = tokenResponse.data.access_token;
+    return tokenResponse.data.access_token;
+  }
 
-    // 2. 카카오 API를 통해 유저 정보 가져오기
+  private async getKakaoUserInfo(accessToken: string): Promise<any> {
     const userInfoResponse = await firstValueFrom(
       this.httpService.get('https://kapi.kakao.com/v2/user/me', {
         headers: {
-          Authorization: `Bearer ${accessToken}`, // Access Token 전달
+          Authorization: `Bearer ${accessToken}`,
         },
       }),
     );
 
-      const snsId = String(userInfoResponse.data.id); // 카카오 고유 식별값
-      // String 말고 toString으로
-      const nickname = 'random'; // TODO : 랜덤 닉네임 생성 함수 만들기
+    return userInfoResponse.data;
+  }
 
-      let userProvider = await this.prisma.userProvider.findFirst({
-          where: { snsId, provider: 0 }, // Q. provider 0인게 카카오 로그인이라고 가정
-          include : {user:true}
-      })
+  private async findOrCreateUser(userInfo: any): Promise<any> {
+    const snsId = String(userInfo.id); // 카카오 고유 식별값
+    const nickname = 'random'; // TODO: 랜덤 닉네임 생성 함수 추가
 
-      // 3. 신규유저라면 DB에 저장
-      if (!userProvider) {
-          const newUser = await this.prisma.user.create({
-              data: {
-                  nickname,
-                  createdAt : new Date()
-              }
-          })
+    let userProvider = await this.prisma.userProvider.findFirst({
+      where: { snsId, provider: 0 }, // provider 0: 카카오
+      include: { user: true },
+    });
 
-          userProvider = await this.prisma.userProvider.create({
-              data: {
-                  snsId,
-                  provider: 0,
-                  idx : newUser.idx
-              },
-              include: {
-                  user: true
-              }
-          })
-      }
+    if (!userProvider) {
+      const newUser = await this.prisma.user.create({
+        data: {
+          nickname,
+          createdAt: new Date(),
+        },
+      });
 
-      // 4. JWT 발급
-      const payload = { idx: userProvider.idx };
-      const jwtToken = this.jwtService.sign(payload);
+      userProvider = await this.prisma.userProvider.create({
+        data: {
+          snsId,
+          provider: 0,
+          idx: newUser.idx,
+        },
+        include: { user: true },
+      });
+    }
 
-      return { accessToken: jwtToken };
+    return userProvider;
+  }
 
+  private generateJwtToken(idx: number): string {
+    const payload = { idx };
+    return this.jwtService.sign(payload);
   }
 }
