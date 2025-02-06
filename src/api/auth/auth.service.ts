@@ -4,10 +4,11 @@ import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { firstValueFrom } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 
-// TODO : AuthGuard
+// TODO : 기능별로 함수 나누기 / dto 만들기 / repository로 sql 빼기 / 개방 폐쇄 원칙 반영하여 코드 리팩토링 
+// TODO : 랜덤 닉네임 생성 함수 / user dto 만들때 extends 사용하기
 
 @Injectable()
-export class HeejuAuthService {
+export class AuthService {
   constructor(
     private httpService: HttpService,
     private prisma: PrismaService,
@@ -44,6 +45,7 @@ export class HeejuAuthService {
     );
 
       const snsId = String(userInfoResponse.data.id); // 카카오 고유 식별값
+      // String 말고 toString으로
       const nickname = 'random'; // TODO : 랜덤 닉네임 생성 함수 만들기
 
       let userProvider = await this.prisma.userProvider.findFirst({

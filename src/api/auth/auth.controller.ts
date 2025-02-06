@@ -1,13 +1,13 @@
 import { BadRequestException, Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
-import { HeejuAuthService } from './heeju_auth.service';
-import { AuthGuard } from './heeju_auth.guard';
+import { AuthService } from './auth.service';
+import { AuthGuard } from './auth.guard';
 import { Request } from 'express';
-import { Public } from './public.decorator';
+import { Public } from './decorators/public.decorator';
 type RequestWithUser = Request & { user?: { idx: number } };
 
-@Controller('heeju-auth')
-export class HeejuAuthController {
-    constructor(private readonly heejuAuthService: HeejuAuthService) { }
+@Controller('auth')
+export class AuthController {
+    constructor(private readonly AuthService: AuthService) { }
     
     @Public()
     @Get('kakao/callback')
@@ -17,7 +17,7 @@ export class HeejuAuthController {
         }
 
         try {
-            const { accessToken } = await this.heejuAuthService.loginWithKakao(code);
+            const { accessToken } = await this.AuthService.loginWithKakao(code);
             return {
                 message: "로그인 성공",
                 accessToken
