@@ -2,6 +2,7 @@ import { BadRequestException, Body, Controller, Get, Post, Query, Req } from '@n
 import { AuthService } from './auth.service';
 import { Request } from 'express';
 import { Public } from './decorators/public.decorator';
+import { KakaoCallbackResponseDto, KakaoRedirectResponseDto } from './dto/kakao.dto';
 type RequestWithUser = Request & { user?: { idx: number } };
 
 @Controller('auth')
@@ -10,7 +11,7 @@ export class AuthController {
     
     @Public()
     @Get('kakao-redirect')
-    redirectToKakaoLogin() {
+    async redirectToKakaoLogin(): Promise<KakaoRedirectResponseDto> {
         const uri =
             'https://kauth.kakao.com/oauth/authorize?' +
             'response_type=code&' +
@@ -21,7 +22,7 @@ export class AuthController {
     
     @Public()
     @Get('kakao/callback')
-    async loginWithKakao(@Query('code') code: string) {
+    async loginWithKakao(@Query('code') code: string): Promise<KakaoCallbackResponseDto> {
         if (!code) {
             throw new BadRequestException('코드가 존재하지 않음');
         }
