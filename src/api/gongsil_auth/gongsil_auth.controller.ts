@@ -6,6 +6,7 @@ import {
   Query,
   Redirect,
   Res,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './gongsil_auth.service';
@@ -21,8 +22,7 @@ export class AuthController {
     private configService: ConfigService,
   ) {}
 
-  //@Public()
-  // 로그인 페이지로 이동 (인가 코드 받기 위함...)
+  @Public()
   @Get('login-page')
   @Redirect()
   async kakaoLogin() {
@@ -32,30 +32,21 @@ export class AuthController {
 
     return { url: kakaoLoginUrl };
   }
-
+  @Public()
   @Get('kakao/callback')
-  async kakaoCallback(@Query('code') code: string) {}
-
-  @Get('getToken')
-  async kakaoGetToken(@Body('code') code: string) {
-    const kakaoToken = await this.authService.getKakaoAccessToken(code);
-
-    return { access_token: kakaoToken };
-  }
-
-  @Get('extractUser')
-  async extractUser(@Body('access_token') accessToken: string) {
-    const kakaoUserId = await this.authService.getUserIdFromToken(accessToken);
-    return { kakao_user_id: kakaoUserId };
-  }
-
-  @Post('jwt')
-  async generateJwt(@Body('kakao_user_id') kakaoUserId: number) {
-    if (!kakaoUserId) {
-      throw new Error();
+  async kakaoCallback(@Query('code') code: string) {
+    if (!code) {
+      throw new UnauthorizedException('인가 코드가 없습니다.');
     }
-    const jwt = await this.authService.generateJwt(kakaoUserId);
 
-    return { jwt };
+    const kakaoToken = await this.authService.getKakaoAccessToken(code);
+    const kakaoUser = await this.authService.getUserIdFromToken(
+      kakaoToken.access_token,
+    );
+    const jwt = await this.authService.generateJwt(kakaoUser.id);
+
+    return {
+      jwt,
+    };
   }
 }

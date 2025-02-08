@@ -46,7 +46,7 @@ export class AuthService {
 
   //accessToken으로 사용자 id 조회
   async getUserIdFromToken(accessToken: string) {
-    const url = 'https://kapi.kakao.com/v1/user/access_token_info';
+    const url = 'https://kapi.kakao.com/v2/user/me';
 
     try {
       const response = await firstValueFrom(
@@ -56,8 +56,8 @@ export class AuthService {
           },
         }),
       );
-      console.log(response.data.id);
-      return response.data.id;
+      console.log(response.data);
+      return response.data;
     } catch (error) {
       throw new UnauthorizedException();
     }
