@@ -37,7 +37,7 @@ export class AuthService {
   }
 
   //accessToken으로 사용자 id 조회
-  async getUserIdFromToken(accessToken: string) {
+  async getKakaoUser(accessToken: string) {
     const url = 'https://kapi.kakao.com/v2/user/me';
 
     try {
@@ -54,6 +54,8 @@ export class AuthService {
       throw new UnauthorizedException();
     }
   }
+
+  async authenticateKakaoUser() {}
 
   async generateJwt(kakaoUserId: number) {
     const payload = {

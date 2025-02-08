@@ -40,7 +40,7 @@ export class AuthController {
     }
 
     const kakaoToken = await this.authService.getKakaoAccessToken(code);
-    const kakaoUser = await this.authService.getUserIdFromToken(
+    const kakaoUser = await this.authService.getKakaoUser(
       kakaoToken.access_token,
     );
     const jwt = await this.authService.generateJwt(kakaoUser.id);
