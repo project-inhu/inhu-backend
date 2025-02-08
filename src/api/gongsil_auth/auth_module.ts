@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './gongsil_auth.controller';
-import { AuthService } from './gongsil_auth.service';
+import { AuthController } from './auth_controller';
+import { AuthService } from './auth_service';
 import { HttpModule } from '@nestjs/axios';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './guards/auth.guard';
-import { AuthRepository } from './gongsil_auth.repository';
+import { AuthRepository } from './auth_repository';
 
 @Module({
   imports: [

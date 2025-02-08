@@ -7,7 +7,7 @@ import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { AuthRepository } from './gongsil_auth.repository';
+import { AuthRepository } from './auth_repository';
 import { UserProvider } from '@prisma/client';
 
 @Injectable()

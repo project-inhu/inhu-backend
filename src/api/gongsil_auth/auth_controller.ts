@@ -9,7 +9,7 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { AuthService } from './gongsil_auth.service';
+import { AuthService } from './auth_service';
 import { AuthGuard } from './guards/auth.guard';
 import { ConfigService } from '@nestjs/config';
 import { Public } from './decorators/public.decorator';
