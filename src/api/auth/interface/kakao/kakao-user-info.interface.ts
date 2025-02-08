@@ -1,13 +1,4 @@
-type KakaoTokenType = {
-  access_token: string;
-  token_type: string;
-  refresh_token: string;
-  expires_in: number;
-  scope: string;
-  refresh_token_expires_in: number;
-};
-
-type KakaoUserInfoType = {
+interface KakaoUserInfo {
   id: number;
   has_signed_up?: boolean;
   connected_at?: string;
@@ -33,4 +24,4 @@ type KakaoUserInfoType = {
     is_email_verified?: boolean;
     email?: string;
   };
-};
+}
