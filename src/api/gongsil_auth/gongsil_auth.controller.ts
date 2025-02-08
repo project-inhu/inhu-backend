@@ -18,8 +18,8 @@ import { Public } from './decorators/public.decorator';
 @UseGuards(AuthGuard)
 export class AuthController {
   constructor(
-    private authService: AuthService,
-    private configService: ConfigService,
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
   ) {}
 
   @Public()

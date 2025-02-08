@@ -6,29 +6,19 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-  private jwtSecret: string;
-  private clientId: string;
-  private redirectUrl: string;
-
   constructor(
-    private httpService: HttpService,
-    private jwtService: JwtService,
-    private configService: ConfigService,
-  ) {
-    this.jwtSecret = this.configService.get<string>('JWT_SECRET') || '';
-    this.clientId = this.configService.get<string>('KAKAO_CLIENT_ID') || '';
-    this.redirectUrl =
-      this.configService.get<string>('KAKAO_REDIRECT_URL') || '';
-  }
+    private readonly httpService: HttpService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async getKakaoAccessToken(code: string) {
     const tokenUrl = 'https://kauth.kakao.com/oauth/token';
 
-    // 카카오에서 요구하는 http 요청 형식에 맞게 바꿔줌줌
     const payload = new URLSearchParams({
       grant_type: 'authorization_code',
-      client_id: this.clientId,
-      redirect_uri: this.redirectUrl,
+      client_id: this.configService.get<string>('KAKAO_CLIENT_ID') || '',
+      redirect_uri: this.configService.get<string>('KAKAO_REDIRECT_URL') || '',
       code: code,
     });
 
@@ -68,7 +58,7 @@ export class AuthService {
       sub: kakaoUserId,
     };
     return this.jwtService.sign(payload, {
-      secret: this.jwtSecret,
+      secret: this.configService.get<string>('JWT_SECRET'),
       expiresIn: '1m',
     });
   }
