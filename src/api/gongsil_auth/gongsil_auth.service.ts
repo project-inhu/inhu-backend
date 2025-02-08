@@ -3,6 +3,7 @@ import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { AuthRepository } from './gongsil_auth.repository';
 
 @Injectable()
 export class AuthService {
@@ -10,6 +11,7 @@ export class AuthService {
     private readonly httpService: HttpService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly authRepository: AuthRepository,
   ) {}
 
   async getKakaoAccessToken(code: string) {

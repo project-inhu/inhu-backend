@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './guards/auth.guard';
+import { AuthRepository } from './gongsil_auth.repository';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { AuthGuard } from './guards/auth.guard';
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
+    AuthRepository,
   ],
 })
 export class AuthModule {}
