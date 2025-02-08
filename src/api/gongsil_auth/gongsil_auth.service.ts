@@ -1,9 +1,14 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthRepository } from './gongsil_auth.repository';
+import { UserProvider } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -53,12 +58,32 @@ export class AuthService {
     }
   }
 
-  async authenticateKakaoUser() {}
+  async authenticateKakaoUser(kakoUserId: string) {
+    try {
+      let userProvider: UserProvider | null =
+        await this.authRepository.selectKakaoUser(kakoUserId);
 
-  async generateJwt(kakaoUserId: number) {
+      if (!userProvider) {
+        //회원가입
+        const user = await this.authRepository.insertUser();
+        userProvider = await this.authRepository.inserUserProvider(
+          user.idx,
+          kakoUserId,
+        );
+      }
+      return userProvider;
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw new UnauthorizedException('잘못된 정보');
+      }
+      throw new InternalServerErrorException('인증 실패패');
+    }
+  }
+
+  async generateJwt(userId: number) {
     try {
       const payload = {
-        sub: kakaoUserId,
+        sub: userId,
       };
       return this.jwtService.sign(payload, {
         secret: this.configService.get<string>('JWT_SECRET'),
