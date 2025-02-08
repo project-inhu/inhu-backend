@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthGuard } from './auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { Reflector } from '@nestjs/core';
+import { AuthRepository } from './auth.repository';
 
 @Module({
   imports: [HttpModule,
@@ -17,6 +18,7 @@ import { Reflector } from '@nestjs/core';
   controllers: [AuthController],
   providers: [
     AuthService,
+    AuthRepository,
     {
       provide: APP_GUARD,
       useClass : AuthGuard

@@ -1,34 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { firstValueFrom } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 import { KakaoAccessTokenDto, KakaoUserInfoDto } from './dto/kakao.dto';
-import { LoginResponseDto } from './dto/auth.dto';
+import { LoginResponseDto, UserProviderDto } from './dto/auth.dto';
+import { AuthRepository } from './auth.repository';
 
-// TODO : dto 만들고 return type 명시 / repository로 sql 빼기 / 개방 폐쇄 원칙 반영하여 코드 리팩토링 
-// TODO : 랜덤 닉네임 생성 함수 / user dto 만들때 extends 사용하기
+// TODO :  개방 폐쇄 원칙 반영하여 코드 리팩토링 / refresh token 생각하기
+// TODO : 랜덤 닉네임 생성 함수 만들고 UserDto 변수명 생각하기
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly httpService: HttpService,
-    private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly authRepository: AuthRepository
   ) {}
 
   async loginWithKakao(code: string): Promise<LoginResponseDto> {
     // 1. 카카오 API를 통해 Access Token 가져오기
     const accessToken = await this.getKakaoAccessToken(code);
+    //console.log("accessToken : ", accessToken)
 
     // 2. Access Token으로 카카오 사용자 정보 가져오기
     const userInfo = await this.getKakaoUserInfo(accessToken.access_token);
+    //console.log("userInfo : ", userInfo)
 
-    // 3. 유저 정보 조회 및 신규 유저 등록
-    const userProvider = await this.findOrCreateUser(userInfo);
+    // 3. 유저 정보 조회 및 신규 유저 등록 -> db에 저장된 현재 유저 정보 return
+    const registeredUser = await this.registerUser(userInfo);
+    //console.log("userProvider : ", registeredUser)
 
     // 4. JWT 발급
-    const jwtToken = this.generateJwtToken(userProvider.idx);
+    const jwtToken = this.generateJwtToken(registeredUser.idx);
+    //console.log("jwtToken : ", jwtToken)
 
     return { accessToken: jwtToken };
   }
@@ -63,35 +67,22 @@ export class AuthService {
     return userInfoResponse.data;
   }
 
-  private async findOrCreateUser(userInfo: any): Promise<any> {
-    const snsId = String(userInfo.id); // 카카오 고유 식별값
+  private async registerUser(userInfo: KakaoUserInfoDto): Promise<UserProviderDto> {
+    const snsId = userInfo.id.toString(); // 카카오 고유 식별값 (snsId)
+    const provider = 0;
     const nickname = 'random'; // TODO: 랜덤 닉네임 생성 함수 추가
 
-    let userProvider = await this.prisma.userProvider.findFirst({
-      where: { snsId, provider: 0 }, // provider 0: 카카오
-      include: { user: true },
-    });
+    const existingUserProvider = await this.authRepository.findUser(snsId, provider);
 
-    if (!userProvider) {
-      const newUser = await this.prisma.user.create({
-        data: {
-          nickname,
-          createdAt: new Date(),
-        },
-      });
-
-      userProvider = await this.prisma.userProvider.create({
-        data: {
-          snsId,
-          provider: 0,
-          idx: newUser.idx,
-        },
-        include: { user: true },
-      });
+    // 유저가 이미 존재하는 경우 바로 그 유저 반환
+    if (existingUserProvider) {
+        return existingUserProvider; 
     }
 
-    return userProvider;
-  }
+    // 유저가 없다면 DB에 등록 후 유저 반환
+    const newUser = await this.authRepository.createUser(nickname);
+    return await this.authRepository.createUserProvider(snsId, provider, newUser.idx);
+}
 
   private generateJwtToken(idx: number): string {
     const payload = { idx };
