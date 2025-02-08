@@ -36,7 +36,6 @@ export class AuthService {
     }
   }
 
-  //accessToken으로 사용자 id 조회
   async getKakaoUser(accessToken: string) {
     const url = 'https://kapi.kakao.com/v2/user/me';
 
@@ -48,22 +47,25 @@ export class AuthService {
           },
         }),
       );
-      console.log(response.data);
       return response.data;
     } catch (error) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('사용자 정보 조회 실패');
     }
   }
 
   async authenticateKakaoUser() {}
 
   async generateJwt(kakaoUserId: number) {
-    const payload = {
-      sub: kakaoUserId,
-    };
-    return this.jwtService.sign(payload, {
-      secret: this.configService.get<string>('JWT_SECRET'),
-      expiresIn: '1m',
-    });
+    try {
+      const payload = {
+        sub: kakaoUserId,
+      };
+      return this.jwtService.sign(payload, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+        expiresIn: '1m',
+      });
+    } catch (error) {
+      throw new UnauthorizedException('jwt 토큰 발급 실패');
+    }
   }
 }
