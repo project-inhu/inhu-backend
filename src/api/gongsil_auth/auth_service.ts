@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthRepository } from './auth_repository';
 import { UserProvider } from '@prisma/client';
+import { KakaoAccessTokenDto, KakoUserInfoDto } from './auth_dto';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +20,7 @@ export class AuthService {
     private readonly authRepository: AuthRepository,
   ) {}
 
-  async getKakaoAccessToken(code: string) {
+  async getKakaoAccessToken(code: string): Promise<KakaoAccessTokenDto> {
     const tokenUrl = 'https://kauth.kakao.com/oauth/token';
 
     const payload = new URLSearchParams({
@@ -41,7 +42,7 @@ export class AuthService {
     }
   }
 
-  async getKakaoUser(accessToken: string) {
+  async getKakaoUser(accessToken: string): Promise<KakoUserInfoDto> {
     const url = 'https://kapi.kakao.com/v2/user/me';
 
     try {
@@ -58,7 +59,7 @@ export class AuthService {
     }
   }
 
-  async authenticateKakaoUser(kakoUserId: string) {
+  async authenticateKakaoUser(kakoUserId: string): Promise<UserProvider> {
     try {
       let userProvider: UserProvider | null =
         await this.authRepository.selectKakaoUser(kakoUserId);
@@ -80,7 +81,7 @@ export class AuthService {
     }
   }
 
-  async generateJwt(userId: number) {
+  async generateJwt(userId: number): Promise<string> {
     try {
       const payload = {
         sub: userId,

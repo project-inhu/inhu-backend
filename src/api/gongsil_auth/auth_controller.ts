@@ -25,7 +25,7 @@ export class AuthController {
   @Public()
   @Get('login-page')
   @Redirect()
-  async kakaoLogin() {
+  async kakaoLogin(): Promise<{ url: string }> {
     const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code
     &client_id=${this.configService.get<string>('KAKAO_CLIENT_ID')}
     &redirect_uri=${this.configService.get<string>('KAKAO_REDIRECT_URL')}`;
@@ -34,7 +34,7 @@ export class AuthController {
   }
   @Public()
   @Get('kakao/callback')
-  async kakaoCallback(@Query('code') code: string) {
+  async kakaoCallback(@Query('code') code: string): Promise<{ jwt: string }> {
     if (!code) {
       throw new UnauthorizedException('인가 코드가 없습니다.');
     }
