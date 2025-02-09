@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { Request } from 'express';
 import { Public } from './decorators/public.decorator';
 import { KakaoCallbackResponseDto, KakaoRedirectResponseDto } from './dto/kakao.dto';
+import { generateRandomNickname } from './utils/random-nickname.util';
 type RequestWithUser = Request & { user?: { idx: number } };
 
 @Controller('auth')
@@ -47,6 +48,13 @@ export class AuthController {
             message: "test",
             userIdx : req.user?.idx
         }
+    }
+
+    // test
+    @Public()
+    @Get('random-nickname')
+    async getRandomNickname() {
+        return generateRandomNickname();
     }
 
 }
