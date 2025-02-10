@@ -49,11 +49,17 @@ export class AuthController {
     );
     const jwt = await this.authService.generateJwt(userProvider.idx);
 
-    res.cookie('Authorization', `Bearer ${jwt}`, {
+    res.cookie('Authorization', jwt, {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
     });
+
+    // res.cookie('RefreshToken', refreshToken,{
+    //   httpOnly : true,
+    //   secure:false,
+    //   sameSite:'lax'
+    // });
 
     console.log(jwt);
     res.redirect('http://localhost:3000/auth/test');
