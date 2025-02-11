@@ -68,18 +68,29 @@ export class AuthController {
   @Public()
   @Get('refresh')
   async refreshToken(@Req() req: Request, @Res() res: Response) {
-    const { accessToken, refreshToken } =
-      await this.authService.refreshTokens(req);
+    console.log('클라에서 받은 refresh', req.cookies['RefreshToken']);
 
-    res.cookie('AccessToken', accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-    });
-    res.cookie('RefreshToken', refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-    });
+    if (!req.cookies['RefreshToken']) {
+      throw new UnauthorizedException('Refresh Token이 없습니다.');
+    }
+    try {
+      const { accessToken, refreshToken } =
+        await this.authService.refreshTokens(req);
+
+      res.cookie('AccessToken', accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'lax',
+      });
+      res.cookie('RefreshToken', refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'lax',
+      });
+      console.log('새로운 access', accessToken);
+      console.log('새로운 refresh', refreshToken);
+    } catch (error) {
+      throw new UnauthorizedException('실패');
+    }
   }
 }

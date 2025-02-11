@@ -33,7 +33,7 @@ export class AuthService {
     await this.saveKakaoRefreshToken(kakaoUserId, kakaoToken.refresh_token);
 
     const accessToken = await this.generateAccessJwt(kakaoUserId);
-    const refreshToken = await this.getKakaoRefreshToken(kakaoUserId);
+    const refreshToken = await this.generateRefreshJwt(kakaoUserId);
 
     return { accessToken, refreshToken };
   }
@@ -110,10 +110,12 @@ export class AuthService {
       const payload = {
         sub: userId,
       };
-      return this.jwtService.sign(payload, {
+      const token = this.jwtService.sign(payload, {
         secret: this.configService.get<string>('JWT_SECRET'),
         expiresIn: '7d',
       });
+      console.log('생성된 refresh', token);
+      return token;
     } catch (error) {
       throw new UnauthorizedException('refresh jwt 토큰 발급 실패');
     }
@@ -154,7 +156,9 @@ export class AuthService {
     }
 
     //jwt에서 snsId 추출
+    console.log('검증할 server refreshtoken', serverRefreshToken);
     const snsId = await this.verifyRefreshJwt(serverRefreshToken);
+    console.log('추출된 snsId', snsId);
 
     //DB에서 카카오 refresh token 조회
     const kakaoRefreshToken = await this.getKakaoRefreshToken(snsId);
@@ -175,11 +179,14 @@ export class AuthService {
   //서버 refresh jwt에서 사용자 정보 추출출
   async verifyRefreshJwt(serverRefreshToken: string): Promise<string> {
     try {
+      console.log('검증 시작', serverRefreshToken);
       const decoded = this.jwtService.verify(serverRefreshToken, {
         secret: this.configService.get<string>('JWT_SECRET'),
       });
+      console.log('디코딩 성공', decoded);
       return decoded.sub;
     } catch (error) {
+      console.log(error.message);
       throw new UnauthorizedException('유효하지 않은 Refresh Token');
     }
   }

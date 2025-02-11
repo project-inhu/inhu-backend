@@ -29,6 +29,8 @@ export class AuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
+    console.log('쿠키', request.headers.cookie);
+
     const token = request.cookies['AccessToken'];
     if (!token) {
       throw new UnauthorizedException('Access Token이 없습니다.');
@@ -42,10 +44,14 @@ export class AuthGuard implements CanActivate {
       if (error.name === 'TokenExpiredError') {
         console.log('재발급 요청');
         // 자동으로 refresh API 호출출
-        await axios.get('http://localhost:3000/auth/refresh', {
-          headers: { Cookie: request.headers.cookie }, // 쿠키를 그대로 저장장
-          withCredentials: true, // 쿠키를 포함
-        });
+        try {
+          await axios.get('http://localhost:3000/auth/refresh', {
+            headers: { Cookie: request.headers.cookie }, // 쿠키를 그대로 저장장
+            withCredentials: true, // 쿠키를 포함
+          });
+        } catch (error) {
+          throw new UnauthorizedException('토큰 갱신 실패');
+        }
       }
       throw new UnauthorizedException('유효하지 않은 Access Token입니다.');
     }
