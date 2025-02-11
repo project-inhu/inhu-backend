@@ -4,6 +4,13 @@ CREATE DATABASE inhu OWNER inhu_admin;
 
 \c inhu inhu_admin
 
+CREATE TABLE black_list_tb
+(
+  idx           int     NOT NULL GENERATED ALWAYS AS IDENTITY,
+  refresh_token varchar NOT NULL,
+  PRIMARY KEY (idx)
+);
+
 CREATE TABLE bookmark_tb
 (
   idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -157,7 +164,8 @@ CREATE TABLE user_tb
 (
   idx                int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
   nickname           varchar                  NOT NULL,
-  profile_image_path varchar                  NOT NULL,
+  profile_image_path varchar                  ,
+  refresh_token      varchar                  ,
   created_at         timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at         timestamp with time zone,
   PRIMARY KEY (idx)
