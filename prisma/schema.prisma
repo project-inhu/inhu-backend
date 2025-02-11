@@ -183,7 +183,7 @@ model UserProvider {
   provider Int    @db.SmallInt
   snsId    String @map("sns_id") @db.VarChar
   user     User   @relation(fields: [idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_user_provider_tb")
-
+  refresh_token String?
   @@map("user_provider_tb")
 }
 

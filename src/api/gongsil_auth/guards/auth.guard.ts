@@ -9,6 +9,7 @@ import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
+import axios from 'axios';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -24,31 +25,30 @@ export class AuthGuard implements CanActivate {
       context.getClass(),
     ]);
     if (isPublic) {
-      // 💡 See this condition
       return true;
     }
 
     const request = context.switchToHttp().getRequest();
-    const token = request.cookies['Authorization'];
-    console.log(token);
+    const token = request.cookies['AccessToken'];
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Access Token이 없습니다.');
     }
     try {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('JWT_SECRET'),
       });
-      // 💡 We're assigning the payload to the request object here
-      // so that we can access it in our route handlers
       request['user'] = payload;
-    } catch {
-      throw new UnauthorizedException();
+    } catch (error) {
+      if (error.name === 'TokenExpiredError') {
+        console.log('재발급 요청');
+        // 자동으로 refresh API 호출출
+        await axios.get('http://localhost:3000/auth/refresh', {
+          headers: { Cookie: request.headers.cookie }, // 쿠키를 그대로 저장장
+          withCredentials: true, // 쿠키를 포함
+        });
+      }
+      throw new UnauthorizedException('유효하지 않은 Access Token입니다.');
     }
     return true;
   }
-
-  // private extractTokenFromCookie(request: Request): string | undefined {
-  //   const [type, token] = request.cookies?.Authorization.split(' ');
-  //   return type === 'Bearer' ? token : undefined;
-  // }
 }

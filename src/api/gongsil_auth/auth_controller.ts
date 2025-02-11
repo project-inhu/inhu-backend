@@ -5,6 +5,7 @@ import {
   Post,
   Query,
   Redirect,
+  Req,
   Res,
   UnauthorizedException,
   UseGuards,
@@ -13,7 +14,7 @@ import { AuthService } from './auth_service';
 import { AuthGuard } from './guards/auth.guard';
 import { ConfigService } from '@nestjs/config';
 import { Public } from './decorators/public.decorator';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @Controller('auth')
 @UseGuards(AuthGuard)
@@ -33,6 +34,7 @@ export class AuthController {
 
     return { url: kakaoLoginUrl };
   }
+
   @Public()
   @Get('kakao/callback')
   async kakaoCallback(@Query('code') code: string, @Res() res: Response) {
@@ -40,33 +42,44 @@ export class AuthController {
       throw new UnauthorizedException('인가 코드가 없습니다.');
     }
 
-    const kakaoToken = await this.authService.getKakaoAccessToken(code);
-    const kakaoUser = await this.authService.getKakaoUser(
-      kakaoToken.access_token,
-    );
-    const userProvider = await this.authService.authenticateKakaoUser(
-      kakaoUser.id.toString(),
-    );
-    const jwt = await this.authService.generateJwt(userProvider.idx);
+    const { accessToken, refreshToken } =
+      await this.authService.loginWithKakao(code);
 
-    res.cookie('Authorization', jwt, {
+    res.cookie('AccessToken', accessToken, {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
     });
 
-    // res.cookie('RefreshToken', refreshToken,{
-    //   httpOnly : true,
-    //   secure:false,
-    //   sameSite:'lax'
-    // });
+    res.cookie('RefreshToken', refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+    });
 
-    console.log(jwt);
     res.redirect('http://localhost:3000/auth/test');
   }
 
   @Get('test')
   async test() {
     return { message: '인증 성공' };
+  }
+
+  @Public()
+  @Get('refresh')
+  async refreshToken(@Req() req: Request, @Res() res: Response) {
+    const { accessToken, refreshToken } =
+      await this.authService.refreshTokens(req);
+
+    res.cookie('AccessToken', accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+    });
+    res.cookie('RefreshToken', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+    });
   }
 }
