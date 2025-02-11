@@ -188,11 +188,12 @@ model UserProvider {
 }
 
 model User {
-  idx                   Int                      @id @default(autoincrement())
-  nickname              String                   @db.VarChar
-  profileImagePath      String?                  @map("profile_image_path") @db.VarChar
-  createdAt             DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  idx                   Int                     @id @default(autoincrement())
+  nickname              String                  @db.VarChar
+  profileImagePath      String?                 @map("profile_image_path") @db.VarChar
+  createdAt             DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt             DateTime?               @map("deleted_at") @db.Timestamptz(6)
+  refreshToken          String?                 @map("refresh_token") @db.Text
   bookmark              Bookmark[]
   review                Review[]
   service1Result        Service1Result[]

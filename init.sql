@@ -160,6 +160,7 @@ CREATE TABLE user_tb
   profile_image_path varchar                  NOT NULL,
   created_at         timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at         timestamp with time zone,
+  refresh_token      varchar,
   PRIMARY KEY (idx)
 );
 
