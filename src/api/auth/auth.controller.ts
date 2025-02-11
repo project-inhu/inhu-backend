@@ -34,13 +34,8 @@ export class AuthController {
   @Public()
   @Get('kakao/callback')
   async kakaoAuth(@Query('code') code: string, @Res() res: Response) {
-    const kakaoToken = await this.authService.getKakaoToken(code);
-    const kakaoUserInfo = await this.authService.getKakaoUserInfo(
-      kakaoToken.access_token,
-    );
-    const user = await this.authService.authenticateKakaoUser(kakaoUserInfo);
-    const accessToken = await this.authService.makeAccessToken(user.idx);
-    const refreshToken = await this.authService.makeRefreshToken(user.idx);
+    const { accessToken, refreshToken } =
+      await this.authService.handleKakaoLogin(code);
 
     res.cookie('accessToken', accessToken, {
       httpOnly: true,

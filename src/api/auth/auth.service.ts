@@ -116,6 +116,21 @@ export class AuthService {
     }
   }
 
+  async handleKakaoLogin(code: string): Promise<tokenPair> {
+    const kakaoToken = await this.getKakaoToken(code);
+    const kakaoUserInfo = await this.getKakaoUserInfo(kakaoToken.access_token);
+    const user = await this.authenticateKakaoUser(kakaoUserInfo);
+
+    const accessToken = await this.makeAccessToken(user.idx);
+    const refreshToken = await this.makeRefreshToken(user.idx);
+    await this.authRepository.updateUserRefreshTokenByIdx(
+      user.idx,
+      refreshToken,
+    );
+
+    return { accessToken, refreshToken };
+  }
+
   async makeNewToken(refreshToken: string): Promise<tokenPair> {
     if (!refreshToken) {
       throw new UnauthorizedException('refresh 토큰 없음');
