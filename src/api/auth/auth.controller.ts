@@ -1,15 +1,18 @@
-import { HttpService } from '@nestjs/axios';
-import { Controller, Get, Query, Res } from '@nestjs/common';
-import { Response } from 'express';
+import {
+  Controller,
+  Get,
+  Query,
+  Req,
+  Res,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly httpService: HttpService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Public()
   @Get('kakao-login')
@@ -30,14 +33,50 @@ export class AuthController {
 
   @Public()
   @Get('kakao/callback')
-  async kakaoAuth(@Query('code') code: string) {
+  async kakaoAuth(@Query('code') code: string, @Res() res: Response) {
     const kakaoToken = await this.authService.getKakaoToken(code);
     const kakaoUserInfo = await this.authService.getKakaoUserInfo(
       kakaoToken.access_token,
     );
     const user = await this.authService.authenticateKakaoUser(kakaoUserInfo);
-    const jwtToken = await this.authService.makeJwtToken(user);
+    const accessToken = await this.authService.makeAccessToken(user.idx);
+    const refreshToken = await this.authService.makeRefreshToken(user.idx);
 
-    return jwtToken;
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      sameSite: 'strict',
+    });
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      sameSite: 'strict',
+    });
+
+    const url = 'http://localhost:3000/public';
+    return res.redirect(url);
+  }
+
+  @Public()
+  @Get('/reissue')
+  async handleTokenReissue(@Req() req: Request, @Res() res: Response) {
+    console.log(req.cookies);
+    try {
+      const { accessToken, refreshToken } = await this.authService.makeNewToken(
+        req.cookies?.refreshToken,
+      );
+
+      res.cookie('accessToken', accessToken, {
+        httpOnly: true,
+        sameSite: 'strict',
+      });
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        sameSite: 'strict',
+      });
+
+      const url = 'http://localhost:3000/public';
+      return res.redirect(url);
+    } catch (error) {
+      throw new UnauthorizedException();
+    }
   }
 }
