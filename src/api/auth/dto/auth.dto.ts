@@ -3,8 +3,10 @@ export class LoginDto {
     code: string;
 }
 
-export class LoginResponseDto{
-    accessToken: string; // jwt
+// LoginResponseDto와 같은 역할
+export class AuthTokensDto{
+    jwtAccessToken: string;
+    jwtRefreshToken: string;
 }
 
 export class UserDto {

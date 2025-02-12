@@ -3,10 +3,11 @@ export class KakaoRedirectResponseDto{
     redirectUri: string;
 }
 
-// controller - loginWithKakao의 return (Q.auth의 LoginResponseDto와 같음 -> 없앨지?)
+// controller - loginWithKakao의 return (Q.auth의 AuthTokensDto랑 같음 -> 없앨지?)
 export class KakaoCallbackResponseDto{
     message: string;
-    accessToken: string; // jwt
+    jwtAccessToken: string; // jwt
+    jwtRefreshToken: string;
 }
 
 // service - getKakaoAccessToken의 return 

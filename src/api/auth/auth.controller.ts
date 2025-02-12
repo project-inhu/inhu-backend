@@ -29,10 +29,11 @@ export class AuthController {
         }
         
         try {
-            const { accessToken } = await this.AuthService.loginWithKakao(code);
+            const { jwtAccessToken, jwtRefreshToken } = await this.AuthService.loginWithKakao(code);
             return {
                 message: "로그인 성공",
-                accessToken
+                jwtAccessToken,
+                jwtRefreshToken
             }
         } catch (error) {
             console.error('로그인 에러:', error.response?.data || error.message || error);
