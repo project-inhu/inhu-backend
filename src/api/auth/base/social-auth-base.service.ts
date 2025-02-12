@@ -12,6 +12,7 @@ export abstract class SocialAuthBaseService<TToken, TUserInfo> {
   abstract getAuthLoginUrl(): string;
   abstract getAccessToken(token: TToken): string;
   abstract getUserInfo(accessToken: string): Promise<TUserInfo>;
+  abstract extractUserInfo(userInfo: TUserInfo): SocialUserInfo;
 
   async getToken(code: string): Promise<TToken> {
     const params = this.getTokenParams(code);

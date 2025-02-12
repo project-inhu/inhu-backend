@@ -36,6 +36,10 @@ export class KakaoAuthService extends SocialAuthBaseService<
     return token.access_token;
   }
 
+  extractUserInfo(userInfo: KakaoUserInfo): SocialUserInfo {
+    return { id: userInfo.id.toString() };
+  }
+
   async getUserInfo(accessToken: string): Promise<KakaoUserInfo> {
     try {
       const response = await axios.get<KakaoUserInfo>(
