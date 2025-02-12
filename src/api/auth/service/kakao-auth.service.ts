@@ -5,6 +5,8 @@ import {
 } from '@nestjs/common';
 import { SocialAuthBaseService } from '../base/social-auth-base.service';
 import axios from 'axios';
+import { AuthProvider } from '../enum/auth-provider.enum';
+import { SocialUserInfoDto } from '../dto/social-common/social-user-info.dto';
 
 @Injectable()
 export class KakaoAuthService extends SocialAuthBaseService<
@@ -36,8 +38,11 @@ export class KakaoAuthService extends SocialAuthBaseService<
     return token.access_token;
   }
 
-  extractUserInfo(userInfo: KakaoUserInfo): SocialUserInfo {
-    return { id: userInfo.id.toString() };
+  extractUserInfo(userInfo: KakaoUserInfo): SocialUserInfoDto {
+    return {
+      id: userInfo.id.toString(),
+      provider: AuthProvider.KAKAO,
+    };
   }
 
   async getUserInfo(accessToken: string): Promise<KakaoUserInfo> {
