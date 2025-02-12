@@ -1,4 +1,3 @@
-import { HttpService } from '@nestjs/axios';
 import {
   BadRequestException,
   ConflictException,
@@ -6,7 +5,6 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { firstValueFrom } from 'rxjs';
 import { AuthRepository } from './auth.repository';
 import { JwtService } from '@nestjs/jwt';
 import { UserProvider } from '@prisma/client';
@@ -14,75 +12,31 @@ import {
   PrismaClientKnownRequestError,
   PrismaClientValidationError,
 } from '@prisma/client/runtime/library';
-import axios from 'axios';
+import { SocialAuthFactory } from './factories/social-auth.factory';
+import { SocialUserInfoDto } from './dto/social-common/social-user-info.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly httpService: HttpService,
     private readonly authRepository: AuthRepository,
     private readonly jwtService: JwtService,
+    private readonly socialAuthFactory: SocialAuthFactory,
   ) {}
 
-  async getKakaoToken(code: string): Promise<KakaoToken> {
-    try {
-      const response = await axios.post<KakaoToken>(
-        'https://kauth.kakao.com/oauth/token',
-        new URLSearchParams({
-          grant_type: 'authorization_code',
-          client_id: process.env.KAKAO_CLIENT_ID ?? '',
-          redirect_uri: process.env.KAKAO_REDIRECT_URI ?? '',
-          code: code,
-        }),
-        {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        },
-      );
-
-      if (!response?.data) {
-        throw new UnauthorizedException('토큰 발급 실패');
-      }
-
-      return response.data;
-    } catch (error) {
-      throw new InternalServerErrorException('Something is wrong');
-    }
-  }
-
-  async getKakaoUserInfo(accessToken: string): Promise<KakaoUserInfo> {
-    try {
-      const response = await firstValueFrom(
-        this.httpService.get('https://kapi.kakao.com/v2/user/me', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-          },
-        }),
-      );
-
-      if (!response?.data) {
-        throw new UnauthorizedException('정보 조회 실패');
-      }
-
-      return response.data;
-    } catch (error) {
-      throw new InternalServerErrorException('Something is wrong!!');
-    }
-  }
-
-  async authenticateKakaoUser(
-    kakaoUserInfo: KakaoUserInfo,
+  async authenticateSocialUser(
+    socialUserInfoDto: SocialUserInfoDto,
   ): Promise<UserProvider> {
     try {
-      const kakaoId = kakaoUserInfo.id.toString();
+      const snsId = socialUserInfoDto.id;
       let userProvider: UserProvider | null =
-        await this.authRepository.selectKakaoId(kakaoId);
+        await this.authRepository.selectUserProviderBySnsId(snsId);
 
       if (!userProvider) {
         const user = await this.authRepository.insertUser();
-        userProvider = await this.authRepository.insertUserProviderByKakao(
+        userProvider = await this.authRepository.insertUserProvider(
           user.idx,
-          kakaoId,
+          socialUserInfoDto.provider,
+          snsId,
         );
       }
 
@@ -116,10 +70,16 @@ export class AuthService {
     }
   }
 
-  async handleKakaoLogin(code: string): Promise<tokenPair> {
-    const kakaoToken = await this.getKakaoToken(code);
-    const kakaoUserInfo = await this.getKakaoUserInfo(kakaoToken.access_token);
-    const user = await this.authenticateKakaoUser(kakaoUserInfo);
+  async handleSocialLogin(code: string, provider: string): Promise<tokenPair> {
+    const socialProviderService =
+      this.socialAuthFactory.getAuthService(provider);
+    const authToken = await socialProviderService.getToken(code);
+    const socialUserInfo = await socialProviderService.getUserInfo(
+      socialProviderService.getAccessToken(authToken),
+    );
+    const extractedUserInfo =
+      await socialProviderService.extractUserInfo(socialUserInfo);
+    const user = await this.authenticateSocialUser(extractedUserInfo);
 
     const accessToken = await this.makeAccessToken(user.idx);
     const refreshToken = await this.makeRefreshToken(user.idx);

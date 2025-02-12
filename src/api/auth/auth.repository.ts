@@ -6,9 +6,9 @@ import { PrismaService } from 'src/common/module/prisma/prisma.service';
 export class AuthRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async selectKakaoId(kakaoId: string): Promise<UserProvider | null> {
+  async selectUserProviderBySnsId(snsId: string): Promise<UserProvider | null> {
     return await this.prisma.userProvider.findFirst({
-      where: { snsId: kakaoId },
+      where: { snsId },
     });
   }
 
@@ -20,15 +20,16 @@ export class AuthRepository {
     });
   }
 
-  async insertUserProviderByKakao(
+  async insertUserProvider(
     idx: number,
-    kakaoId: string,
+    provider: number,
+    snsId: string,
   ): Promise<UserProvider> {
     return await this.prisma.userProvider.create({
       data: {
         idx,
-        provider: 0,
-        snsId: kakaoId,
+        provider,
+        snsId,
       },
     });
   }

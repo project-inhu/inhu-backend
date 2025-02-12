@@ -6,6 +6,8 @@ import { AuthRepository } from './auth.repository';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth.guard';
+import { KakaoAuthService } from './service/kakao-auth.service';
+import { SocialAuthFactory } from './factories/social-auth.factory';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { AuthGuard } from './auth.guard';
     },
     AuthService,
     AuthRepository,
+    KakaoAuthService,
+    SocialAuthFactory,
   ],
   exports: [AuthService],
 })

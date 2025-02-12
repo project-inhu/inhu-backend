@@ -3,6 +3,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import axios from 'axios';
+import { SocialUserInfoDto } from '../dto/social-common/social-user-info.dto';
 
 export abstract class SocialAuthBaseService<TToken, TUserInfo> {
   protected abstract authLoginUrl: string;
@@ -12,7 +13,7 @@ export abstract class SocialAuthBaseService<TToken, TUserInfo> {
   abstract getAuthLoginUrl(): string;
   abstract getAccessToken(token: TToken): string;
   abstract getUserInfo(accessToken: string): Promise<TUserInfo>;
-  abstract extractUserInfo(userInfo: TUserInfo): SocialUserInfo;
+  abstract extractUserInfo(userInfo: TUserInfo): SocialUserInfoDto;
 
   async getToken(code: string): Promise<TToken> {
     const params = this.getTokenParams(code);

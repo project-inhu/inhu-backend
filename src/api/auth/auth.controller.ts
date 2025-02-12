@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Param,
   Query,
   Req,
   Res,
@@ -9,33 +10,36 @@ import {
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
+import { SocialAuthFactory } from './factories/social-auth.factory';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly socialAuthFactory: SocialAuthFactory,
+  ) {}
 
   @Public()
-  @Get('kakao-login')
-  kakaoRedirect(
-    @Res({
-      passthrough: true,
-    })
-    res: Response,
+  @Get(':provider/login')
+  socialLogin(
+    @Param('provider') provider: string,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    const uri =
-      'https://kauth.kakao.com/oauth/authorize?' +
-      'response_type=code&' +
-      `redirect_uri=${process.env.KAKAO_REDIRECT_URI}&` +
-      `client_id=${process.env.KAKAO_CLIENT_ID}`;
+    const socialProviderService =
+      this.socialAuthFactory.getAuthService(provider);
 
-    res.redirect(uri);
+    res.redirect(socialProviderService.getAuthLoginUrl());
   }
 
   @Public()
-  @Get('kakao/callback')
-  async kakaoAuth(@Query('code') code: string, @Res() res: Response) {
+  @Get(':provider/callback')
+  async kakaoAuth(
+    @Query('code') code: string,
+    @Param('provider') provider: string,
+    @Res() res: Response,
+  ) {
     const { accessToken, refreshToken } =
-      await this.authService.handleKakaoLogin(code);
+      await this.authService.handleSocialLogin(code, provider);
 
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
