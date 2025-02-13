@@ -1,14 +1,4 @@
-export class KakaoAccessTokenDto {
-  token_type: string;
-  access_token: string;
-  id_token?: string;
-  expires_in: number;
-  refresh_token: string;
-  refresh_token_expires_in: number;
-  scope?: string;
-}
-
-export class KakoUserInfoDto {
+interface kakaoUser {
   id: number;
   has_signed_up?: boolean;
   connected_at?: string;
