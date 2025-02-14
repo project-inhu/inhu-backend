@@ -38,7 +38,7 @@ export class AuthRepository {
     });
     } 
     
-    // 특정 유저의 refreshToken 가져오기
+    // 특정 유저의 refreshToken 가져오기 (비교해서 검증 위함)
     async getRefreshToken(userIdx: number): Promise<string | null> {
         const user = await this.prisma.user.findUnique({
             where: { idx: userIdx },

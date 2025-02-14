@@ -7,9 +7,12 @@ import { AuthTokensDto, UserProviderDto } from './dto/auth.dto';
 import { AuthRepository } from './auth.repository';
 import { generateRandomNickname } from './utils/random-nickname.util';
 
-// TODO : regenerateToken 안에서 accessToken, refreshToken 만료됐는지 확인하지말고 auth guard에서 확인하도록 하기? -> accessToken은 만료 안됐는데 refreshToken은 만료되는 경우도 있을 수 있으므로
-// TODO : try catch, 오류 제어 부분 보충
-// TODO(Later) : 개방 폐쇄 원칙 반영하여 코드 리팩토링
+export enum SocialProvider {
+  KAKAO = 0
+}
+
+// TODO : 폴더 구조 정비 / repository 함수명 바꾸기 / type 정의 / 1파일 1인터페이스/dto
+// TODO : try, catch 적당히 / 추상화 / userProvider 접근시 user를 통해 접근 
 // Q. auth.dtod의 UserDto, UserProviderDTO는 user-info.dto에 있어야하는가?
 
 @Injectable()
@@ -21,20 +24,13 @@ export class AuthService {
   ) {}
 
   async loginWithKakao(code: string): Promise<AuthTokensDto> {
-    // 1. 카카오 API를 통해 Access Token 가져오기
     const accessToken = await this.getKakaoAccessToken(code);
-
-    // 2. Access Token으로 카카오 사용자 정보 가져오기
     const userInfo = await this.getKakaoUserInfo(accessToken.access_token);
-
-    // 3. 유저 정보 조회 및 신규 유저 등록 -> db에 저장된 현재 유저 정보 return
     const registeredUser = await this.registerUser(userInfo);
 
-    // 4. JWT 발급 (Access + Refresh)
     const jwtAccessToken = this.generateToken(registeredUser.idx, 'access');
     const jwtRefreshToken = this.generateToken(registeredUser.idx, 'refresh');
 
-    // Refresh Token은 DB에 저장
     await this.authRepository.updateRefreshToken(registeredUser.idx, jwtRefreshToken);
 
     return { jwtAccessToken, jwtRefreshToken };
@@ -72,7 +68,7 @@ export class AuthService {
 
   private async registerUser(userInfo: KakaoUserInfoDto): Promise<UserProviderDto> {
     const snsId = userInfo.id.toString(); // 카카오 고유 식별값 (snsId)
-    const provider = 0; // 현재는 카카오만 고려하고 있으므로 임시로 0으로 고정
+    const provider:SocialProvider = SocialProvider.KAKAO; // 현재는 카카오만 고려하고 있으므로 임시로 0으로 고정
     const nickname = generateRandomNickname(); // 랜덤 닉네임 생성
 
     const existingUserProvider = await this.authRepository.findUser(snsId, provider);

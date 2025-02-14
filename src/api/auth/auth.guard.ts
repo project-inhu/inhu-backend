@@ -3,7 +3,6 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from './decorators/public.decorator';
 import { Reflector } from '@nestjs/core';
-// Reflector : SetMetadata로 설정한 메타데이터를 읽어옴
 
 @Injectable()
 export class AuthGuard implements CanActivate {
