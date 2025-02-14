@@ -2,7 +2,8 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
-import { KakaoAccessTokenDto, KakaoUserInfoDto } from './dto/kakao.dto';
+import { KakaoAccessTokenDto } from './dto/kakao/kakao-access-token.dto';
+import { KakaoUserInfoDto } from './dto/kakao/kakao-user-info.dto'
 import { AuthTokensDto, UserProviderDto } from './dto/auth.dto';
 import { AuthRepository } from './auth.repository';
 import { generateRandomNickname } from './utils/random-nickname.util';
