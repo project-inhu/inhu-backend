@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './auth_controller';
-import { AuthService } from './auth_service';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
 import { HttpModule } from '@nestjs/axios';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './guards/auth.guard';
-import { AuthRepository } from './auth_repository';
+import { AuthRepository } from './auth.repository';
 
 @Module({
   imports: [

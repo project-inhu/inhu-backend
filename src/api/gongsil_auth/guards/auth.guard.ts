@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    console.log('쿠키', request.headers.cookie);
+    console.log('가드쿠키', request.headers.cookie);
 
     const token = request.cookies['AccessToken'];
     if (!token) {
@@ -49,6 +49,7 @@ export class AuthGuard implements CanActivate {
             headers: { Cookie: request.headers.cookie }, // 쿠키를 그대로 저장장
             withCredentials: true, // 쿠키를 포함
           });
+          return true;
         } catch (error) {
           throw new UnauthorizedException('토큰 갱신 실패');
         }

@@ -24,30 +24,30 @@ export class AuthRepository {
 
   async inserUserProvider(
     idx: number,
-    kakaoUserId: string,
+    provider: number,
+    snsId: string,
   ): Promise<UserProvider> {
     return await this.prisma.userProvider.create({
       data: {
         idx,
-        provider: 0,
-        snsId: kakaoUserId,
+        provider,
+        snsId,
       },
     });
   }
 
-  async insertKakaoRefreshToken(snsId: string, kakaoRefreshToken: string) {
-    const userProvider = await this.prisma.userProvider.findFirst({
-      where: { snsId },
+  async updateUserRefreshTokenByIdx(
+    idx: number,
+    refreshToken: string,
+  ): Promise<UserProvider> {
+    const user = await this.prisma.user.findFirstOrThrow({
+      where: { idx },
     });
 
-    if (!userProvider) {
-      throw new Error('사용자가 존재하지 않습니다.');
-    }
-
     return await this.prisma.userProvider.update({
-      where: { idx: userProvider.idx },
+      where: { idx: user.idx },
       data: {
-        refresh_token: kakaoRefreshToken,
+        refresh_token: refreshToken,
       },
     });
   }
