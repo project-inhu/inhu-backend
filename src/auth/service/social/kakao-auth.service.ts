@@ -3,7 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import { SocialAuthService } from '../social-auth.service';
 import axios from 'axios';
 import { UserPayloadInfoDto } from '../../dto/user-payload-info.dto';
-import { AuthProvider } from '../../enum/auth-provider.enum';
+import {
+  AuthProvider,
+  getAuthProviderNumber,
+} from '../../enum/auth-provider.enum';
 
 @Injectable()
 export class kakaoAuthService extends SocialAuthService<
@@ -34,7 +37,7 @@ export class kakaoAuthService extends SocialAuthService<
   extractUserInfo(userInfo: KakaoUserInfo): UserPayloadInfoDto {
     return {
       id: userInfo.id.toString(),
-      provider: AuthProvider.KAKAO,
+      provider: getAuthProviderNumber(AuthProvider.KAKAO),
     };
   }
 
