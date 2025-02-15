@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import { UserPayloadInfoDto } from '../dto/user-payload-info.dto';
+import { UserPayloadInfoDto } from 'src/auth/dto/user-payload-info.dto';
 
 @Injectable()
-export abstract class SocialAuthService<TToken, TUserInfo> {
+export abstract class SocialAuthStrategy<TToken, TUserInfo> {
   protected abstract tokenUrl: string;
   protected abstract getTokenParams(code: string): Record<string, string>;
 

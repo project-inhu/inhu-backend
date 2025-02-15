@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SocialAuthService } from '../social-auth.service';
+import { SocialAuthStrategy } from './base/social-auth.strategy';
+import { UserPayloadInfoDto } from '../dto/user-payload-info.dto';
 import axios from 'axios';
-import { UserPayloadInfoDto } from '../../dto/user-payload-info.dto';
 import {
   AuthProvider,
   getAuthProviderNumber,
-} from '../../enum/auth-provider.enum';
+} from '../enum/auth-provider.enum';
 
 @Injectable()
-export class kakaoAuthService extends SocialAuthService<
+export class kakaoAuthService extends SocialAuthStrategy<
   kakaoToken,
   KakaoUserInfo
 > {

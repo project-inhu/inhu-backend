@@ -1,9 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { AuthRepository } from '../../auth.repository';
+import { AuthRepository } from './auth.repository';
 import { User, UserProvider } from '@prisma/client';
 import { SocialAuthFactory } from 'src/auth/factories/social-auth.factory';
-import { UserPayloadInfoDto } from '../../dto/user-payload-info.dto';
+import { UserPayloadInfoDto } from './dto/user-payload-info.dto';
 import { tokenPairDto } from 'src/auth/dto/token-pair.interface';
 
 @Injectable()
