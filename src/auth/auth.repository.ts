@@ -54,19 +54,6 @@ export class AuthRepository {
     });
   }
 
-  async getKakaoRefreshToken(snsId: string): Promise<string | null> {
-    const result = await this.prisma.userProvider.findFirst({
-      where: {
-        snsId,
-      },
-      select: {
-        refresh_token: true,
-      },
-    });
-
-    return result?.refresh_token || null;
-  }
-
   async selectUserProviderByIdx(idx: number): Promise<UserProvider> {
     return await this.prisma.userProvider.findFirstOrThrow({
       where: { idx },
