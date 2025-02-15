@@ -3,8 +3,8 @@ import axios from 'axios';
 import { SocialUserInfoDto } from '../dto/social-user.dto';
 
 export abstract class SocialAuthBaseService<TToken, TUserInfo> {
-  protected abstract authLoginUrl: string; // OAuth 로그인 URL
-  protected abstract tokenUrl: string; // Access Token 발급 URL
+  protected abstract authLoginUrl: string; 
+  protected abstract tokenUrl: string; 
   protected abstract getTokenParams(code: string): Record<string, string>;
 
   abstract getAuthLoginUrl(): string;
