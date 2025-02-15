@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Public } from './decorators/public.decorator';
 import { Request, Response } from 'express';
 import { SocialAuthFactory } from './factories/social-auth.factory';
-import { tokenPairDto } from './dto/token-pair.interface';
+import { ValidateProviderPipe } from './pipes/validate-provider.pipe';
 
 @Controller('auth')
 export class AuthController {
@@ -16,7 +16,10 @@ export class AuthController {
 
   @Public()
   @Get(':provider/login')
-  socialLogin(@Param('provider') provider: string, @Res() res: Response): void {
+  socialLogin(
+    @Param('provider', ValidateProviderPipe) provider: string,
+    @Res() res: Response,
+  ): void {
     const socialAuthService = this.socialAuthFactory.getAuthService(provider);
     return res.redirect(socialAuthService.getLoginUrl());
   }
@@ -24,7 +27,7 @@ export class AuthController {
   @Public()
   @Get(':provider/callback')
   async callBack(
-    @Param('provider') provider: string,
+    @Param('provider', ValidateProviderPipe) provider: string,
     @Query('code') code: string,
     @Res() res: Response,
   ): Promise<void> {
