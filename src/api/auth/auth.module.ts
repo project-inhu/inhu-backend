@@ -7,6 +7,7 @@ import { AuthGuard } from './auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { Reflector } from '@nestjs/core';
 import { AuthRepository } from './auth.repository';
+import { KakaoAuthService } from './service/kakao-auth.service';
 
 @Module({
   imports: [HttpModule,
@@ -19,6 +20,7 @@ import { AuthRepository } from './auth.repository';
   providers: [
     AuthService,
     AuthRepository,
+    KakaoAuthService,
     {
       provide: APP_GUARD,
       useClass : AuthGuard

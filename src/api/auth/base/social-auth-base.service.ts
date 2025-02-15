@@ -1,6 +1,6 @@
 import { UnauthorizedException, InternalServerErrorException } from '@nestjs/common';
 import axios from 'axios';
-import { SocialUserInfoDto } from '../dto/social-user-info.dto';
+import { SocialUserInfoDto } from '../dto/social-user.dto';
 
 export abstract class SocialAuthBaseService<TToken, TUserInfo> {
   protected abstract authLoginUrl: string; // OAuth 로그인 URL
@@ -20,7 +20,7 @@ export abstract class SocialAuthBaseService<TToken, TUserInfo> {
       new URLSearchParams(params),
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
     );
-    
+
     if (!response?.data) {
       throw new UnauthorizedException('토큰 발급 실패');
     }
