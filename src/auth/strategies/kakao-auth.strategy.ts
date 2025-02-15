@@ -9,7 +9,7 @@ import {
 } from '../enum/auth-provider.enum';
 
 @Injectable()
-export class kakaoAuthService extends SocialAuthStrategy<
+export class kakaoAuthStrategy extends SocialAuthStrategy<
   kakaoToken,
   KakaoUserInfo
 > {

@@ -6,8 +6,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './guards/auth.guard';
 import { AuthRepository } from './auth.repository';
-import { kakaoAuthService } from './service/social/kakao-auth.service';
-import { SocialAuthFactory } from './factories/social-auth.factory';
+import { kakaoAuthStrategy } from './strategies/kakao-auth.strategy';
+import { LoginTokenService } from './login-token.service';
 
 @Module({
   imports: [
@@ -29,8 +29,8 @@ import { SocialAuthFactory } from './factories/social-auth.factory';
       useClass: AuthGuard,
     },
     AuthRepository,
-    SocialAuthFactory,
-    kakaoAuthService,
+    kakaoAuthStrategy,
+    LoginTokenService,
   ],
   exports: [AuthService],
 })

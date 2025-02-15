@@ -2,24 +2,44 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthRepository } from './auth.repository';
 import { User } from '@prisma/client';
-import { SocialAuthFactory } from 'src/auth/factories/social-auth.factory';
 import { UserPayloadInfoDto } from './dto/user-payload-info.dto';
 import { tokenPairDto } from 'src/auth/dto/token-pair.interface';
 import { LoginTokenService } from './login-token.service';
+import { AuthProvider } from './enum/auth-provider.enum';
+import { SocialAuthStrategy } from './strategies/base/social-auth.strategy';
+import { kakaoAuthStrategy } from './strategies/kakao-auth.strategy';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private readonly jwtService: JwtService,
-    private readonly authRepository: AuthRepository,
-    private readonly socialAuthFactory: SocialAuthFactory,
-    private readonly loginTokenService: LoginTokenService,
-  ) {}
-
+  private AUTH_PROVIDER_MAP: {
+    [AuthProvider.KAKAO]: kakaoAuthStrategy;
+  };
   private storedRefreshTokens: Record<number, string> = {};
 
-  async socialLogin(code: string, provider: string): Promise<tokenPairDto> {
-    const socialAuthService = this.socialAuthFactory.getAuthService(provider);
+  constructor(
+    private readonly authRepository: AuthRepository,
+    private readonly loginTokenService: LoginTokenService,
+    private readonly kakaoAuthService: kakaoAuthStrategy,
+  ) {
+    this.AUTH_PROVIDER_MAP = {
+      [AuthProvider.KAKAO]: this.kakaoAuthService,
+    };
+  }
+
+  getAuthService(provider: AuthProvider) {
+    const service = this.AUTH_PROVIDER_MAP[provider];
+    if (!service) {
+      throw new Error('Unsupported provider');
+    }
+
+    return service;
+  }
+
+  async socialLogin(
+    code: string,
+    provider: AuthProvider,
+  ): Promise<tokenPairDto> {
+    const socialAuthService = this.getAuthService(provider);
     const token = await socialAuthService.getToken(code);
     const socialUserInfo = await socialAuthService.getUserInfo(
       token.access_token,

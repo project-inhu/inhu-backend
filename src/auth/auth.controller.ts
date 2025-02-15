@@ -3,31 +3,27 @@ import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
 import { Public } from './decorators/public.decorator';
 import { Request, Response } from 'express';
-import { SocialAuthFactory } from './factories/social-auth.factory';
 import { ValidateProviderPipe } from './pipes/validate-provider.pipe';
+import { AuthProvider } from './enum/auth-provider.enum';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly configService: ConfigService,
-    private readonly socialAuthFactory: SocialAuthFactory,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Public()
   @Get(':provider/login')
   socialLogin(
-    @Param('provider', ValidateProviderPipe) provider: string,
+    @Param('provider', ValidateProviderPipe) provider: AuthProvider,
     @Res() res: Response,
   ): void {
-    const socialAuthService = this.socialAuthFactory.getAuthService(provider);
+    const socialAuthService = this.authService.getAuthService(provider);
     return res.redirect(socialAuthService.getLoginUrl());
   }
 
   @Public()
   @Get(':provider/callback')
   async callBack(
-    @Param('provider', ValidateProviderPipe) provider: string,
+    @Param('provider', ValidateProviderPipe) provider: AuthProvider,
     @Query('code') code: string,
     @Res() res: Response,
   ): Promise<void> {
