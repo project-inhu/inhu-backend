@@ -1,10 +1,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthRepository } from './auth.repository';
-import { User, UserProvider } from '@prisma/client';
+import { User } from '@prisma/client';
 import { SocialAuthFactory } from 'src/auth/factories/social-auth.factory';
 import { UserPayloadInfoDto } from './dto/user-payload-info.dto';
 import { tokenPairDto } from 'src/auth/dto/token-pair.interface';
+import { LoginTokenService } from './login-token.service';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +13,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly authRepository: AuthRepository,
     private readonly socialAuthFactory: SocialAuthFactory,
+    private readonly loginTokenService: LoginTokenService,
   ) {}
 
   private storedRefreshTokens: Record<number, string> = {};
@@ -26,8 +28,12 @@ export class AuthService {
 
     const user = await this.authenticateKakaoUser(extractedUserInfo);
 
-    const accessToken = await this.generateAccessToken(user.idx);
-    const refreshToken = await this.generateRefreshToken(user.idx);
+    const accessToken = await this.loginTokenService.generateAccessToken(
+      user.idx,
+    );
+    const refreshToken = await this.loginTokenService.generateRefreshToken(
+      user.idx,
+    );
 
     this.saveRefreshToken(user.idx, refreshToken);
 
@@ -50,26 +56,9 @@ export class AuthService {
     return user;
   }
 
-  async generateRefreshToken(idx: number): Promise<string> {
-    const payload = {
-      sub: idx,
-    };
-    return this.jwtService.sign(payload, {
-      expiresIn: '7d',
-    });
-  }
-
-  async generateAccessToken(idx: number): Promise<string> {
-    const payload = {
-      sub: idx,
-    };
-    return this.jwtService.sign(payload, {
-      expiresIn: '5s',
-    });
-  }
-
   async reissueToken(serverRefreshToken: string): Promise<string> {
-    const payload = await this.verifyRefreshToken(serverRefreshToken);
+    const payload =
+      await this.loginTokenService.verifyRefreshToken(serverRefreshToken);
     const userIdx = parseInt(payload.sub, 10);
     const storedRefreshToken = this.getStoredRefreshToken(userIdx);
 
@@ -77,20 +66,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid Refresh Token');
     }
 
-    const newAccessToken = await this.generateAccessToken(userIdx);
+    const newAccessToken =
+      await this.loginTokenService.generateAccessToken(userIdx);
 
     return newAccessToken;
-  }
-
-  async verifyRefreshToken(
-    serverRefreshToken: string,
-  ): Promise<DecodedJwtPayload> {
-    try {
-      const decoded = await this.jwtService.verifyAsync(serverRefreshToken);
-      return decoded;
-    } catch (error) {
-      throw new UnauthorizedException('Token verification failed');
-    }
   }
 
   saveRefreshToken(idx: number, refreshToken: string): void {
