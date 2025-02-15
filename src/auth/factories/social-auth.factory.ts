@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { kakaoAuthService } from './kakao-auth.service';
+import { kakaoAuthService } from '../service/social/kakao-auth.service';
 
 @Injectable()
 export class SocialAuthFactory {
@@ -10,7 +10,7 @@ export class SocialAuthFactory {
       case 'kakao':
         return this.kakaoAuthService;
       default:
-        throw new BadRequestException('지원되지 않는 서비스스입니다.');
+        throw new BadRequestException('Unsupported Service');
     }
   }
 }

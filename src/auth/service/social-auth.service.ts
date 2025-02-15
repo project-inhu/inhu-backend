@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import { UserPayloadInfoDto } from './user-payload-info.dto';
+import { UserPayloadInfoDto } from '../dto/user-payload-info.dto';
 
 @Injectable()
 export abstract class SocialAuthService<TToken, TUserInfo> {
@@ -16,6 +16,10 @@ export abstract class SocialAuthService<TToken, TUserInfo> {
     const response = await axios.post<TToken>(this.tokenUrl, payload, {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     });
+
+    if (response.status !== 200) {
+      throw new Error('fail');
+    }
 
     return response.data;
   }

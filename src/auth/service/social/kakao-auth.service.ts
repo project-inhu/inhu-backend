@@ -13,6 +13,7 @@ export class kakaoAuthService extends SocialAuthService<
   constructor(private readonly configService: ConfigService) {
     super();
   }
+
   protected tokenUrl = 'https://kauth.kakao.com/oauth/token';
 
   protected getTokenParams(code: string): Record<string, string> {
@@ -45,6 +46,10 @@ export class kakaoAuthService extends SocialAuthService<
         Authorization: `Bearer ${accessToken}`,
       },
     });
+
+    if (response.status !== 200) {
+      throw new Error('fail');
+    }
 
     return response.data;
   }

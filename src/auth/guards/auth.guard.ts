@@ -5,11 +5,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Request, Response } from 'express';
-import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
-import axios from 'axios';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -23,6 +20,7 @@ export class AuthGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
+
     if (isPublic) {
       return true;
     }
@@ -32,8 +30,9 @@ export class AuthGuard implements CanActivate {
     const token = request.cookies?.['AccessToken'];
 
     if (!token) {
-      throw new UnauthorizedException('Access Token이 없습니다.');
+      throw new UnauthorizedException('Access token is missing or invalid');
     }
+
     try {
       const payload = await this.jwtService.verifyAsync(token);
       request['user'] = payload;
@@ -42,7 +41,6 @@ export class AuthGuard implements CanActivate {
         response.redirect('http://localhost:3000/auth/reissue');
         return false;
       }
-      throw new UnauthorizedException('유효하지 않은 Access Token입니다.');
     }
     return true;
   }

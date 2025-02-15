@@ -37,7 +37,7 @@ export class AuthRepository {
   }
 
   async selectUserByIdx(idx: number): Promise<User> {
-    return await this.prisma.user.findFirstOrThrow({
+    return await this.prisma.user.findUniqueOrThrow({
       where: { idx },
     });
   }

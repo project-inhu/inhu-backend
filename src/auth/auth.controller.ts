@@ -5,12 +5,6 @@ import { Public } from './decorators/public.decorator';
 import { Request, Response } from 'express';
 import { SocialAuthFactory } from './factories/social-auth.factory';
 
-//TODO
-//함수명 바꾸기 특히 refreshTokens...
-//consolog log 지우기
-//try catch 없애기
-//json도 더 nestjs스럽게...
-
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -61,7 +55,6 @@ export class AuthController {
   @Public()
   @Get('reissue')
   async reissueToken(@Req() req: Request, @Res() res: Response) {
-    console.log('재발급 실행이요');
     const accessToken = await this.authService.reissueToken(
       req.cookies['RefreshToken'],
     );
@@ -74,14 +67,11 @@ export class AuthController {
 
     return res.redirect('http://localhost:3000/auth/test');
   }
-  // 이 컨트롤러에서 catch로 error 받고, logout service 호출...
-  // logout service를 만들자.
-  // 이 아래 API 호출 말고고
 
-  @Get('logout')
-  async logout(@Req() req: Request, @Res() res: Response) {
-    res.clearCookie('AccessToken');
-    res.clearCookie('RefreshToken');
-    return res.redirect('http://localhost:3000/auth/login-page');
-  }
+  // @Get('logout')
+  // async logout(@Req() req: Request, @Res() res: Response) {
+  //   res.clearCookie('AccessToken');
+  //   res.clearCookie('RefreshToken');
+  //   return res.redirect('http://localhost:3000/auth/login-page');
+  // }
 }
