@@ -1,25 +1,23 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { HttpModule } from '@nestjs/axios';
+import { AuthService } from './service/auth/auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './guards/auth.guard';
 import { AuthRepository } from './auth.repository';
+import { kakaoAuthService } from './service/social/kakao-auth.service';
+import { SocialAuthFactory } from './factories/social-auth.factory';
 
 @Module({
   imports: [
-    HttpModule,
     ConfigModule.forRoot(),
     JwtModule.registerAsync({
+      global: true,
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (ConfigService: ConfigService) => ({
-        secret: ConfigService.get<string>('JWT_SECRET'),
-        signOptions: {
-          expiresIn: '1m',
-        },
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
       }),
     }),
   ],
@@ -31,6 +29,9 @@ import { AuthRepository } from './auth.repository';
       useClass: AuthGuard,
     },
     AuthRepository,
+    SocialAuthFactory,
+    kakaoAuthService,
   ],
+  exports: [AuthService],
 })
 export class AuthModule {}

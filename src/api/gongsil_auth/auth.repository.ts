@@ -36,16 +36,18 @@ export class AuthRepository {
     });
   }
 
-  async updateUserRefreshTokenByIdx(
+  async selectUserByIdx(idx: number): Promise<User> {
+    return await this.prisma.user.findFirstOrThrow({
+      where: { idx },
+    });
+  }
+
+  async updateUserProviderRefreshTokenByIdx(
     idx: number,
     refreshToken: string,
   ): Promise<UserProvider> {
-    const user = await this.prisma.user.findFirstOrThrow({
-      where: { idx },
-    });
-
     return await this.prisma.userProvider.update({
-      where: { idx: user.idx },
+      where: { idx },
       data: {
         refresh_token: refreshToken,
       },
@@ -63,5 +65,11 @@ export class AuthRepository {
     });
 
     return result?.refresh_token || null;
+  }
+
+  async selectUserProviderByIdx(idx: number): Promise<UserProvider> {
+    return await this.prisma.userProvider.findFirstOrThrow({
+      where: { idx },
+    });
   }
 }

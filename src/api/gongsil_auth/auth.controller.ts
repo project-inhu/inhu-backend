@@ -1,23 +1,9 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-  Redirect,
-  Req,
-  Res,
-  UnauthorizedException,
-  UseGuards,
-} from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthGuard } from './guards/auth.guard';
+import { Controller, Get, Param, Query, Req, Res } from '@nestjs/common';
+import { AuthService } from './service/auth/auth.service';
 import { ConfigService } from '@nestjs/config';
 import { Public } from './decorators/public.decorator';
 import { Request, Response } from 'express';
-import { SocialAuthFactory } from './social-auth.factory';
-import axios from 'axios';
+import { SocialAuthFactory } from './factories/social-auth.factory';
 
 //TODO
 //함수명 바꾸기 특히 refreshTokens...
@@ -26,7 +12,6 @@ import axios from 'axios';
 //json도 더 nestjs스럽게...
 
 @Controller('auth')
-@UseGuards(AuthGuard)
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
@@ -76,15 +61,12 @@ export class AuthController {
   @Public()
   @Get('reissue')
   async reissueToken(@Req() req: Request, @Res() res: Response) {
-    const { accessToken, refreshToken } =
-      await this.authService.reissueRefreshTokens(req);
+    console.log('재발급 실행이요');
+    const accessToken = await this.authService.reissueToken(
+      req.cookies['RefreshToken'],
+    );
 
     res.cookie('AccessToken', accessToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-    });
-    res.cookie('RefreshToken', refreshToken, {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
