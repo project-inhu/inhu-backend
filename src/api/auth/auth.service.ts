@@ -8,6 +8,8 @@ import { AuthProvider } from './enum/auth-provider.enum';
 import { SocialUserInfoDto } from './dto/social-user.dto';
 import { SocialAuthBaseService } from './base/social-auth-base.service';
 
+// TODO : dto, interface 구분 / service 함수명 변경 / type 정의 엄격하게
+// TODO : getAuthLoginUrl 위치 생각
 @Injectable()
 export class AuthService {
   private readonly providers: Partial<Record<AuthProvider, SocialAuthBaseService<any, any>>>;
