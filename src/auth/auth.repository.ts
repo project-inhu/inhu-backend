@@ -6,57 +6,30 @@ import { PrismaService } from 'src/common/module/prisma/prisma.service';
 export class AuthRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async selectKakaoUser(kakaoUserId: string): Promise<UserProvider | null> {
-    return await this.prisma.userProvider.findFirst({
+  async selectUserBySnsId(snsId: string): Promise<User | null> {
+    return await this.prisma.user.findFirst({
       where: {
-        snsId: kakaoUserId,
+        userProvider: {
+          snsId,
+        },
+      },
+      include: {
+        userProvider: true,
       },
     });
   }
 
-  async insertUser(): Promise<User> {
+  async insertUser(snsId: string, provider: number): Promise<User> {
     return await this.prisma.user.create({
       data: {
         nickname: 'random',
+        userProvider: {
+          create: {
+            snsId,
+            provider,
+          },
+        },
       },
-    });
-  }
-
-  async inserUserProvider(
-    idx: number,
-    provider: number,
-    snsId: string,
-  ): Promise<UserProvider> {
-    return await this.prisma.userProvider.create({
-      data: {
-        idx,
-        provider,
-        snsId,
-      },
-    });
-  }
-
-  async selectUserByIdx(idx: number): Promise<User> {
-    return await this.prisma.user.findUniqueOrThrow({
-      where: { idx },
-    });
-  }
-
-  async updateUserProviderRefreshTokenByIdx(
-    idx: number,
-    refreshToken: string,
-  ): Promise<UserProvider> {
-    return await this.prisma.userProvider.update({
-      where: { idx },
-      data: {
-        refresh_token: refreshToken,
-      },
-    });
-  }
-
-  async selectUserProviderByIdx(idx: number): Promise<UserProvider> {
-    return await this.prisma.userProvider.findFirstOrThrow({
-      where: { idx },
     });
   }
 }

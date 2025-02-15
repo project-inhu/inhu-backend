@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Public } from './decorators/public.decorator';
 import { Request, Response } from 'express';
 import { SocialAuthFactory } from './factories/social-auth.factory';
+import { tokenPairDto } from './dto/token-pair.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -15,7 +16,7 @@ export class AuthController {
 
   @Public()
   @Get(':provider/login')
-  socialLogin(@Param('provider') provider: string, @Res() res: Response) {
+  socialLogin(@Param('provider') provider: string, @Res() res: Response): void {
     const socialAuthService = this.socialAuthFactory.getAuthService(provider);
     return res.redirect(socialAuthService.getLoginUrl());
   }
@@ -26,7 +27,7 @@ export class AuthController {
     @Param('provider') provider: string,
     @Query('code') code: string,
     @Res() res: Response,
-  ) {
+  ): Promise<void> {
     const { accessToken, refreshToken } = await this.authService.socialLogin(
       code,
       provider,
@@ -54,8 +55,8 @@ export class AuthController {
 
   @Public()
   @Get('reissue')
-  async reissueToken(@Req() req: Request, @Res() res: Response) {
-    const accessToken = await this.authService.reissueToken(
+  async reissueToken(@Req() req: Request, @Res() res: Response): Promise<void> {
+    const accessToken: string = await this.authService.reissueToken(
       req.cookies['RefreshToken'],
     );
 

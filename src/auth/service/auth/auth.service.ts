@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 import { AuthRepository } from '../../auth.repository';
-import { UserProvider } from '@prisma/client';
+import { User, UserProvider } from '@prisma/client';
 import { SocialAuthFactory } from 'src/auth/factories/social-auth.factory';
 import { UserPayloadInfoDto } from '../../dto/user-payload-info.dto';
+import { tokenPairDto } from 'src/auth/dto/token-pair.interface';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +14,9 @@ export class AuthService {
     private readonly socialAuthFactory: SocialAuthFactory,
   ) {}
 
-  async socialLogin(code: string, provider: string) {
+  private storedRefreshTokens: Record<number, string> = {};
+
+  async socialLogin(code: string, provider: string): Promise<tokenPairDto> {
     const socialAuthService = this.socialAuthFactory.getAuthService(provider);
     const token = await socialAuthService.getToken(code);
     const socialUserInfo = await socialAuthService.getUserInfo(
@@ -27,28 +29,25 @@ export class AuthService {
     const accessToken = await this.generateAccessToken(user.idx);
     const refreshToken = await this.generateRefreshToken(user.idx);
 
-    await this.saveKakaoRefreshToken(user.idx, refreshToken);
+    this.saveRefreshToken(user.idx, refreshToken);
 
     return { accessToken, refreshToken };
   }
 
   async authenticateKakaoUser(
     userPayloadInfoDto: UserPayloadInfoDto,
-  ): Promise<UserProvider> {
+  ): Promise<User> {
     const snsId = userPayloadInfoDto.id;
-    let userProvider: UserProvider | null =
-      await this.authRepository.selectKakaoUser(snsId);
+    let user: User | null = await this.authRepository.selectUserBySnsId(snsId);
 
-    if (!userProvider) {
-      const user = await this.authRepository.insertUser();
-      userProvider = await this.authRepository.inserUserProvider(
-        user.idx,
-        userPayloadInfoDto.provider,
+    if (!user) {
+      user = await this.authRepository.insertUser(
         snsId,
+        userPayloadInfoDto.provider,
       );
     }
 
-    return userProvider;
+    return user;
   }
 
   async generateRefreshToken(idx: number): Promise<string> {
@@ -69,22 +68,12 @@ export class AuthService {
     });
   }
 
-  async saveKakaoRefreshToken(
-    idx: number,
-    refreshToken: string,
-  ): Promise<UserProvider | null> {
-    return await this.authRepository.updateUserProviderRefreshTokenByIdx(
-      idx,
-      refreshToken,
-    );
-  }
-
   async reissueToken(serverRefreshToken: string): Promise<string> {
     const payload = await this.verifyRefreshToken(serverRefreshToken);
     const userIdx = parseInt(payload.sub, 10);
-    const userRefreshToken = await this.getUserRefreshToken(userIdx);
+    const storedRefreshToken = this.getStoredRefreshToken(userIdx);
 
-    if (serverRefreshToken != userRefreshToken) {
+    if (serverRefreshToken != storedRefreshToken) {
       throw new UnauthorizedException('Attacker');
     }
 
@@ -104,12 +93,11 @@ export class AuthService {
     }
   }
 
-  async getUserRefreshToken(idx: number): Promise<string | null> {
-    const user = await this.authRepository.selectUserByIdx(idx);
-    const refreshToken = await this.authRepository.selectUserProviderByIdx(
-      user.idx,
-    );
+  saveRefreshToken(idx: number, refreshToken: string): void {
+    this.storedRefreshTokens[idx] = refreshToken;
+  }
 
-    return refreshToken.refresh_token;
+  getStoredRefreshToken(idx: number): string | null {
+    return this.storedRefreshTokens[idx] || null;
   }
 }
