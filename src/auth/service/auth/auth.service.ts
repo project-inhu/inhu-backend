@@ -74,7 +74,7 @@ export class AuthService {
     const storedRefreshToken = this.getStoredRefreshToken(userIdx);
 
     if (serverRefreshToken != storedRefreshToken) {
-      throw new UnauthorizedException('Attacker');
+      throw new UnauthorizedException('Invalid Refresh Token');
     }
 
     const newAccessToken = await this.generateAccessToken(userIdx);
