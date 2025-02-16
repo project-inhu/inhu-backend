@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
-import { AuthProvider } from '../enum/auth-provider.enum';
+import { AuthProvider } from '../../enum/auth-provider.enum';
 
 @Injectable()
 export class AuthProviderPipe implements PipeTransform<string, AuthProvider> {

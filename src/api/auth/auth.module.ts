@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
+import { AuthService } from './service/auth.service';
 import { HttpModule } from '@nestjs/axios';
 import { AuthRepository } from './auth.repository';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
-import { AuthGuard } from './auth.guard';
-import { KakaoAuthService } from './service/kakao-auth.service';
-import { SocialAuthFactory } from './factories/social-auth.factory';
+import { AuthGuard } from './common/guard/auth.guard';
+import { KakaoStrategy } from './strategies/kakao.strategy';
+import { LoginTokenService } from './service/token.service';
 
 @Module({
   imports: [
@@ -28,8 +28,8 @@ import { SocialAuthFactory } from './factories/social-auth.factory';
     },
     AuthService,
     AuthRepository,
-    KakaoAuthService,
-    SocialAuthFactory,
+    KakaoStrategy,
+    LoginTokenService,
   ],
   exports: [AuthService],
 })
