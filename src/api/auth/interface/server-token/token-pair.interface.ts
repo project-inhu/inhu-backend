@@ -1,4 +1,4 @@
-interface tokenPair {
+interface TokenPair {
   accessToken: string;
   refreshToken: string;
 }
