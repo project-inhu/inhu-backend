@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { SocialAuthBaseService } from '../base/social-auth-base.service';
 import { KakaoAccessTokenDto } from '../dto/kakao/kakao-access-token.dto';
 import { KakaoUserInfoDto } from '../dto/kakao/kakao-user-info.dto';
@@ -7,7 +11,10 @@ import axios from 'axios';
 import { AuthProvider } from '../enum/auth-provider.enum';
 
 @Injectable()
-export class KakaoAuthService extends SocialAuthBaseService<KakaoAccessTokenDto, KakaoUserInfoDto> {
+export class KakaoAuthService extends SocialAuthBaseService<
+  KakaoAccessTokenDto,
+  KakaoUserInfoDto
+> {
   protected authLoginUrl =
     'https://kauth.kakao.com/oauth/authorize?' +
     'response_type=code&' +
@@ -25,22 +32,22 @@ export class KakaoAuthService extends SocialAuthBaseService<KakaoAccessTokenDto,
     };
   }
 
-  getAuthLoginUrl(): string {
+  public getAuthLoginUrl(): string {
     return this.authLoginUrl;
   }
 
-  getAccessToken(token: KakaoAccessTokenDto): string {
+  public getAccessToken(token: KakaoAccessTokenDto): string {
     return token.access_token;
   }
 
-  extractUserInfo(userInfo: KakaoUserInfoDto): SocialUserInfoDto {
+  public extractUserInfo(userInfo: KakaoUserInfoDto): SocialUserInfoDto {
     return {
       id: userInfo.id.toString(),
       provider: AuthProvider.KAKAO,
     };
   }
 
-  async getUserInfo(accessToken: string): Promise<KakaoUserInfoDto> {
+  public async getUserInfo(accessToken: string): Promise<KakaoUserInfoDto> {
     try {
       const response = await axios.get<KakaoUserInfoDto>(
         'https://kapi.kakao.com/v2/user/me',

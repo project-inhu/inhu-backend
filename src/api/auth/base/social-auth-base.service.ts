@@ -1,10 +1,13 @@
-import { UnauthorizedException, InternalServerErrorException } from '@nestjs/common';
+import {
+  UnauthorizedException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import axios from 'axios';
 import { SocialUserInfoDto } from '../dto/social-user.dto';
 
 export abstract class SocialAuthBaseService<TToken, TUserInfo> {
-  protected abstract authLoginUrl: string; 
-  protected abstract tokenUrl: string; 
+  protected abstract authLoginUrl: string;
+  protected abstract tokenUrl: string;
   protected abstract getTokenParams(code: string): Record<string, string>;
 
   abstract getAuthLoginUrl(): string;
@@ -12,7 +15,7 @@ export abstract class SocialAuthBaseService<TToken, TUserInfo> {
   abstract getUserInfo(accessToken: string): Promise<TUserInfo>;
   abstract extractUserInfo(userInfo: TUserInfo): SocialUserInfoDto;
 
-  async getToken(code: string): Promise<TToken> {
+  public async getToken(code: string): Promise<TToken> {
     const params = this.getTokenParams(code);
 
     const response = await axios.post<TToken>(
