@@ -1,15 +1,11 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { SocialAuthBaseService } from '../base/social-auth-base.service';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { SocialAuthBaseStrategy } from '../base/social-auth-base.strategy';
 import axios from 'axios';
 import { AuthProvider } from '../enum/auth-provider.enum';
 import { SocialUserInfoDto } from '../dto/social-common/social-user-info.dto';
 
 @Injectable()
-export class KakaoAuthService extends SocialAuthBaseService<
+export class KakaoStrategy extends SocialAuthBaseStrategy<
   KakaoToken,
   KakaoUserInfo
 > {
@@ -46,24 +42,20 @@ export class KakaoAuthService extends SocialAuthBaseService<
   }
 
   async getUserInfo(accessToken: string): Promise<KakaoUserInfo> {
-    try {
-      const response = await axios.get<KakaoUserInfo>(
-        'https://kapi.kakao.com/v2/user/me',
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-          },
+    const response = await axios.get<KakaoUserInfo>(
+      'https://kapi.kakao.com/v2/user/me',
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
         },
-      );
+      },
+    );
 
-      if (!response?.data) {
-        throw new UnauthorizedException('정보 조회 실패');
-      }
-
-      return response.data;
-    } catch (error) {
-      throw new InternalServerErrorException('Something is wrong!!');
+    if (!response?.data) {
+      throw new UnauthorizedException('정보 조회 실패');
     }
+
+    return response.data;
   }
 }

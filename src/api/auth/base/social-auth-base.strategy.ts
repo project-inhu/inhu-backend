@@ -1,11 +1,8 @@
-import {
-  InternalServerErrorException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import axios from 'axios';
 import { SocialUserInfoDto } from '../dto/social-common/social-user-info.dto';
 
-export abstract class SocialAuthBaseService<TToken, TUserInfo> {
+export abstract class SocialAuthBaseStrategy<TToken = any, TUserInfo = any> {
   protected abstract authLoginUrl: string;
   protected abstract tokenUrl: string;
   protected abstract getTokenParams(code: string): Record<string, string>;
@@ -18,19 +15,15 @@ export abstract class SocialAuthBaseService<TToken, TUserInfo> {
   async getToken(code: string): Promise<TToken> {
     const params = this.getTokenParams(code);
 
-    try {
-      const response = await axios.post<TToken>(
-        this.tokenUrl,
-        new URLSearchParams(params),
-        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
-      );
-      if (!response?.data) {
-        throw new UnauthorizedException('토큰 발급 실패');
-      }
-
-      return response.data;
-    } catch (error) {
-      throw new InternalServerErrorException('Something is wrong');
+    const response = await axios.post<TToken>(
+      this.tokenUrl,
+      new URLSearchParams(params),
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
+    );
+    if (!response?.data) {
+      throw new UnauthorizedException('토큰 발급 실패');
     }
+
+    return response.data;
   }
 }
