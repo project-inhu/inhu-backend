@@ -4,10 +4,10 @@ import { AuthRepository } from './auth.repository';
 import { User } from '@prisma/client';
 import { UserPayloadInfoDto } from './dto/user-payload-info.dto';
 import { tokenPairDto } from 'src/auth/dto/token-pair.interface';
-import { LoginTokenService } from './login-token.service';
+import { LoginTokenService } from './service/login-token.service';
 import { AuthProvider } from './enum/auth-provider.enum';
-import { SocialAuthStrategy } from './strategies/base/social-auth.strategy';
-import { kakaoAuthStrategy } from './strategies/kakao-auth.strategy';
+import { SocialAuthStrategy } from './strategy/base/social-auth.strategy';
+import { kakaoAuthStrategy } from './strategy/kakao-auth.strategy';
 
 @Injectable()
 export class AuthService {

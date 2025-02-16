@@ -4,10 +4,10 @@ import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
-import { AuthGuard } from './guards/auth.guard';
+import { AuthGuard } from './guard/auth.guard';
 import { AuthRepository } from './auth.repository';
-import { kakaoAuthStrategy } from './strategies/kakao-auth.strategy';
-import { LoginTokenService } from './login-token.service';
+import { kakaoAuthStrategy } from './strategy/kakao-auth.strategy';
+import { LoginTokenService } from './service/login-token.service';
 
 @Module({
   imports: [
