@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { Request } from 'express';
 import { Public } from './decorators/public.decorator';
 import { AuthTokensDto } from './dto/auth.dto';
-import { Response } from 'express'; // ✅ express의 Response 사용
+import { Response } from 'express';
 
 type RequestWithUser = Request & { user?: { idx: number } };
 
