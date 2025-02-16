@@ -1,9 +1,8 @@
 import { Controller, Get, Param, Query, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ConfigService } from '@nestjs/config';
 import { Public } from './decorators/public.decorator';
 import { Request, Response } from 'express';
-import { ValidateProviderPipe } from './pipes/validate-provider.pipe';
+import { ValidateProviderPipe } from './pipe/validate-provider.pipe';
 import { AuthProvider } from './enum/auth-provider.enum';
 
 @Controller('auth')
