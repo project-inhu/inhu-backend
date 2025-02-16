@@ -1,3 +1,7 @@
 export enum AuthProvider {
-  KAKAO,
+  KAKAO = 'kakao',
 }
+
+export const AuthProviderIndex: Record<AuthProvider, number> = {
+  [AuthProvider.KAKAO]: 0,
+};
