@@ -19,7 +19,7 @@ export class LoginTokenService {
       sub: idx,
     };
     return this.jwtService.sign(payload, {
-      expiresIn: '7d',
+      expiresIn: '10s',
     });
   }
 
@@ -30,6 +30,9 @@ export class LoginTokenService {
       const decoded = await this.jwtService.verifyAsync(serverRefreshToken);
       return decoded;
     } catch (error) {
+      if (error.name === 'TokenExpiredError') {
+        throw new UnauthorizedException('Refresh token expired');
+      }
       throw new UnauthorizedException('Token verification failed');
     }
   }

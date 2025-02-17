@@ -1,8 +1,15 @@
-import { Controller, Get, Param, Query, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  Req,
+  Res,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
 import { Request, Response } from 'express';
-import { ValidateProviderPipe } from './pipe/validate-provider.pipe';
 import { AuthProvider } from './enum/auth-provider.enum';
 import { provider } from './decorators/provider.decorator';
 
@@ -31,13 +38,13 @@ export class AuthController {
 
     res.cookie('AccessToken', accessToken, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: 'lax',
     });
 
     res.cookie('RefreshToken', refreshToken, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: 'lax',
     });
 
@@ -50,25 +57,33 @@ export class AuthController {
   }
 
   @Public()
-  @Get('reissue')
-  async reissueToken(@Req() req: Request, @Res() res: Response): Promise<void> {
-    const accessToken: string = await this.authService.reissueToken(
-      req.cookies['RefreshToken'],
-    );
-
-    res.cookie('AccessToken', accessToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-    });
-
-    return res.redirect('http://localhost:3000/auth/test');
+  @Get('test/main')
+  async maintest() {
+    return { message: '여기는 로그인 메인 페이지가 될 것이다' };
   }
 
-  // @Get('logout')
-  // async logout(@Req() req: Request, @Res() res: Response) {
-  //   res.clearCookie('AccessToken');
-  //   res.clearCookie('RefreshToken');
-  //   return res.redirect('http://localhost:3000/auth/login-page');
-  // }
+  @Public()
+  @Get('reissue')
+  async reissueToken(@Req() req: Request, @Res() res: Response): Promise<void> {
+    try {
+      const accessToken: string = await this.authService.reissueToken(
+        req.cookies['RefreshToken'],
+      );
+
+      res.cookie('AccessToken', accessToken, {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'lax',
+      });
+      return res.redirect('http://localhost:3000/auth/test');
+    } catch (error) {
+      if (
+        error instanceof UnauthorizedException &&
+        error.message === 'Refresh token expired'
+      ) {
+        return res.redirect('http://localhost:3000/auth/test/main');
+      }
+      throw error;
+    }
+  }
 }
