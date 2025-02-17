@@ -21,6 +21,6 @@ import { UserModule } from 'src/api/user/user.module';
   ],
   controllers: [AuthController],
   providers: [AuthService, AuthGuard, KakaoStrategy, LoginTokenService],
-  exports: [AuthService, LoginTokenService]
+  exports: [AuthService, LoginTokenService],
 })
 export class AuthModule {}
