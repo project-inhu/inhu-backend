@@ -180,7 +180,7 @@ model Service2 {
 
 model UserProvider {
   idx      Int    @id
-  provider Int    @db.SmallInt
+  name     String @db.VarChar
   snsId    String @map("sns_id") @db.VarChar
   user     User   @relation(fields: [idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_user_provider_tb")
 
