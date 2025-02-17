@@ -1,4 +1,4 @@
-import { AuthProvider } from 'src/auth/enum/auth-provider.enum';
+import { AuthProvider } from 'src/auth/enums/auth-provider.enum';
 
 /**
  * 소셜 로그인 후 받은 사용자 정보 중 필요한 값만 추출하여 저장하는 DTO
