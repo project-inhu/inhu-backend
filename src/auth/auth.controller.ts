@@ -65,25 +65,15 @@ export class AuthController {
   @Public()
   @Get('reissue')
   async reissueToken(@Req() req: Request, @Res() res: Response): Promise<void> {
-    try {
-      const accessToken: string = await this.authService.reissueToken(
-        req.cookies['RefreshToken'],
-      );
+    const accessToken: string = await this.authService.reissueToken(
+      req.cookies['RefreshToken'],
+    );
 
-      res.cookie('AccessToken', accessToken, {
-        httpOnly: true,
-        secure: false,
-        sameSite: 'lax',
-      });
-      return res.redirect('http://localhost:3000/auth/test');
-    } catch (error) {
-      if (
-        error instanceof UnauthorizedException &&
-        error.message === 'Refresh token expired'
-      ) {
-        return res.redirect('http://localhost:3000/auth/test/main');
-      }
-      throw error;
-    }
+    res.cookie('AccessToken', accessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+    });
+    return res.redirect('http://localhost:3000/auth/test');
   }
 }
