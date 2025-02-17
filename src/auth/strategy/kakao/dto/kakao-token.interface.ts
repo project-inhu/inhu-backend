@@ -1,4 +1,4 @@
-interface kakaoToken {
+export class kakaoToken {
   token_type: string;
   access_token: string;
   id_token?: string;

@@ -8,7 +8,7 @@ import { AuthProvider } from '../enum/auth-provider.enum';
 
 @Injectable()
 export class ValidateProviderPipe implements PipeTransform {
-  transform(value: any, metadata: ArgumentMetadata): string {
+  transform(value: any, metadata: ArgumentMetadata): AuthProvider {
     if (!Object.values(AuthProvider).includes(value as AuthProvider)) {
       throw new BadRequestException('Invalid provider');
     }

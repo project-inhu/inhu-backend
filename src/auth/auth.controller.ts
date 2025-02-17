@@ -4,6 +4,7 @@ import { Public } from './decorators/public.decorator';
 import { Request, Response } from 'express';
 import { ValidateProviderPipe } from './pipe/validate-provider.pipe';
 import { AuthProvider } from './enum/auth-provider.enum';
+import { provider } from './decorators/provider.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -11,10 +12,7 @@ export class AuthController {
 
   @Public()
   @Get(':provider/login')
-  socialLogin(
-    @Param('provider', ValidateProviderPipe) provider: AuthProvider,
-    @Res() res: Response,
-  ): void {
+  socialLogin(@provider() provider: AuthProvider, @Res() res: Response): void {
     const socialAuthService = this.authService.getAuthService(provider);
     return res.redirect(socialAuthService.getLoginUrl());
   }
@@ -22,7 +20,7 @@ export class AuthController {
   @Public()
   @Get(':provider/callback')
   async callBack(
-    @Param('provider', ValidateProviderPipe) provider: AuthProvider,
+    @provider() provider: AuthProvider,
     @Query('code') code: string,
     @Res() res: Response,
   ): Promise<void> {

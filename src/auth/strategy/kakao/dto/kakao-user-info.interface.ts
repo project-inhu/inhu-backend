@@ -1,4 +1,4 @@
-interface KakaoUserInfo {
+export class KakaoUserInfo {
   id: number;
   has_signed_up?: boolean;
   connected_at?: string;

@@ -1,5 +1,4 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { AuthRepository } from './auth.repository';
 import { User } from '@prisma/client';
 import { UserPayloadInfoDto } from './dto/user-payload-info.dto';
@@ -7,13 +6,11 @@ import { tokenPairDto } from 'src/auth/dto/token-pair.interface';
 import { LoginTokenService } from './service/login-token.service';
 import { AuthProvider } from './enum/auth-provider.enum';
 import { SocialAuthStrategy } from './strategy/base/social-auth.strategy';
-import { kakaoAuthStrategy } from './strategy/kakao-auth.strategy';
+import { kakaoAuthStrategy } from './strategy/kakao/kakao-auth.strategy';
 
 @Injectable()
 export class AuthService {
-  private AUTH_PROVIDER_MAP: {
-    [AuthProvider.KAKAO]: kakaoAuthStrategy;
-  };
+  private AUTH_PROVIDER_MAP: Record<AuthProvider, SocialAuthStrategy>;
   private storedRefreshTokens: Record<number, string> = {};
 
   constructor(
@@ -28,9 +25,6 @@ export class AuthService {
 
   getAuthService(provider: AuthProvider) {
     const service = this.AUTH_PROVIDER_MAP[provider];
-    if (!service) {
-      throw new Error('Unsupported provider');
-    }
 
     return service;
   }
@@ -46,7 +40,7 @@ export class AuthService {
     );
     const extractedUserInfo = socialAuthService.extractUserInfo(socialUserInfo);
 
-    const user = await this.authenticateKakaoUser(extractedUserInfo);
+    const user = await this.authenticateUser(extractedUserInfo);
 
     const accessToken = await this.loginTokenService.generateAccessToken(
       user.idx,
@@ -60,7 +54,7 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async authenticateKakaoUser(
+  async authenticateUser(
     userPayloadInfoDto: UserPayloadInfoDto,
   ): Promise<User> {
     const snsId = userPayloadInfoDto.id;
@@ -82,7 +76,7 @@ export class AuthService {
     const userIdx = parseInt(payload.sub, 10);
     const storedRefreshToken = this.getStoredRefreshToken(userIdx);
 
-    if (serverRefreshToken != storedRefreshToken) {
+    if (serverRefreshToken !== storedRefreshToken) {
       throw new UnauthorizedException('Invalid Refresh Token');
     }
 

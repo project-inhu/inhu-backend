@@ -3,12 +3,15 @@ import axios from 'axios';
 import { UserPayloadInfoDto } from 'src/auth/dto/user-payload-info.dto';
 
 @Injectable()
-export abstract class SocialAuthStrategy<TToken, TUserInfo> {
+// 이 정도 any는 어쩔 수 없음
+export abstract class SocialAuthStrategy<TToken = any, TUserInfo = any> {
   protected abstract tokenUrl: string;
   protected abstract getTokenParams(code: string): Record<string, string>;
 
+  //public 붙이기기
   abstract getUserInfo(accessToken: string): Promise<TUserInfo>;
   abstract extractUserInfo(userInfo: TUserInfo): UserPayloadInfoDto;
+  abstract getLoginUrl(): string;
 
   async getToken(code: string): Promise<TToken> {
     const payload = new URLSearchParams(this.getTokenParams(code));

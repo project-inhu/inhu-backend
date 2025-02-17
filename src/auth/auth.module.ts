@@ -6,7 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './guard/auth.guard';
 import { AuthRepository } from './auth.repository';
-import { kakaoAuthStrategy } from './strategy/kakao-auth.strategy';
+import { kakaoAuthStrategy } from './strategy/kakao/kakao-auth.strategy';
 import { LoginTokenService } from './service/login-token.service';
 
 @Module({
