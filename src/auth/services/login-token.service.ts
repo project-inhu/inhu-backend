@@ -17,9 +17,7 @@ export class LoginTokenService {
    */
   async verifyRefreshToken(token: string): Promise<RefreshTokenPayload> {
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_SECRET,
-      });
+      const payload = await this.jwtService.verifyAsync(token);
 
       if (!payload.idx) {
         throw new UnauthorizedException('invalid token');
@@ -44,9 +42,7 @@ export class LoginTokenService {
    */
   async verifyAccessToken(token: string): Promise<AccessTokenPayload | null> {
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_SECRET,
-      });
+      const payload = await this.jwtService.verifyAsync(token);
 
       if (!payload.idx) {
         throw new UnauthorizedException('invalid token');
@@ -70,7 +66,7 @@ export class LoginTokenService {
   async signAccessToken(payload: AccessTokenPayload): Promise<string> {
     const token = await this.jwtService.signAsync(payload, { expiresIn: '3s' });
     if (!token) {
-      throw new Error('NOT IMPLEMENT');
+      throw new Error('not implement');
     }
 
     return token;
@@ -86,7 +82,7 @@ export class LoginTokenService {
   async signRefreshToken(payload: RefreshTokenPayload): Promise<string> {
     const token = await this.jwtService.signAsync(payload, { expiresIn: '1m' });
     if (!token) {
-      throw new Error('NOT IMPLEMENT');
+      throw new Error('not implement');
     }
 
     return token;
