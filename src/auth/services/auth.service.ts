@@ -73,20 +73,12 @@ export class AuthService {
     const provider = userInfo.provider;
     const nickname = generateRandomNickname();
 
-    const existingUser = await this.userRepository.selectUserBySnsId(
-      snsId,
-      provider,
-    );
+    const existingUser = await this.userRepository.selectUserBySnsId(snsId);
     if (existingUser) {
       return existingUser;
     }
 
-    const newUser = await this.userRepository.insertUser(nickname);
-    return await this.userRepository.insertUserProvider(
-      snsId,
-      provider,
-      newUser.idx,
-    );
+    return await this.userRepository.insertUser(snsId, nickname, provider);
   }
 
   /**
