@@ -3,8 +3,7 @@ import {
   UnauthorizedException,
   BadRequestException,
 } from '@nestjs/common';
-import { UserRepository } from '../../api/user/user.repository';
-import { generateRandomNickname } from '../../api/user/utils/random-nickname.util';
+import { UserRepository } from '../../api/user/repository/user.repository';
 import { AuthProvider } from '../enums/auth-provider.enum';
 import { SocialUserInfoDto } from '../dto/social-common/social-user-info.dto';
 import { LoginTokenService } from '../services/login-token.service';
@@ -17,16 +16,17 @@ import { TokenPair } from '../interfaces/server-token/token-pair.interface';
 
 @Injectable()
 export class AuthService {
-  /**
-   * 소셜 로그인 제공자에 대한 매핑 정보
-   * - 각 AuthProvider(enum) 값에 해당하는 로그인 전략을 저장
-   *
-   * @author 조희주
-   */
   private readonly SOCIAL_LOGIN_MAP: Record<
     AuthProvider,
     SocialAuthBaseStrategy
   >;
+
+  /**
+   * Refresh Token을 서버 메모리에서 관리 (DB 저장 X)
+   * - key: userIdx
+   * - value: refreshToken (string)
+   */
+  private readonly REFRESH_TOKEN_STORE: Record<number, string> = {};
 
   constructor(
     private readonly userRepository: UserRepository,
@@ -70,15 +70,38 @@ export class AuthService {
    */
   private async registerUser(userInfo: SocialUserInfoDto): Promise<User> {
     const snsId = userInfo.id;
-    const provider = userInfo.provider;
-    const nickname = generateRandomNickname();
+    const provider: string = userInfo.provider;
 
     const existingUser = await this.userRepository.selectUserBySnsId(snsId);
     if (existingUser) {
       return existingUser;
     }
 
-    return await this.userRepository.insertUser(snsId, nickname, provider);
+    return await this.userRepository.insertUser(snsId, provider);
+  }
+
+  /**
+   * Refresh Token 저장 (DB 대신 메모리에서 관리)
+   *
+   * @param userIdx 사용자 ID
+   * @param refreshToken 저장할 Refresh Token
+   *
+   * @author 조희주
+   */
+  private saveRefreshToken(userIdx: number, refreshToken: string): void {
+    this.REFRESH_TOKEN_STORE[userIdx] = refreshToken;
+  }
+
+  /**
+   * Refresh Token 조회 (메모리에서 가져옴)
+   *
+   * @param userIdx 사용자 ID
+   * @returns 저장된 Refresh Token (없으면 null)
+   *
+   * @author 조희주
+   */
+  private getRefreshToken(userIdx: number): string | null {
+    return this.REFRESH_TOKEN_STORE[userIdx] || null;
   }
 
   /**
@@ -109,10 +132,7 @@ export class AuthService {
     const jwtRefreshToken =
       await this.loginTokenService.signRefreshToken(payload);
 
-    await this.userRepository.updateRefreshToken(
-      registeredUser.idx,
-      jwtRefreshToken,
-    );
+    this.saveRefreshToken(registeredUser.idx, jwtRefreshToken);
 
     return { accessToken: jwtAccessToken, refreshToken: jwtRefreshToken };
   }
@@ -133,7 +153,8 @@ export class AuthService {
     userIdx: number,
     refreshToken: string,
   ): Promise<TokenPair> {
-    const storedToken = await this.userRepository.selectRefreshToken(userIdx);
+    const storedToken = this.getRefreshToken(userIdx);
+
     if (!storedToken || storedToken !== refreshToken) {
       throw new UnauthorizedException('유효하지 않은 refresh token');
     }
@@ -151,7 +172,7 @@ export class AuthService {
     if (storedToken !== refreshToken) {
       newJwtRefreshToken =
         await this.loginTokenService.signRefreshToken(payload);
-      await this.userRepository.updateRefreshToken(userIdx, newJwtRefreshToken);
+      this.saveRefreshToken(userIdx, newJwtRefreshToken);
     }
 
     return {
