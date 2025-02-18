@@ -3,6 +3,7 @@ import { SocialAuthBaseStrategy } from '../base/social-auth-base.strategy';
 import axios from 'axios';
 import { SocialUserInfoDto } from 'src/auth/dto/social-common/social-user-info.dto';
 import { AuthProvider } from 'src/auth/enums/auth-provider.enum';
+import { ConfigService } from '@nestjs/config';
 
 /**
  * 카카오 OAuth 인증 전략
@@ -16,13 +17,17 @@ export class KakaoStrategy extends SocialAuthBaseStrategy<
   KakaoTokenDto,
   KakaoUserInfoDto
 > {
-  protected authLoginUrl =
-    'https://kauth.kakao.com/oauth/authorize?' +
-    'response_type=code&' +
-    `redirect_uri=${process.env.KAKAO_REDIRECT_URI}&` +
-    `client_id=${process.env.KAKAO_CLIENT_ID}`;
+  constructor(private readonly configService: ConfigService) {
+    super();
+  }
 
-  protected tokenUrl = 'https://kauth.kakao.com/oauth/token';
+  protected authLoginUrl =
+    this.configService.get<string>('KAKAO_AUTH_URL') +
+    'response_type=code&' +
+    `redirect_uri=${this.configService.get<string>('KAKAO_REDIRECT_URI')}&` +
+    `client_id=${this.configService.get<string>('KAKAO_CLIENT_ID')}`;
+
+  protected tokenUrl = this.configService.get<string>('KAKAO_TOKEN_URL') ?? '';
 
   protected getTokenParams(code: string): Record<string, string> {
     return {
@@ -33,24 +38,24 @@ export class KakaoStrategy extends SocialAuthBaseStrategy<
     };
   }
 
-  getAuthLoginUrl(): string {
+  public getAuthLoginUrl(): string {
     return this.authLoginUrl;
   }
 
-  getAccessToken(token: KakaoTokenDto): string {
+  public getAccessToken(token: KakaoTokenDto): string {
     return token.access_token;
   }
 
-  extractUserInfo(userInfo: KakaoUserInfoDto): SocialUserInfoDto {
+  public extractUserInfo(userInfo: KakaoUserInfoDto): SocialUserInfoDto {
     return {
       id: userInfo.id.toString(),
       provider: AuthProvider.KAKAO,
     };
   }
 
-  async getUserInfo(accessToken: string): Promise<KakaoUserInfoDto> {
+  public async getUserInfo(accessToken: string): Promise<KakaoUserInfoDto> {
     const response = await axios.get<KakaoUserInfoDto>(
-      'https://kapi.kakao.com/v2/user/me',
+      this.configService.get<string>('KAKAO_USER_INFO_URL') ?? '',
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -60,7 +65,7 @@ export class KakaoStrategy extends SocialAuthBaseStrategy<
     );
 
     if (!response?.data) {
-      throw new UnauthorizedException('정보 조회 실패');
+      throw new UnauthorizedException('Failed to fetch information');
     }
 
     return response.data;
