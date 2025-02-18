@@ -52,7 +52,7 @@ export class AuthService {
     const socialProviderService = this.SOCIAL_LOGIN_MAP[provider];
 
     if (!socialProviderService) {
-      throw new BadRequestException('지원하지 않는 로그인 제공자입니다.');
+      throw new BadRequestException('Unsupported authentication provider');
     }
 
     return socialProviderService;
@@ -156,13 +156,13 @@ export class AuthService {
     const storedToken = this.getRefreshToken(userIdx);
 
     if (!storedToken || storedToken !== refreshToken) {
-      throw new UnauthorizedException('유효하지 않은 refresh token');
+      throw new UnauthorizedException('Invalid refresh token');
     }
 
     const payload: RefreshTokenPayload =
       await this.loginTokenService.verifyRefreshToken(refreshToken);
     if (!payload || !payload.idx) {
-      throw new UnauthorizedException('잘못된 refresh token');
+      throw new UnauthorizedException('Malformed refresh token');
     }
 
     const newJwtAccessToken =
