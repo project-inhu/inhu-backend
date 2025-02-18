@@ -42,7 +42,7 @@ export abstract class SocialAuthBaseStrategy<TToken = any, TUserInfo = any> {
    *
    * @returns 소셜 로그인 인증 URL
    */
-  abstract getAuthLoginUrl(): string;
+  public abstract getAuthLoginUrl(): string;
 
   /**
    * 액세스 토큰을 추출하는 메서드
@@ -51,7 +51,7 @@ export abstract class SocialAuthBaseStrategy<TToken = any, TUserInfo = any> {
    * @param token 소셜 로그인에서 반환된 토큰 객체
    * @returns 액세스 토큰 문자열
    */
-  abstract getAccessToken(token: TToken): string;
+  public abstract getAccessToken(token: TToken): string;
 
   /**
    * 액세스 토큰을 이용해 사용자 정보를 가져오는 메서드
@@ -60,7 +60,7 @@ export abstract class SocialAuthBaseStrategy<TToken = any, TUserInfo = any> {
    * @param accessToken 소셜 로그인에서 발급받은 액세스 토큰
    * @returns 사용자 정보 객체 (TUserInfo 타입)
    */
-  abstract getUserInfo(accessToken: string): Promise<TUserInfo>;
+  public abstract getUserInfo(accessToken: string): Promise<TUserInfo>;
 
   /**
    * 소셜 로그인 사용자 정보를 공통 DTO 형식으로 변환
@@ -69,7 +69,7 @@ export abstract class SocialAuthBaseStrategy<TToken = any, TUserInfo = any> {
    * @param userInfo 소셜 로그인에서 제공한 원본 사용자 정보
    * @returns 변환된 사용자 정보 DTO
    */
-  abstract extractUserInfo(userInfo: TUserInfo): SocialUserInfoDto;
+  public abstract extractUserInfo(userInfo: TUserInfo): SocialUserInfoDto;
 
   /**
    * 소셜 로그인에서 발급한 액세스 토큰을 요청하는 메서드
@@ -79,7 +79,7 @@ export abstract class SocialAuthBaseStrategy<TToken = any, TUserInfo = any> {
    * @returns 소셜 로그인에서 반환된 토큰 객체 (TToken 타입)
    * @throws UnauthorizedException 토큰 발급 실패 시 예외 발생
    */
-  async getToken(code: string): Promise<TToken> {
+  public async getToken(code: string): Promise<TToken> {
     const params = this.getTokenParams(code);
 
     const response = await axios.post<TToken>(
@@ -88,7 +88,7 @@ export abstract class SocialAuthBaseStrategy<TToken = any, TUserInfo = any> {
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
     );
     if (!response?.data) {
-      throw new UnauthorizedException('토큰 발급 실패');
+      throw new UnauthorizedException('Failed to issue token');
     }
 
     return response.data;
