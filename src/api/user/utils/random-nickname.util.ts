@@ -1,4 +1,5 @@
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
+import { UserRepository } from '../repository/user.repository';
 
 /**
  * 새로운 사용자를 위한 임시 닉네임을 생성하는 함수
@@ -14,9 +15,9 @@ import { PrismaService } from 'src/common/module/prisma/prisma.service';
  * @author 조희주
  */
 export async function generateTemporaryNickname(
-  prisma: PrismaService,
+  userRepository: UserRepository,
 ): Promise<string> {
-  const userCount = await prisma.user.count();
+  const userCount = await userRepository.getUserCount();
   const nickname = `${userCount + 1}번째 인후러`;
   return nickname;
 }
