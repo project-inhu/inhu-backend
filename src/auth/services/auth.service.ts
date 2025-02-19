@@ -154,16 +154,13 @@ export class AuthService {
     const payload =
       await this.loginTokenService.verifyRefreshToken(refreshToken);
 
-    const userIdx = payload.idx;
-    const storedToken = this.getRefreshToken(userIdx);
-
-    if (!storedToken || storedToken !== refreshToken) {
+    if (
+      !this.getRefreshToken(payload.idx) ||
+      this.getRefreshToken(payload.idx) !== refreshToken
+    ) {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
-    const newJwtAccessToken =
-      await this.loginTokenService.signAccessToken(payload);
-
-    return newJwtAccessToken;
+    return await this.loginTokenService.signAccessToken(payload);
   }
 }
