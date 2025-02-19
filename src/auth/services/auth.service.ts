@@ -47,7 +47,6 @@ export class AuthService {
    */
   public getSocialAuthStrategy(provider: AuthProvider): SocialAuthBaseStrategy {
     const socialAuthStrategy = this.SOCIAL_LOGIN_MAP[provider];
-
     return socialAuthStrategy;
   }
 
