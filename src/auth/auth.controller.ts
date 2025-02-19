@@ -3,6 +3,7 @@ import { AuthService } from './services/auth.service';
 import { AuthProvider } from './enums/auth-provider.enum';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { Provider } from './common/decorators/provider.decorator';
 
 @Controller('auth')
 export class AuthController {
