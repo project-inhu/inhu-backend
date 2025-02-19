@@ -1,33 +1,47 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Query,
-  Req,
-  Res,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Controller, Get, Query, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { AuthProvider } from './enum/auth-provider.enum';
-import { provider } from './decorators/provider.decorator';
+import { Provider } from './decorators/provider.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  /**
+   * 소셜 로그인 요청을 처리하는 엔드포인트
+   * - 해당 소셜 로그인 페이지로 리다이렉트한다.
+   *
+   * @param provider 로그인할 소셜 플랫폼 (예: KAKAO, GOOGLE 등)
+   * @param res 응답 객체
+   * @returns 해당 소셜 로그인 URL로 리디렉트
+   *
+   * @author 강정연
+   */
   @Public()
   @Get(':provider/login')
-  socialLogin(@provider() provider: AuthProvider, @Res() res: Response): void {
+  socialLogin(@Provider() provider: AuthProvider, @Res() res: Response): void {
     const socialAuthService = this.authService.getAuthService(provider);
     return res.redirect(socialAuthService.getLoginUrl());
   }
 
+  /**
+   * 소셜 로그인 콜백 처리 엔드포인트트
+   * - 소셜 로그인 후, 반환된 인증 코드를 이용하여
+   *   JWT access 및 refresh token을 발급해 쿠키에 저장한다.
+   *
+   * @param provider 로그인할 소셜 플랫폼 (예: KAKAO, GOOGLE 등)
+   * @param res 응답 객체
+   * @param code 소셜 로그인 후 반환된 인증 코드
+   * @returns 메인 페이지로 리디렉트
+   *
+   * @author 강정연
+   */
   @Public()
   @Get(':provider/callback')
   async callBack(
-    @provider() provider: AuthProvider,
+    @Provider() provider: AuthProvider,
     @Query('code') code: string,
     @Res() res: Response,
   ): Promise<void> {
@@ -48,32 +62,6 @@ export class AuthController {
       sameSite: 'lax',
     });
 
-    return res.redirect('http://localhost:3000/auth/test');
-  }
-
-  @Get('test')
-  async test() {
-    return { message: '인증 성공' };
-  }
-
-  @Public()
-  @Get('test/main')
-  async maintest() {
-    return { message: '여기는 로그인 메인 페이지가 될 것이다' };
-  }
-
-  @Public()
-  @Get('reissue')
-  async reissueToken(@Req() req: Request, @Res() res: Response): Promise<void> {
-    const accessToken: string = await this.authService.reissueToken(
-      req.cookies['RefreshToken'],
-    );
-
-    res.cookie('AccessToken', accessToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-    });
     return res.redirect('http://localhost:3000/auth/test');
   }
 }
