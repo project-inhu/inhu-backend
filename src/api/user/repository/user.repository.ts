@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
-import { generateRandomNickname } from '../utils/random-nickname.util';
+import { generateTemporaryNickname } from '../utils/random-nickname.util';
 
 @Injectable()
 export class UserRepository {
@@ -27,6 +27,18 @@ export class UserRepository {
   }
 
   /**
+   * 전체 사용자 수를 조회
+   * - 현재 데이터베이스에 등록된 전체 사용자 수를 반환
+   *
+   * @returns 현재 등록된 사용자 수 (number)
+   *
+   * @author 조희주
+   */
+  async getUserCount(): Promise<number> {
+    return await this.prisma.user.count();
+  }
+
+  /**
    * 새 사용자를 생성하고, UserProvider 정보를 함께 저장
    * - 랜덤 닉네임을 생성하여 사용자 정보에 추가
    *
@@ -37,9 +49,10 @@ export class UserRepository {
    * @author 조희주
    */
   async insertUser(snsId: string, provider: string): Promise<User> {
+    const nickname = await generateTemporaryNickname(this);
     return await this.prisma.user.create({
       data: {
-        nickname: generateRandomNickname(),
+        nickname,
         userProvider: {
           create: {
             snsId,
