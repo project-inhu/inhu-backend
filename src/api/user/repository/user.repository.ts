@@ -36,14 +36,14 @@ export class UserRepository {
    *
    * @author 조희주
    */
-  async insertUser(snsId: string, name: string): Promise<User> {
+  async insertUser(snsId: string, provider: string): Promise<User> {
     return await this.prisma.user.create({
       data: {
         nickname: generateRandomNickname(),
         userProvider: {
           create: {
             snsId,
-            name,
+            name: provider,
           },
         },
       },
