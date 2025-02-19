@@ -153,10 +153,6 @@ export class AuthService {
     const payload: RefreshTokenPayload =
       await this.loginTokenService.verifyRefreshToken(refreshToken);
 
-    if (!payload || !payload.idx) {
-      throw new UnauthorizedException('Malformed refresh token');
-    }
-
     const userIdx = payload.idx;
     const storedToken = this.getRefreshToken(userIdx);
 
