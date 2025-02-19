@@ -69,9 +69,9 @@ export class AuthService {
     const snsId = userInfo.id;
     const provider = userInfo.provider;
 
-    const existingUser = await this.userRepository.selectUserBySnsId(snsId);
-    if (existingUser) {
-      return existingUser;
+    const user = await this.userRepository.selectUserBySnsId(snsId);
+    if (user) {
+      return user;
     }
 
     return await this.userRepository.insertUser(snsId, provider);
