@@ -149,20 +149,19 @@ export class AuthService {
    *
    * @author 조희주
    */
-  public async regenerateToken(
-    userIdx: number,
-    refreshToken: string,
-  ): Promise<TokenPair> {
+  public async regenerateToken(refreshToken: string): Promise<TokenPair> {
+    const payload: RefreshTokenPayload =
+      await this.loginTokenService.verifyRefreshToken(refreshToken);
+
+    if (!payload || !payload.idx) {
+      throw new UnauthorizedException('Malformed refresh token');
+    }
+
+    const userIdx = payload.idx;
     const storedToken = this.getRefreshToken(userIdx);
 
     if (!storedToken || storedToken !== refreshToken) {
       throw new UnauthorizedException('Invalid refresh token');
-    }
-
-    const payload: RefreshTokenPayload =
-      await this.loginTokenService.verifyRefreshToken(refreshToken);
-    if (!payload || !payload.idx) {
-      throw new UnauthorizedException('Malformed refresh token');
     }
 
     const newJwtAccessToken =
