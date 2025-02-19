@@ -148,7 +148,7 @@ export class AuthService {
    */
   public async regenerateAccessTokenFromRefreshToken(
     refreshToken: string,
-  ): Promise<TokenPair> {
+  ): Promise<string> {
     const payload =
       await this.loginTokenService.verifyRefreshToken(refreshToken);
 
@@ -161,17 +161,7 @@ export class AuthService {
 
     const newJwtAccessToken =
       await this.loginTokenService.signAccessToken(payload);
-    let newJwtRefreshToken = refreshToken;
 
-    if (storedToken !== refreshToken) {
-      newJwtRefreshToken =
-        await this.loginTokenService.signRefreshToken(payload);
-      this.saveRefreshToken(userIdx, newJwtRefreshToken);
-    }
-
-    return {
-      accessToken: newJwtAccessToken,
-      refreshToken: newJwtRefreshToken,
-    };
+    return newJwtAccessToken;
   }
 }
