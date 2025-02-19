@@ -4,7 +4,7 @@
  * @author 이수인
  */
 
-export interface AccessTokenPayload {
+interface AccessTokenPayload {
   /**
    * 사용자 idx
    */
