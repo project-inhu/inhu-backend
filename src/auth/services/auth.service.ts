@@ -124,15 +124,15 @@ export class AuthService {
     const userInfo = await socialAuthService.getUserInfo(accessToken);
     const extractedUserInfo = socialAuthService.extractUserInfo(userInfo);
 
-    const registeredUser = await this.registerUser(extractedUserInfo);
+    const user = await this.registerUser(extractedUserInfo);
 
-    const payload: AccessTokenPayload = { idx: registeredUser.idx };
+    const payload: AccessTokenPayload = { idx: user.idx };
     const jwtAccessToken =
       await this.loginTokenService.signAccessToken(payload);
     const jwtRefreshToken =
       await this.loginTokenService.signRefreshToken(payload);
 
-    this.saveRefreshToken(registeredUser.idx, jwtRefreshToken);
+    this.saveRefreshToken(user.idx, jwtRefreshToken);
 
     return { accessToken: jwtAccessToken, refreshToken: jwtRefreshToken };
   }
