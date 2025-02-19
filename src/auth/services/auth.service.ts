@@ -70,7 +70,7 @@ export class AuthService {
    */
   private async registerUser(userInfo: SocialUserInfoDto): Promise<User> {
     const snsId = userInfo.id;
-    const provider: string = userInfo.provider;
+    const provider = userInfo.provider;
 
     const existingUser = await this.userRepository.selectUserBySnsId(snsId);
     if (existingUser) {
