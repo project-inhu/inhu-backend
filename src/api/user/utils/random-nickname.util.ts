@@ -81,6 +81,19 @@ const nameList: string[] = [
   '바람길',
 ];
 
+/**
+ * 랜덤한 닉네임을 생성하는 함수
+ * - nameList에서 서로 다른 두 개의 단어를 랜덤하게 선택하여 조합
+ * - 동일한 단어가 두 번 선택되는 것을 방지
+ *
+ * @returns 생성된 랜덤 닉네임 (string)
+ *
+ * @example
+ * const nickname = generateRandomNickname();
+ * console.log(nickname); // 예: "하늘강", "달빛모래"
+ *
+ * @author 조희주
+ */
 export function generateRandomNickname(): string {
   const firstIndex = Math.floor(Math.random() * nameList.length);
   let secondIndex = Math.floor(Math.random() * nameList.length);
