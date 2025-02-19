@@ -45,14 +45,16 @@ export class AuthService {
    *
    * @author 조희주
    */
-  public getAuthService(provider: AuthProvider): SocialAuthBaseStrategy {
-    const socialProviderService = this.SOCIAL_LOGIN_MAP[provider];
+  private getSocialAuthStrategy(
+    provider: AuthProvider,
+  ): SocialAuthBaseStrategy {
+    const socialAuthStrategy = this.SOCIAL_LOGIN_MAP[provider];
 
-    if (!socialProviderService) {
+    if (!socialAuthStrategy) {
       throw new BadRequestException('Unsupported authentication provider');
     }
 
-    return socialProviderService;
+    return socialAuthStrategy;
   }
 
   /**
@@ -114,7 +116,7 @@ export class AuthService {
    * @author 조희주
    */
   public async login(provider: AuthProvider, code: string): Promise<TokenPair> {
-    const socialAuthService = this.getAuthService(provider);
+    const socialAuthService = this.getSocialAuthStrategy(provider);
 
     const authToken = await socialAuthService.getToken(code);
     const accessToken = socialAuthService.getAccessToken(authToken);
