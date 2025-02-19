@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
-import { generateRandomNickname } from '../utils/random-nickname.util';
+import { generateTemporaryNickname } from '../utils/random-nickname.util';
 
 @Injectable()
 export class UserRepository {
@@ -37,9 +37,10 @@ export class UserRepository {
    * @author 조희주
    */
   async insertUser(snsId: string, provider: string): Promise<User> {
+    const nickname = await generateTemporaryNickname(this.prisma);
     return await this.prisma.user.create({
       data: {
-        nickname: generateRandomNickname(),
+        nickname,
         userProvider: {
           create: {
             snsId,
