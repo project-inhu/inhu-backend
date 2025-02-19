@@ -146,7 +146,9 @@ export class AuthService {
    *
    * @author 조희주
    */
-  public async regenerateToken(refreshToken: string): Promise<TokenPair> {
+  public async regenerateAccessTokenFromRefreshToken(
+    refreshToken: string,
+  ): Promise<TokenPair> {
     const payload =
       await this.loginTokenService.verifyRefreshToken(refreshToken);
 
