@@ -45,14 +45,8 @@ export class AuthService {
    *
    * @author 조희주
    */
-  private getSocialAuthStrategy(
-    provider: AuthProvider,
-  ): SocialAuthBaseStrategy {
+  public getSocialAuthStrategy(provider: AuthProvider): SocialAuthBaseStrategy {
     const socialAuthStrategy = this.SOCIAL_LOGIN_MAP[provider];
-
-    if (!socialAuthStrategy) {
-      throw new BadRequestException('Unsupported authentication provider');
-    }
 
     return socialAuthStrategy;
   }
