@@ -8,7 +8,7 @@
  *
  * @author 조희주
  */
-export interface TokenPair {
+interface TokenPair {
   accessToken: string;
   refreshToken: string;
 }

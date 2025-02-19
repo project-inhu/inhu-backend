@@ -9,10 +9,7 @@ import { SocialUserInfoDto } from '../dto/social-common/social-user-info.dto';
 import { LoginTokenService } from '../services/login-token.service';
 import { SocialAuthBaseStrategy } from '../strategies/base/social-auth-base.strategy';
 import { KakaoStrategy } from '../strategies/kakao/kakao.strategy';
-import { AccessTokenPayload } from '../interfaces/server-token/access-token-payload.interface';
-import { RefreshTokenPayload } from '../interfaces/server-token/refresh-token-payload';
 import { User } from '@prisma/client';
-import { TokenPair } from '../interfaces/server-token/token-pair.interface';
 
 @Injectable()
 export class AuthService {
@@ -126,7 +123,7 @@ export class AuthService {
 
     const user = await this.registerUser(extractedUserInfo);
 
-    const payload: AccessTokenPayload = { idx: user.idx };
+    const payload = { idx: user.idx };
     const jwtAccessToken =
       await this.loginTokenService.signAccessToken(payload);
     const jwtRefreshToken =
@@ -150,7 +147,7 @@ export class AuthService {
    * @author 조희주
    */
   public async regenerateToken(refreshToken: string): Promise<TokenPair> {
-    const payload: RefreshTokenPayload =
+    const payload =
       await this.loginTokenService.verifyRefreshToken(refreshToken);
 
     const userIdx = payload.idx;
