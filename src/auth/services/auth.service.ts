@@ -41,20 +41,11 @@ export class AuthService {
    *
    * @param provider 로그인 제공자 (AuthProvider)
    * @returns 해당 provider의 소셜 로그인 전략
-   * @throws BadRequestException 지원되지 않는 provider인 경우
    *
    * @author 조희주
    */
-  private getSocialAuthStrategy(
-    provider: AuthProvider,
-  ): SocialAuthBaseStrategy {
-    const socialAuthStrategy = this.SOCIAL_LOGIN_MAP[provider];
-
-    if (!socialAuthStrategy) {
-      throw new BadRequestException('Unsupported authentication provider');
-    }
-
-    return socialAuthStrategy;
+  public getSocialAuthStrategy(provider: AuthProvider): SocialAuthBaseStrategy {
+    return this.SOCIAL_LOGIN_MAP[provider];
   }
 
   /**
