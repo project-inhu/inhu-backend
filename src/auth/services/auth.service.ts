@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from '../../api/user/repository/user.repository';
 import { AuthProvider } from '../enums/auth-provider.enum';
 import { SocialUserInfoDto } from '../dto/social-common/social-user-info.dto';
@@ -17,12 +13,6 @@ export class AuthService {
     AuthProvider,
     SocialAuthBaseStrategy
   >;
-
-  /**
-   * Refresh Token을 서버 메모리에서 관리 (DB 저장 X)
-   * - key: userIdx
-   * - value: refreshToken (string)
-   */
   private readonly REFRESH_TOKEN_STORE: Record<number, string> = {};
 
   constructor(
@@ -36,11 +26,7 @@ export class AuthService {
   }
 
   /**
-   * 소셜 로그인 제공자 매핑
-   * - 입력된 provider에 해당하는 소셜 로그인 전략을 반환
-   *
-   * @param provider 로그인 제공자 (AuthProvider)
-   * @returns 해당 provider의 소셜 로그인 전략
+   * 로그인 provider에 해당하는 social strategy 반환
    *
    * @author 조희주
    */
@@ -49,12 +35,7 @@ export class AuthService {
   }
 
   /**
-   * 소셜 로그인 후 사용자 인증 (DB에서 조회 또는 신규 생성)
-   * - 소셜 로그인 정보를 기반으로 사용자를 조회
-   * - 기존 사용자가 없으면 새로 등록
-   *
-   * @param userInfo 소셜 로그인 후 받은 사용자 정보 DTO
-   * @returns 기존 사용자 정보 또는 새로 등록된 사용자 정보
+   * 소셜 로그인 후 사용자 조회 및 등록
    *
    * @author 조희주
    */
@@ -71,10 +52,7 @@ export class AuthService {
   }
 
   /**
-   * Refresh Token 저장 (DB 대신 메모리에서 관리)
-   *
-   * @param userIdx 사용자 ID
-   * @param refreshToken 저장할 Refresh Token
+   * Refresh Token 메모리에 저장
    *
    * @author 조희주
    */
@@ -83,10 +61,7 @@ export class AuthService {
   }
 
   /**
-   * Refresh Token 조회 (메모리에서 가져옴)
-   *
-   * @param userIdx 사용자 ID
-   * @returns 저장된 Refresh Token (없으면 null)
+   * Refresh Token 조회
    *
    * @author 조희주
    */
@@ -95,14 +70,7 @@ export class AuthService {
   }
 
   /**
-   * 소셜 로그인 처리
-   * - 소셜 로그인 인증 코드(code)를 사용해 소셜 로그인 서비스에서 토큰을 받아옴
-   * - 해당 토큰을 통해 사용자 정보를 조회 및 인증
-   * - 사용자 정보가 없으면 회원 가입 후, 새 accessToken과 refreshToken을 생성
-   *
-   * @param provider 로그인 제공자 (AuthProvider)
-   * @param code 소셜 로그인 인증 코드
-   * @returns accessToken과 refreshToken 쌍
+   * 소셜 로그인 인증 코드(code)를 사용하여 사용자 인증 후 토큰 발급
    *
    * @author 조희주
    */
@@ -129,13 +97,6 @@ export class AuthService {
 
   /**
    * Refresh Token 검증 후 새로운 Access Token 발급
-   * - 전달된 refreshToken의 유효성을 검증한 후 새로운 accessToken을 발급
-   * - 저장된 refreshToken과 비교하여 유효하지 않으면 예외 발생
-   *
-   * @param userIdx 사용자 ID
-   * @param refreshToken 기존의 refreshToken
-   * @returns 새로운 accessToken과 refreshToken 쌍
-   * @throws UnauthorizedException refreshToken이 유효하지 않거나 만료된 경우
    *
    * @author 조희주
    */
