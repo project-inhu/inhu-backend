@@ -7,12 +7,7 @@ import { generateTemporaryNickname } from '../utils/random-nickname.util';
 export class UserRepository {
   constructor(private readonly prisma: PrismaService) {}
   /**
-   * SNS ID를 기반으로 사용자 정보를 조회
-   * - 유저가 존재하면 유저 정보를 반환
-   * - 존재하지 않으면 null 반환
-   *
-   * @param snsId 소셜 로그인 ID
-   * @returns 조회된 사용자 정보 (User | null)
+   * SNS ID를 기반으로 사용자 정보 조회
    *
    * @author 조희주
    */
@@ -27,10 +22,7 @@ export class UserRepository {
   }
 
   /**
-   * 전체 사용자 수를 조회
-   * - 현재 데이터베이스에 등록된 전체 사용자 수를 반환
-   *
-   * @returns 현재 등록된 사용자 수 (number)
+   * 현재 데이터베이스에 등록된 전체 사용자 수 반환
    *
    * @author 조희주
    */
@@ -39,12 +31,8 @@ export class UserRepository {
   }
 
   /**
-   * 새 사용자를 생성하고, UserProvider 정보를 함께 저장
-   * - 랜덤 닉네임을 생성하여 사용자 정보에 추가
-   *
-   * @param snsId 소셜 로그인 ID
-   * @param provider 로그인 제공자 (AuthProvider)
-   * @returns 생성된 사용자 정보 (User)
+   * user, userProvider에 새 사용자 생성
+   * 임시 닉네임(N번째 인후러)을 생성하여 user에 추가
    *
    * @author 조희주
    */
