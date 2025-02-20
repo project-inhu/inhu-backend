@@ -3,7 +3,6 @@
  *
  * @author 이수인
  */
-
 interface AccessTokenPayload {
   /**
    * 사용자 idx
