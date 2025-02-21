@@ -5,7 +5,7 @@ import { SocialUserInfoDto } from '../dto/social-common/social-user-info.dto';
 import { LoginTokenService } from '../services/login-token.service';
 import { SocialAuthBaseStrategy } from '../strategies/base/social-auth-base.strategy';
 import { KakaoStrategy } from '../strategies/kakao/kakao.strategy';
-import { User } from '@prisma/client';
+import { RegisterUserResponseDto } from 'src/api/user/dto/register-user-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -39,16 +39,19 @@ export class AuthService {
    *
    * @author 조희주
    */
-  private async registerUser(userInfo: SocialUserInfoDto): Promise<User> {
+  private async registerUser(
+    userInfo: SocialUserInfoDto,
+  ): Promise<RegisterUserResponseDto> {
     const snsId = userInfo.id;
     const provider = userInfo.provider;
 
     const user = await this.userRepository.selectUserBySnsId(snsId);
     if (user) {
-      return user;
+      return { idx: user.idx };
     }
 
-    return await this.userRepository.insertUser(snsId, provider);
+    const newUser = await this.userRepository.insertUser(snsId, provider);
+    return { idx: newUser.idx };
   }
 
   /**
