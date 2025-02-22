@@ -148,7 +148,7 @@ CREATE TABLE service2_tb
 CREATE TABLE user_provider_tb
 (
   idx      int      NOT NULL,
-  provider smallint NOT NULL,
+  name     varchar  NOT NULL,
   sns_id   varchar  NOT NULL,
   PRIMARY KEY (idx)
 );
