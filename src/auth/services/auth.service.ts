@@ -1,11 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserRepository } from '../../api/user/repository/user.repository';
 import { AuthProvider } from '../enums/auth-provider.enum';
-import { SocialUserInfoDto } from '../dto/social-common/social-user-info.dto';
 import { LoginTokenService } from '../services/login-token.service';
 import { SocialAuthBaseStrategy } from '../strategies/base/social-auth-base.strategy';
 import { KakaoStrategy } from '../strategies/kakao/kakao.strategy';
-import { RegisterUserResponseDto } from 'src/api/user/dto/register-user-response.dto';
+import { UserService } from 'src/api/user/user.service';
 
 @Injectable()
 export class AuthService {
@@ -13,12 +11,18 @@ export class AuthService {
     AuthProvider,
     SocialAuthBaseStrategy
   >;
+
+  /**
+   * Refresh Token을 서버 메모리에서 관리 (DB 저장 X)
+   * - key: userIdx
+   * - value: refreshToken (string)
+   */
   private readonly REFRESH_TOKEN_STORE: Record<number, string> = {};
 
   constructor(
-    private readonly userRepository: UserRepository,
     private readonly kakaoAuthService: KakaoStrategy,
     private readonly loginTokenService: LoginTokenService,
+    private readonly userService: UserService,
   ) {
     this.SOCIAL_LOGIN_MAP = {
       [AuthProvider.KAKAO]: this.kakaoAuthService,
@@ -32,26 +36,6 @@ export class AuthService {
    */
   public getSocialAuthStrategy(provider: AuthProvider): SocialAuthBaseStrategy {
     return this.SOCIAL_LOGIN_MAP[provider];
-  }
-
-  /**
-   * 소셜 로그인 후 사용자 조회 및 등록
-   *
-   * @author 조희주
-   */
-  private async registerUser(
-    userInfo: SocialUserInfoDto,
-  ): Promise<RegisterUserResponseDto> {
-    const snsId = userInfo.id;
-    const provider = userInfo.provider;
-
-    const user = await this.userRepository.selectUserBySnsId(snsId);
-    if (user) {
-      return { idx: user.idx };
-    }
-
-    const newUser = await this.userRepository.insertUser(snsId, provider);
-    return { idx: newUser.idx };
   }
 
   /**
@@ -85,7 +69,7 @@ export class AuthService {
     const userInfo = await socialAuthService.getUserInfo(accessToken);
     const extractedUserInfo = socialAuthService.extractUserInfo(userInfo);
 
-    const user = await this.registerUser(extractedUserInfo);
+    const user = await this.userService.registerUser(extractedUserInfo);
 
     const payload = { idx: user.idx };
     const jwtAccessToken =
