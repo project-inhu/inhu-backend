@@ -6,11 +6,8 @@ export class LoginTokenService {
   constructor(private readonly jwtService: JwtService) {}
 
   /**
-   * Refresh Token을 검증하여 payload를 반환한다.
-   * 만약 토큰이 유효하지 않거나, `idx`가 없다면 예외를 발생시킨다.
+   * Refresh Token을 검증하고, 유효한 경우 payload를 반환
    *
-   * @param token 검증할 Refresh Token
-   * @returns 검증된 토큰의 payload
    * @throws UnauthorizedException 토큰이 만료되었거나, 유효하지 않은 경우
    *
    * @author 이수인
@@ -32,11 +29,9 @@ export class LoginTokenService {
   }
 
   /**
-   * Access Token을 검증하고 payload를 반환한다.
-   * 만료된 경우 예외를 던지지 않고 `null`을 반환한다.
+   * Access Token을 검증하고, 만료되지 않은 경우 payload를 반환
    *
-   * @param token 검증할 Access Token
-   * @returns 검증된 payload 또는 `null` (만료된 경우)
+   * @returns 검증된 payload 또는 만료된 경우 예외를 던지지 않고 null을 반환
    *
    * @author 이수인
    */
@@ -55,11 +50,7 @@ export class LoginTokenService {
   }
 
   /**
-   * 주어진 payload로 Access Token을 생성한다.
-   *
-   * @param payload Access Token에 포함할 정보
-   * @returns 생성된 JWT Access Token
-   * @throws Error 토큰 생성에 실패한 경우
+   * 주어진 payload로 Access Token을 생성
    *
    * @author 이수인
    */
@@ -75,9 +66,7 @@ export class LoginTokenService {
   /**
    * 주어진 payload로 Refresh Token을 생성한다.
    *
-   * @param payload Refresh Token에 포함할 정보
-   * @returns 생성된 JWT Refresh Token
-   * @throws Error 토큰 생성에 실패한 경우
+   * @author 이수인
    */
   async signRefreshToken(payload: RefreshTokenPayload): Promise<string> {
     const token = await this.jwtService.signAsync(payload, { expiresIn: '1m' });
