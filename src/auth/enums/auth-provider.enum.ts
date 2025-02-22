@@ -1,6 +1,6 @@
 /**
- * 인증 제공자 (Auth Provider) Enum
- * - 사용자가 어떤 소셜 로그인 서비스를 이용했는지 나타냄
+ * 사용자가 이용한 소셜 로그인 제공자를 나타내는 AuthProvider Enum
+ *
  * @author 이수인
  */
 export enum AuthProvider {
