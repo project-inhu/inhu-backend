@@ -13,6 +13,12 @@ export class AuthService {
     AuthProvider,
     SocialAuthBaseStrategy
   >;
+
+  /**
+   * Refresh Token을 서버 메모리에서 관리 (DB 저장 X)
+   * - key: userIdx
+   * - value: refreshToken (string)
+   */
   private readonly REFRESH_TOKEN_STORE: Record<number, string> = {};
 
   constructor(
