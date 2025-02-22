@@ -1,8 +1,8 @@
 import { AuthProvider } from 'src/auth/enums/auth-provider.enum';
 
 /**
- * 소셜 로그인 후 받은 사용자 정보 중 필요한 값만 추출하여 저장하는 DTO
- * - 소셜 로그인 API에서 받아온 원본 데이터에서 필요한 값만 선별하여 저장
+ * 소셜 로그인 후 받은 사용자 정보에서 필요한 값(id, 제공자)을 추출하여 저장하는 DTO
+ *
  * @author 이수인
  */
 export class SocialUserInfoDto {
