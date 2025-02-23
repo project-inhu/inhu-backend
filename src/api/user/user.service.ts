@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserRepository } from './repository/user.repository';
 import { RegisterUserResponseDto } from './dto/register-user-response.dto';
 import { SocialUserInfoDto } from 'src/auth/dto/social-common/social-user-info.dto';
-import { GetMyProfileResponseDto } from './dto/user-profile-response.dto';
+import { GetMyInfoResponseDto } from './dto/user-info-response.dto';
 
 @Injectable()
 export class UserService {
@@ -32,7 +32,7 @@ export class UserService {
    *
    * @author 조희주
    */
-  async getMyProfile(idx: number): Promise<GetMyProfileResponseDto> {
-    return await this.userRepository.selectUserProfileByUserIdx(idx);
+  async getMyInfoByUserIdx(idx: number): Promise<GetMyInfoResponseDto> {
+    return await this.userRepository.selectUserInfoByUserIdx(idx);
   }
 }
