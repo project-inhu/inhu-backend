@@ -1,10 +1,12 @@
-interface PlaceQueryResult {
+import { Decimal } from '@prisma/client/runtime/library';
+
+export interface PlaceQueryResult {
   idx: number;
   name: string;
   tel: string;
   address: string;
-  addressX: number;
-  addressY: number;
+  addressX: Decimal;
+  addressY: Decimal;
   createdAt: Date;
   placeHours: {
     day: string;

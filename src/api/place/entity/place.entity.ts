@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { WeekSchedule } from '../type/week-schedule.type';
 import { Week } from '../type/week.type';
+import { Decimal } from '@prisma/client/runtime/library';
+import { PlaceQueryResult } from '../interfaces/place-query-result.interface';
 
 export class PlaceEntity {
   @ApiProperty({ description: 'place idx', example: 1 })
@@ -16,10 +18,10 @@ export class PlaceEntity {
   address: string;
 
   // @ApiProperty({ description: 'place address', example: '인천 미추홀구' })
-  addressX: number;
+  addressX: Decimal;
 
   // @ApiProperty({ description: 'place address', example: '인천 미추홀구' })
-  addressY: number;
+  addressY: Decimal;
 
   // @ApiProperty({ description: 'place address', example: '인천 미추홀구' })
   createdAt: Date;
