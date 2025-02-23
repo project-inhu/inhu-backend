@@ -56,11 +56,22 @@ export class UserRepository {
    *
    * @author 조희주
    */
-  async selectUserProfileByUserIdx(idx: number): Promise<UserProfile> {
+  async selectUserInfoByUserIdx(idx: number): Promise<UserProfile> {
     return await this.prisma.user.findUniqueOrThrow({
       where: { idx },
       select: {
         nickname: true,
+        profileImagePath: true,
+      },
+    });
+  }
+
+  async updateUserProfileImageByUserIdx(idx: number, profileImagePath: string) {
+    return await this.prisma.user.update({
+      where: { idx },
+      data: { profileImagePath },
+      select: {
+        idx: true,
         profileImagePath: true,
       },
     });

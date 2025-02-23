@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from 'src/auth/common/guards/auth.guard';
-import { GetMyProfileResponseDto } from './dto/user-profile-response.dto';
+import { GetMyInfoResponseDto } from './dto/user-info-response.dto';
 import { RequestWithUser } from './interfaces/request-with-user.interface';
 
 @Controller('user')
@@ -22,12 +22,12 @@ export class UserController {
    */
   @UseGuards(AuthGuard)
   @Get()
-  async getMyProfile(
+  async getMyInfoByUserIdx(
     @Req() req: RequestWithUser,
-  ): Promise<GetMyProfileResponseDto> {
+  ): Promise<GetMyInfoResponseDto> {
     if (!req.user) {
       throw new UnauthorizedException('User not authenticated');
     }
-    return await this.userService.getMyProfile(req.user.idx);
+    return await this.userService.getMyInfoByUserIdx(req.user.idx);
   }
 }
