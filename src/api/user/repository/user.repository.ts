@@ -50,4 +50,19 @@ export class UserRepository {
       },
     });
   }
+
+  /**
+   * 사용자의 프로필, 닉네임 정보 조회
+   *
+   * @author 조희주
+   */
+  async selectUserProfileById(idx: number): Promise<UserProfile> {
+    return await this.prisma.user.findUniqueOrThrow({
+      where: { idx },
+      select: {
+        nickname: true,
+        profileImagePath: true,
+      },
+    });
+  }
 }
