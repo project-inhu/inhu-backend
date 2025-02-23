@@ -39,5 +39,7 @@ export class UserService {
     return updatedUser;
   }
 
-  // * 회원 탈퇴
+  async getMyInfo(idx: number): Promise<UserProfile> {
+    return await this.userRepository.selectUserProfileById(idx);
+  }
 }
