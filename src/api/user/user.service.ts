@@ -25,4 +25,8 @@ export class UserService {
     const newUser = await this.userRepository.insertUser(snsId, provider);
     return { idx: newUser.idx };
   }
+
+  async getMyInfo(idx: number): Promise<UserProfile> {
+    return await this.userRepository.selectUserProfileById(idx);
+  }
 }
