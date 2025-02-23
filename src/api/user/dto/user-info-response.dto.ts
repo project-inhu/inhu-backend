@@ -4,7 +4,7 @@
  *
  * @author 조희주
  */
-export class GetMyProfileResponseDto {
+export class GetMyInfoResponseDto {
   profileImagePath: string | null;
   nickname: string;
 }
