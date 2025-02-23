@@ -1,40 +1,28 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/common/module/prisma/prisma.service';
-import { GetMyInfoResponseDto, UpdateMyInfoDto } from './dto/user-info.dto';
+import { Injectable } from '@nestjs/common';
+import { UserRepository } from './repository/user.repository';
+import { RegisterUserResponseDto } from './dto/register-user-response.dto';
+import { SocialUserInfoDto } from 'src/auth/dto/social-common/social-user-info.dto';
 
 @Injectable()
 export class UserService {
-    constructor(private prisma: PrismaService) { }
-    // * 내 정보 보기 (마이페이지 - 프로필, 닉네임)
-    // Q. 그러면 로그인할때 닉네임 정해지는거임? OK
-    async getMyInfo(idx: number): Promise<GetMyInfoResponseDto> {
-        // 토큰에서 내 idx값 가져와서 그 idx에 해당하는 프로필, 닉네임 가져오기
-        const user = await this.prisma.user.findUniqueOrThrow({
-            where: { idx },
-            select: {
-                nickname: true,
-                profileImagePath: true
-            }
-        })
+  constructor(private readonly userRepository: UserRepository) {}
+  /**
+   * 소셜 로그인 후 사용자 조회 및 등록
+   *
+   * @author 조희주
+   */
+  async registerUser(
+    userInfo: SocialUserInfoDto,
+  ): Promise<RegisterUserResponseDto> {
+    const snsId = userInfo.id;
+    const provider = userInfo.provider;
 
-        return user;
+    const user = await this.userRepository.selectUserBySnsId(snsId);
+    if (user) {
+      return { idx: user.idx };
     }
 
-    // * 내 정보 수정하기 (마이페이지 - 프로필, 닉네임)
-    // Q. update문에 return을 줄 필요가 있는가? OK
-    // Q. GetMyInfoResponseDto
-    // TODO : 유효성 검사 (닉네임 중복 검사)
-    async updateMyInfo(idx: number, updateData: UpdateMyInfoDto): Promise<GetMyInfoResponseDto> {
-        const updatedUser = await this.prisma.user.update({
-            where: { idx },
-            data: {
-                nickname: updateData.nickname,
-                profileImagePath: updateData.profileImagePath
-            }
-        })
-
-        return updatedUser;
-    }
-
-    // * 회원 탈퇴
+    const newUser = await this.userRepository.insertUser(snsId, provider);
+    return { idx: newUser.idx };
+  }
 }
