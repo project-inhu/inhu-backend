@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserRepository } from './repository/user.repository';
 import { RegisterUserResponseDto } from './dto/register-user-response.dto';
 import { SocialUserInfoDto } from 'src/auth/dto/social-common/social-user-info.dto';
+import { GetMyProfileResponseDto } from './dto/user-profile-response.dto';
 
 @Injectable()
 export class UserService {
@@ -26,7 +27,12 @@ export class UserService {
     return { idx: newUser.idx };
   }
 
-  async getMyInfo(idx: number): Promise<UserProfile> {
-    return await this.userRepository.selectUserProfileById(idx);
+  /**
+   * 내 프로필 조회 (프로필 이미지, 닉네임)
+   *
+   * @author 조희주
+   */
+  async getMyProfile(idx: number): Promise<GetMyProfileResponseDto> {
+    return await this.userRepository.selectUserProfileByUserIdx(idx);
   }
 }
