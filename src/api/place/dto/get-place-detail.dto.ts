@@ -8,10 +8,4 @@ export class GetPlaceByPlaceIdxDto {
   @IsInt()
   @Min(1)
   idx: number;
-
-  @ApiProperty({ description: 'user idx number', example: 1 })
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  userIdx: number;
 }
