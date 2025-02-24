@@ -17,15 +17,30 @@ export class PlaceEntity {
   @ApiProperty({ description: 'place address', example: '인천 미추홀구' })
   address: string;
 
-  // @ApiProperty({ description: 'place address', example: '인천 미추홀구' })
+  @ApiProperty({ description: 'place addressX', example: 37.1111 })
   addressX: Decimal;
 
-  // @ApiProperty({ description: 'place address', example: '인천 미추홀구' })
+  @ApiProperty({ description: 'place addressY', example: 37.1111 })
   addressY: Decimal;
 
-  // @ApiProperty({ description: 'place address', example: '인천 미추홀구' })
+  @ApiProperty({
+    description: '생성 날짜',
+    example: '2024-02-23T12:34:56.789Z',
+  })
   createdAt: Date;
 
+  @ApiProperty({
+    description: '요일별 운영 시간',
+    example: {
+      mon: { startAt: '09:00', endAt: '18:00' },
+      tue: null,
+      wed: { startAt: '10:00', endAt: '22:00' },
+      thu: { startAt: '09:00', endAt: '18:00' },
+      fri: { startAt: '09:00', endAt: '18:00' },
+      sat: null,
+      sun: null,
+    },
+  })
   week: WeekSchedule;
 
   @ApiProperty({ description: 'review count', example: 1 })
