@@ -1,18 +1,16 @@
+import { PickType } from '@nestjs/swagger';
 import { PlaceEntity } from './place.entity';
 
-export class PlaceOverviewEntity {
-  constructor(
-    data: Pick<
-      PlaceEntity,
-      | 'idx'
-      | 'name'
-      | 'address'
-      | 'reviewCount'
-      | 'bookmark'
-      // | 'keyword'
-      | 'imagePath'
-    >,
-  ) {
+export class PlaceOverviewEntity extends PickType(PlaceEntity, [
+  'idx',
+  'name',
+  'address',
+  'reviewCount',
+  'bookmark',
+  'imagePath',
+]) {
+  constructor(data: PlaceOverviewEntity) {
+    super();
     Object.assign(this, data);
   }
 
