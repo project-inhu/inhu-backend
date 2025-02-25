@@ -20,7 +20,7 @@ export class AuthService {
   private readonly REFRESH_TOKEN_STORE: Record<number, string> = {};
 
   constructor(
-    private readonly kakaoAuthService: KakaoStrategy,
+    private readonly kakaoAuthService: KakaoStrategy, // Nestjs가 주입시켜주는거잖아.
     private readonly loginTokenService: LoginTokenService,
     private readonly userService: UserService,
   ) {
@@ -52,7 +52,7 @@ export class AuthService {
    *
    * @author 조희주
    */
-  private getRefreshToken(userIdx: number): string | null {
+  public getRefreshToken(userIdx: number): string | null {
     return this.REFRESH_TOKEN_STORE[userIdx] || null;
   }
 

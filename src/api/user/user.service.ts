@@ -18,6 +18,7 @@ export class UserService {
     const provider = userInfo.provider;
 
     const user = await this.userRepository.selectUserBySnsId(snsId);
+
     if (user) {
       return { idx: user.idx };
     }
@@ -26,3 +27,6 @@ export class UserService {
     return { idx: newUser.idx };
   }
 }
+
+// 주입 가능한 모든 메서드들을 모킹한다.
+// -> 주입 가능한 메서드들은 또 그들만의 유닛테스트가 있기 때문에, 그 메서드들은 된다고 가정하고 테스트한다.

@@ -7,5 +7,5 @@ import { ValidateProviderPipe } from '../pipes/validate-provider.pipe';
  * @author 강정연
  */
 export function Provider() {
-  return Param('provider', ValidateProviderPipe);
+  return Param('provider', ValidateProviderPipe); // 400응답이 충분히 이루어짐.
 }

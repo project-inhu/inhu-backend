@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
+import { AuthService } from 'src/auth/services/auth.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,6 +15,8 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  const authService = app.get(AuthService);
 
   const config = new DocumentBuilder()
     .setTitle('Inhu API')

@@ -62,3 +62,9 @@ export class AuthController {
     return res.redirect(mainPageUrl);
   }
 }
+
+// 1. 인가 코드를 가져온다.
+// 2. 인가 코드로 토큰을 발급한다. (카카오) -> 모킹
+// 3. 토큰으로 사용자 정보를 열람한다. (카카오) -> 모킹
+// 4. 사용자 정보를 SELECT해서 INSERT하거나 스킵한다.
+// 5. 토큰을 발급해서 쿠키로 넣어주고 302응답을 한다.

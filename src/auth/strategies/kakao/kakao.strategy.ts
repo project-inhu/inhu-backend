@@ -29,6 +29,9 @@ export class KakaoStrategy extends SocialAuthBaseStrategy<
 
   protected tokenUrl = this.configService.get<string>('KAKAO_TOKEN_URL') ?? '';
 
+  /**
+   * 인가코드를 통해 액세스 토큰을 발급하는 메서드
+   */
   protected getTokenParams(code: string): Record<string, string> {
     return {
       grant_type: 'authorization_code',
