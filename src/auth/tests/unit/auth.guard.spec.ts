@@ -1,8 +1,8 @@
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from '../services/auth.service';
-import { LoginTokenService } from '../services/login-token.service';
-import { AuthGuard } from '../common/guards/auth.guard';
+import { AuthGuard } from 'src/auth/common/guards/auth.guard';
+import { LoginTokenService } from 'src/auth/services/login-token.service';
+import { AuthService } from 'src/auth/services/auth.service';
 import { createMock } from '@golevelup/ts-jest';
 
 describe('AuthGuard', () => {
