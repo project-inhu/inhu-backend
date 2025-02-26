@@ -66,7 +66,15 @@ export class UserRepository {
     });
   }
 
-  async updateUserProfileImageByUserIdx(idx: number, profileImagePath: string) {
+  /**
+   * 사용자의 프로필 이미지 수정
+   *
+   * @author 조희주
+   */
+  async updateUserProfileImageByUserIdx(
+    idx: number,
+    profileImagePath: string,
+  ): Promise<UserProfileImage> {
     return await this.prisma.user.update({
       where: { idx },
       data: { profileImagePath },
