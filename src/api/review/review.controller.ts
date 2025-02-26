@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post } from '@nestjs/common';
+import { Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { GetReviewsByPlaceIdxDto } from './dto/get-reviews-by-place-idx.dto';
 
@@ -8,7 +8,7 @@ export class ReviewController {
 
   @Get(':placeIdx/reviews')
   async getReviewsByPlaceIdx(
-    @Param('placeIdx') getReviewsByPlaceIdxDto: GetReviewsByPlaceIdxDto,
+    @Param() getReviewsByPlaceIdxDto: GetReviewsByPlaceIdxDto,
   ) {
     return this.reviewService.getReviewsByPlaceIdx(getReviewsByPlaceIdxDto);
   }
