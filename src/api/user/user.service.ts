@@ -3,8 +3,12 @@ import { UserRepository } from './repository/user.repository';
 import { RegisterUserResponseDto } from './dto/register-user-response.dto';
 import { SocialUserInfoDto } from 'src/auth/dto/social-common/social-user-info.dto';
 import { GetMyInfoResponseDto } from './dto/user-info-response.dto';
+import { UserProfileImageResponseDto } from './dto/user-profile-image-response.dto';
 
 // TODO : 프로필 수정 / 닉네임 수정 / 회원 탈퇴
+
+// TODO : updateMyProfileImageByUserIdx service/controller 의 input DTO type 재정의 필요
+
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
@@ -42,7 +46,10 @@ export class UserService {
    *
    * @author 조희주
    */
-  async updateMyProfileImageByUserIdx(idx: number, profileImagePath: string) {
+  async updateMyProfileImageByUserIdx(
+    idx: number,
+    profileImagePath: string,
+  ): Promise<UserProfileImageResponseDto> {
     return await this.userRepository.updateUserProfileImageByUserIdx(
       idx,
       profileImagePath,
