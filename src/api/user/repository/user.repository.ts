@@ -73,7 +73,7 @@ export class UserRepository {
    */
   async updateUserProfileImageByUserIdx(
     idx: number,
-    profileImagePath: string,
+    profileImagePath: string | null,
   ): Promise<UserProfileImage> {
     return await this.prisma.user.update({
       where: { idx },
