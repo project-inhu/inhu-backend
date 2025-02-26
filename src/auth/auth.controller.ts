@@ -20,9 +20,15 @@ export class AuthController {
    */
   @Get(':provider/login')
   public socialLogin(
-    @Provider() provider: AuthProvider,
+    @Provider() provider: AuthProvider | null,
     @Res() res: Response,
   ): void {
+    if (!provider) {
+      return res.redirect(
+        this.configService.get<string>('MAIN_PAGE_URL') || '/',
+      );
+    }
+
     const socialAuthService = this.authService.getSocialAuthStrategy(provider);
     return res.redirect(socialAuthService.getAuthLoginUrl());
   }
@@ -35,10 +41,16 @@ export class AuthController {
    */
   @Get(':provider/callback')
   public async callBack(
-    @Provider() provider: AuthProvider,
+    @Provider() provider: AuthProvider | null,
     @Query('code') code: string,
     @Res() res: Response,
   ): Promise<void> {
+    if (!provider) {
+      return res.redirect(
+        this.configService.get<string>('MAIN_PAGE_URL') || '/',
+      );
+    }
+
     const { accessToken, refreshToken } = await this.authService.login(
       provider,
       code,
@@ -54,10 +66,7 @@ export class AuthController {
       sameSite: 'lax',
     });
 
-    const mainPageUrl = this.configService.get<string>('MAIN_PAGE_URL');
-    if (!mainPageUrl) {
-      throw new Error('url environment variable is not set');
-    }
+    const mainPageUrl = this.configService.get<string>('MAIN_PAGE_URL') || '/';
 
     return res.redirect(mainPageUrl);
   }
