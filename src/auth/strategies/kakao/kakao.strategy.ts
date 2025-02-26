@@ -32,8 +32,8 @@ export class KakaoStrategy extends SocialAuthBaseStrategy<
   protected getTokenParams(code: string): Record<string, string> {
     return {
       grant_type: 'authorization_code',
-      client_id: process.env.KAKAO_CLIENT_ID ?? '',
-      redirect_uri: process.env.KAKAO_REDIRECT_URI ?? '',
+      client_id: this.configService.get<string>('KAKAO_CLIENT_ID') ?? '',
+      redirect_uri: this.configService.get<string>('KAKAO_REDIRECT_URI') ?? '',
       code: code,
     };
   }
