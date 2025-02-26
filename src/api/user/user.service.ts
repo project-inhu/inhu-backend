@@ -4,6 +4,7 @@ import { RegisterUserResponseDto } from './dto/register-user-response.dto';
 import { SocialUserInfoDto } from 'src/auth/dto/social-common/social-user-info.dto';
 import { GetMyInfoResponseDto } from './dto/user-info-response.dto';
 
+// TODO : 프로필 수정 / 닉네임 수정 / 회원 탈퇴
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
@@ -34,5 +35,17 @@ export class UserService {
    */
   async getMyInfoByUserIdx(idx: number): Promise<GetMyInfoResponseDto> {
     return await this.userRepository.selectUserInfoByUserIdx(idx);
+  }
+
+  /**
+   * 내 프로필 이미지 수정
+   *
+   * @author 조희주
+   */
+  async updateMyProfileImageByUserIdx(idx: number, profileImagePath: string) {
+    return await this.userRepository.updateUserProfileImageByUserIdx(
+      idx,
+      profileImagePath,
+    );
   }
 }
