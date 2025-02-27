@@ -4,7 +4,7 @@
  * @author 조희주
  */
 
-interface UserProfile {
+interface UserInfo {
   nickname: string;
   profileImagePath: string | null;
 }
