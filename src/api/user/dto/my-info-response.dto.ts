@@ -5,8 +5,7 @@
  * @author 조희주
  */
 
-// TODO : Get 빼고 rename
-export class GetMyInfoResponseDto {
-  profileImagePath: string | null;
+export class MyInfoResponseDto {
   nickname: string;
+  profileImagePath: string | null;
 }

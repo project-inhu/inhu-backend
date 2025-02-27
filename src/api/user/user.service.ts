@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { UserRepository } from './repository/user.repository';
 import { RegisterUserResponseDto } from './dto/register-user-response.dto';
 import { SocialUserInfoDto } from 'src/auth/dto/social-common/social-user-info.dto';
-import { GetMyInfoResponseDto } from './dto/user-info-response.dto';
-import { UserProfileImageResponseDto } from './dto/user-profile-image-response.dto';
+import { MyInfoResponseDto } from './dto/my-info-response.dto';
+import { MyProfileImageResponseDto } from './dto/my-profile-image-response.dto';
+import { MyProfileImageDto } from './dto/my-profile-image.dto';
 
 // TODO : 프로필 수정 / 닉네임 수정 / 회원 탈퇴
 
@@ -37,7 +38,7 @@ export class UserService {
    *
    * @author 조희주
    */
-  async getMyInfoByUserIdx(idx: number): Promise<GetMyInfoResponseDto> {
+  async getMyInfoByUserIdx(idx: number): Promise<MyInfoResponseDto> {
     return await this.userRepository.selectUserInfoByUserIdx(idx);
   }
 
@@ -47,9 +48,9 @@ export class UserService {
    * @author 조희주
    */
   async updateMyProfileImageByUserIdx(
-    idx: number,
-    profileImagePath: string,
-  ): Promise<UserProfileImageResponseDto> {
+    myProfileImage: MyProfileImageDto,
+  ): Promise<MyProfileImageResponseDto> {
+    const { idx, profileImagePath } = myProfileImage;
     return await this.userRepository.updateUserProfileImageByUserIdx(
       idx,
       profileImagePath,

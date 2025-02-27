@@ -9,9 +9,10 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from 'src/auth/common/guards/auth.guard';
-import { GetMyInfoResponseDto } from './dto/user-info-response.dto';
+import { MyInfoResponseDto } from './dto/my-info-response.dto';
 import { RequestWithUser } from './interfaces/request-with-user.interface';
-import { UserProfileImageResponseDto } from './dto/user-profile-image-response.dto';
+import { MyProfileImageResponseDto } from './dto/my-profile-image-response.dto';
+import { MyProfileImageDto } from './dto/my-profile-image.dto';
 
 @Controller('user')
 export class UserController {
@@ -26,7 +27,7 @@ export class UserController {
   @Get()
   async getMyInfoByUserIdx(
     @Req() req: RequestWithUser,
-  ): Promise<GetMyInfoResponseDto> {
+  ): Promise<MyInfoResponseDto> {
     if (!req.user) {
       throw new UnauthorizedException('User not authenticated');
     }
@@ -42,16 +43,18 @@ export class UserController {
   @Patch('profile-image')
   async updateMyProfileImageByUserIdx(
     @Req() req: RequestWithUser,
-    @Body() body: { profileImagePath: string },
-  ): Promise<UserProfileImageResponseDto> {
+    @Body() body: { profileImagePath: string | null },
+  ): Promise<MyProfileImageResponseDto> {
     if (!req.user) {
       throw new UnauthorizedException('User not authenticated');
     }
     const userIdx = req.user.idx;
 
-    return this.userService.updateMyProfileImageByUserIdx(
-      userIdx,
-      body.profileImagePath,
-    );
+    const myProfileImageDto: MyProfileImageDto = {
+      idx: userIdx,
+      profileImagePath: body.profileImagePath,
+    };
+
+    return this.userService.updateMyProfileImageByUserIdx(myProfileImageDto);
   }
 }
