@@ -56,7 +56,7 @@ export class UserRepository {
    *
    * @author 조희주
    */
-  async selectUserInfoByUserIdx(idx: number): Promise<UserProfile> {
+  async selectUserInfoByUserIdx(idx: number): Promise<UserInfo> {
     return await this.prisma.user.findUniqueOrThrow({
       where: { idx },
       select: {
