@@ -84,4 +84,18 @@ export class UserRepository {
       },
     });
   }
+
+  /**
+   * 닉네임 중복 확인
+   * - 중복이면 true / 중복이 아니면 false 반환
+   *
+   * @author 조희주
+   */
+  async isDuplicatedNickname(nickname: string): Promise<boolean> {
+    const user = await this.prisma.user.findFirst({
+      where: { nickname },
+    });
+
+    return user !== null;
+  }
 }
