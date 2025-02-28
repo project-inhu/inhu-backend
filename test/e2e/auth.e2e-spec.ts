@@ -1,7 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserRepository } from 'src/api/user/repository/user.repository';
 import { AppModule } from 'src/app.module';
 import { AuthProvider } from 'src/auth/enums/auth-provider.enum';
 import { AuthService } from 'src/auth/services/auth.service';
@@ -9,6 +8,8 @@ import { LoginTokenService } from 'src/auth/services/login-token.service';
 import { KakaoStrategy } from 'src/auth/strategies/kakao/kakao.strategy';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import * as request from 'supertest';
+import { PrismaTestingHelper } from '@chax-at/transactional-prisma-testing';
+import { extractCookieValue } from 'test/utils/extract-cookie-value.util';
 
 /**
  * authController e2e test
@@ -17,29 +18,32 @@ import * as request from 'supertest';
  */
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
+  let prismaTestingHelper: PrismaTestingHelper<PrismaService> | undefined;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    if (!prismaTestingHelper) {
+      prismaTestingHelper = new PrismaTestingHelper(new PrismaService());
+      prisma = prismaTestingHelper.getProxyClient();
+    }
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(PrismaService)
+      .useValue(prisma)
+      .compile();
 
     app = moduleFixture.createNestApplication();
+
+    await prismaTestingHelper.startNewTransaction();
+
     await app.init();
   });
 
-  beforeEach(async () => {
-    jest.clearAllMocks();
-  });
-
-  afterEach(() => {
+  afterEach(async () => {
     jest.restoreAllMocks();
-  });
-
-  afterAll(async () => {
-    const prisma = app.get(PrismaService);
-    await prisma.truncate();
-    await prisma.resetSequences();
-    await prisma.$disconnect();
+    prismaTestingHelper?.rollbackCurrentTransaction();
     await app.close();
   });
 
@@ -92,9 +96,15 @@ describe('AuthController (e2e)', () => {
       };
       jest.spyOn(kakaoStrategy, 'getUserInfo').mockResolvedValue(kakaoUserInfo);
 
-      // insertUser mocking(추적)
-      const userRepository = app.get(UserRepository);
-      jest.spyOn(userRepository, 'insertUser');
+      // 최초 로그인 사용자 db에 존재하지 않은지 확인 (사용자 정보가 db에 반드시 등록되도록 보장하기 위함)
+      let user = await prisma.user.findFirst({
+        where: {
+          userProvider: {
+            snsId: kakaoId.toString(),
+          },
+        },
+      });
+      expect(user).toBeNull();
 
       const res = await request(app.getHttpServer())
         .get('/auth/kakao/callback')
@@ -102,8 +112,7 @@ describe('AuthController (e2e)', () => {
         .expect(302);
 
       // 최초 로그인 사용자 정보 정상 등록 확인
-      const prisma = app.get(PrismaService);
-      const user = await prisma.user.findFirstOrThrow({
+      user = await prisma.user.findFirstOrThrow({
         where: {
           userProvider: {
             snsId: kakaoId.toString(),
@@ -111,7 +120,6 @@ describe('AuthController (e2e)', () => {
         },
       });
       expect(user).not.toBeNull();
-      expect(userRepository.insertUser).toHaveBeenCalledTimes(1);
 
       // memory에 refresh 정상 등록 확인
       expect(app.get(AuthService).getRefreshToken(user?.idx)).not.toBeNull();
@@ -127,10 +135,10 @@ describe('AuthController (e2e)', () => {
       const loginTokenService = app.get(LoginTokenService);
       await expect(
         loginTokenService.verifyAccessToken(accessToken),
-      ).resolves.toMatchObject({ idx: expect.any(Number) });
+      ).resolves.toMatchObject({ idx: user.idx });
       await expect(
         loginTokenService.verifyAccessToken(refreshToken),
-      ).resolves.toMatchObject({ idx: expect.any(Number) });
+      ).resolves.toMatchObject({ idx: user.idx });
     });
 
     it('second login', async () => {
@@ -155,7 +163,6 @@ describe('AuthController (e2e)', () => {
       jest.spyOn(kakaoStrategy, 'getUserInfo').mockResolvedValue(kakaoUserInfo);
 
       // 기존 사용자임을 가정하기 위해 임의 값 등록
-      const prisma = app.get(PrismaService);
       await prisma.user.create({
         data: {
           nickname: 'mock-nickname',
@@ -168,18 +175,9 @@ describe('AuthController (e2e)', () => {
         },
       });
 
-      // insertUser mocking(추적)
-      const userRepository = app.get(UserRepository);
-      jest.spyOn(userRepository, 'insertUser');
-
-      const res = await request(app.getHttpServer())
-        .get('/auth/kakao/callback')
-        .query({ code: 'mockingCode' })
-        .expect(302);
-
-      // 기존 사용자 정보 정상 select 확인
+      // 기존 사용자 이미 db에 존재하는지 확인 (사용자 정보가 db에 등록되지 않도록 보장하기 위함)
       // 최초 로그인 사용자 아니기 때문에 등록 x
-      const user = await prisma.user.findFirstOrThrow({
+      let user = await prisma.user.findFirstOrThrow({
         where: {
           userProvider: {
             snsId: kakaoId.toString(),
@@ -187,7 +185,21 @@ describe('AuthController (e2e)', () => {
         },
       });
       expect(user).not.toBeNull();
-      expect(userRepository.insertUser).toHaveBeenCalledTimes(0);
+
+      const res = await request(app.getHttpServer())
+        .get('/auth/kakao/callback')
+        .query({ code: 'mockingCode' })
+        .expect(302);
+
+      // 기존 사용자 정보 정상 select 확인
+      user = await prisma.user.findFirstOrThrow({
+        where: {
+          userProvider: {
+            snsId: kakaoId.toString(),
+          },
+        },
+      });
+      expect(user).not.toBeNull();
 
       // memory에 refresh 정상 등록 확인
       expect(app.get(AuthService).getRefreshToken(user?.idx)).not.toBeNull();
@@ -203,10 +215,10 @@ describe('AuthController (e2e)', () => {
       const loginTokenService = app.get(LoginTokenService);
       await expect(
         loginTokenService.verifyAccessToken(accessToken),
-      ).resolves.toMatchObject({ idx: expect.any(Number) });
+      ).resolves.toMatchObject({ idx: user.idx });
       await expect(
         loginTokenService.verifyAccessToken(refreshToken),
-      ).resolves.toMatchObject({ idx: expect.any(Number) });
+      ).resolves.toMatchObject({ idx: user.idx });
     });
 
     it('returns 400 for invalid provider', async () => {
@@ -218,15 +230,5 @@ describe('AuthController (e2e)', () => {
         app.get(ConfigService).get<string>('MAIN_PAGE_URL') || '/',
       );
     });
-
-    function extractCookieValue(cookies: string, key: string): string {
-      if (Array.isArray(cookies)) {
-        return cookies
-          .find((cookie) => cookie.startsWith(`${key}=`))
-          ?.split(';')[0]
-          ?.split('=')[1];
-      }
-      return '';
-    }
   });
 });
