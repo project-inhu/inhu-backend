@@ -8,6 +8,8 @@ export class ReviewEntity {
   createdAt: Date;
   imagePath: string[];
   keyword: string[];
+  userNickName: string;
+  placeName: string;
 
   constructor(data: ReviewEntity) {
     Object.assign(this, data);
@@ -24,6 +26,8 @@ export class ReviewEntity {
       keyword: review.reviewKeywordMapping.map(
         (mapping) => mapping.keyword.content,
       ),
+      userNickName: review.user.nickname,
+      placeName: review.place.name,
     });
   }
 }
