@@ -8,7 +8,7 @@ export class ReviewService {
   constructor(private readonly reviewRepository: ReviewRepository) {}
 
   async getReviewsByPlaceIdx(getReviewsByPlaceIdxDto: GetReviewsByPlaceIdxDto) {
-    const { placeIdx } = getReviewsByPlaceIdxDto; // DTO에서 placeIdx 추출
+    const { placeIdx } = getReviewsByPlaceIdxDto;
     return (await this.reviewRepository.selectReviewsByPlaceIdx(placeIdx)).map(
       ReviewEntity.createEntityFromPrisma,
     );
