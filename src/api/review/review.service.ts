@@ -7,7 +7,9 @@ import { ReviewEntity } from './entity/review.entity';
 export class ReviewService {
   constructor(private readonly reviewRepository: ReviewRepository) {}
 
-  async getReviewsByPlaceIdx(getReviewsByPlaceIdxDto: GetReviewsByPlaceIdxDto) {
+  async getReviewsByPlaceIdx(
+    getReviewsByPlaceIdxDto: GetReviewsByPlaceIdxDto,
+  ): Promise<ReviewEntity[]> {
     const { placeIdx } = getReviewsByPlaceIdxDto;
     return (await this.reviewRepository.selectReviewsByPlaceIdx(placeIdx)).map(
       ReviewEntity.createEntityFromPrisma,
