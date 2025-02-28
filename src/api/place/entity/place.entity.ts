@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { WeekSchedule } from '../type/week-schedule.type';
 import { Week } from '../type/week.type';
 import { Decimal } from '@prisma/client/runtime/library';
 import { PlaceQueryResult } from '../interfaces/place-query-result.interface';
+import { WEEKS } from '../common/constants/weeks.constant';
+import { WeekScheduleDto } from '../dto/week-schedule.dto';
 
 export class PlaceEntity {
   @ApiProperty({ description: 'place idx', example: 1 })
@@ -29,19 +30,8 @@ export class PlaceEntity {
   })
   createdAt: Date;
 
-  @ApiProperty({
-    description: '요일별 운영 시간',
-    example: {
-      mon: { startAt: '09:00', endAt: '18:00' },
-      tue: null,
-      wed: { startAt: '10:00', endAt: '22:00' },
-      thu: { startAt: '09:00', endAt: '18:00' },
-      fri: { startAt: '09:00', endAt: '18:00' },
-      sat: null,
-      sun: null,
-    },
-  })
-  week: WeekSchedule;
+  @ApiProperty()
+  week: WeekScheduleDto;
 
   @ApiProperty({ description: 'review count', example: 1 })
   reviewCount: number;
@@ -52,11 +42,11 @@ export class PlaceEntity {
   })
   bookmark: boolean;
 
-  // @ApiProperty({
-  //   description: '특정 장소에서 가장 많이 사용된 review keyword 상위 2개',
-  //   example: ['맛있어요.', '가성비 좋아요.'],
-  // })
-  // keyword: string[];
+  @ApiProperty({
+    description: '특정 장소에서 가장 많이 사용된 review keyword 상위 2개',
+    example: ['맛있어요.', '가성비 좋아요.'],
+  })
+  keyword: string[];
 
   @ApiProperty({ description: '특정 장소 사진 path list', example: ['1234'] })
   imagePath: string[];
@@ -74,25 +64,25 @@ export class PlaceEntity {
       addressX: place.addressX,
       addressY: place.addressY,
       createdAt: place.createdAt,
-      week: place.placeHours.reduce<WeekSchedule>(
+      week: place.placeHours.reduce<WeekScheduleDto>(
         (acc, item) => {
           const key = item.day as Week;
           acc[key] = { startAt: item.startAt, endAt: item.endAt };
           return acc;
         },
         {
-          mon: null,
-          tue: null,
-          wed: null,
-          thu: null,
-          fri: null,
-          sat: null,
-          sun: null,
+          [WEEKS.MON]: null,
+          [WEEKS.TUE]: null,
+          [WEEKS.WED]: null,
+          [WEEKS.THU]: null,
+          [WEEKS.FRI]: null,
+          [WEEKS.SAT]: null,
+          [WEEKS.SUN]: null,
         },
       ),
       reviewCount: place.review.length,
       bookmark: place.bookmark.length > 0 ? true : false,
-      // keyword: [],
+      keyword: [],
       imagePath: place.placeImage.map((path) => path.imagePath ?? ''),
     });
   }
