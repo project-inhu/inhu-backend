@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
-import { GetReviewsByPlaceIdxDto } from './dto/get-reviews-by-place-idx.dto';
-import { ReviewEntity } from './entity/review.entity';
+import { ReviewQueryResult } from './interfaces/review-query-result.interface';
 
 @Injectable()
 export class ReviewRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async selectReviewsByPlaceIdx(placeIdx: number) {
+  async selectReviewsByPlaceIdx(
+    placeIdx: number,
+  ): Promise<ReviewQueryResult[]> {
     const reviews = await this.prisma.review.findMany({
       where: {
         placeIdx,
