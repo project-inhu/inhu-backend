@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { GetReviewsByPlaceIdxDto } from './dto/get-reviews-by-place-idx.dto';
 import { CreateReviewByPlaceIdxDto } from './dto/create-review-by-place-idx.dto';
@@ -18,8 +18,10 @@ export class ReviewController {
   }
 
   @UseGuards(AuthGuard)
-  @Post(':placeIdx/review')
+  @Post('review')
   async createReviewByPlaceIdx(
-    @Param('placeIdx') createReviewByPlaceIdxDto: CreateReviewByPlaceIdxDto,
-  ) {}
+    @Body() createReviewByPlaceIdxDto: CreateReviewByPlaceIdxDto,
+  ) {
+    return this.reviewService.createReviewByPlaceIdx(createReviewByPlaceIdxDto);
+  }
 }
