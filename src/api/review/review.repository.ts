@@ -31,6 +31,16 @@ export class ReviewRepository {
             },
           },
         },
+        user: {
+          select: {
+            nickname: true,
+          },
+        },
+        place: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
     return reviews;

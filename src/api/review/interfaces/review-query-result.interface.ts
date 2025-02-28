@@ -6,4 +6,6 @@ export interface ReviewQueryResult {
   createdAt: Date;
   reviewImage: { imagePath: string | null }[];
   reviewKeywordMapping: { keyword: { content: string } }[];
+  user: { nickname: string };
+  place: { name: string };
 }
