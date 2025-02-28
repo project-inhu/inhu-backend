@@ -46,4 +46,18 @@ export class ReviewRepository {
     });
     return reviews;
   }
+
+  async createReviewByPlaceIdx(
+    placeIdx: number,
+    content: string,
+    userIdx: number,
+  ) {
+    await this.prisma.review.create({
+      data: {
+        placeIdx,
+        content,
+        userIdx,
+      },
+    });
+  }
 }
