@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { GetReviewsByPlaceIdxDto } from './dto/get-reviews-by-place-idx.dto';
 import { CreateReviewByPlaceIdxDto } from './dto/create-review-by-place-idx.dto';

@@ -20,7 +20,7 @@ export class ReviewService {
   async createReviewByPlaceIdx(
     createReviewByPlaceIdxDto: CreateReviewByPlaceIdxDto,
   ) {
-    const { placeIdx, content, keywordIdx } = createReviewByPlaceIdxDto;
+    const { placeIdx, content, keywordIdxs } = createReviewByPlaceIdxDto;
 
     const review = await this.reviewRepository.createReviewByPlaceIdx(
       placeIdx,
