@@ -3,7 +3,7 @@ import { WEEKS } from '../common/constants/weeks.constant';
 import { WeekInfoDto } from './week-info.dto';
 
 export class WeekScheduleDto {
-  @ApiProperty({ type: () => WeekInfoDto })
+  @ApiProperty({ type: () => WeekInfoDto, example: null })
   [WEEKS.MON]: WeekInfoDto | null;
 
   @ApiProperty({ type: () => WeekInfoDto })
@@ -12,7 +12,7 @@ export class WeekScheduleDto {
   @ApiProperty({ type: () => WeekInfoDto })
   [WEEKS.WED]: WeekInfoDto | null;
 
-  @ApiProperty({ type: () => WeekInfoDto })
+  @ApiProperty({ type: () => WeekInfoDto, example: null })
   [WEEKS.THU]: WeekInfoDto | null;
 
   @ApiProperty({ type: () => WeekInfoDto })
