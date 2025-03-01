@@ -60,4 +60,15 @@ export class ReviewRepository {
       },
     });
   }
+
+  async createReviewKeywordMapping(reviewIdx: number, keywordIdxs: number[]) {
+    const keywordMappings = keywordIdxs.map((keywordIdx) => ({
+      reviewIdx,
+      keywordIdx,
+    }));
+
+    return this.prisma.reviewKeywordMapping.createMany({
+      data: keywordMappings,
+    });
+  }
 }
