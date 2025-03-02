@@ -5,19 +5,19 @@ import { CreateReviewByPlaceIdxDto } from './dto/create-review-by-place-idx.dto'
 import { ReviewEntity } from './entity/review.entity';
 import { AuthGuard } from 'src/auth/common/guards/auth.guard';
 
-@Controller('places')
+@Controller('')
 export class ReviewController {
   constructor(private reviewService: ReviewService) {}
 
   @UseGuards(AuthGuard)
-  @Get(':placeIdx/reviews')
+  @Get('places/:placeIdx/reviews')
   async getReviewsByPlaceIdx(
     @Param() getReviewsByPlaceIdxDto: GetReviewsByPlaceIdxDto,
   ): Promise<ReviewEntity[]> {
     return this.reviewService.getReviewsByPlaceIdx(getReviewsByPlaceIdxDto);
   }
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Post('review')
   async createReviewByPlaceIdx(
     @Body() createReviewByPlaceIdxDto: CreateReviewByPlaceIdxDto,

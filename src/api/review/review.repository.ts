@@ -9,7 +9,7 @@ export class ReviewRepository {
   async selectReviewsByPlaceIdx(
     placeIdx: number,
   ): Promise<ReviewQueryResult[]> {
-    const reviews = await this.prisma.review.findMany({
+    return await this.prisma.review.findMany({
       where: {
         placeIdx,
         deletedAt: null,
@@ -44,31 +44,74 @@ export class ReviewRepository {
         },
       },
     });
-    return reviews;
+  }
+
+  async selectReviewByIdx(idx: number): Promise<ReviewQueryResult | null> {
+    return await this.prisma.review.findUnique({
+      where: {
+        idx,
+        deletedAt: null,
+      },
+      select: {
+        idx: true,
+        userIdx: true,
+        placeIdx: true,
+        content: true,
+        createdAt: true,
+        reviewImage: {
+          select: {
+            imagePath: true,
+          },
+        },
+        reviewKeywordMapping: {
+          select: {
+            keyword: {
+              select: { content: true },
+            },
+          },
+        },
+        user: {
+          select: {
+            nickname: true,
+          },
+        },
+        place: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
   }
 
   async createReviewByPlaceIdx(
     placeIdx: number,
     content: string,
     userIdx: number,
-  ) {
-    await this.prisma.review.create({
+    reviewImages: string[],
+    keywordIdxs: number[],
+  ): Promise<{ idx: number }> {
+    const review = await this.prisma.review.create({
       data: {
         placeIdx,
         content,
         userIdx,
+        reviewImage: {
+          create: reviewImages.map((imagePath) => ({
+            imagePath,
+          })),
+        },
+        reviewKeywordMapping: {
+          create: keywordIdxs.map((keywordIdx) => ({
+            keyword: {
+              connect: { idx: keywordIdx },
+            },
+          })),
+        },
       },
+      select: { idx: true },
     });
-  }
 
-  async createReviewKeywordMapping(reviewIdx: number, keywordIdxs: number[]) {
-    const keywordMappings = keywordIdxs.map((keywordIdx) => ({
-      reviewIdx,
-      keywordIdx,
-    }));
-
-    return this.prisma.reviewKeywordMapping.createMany({
-      data: keywordMappings,
-    });
+    return review;
   }
 }

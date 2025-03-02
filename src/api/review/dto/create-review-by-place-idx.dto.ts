@@ -12,7 +12,11 @@ export class CreateReviewByPlaceIdxDto {
   content: string;
 
   @IsArray()
+  @IsString({ each: true })
+  reviewImages: string[];
+
+  @IsArray()
   @IsInt({ each: true })
   @IsNotEmpty()
-  keywordIdxs: number[];
+  keywordIdxList: number[];
 }

@@ -19,13 +19,32 @@ export class ReviewService {
 
   async createReviewByPlaceIdx(
     createReviewByPlaceIdxDto: CreateReviewByPlaceIdxDto,
-  ) {
-    const { placeIdx, content, keywordIdxs } = createReviewByPlaceIdxDto;
+  ): Promise<ReviewEntity | null> {
+    const { placeIdx, content, reviewImages, keywordIdxList } =
+      createReviewByPlaceIdxDto;
 
-    const review = await this.reviewRepository.createReviewByPlaceIdx(
-      placeIdx,
-      content,
-      1,
-    );
+    // const validKeywords = await this.reviewRepository.selectKeywordsByIdxList(keywordIdxList);
+    // const validKeywordIdxList = validKeywords.map((keyword)=>keyword.idx);
+
+    // const invalidKeywordIdxList = keywordIdxList.filter((idx)=>!validKeywordIdxList.includes(idx));
+
+    // if(invalidKeywordIdxList.length >0){
+    //   return null;
+    // }
+
+    const { idx: reviewIdx } =
+      await this.reviewRepository.createReviewByPlaceIdx(
+        placeIdx,
+        content,
+        1,
+        reviewImages,
+        keywordIdxList,
+      );
+
+    const review = await this.reviewRepository.selectReviewByIdx(reviewIdx);
+    if (!review) {
+      return null;
+    }
+    return ReviewEntity.createEntityFromPrisma(review);
   }
 }
