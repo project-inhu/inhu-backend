@@ -9,11 +9,11 @@ import { AuthGuard } from 'src/auth/common/guards/auth.guard';
 export class ReviewController {
   constructor(private reviewService: ReviewService) {}
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Get('places/:placeIdx/reviews')
   async getReviewsByPlaceIdx(
     @Param() getReviewsByPlaceIdxDto: GetReviewsByPlaceIdxDto,
-  ): Promise<ReviewEntity[]> {
+  ): Promise<ReviewEntity[] | null> {
     return this.reviewService.getReviewsByPlaceIdx(getReviewsByPlaceIdxDto);
   }
 

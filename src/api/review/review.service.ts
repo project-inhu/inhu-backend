@@ -3,15 +3,28 @@ import { ReviewRepository } from './review.repository';
 import { GetReviewsByPlaceIdxDto } from './dto/get-reviews-by-place-idx.dto';
 import { ReviewEntity } from './entity/review.entity';
 import { CreateReviewByPlaceIdxDto } from './dto/create-review-by-place-idx.dto';
+import { PlaceRepository } from '../place/place.repository';
+import { KeywordRepository } from '../keyword/keyword.repository';
 
 @Injectable()
 export class ReviewService {
-  constructor(private readonly reviewRepository: ReviewRepository) {}
+  constructor(
+    private readonly reviewRepository: ReviewRepository,
+    // private readonly placeRepository: PlaceRepository,
+    private readonly keywordRepository: KeywordRepository,
+  ) {}
 
   async getReviewsByPlaceIdx(
     getReviewsByPlaceIdxDto: GetReviewsByPlaceIdxDto,
-  ): Promise<ReviewEntity[]> {
+  ): Promise<ReviewEntity[] | null> {
     const { placeIdx } = getReviewsByPlaceIdxDto;
+
+    // const validPlace =
+    //   await this.placeRepository.exitsPlaceByIdx(placeIdx);
+    // if (!validPlace) {
+    //   return null;
+    // }
+
     return (await this.reviewRepository.selectReviewsByPlaceIdx(placeIdx)).map(
       ReviewEntity.createEntityFromPrisma,
     );
@@ -23,14 +36,17 @@ export class ReviewService {
     const { placeIdx, content, reviewImages, keywordIdxList } =
       createReviewByPlaceIdxDto;
 
-    // const validKeywords = await this.reviewRepository.selectKeywordsByIdxList(keywordIdxList);
-    // const validKeywordIdxList = validKeywords.map((keyword)=>keyword.idx);
-
-    // const invalidKeywordIdxList = keywordIdxList.filter((idx)=>!validKeywordIdxList.includes(idx));
-
-    // if(invalidKeywordIdxList.length >0){
+    // const validPlace = await this.reviewRepository.selectPlaceByIdx(placeIdx);
+    // if(!validPlace){
     //   return null;
     // }
+
+    const areAllKeywordsValid =
+      await this.keywordRepository.existKeywordsByIdx(keywordIdxList);
+
+    if (!areAllKeywordsValid) {
+      return null;
+    }
 
     const { idx: reviewIdx } =
       await this.reviewRepository.createReviewByPlaceIdx(
