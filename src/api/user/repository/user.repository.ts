@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { generateTemporaryNickname } from '../utils/random-nickname.util';
+import { dmmfToRuntimeDataModel } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class UserRepository {
@@ -97,5 +98,21 @@ export class UserRepository {
     });
 
     return user !== null;
+  }
+
+  /**
+   * 사용자의 닉네임 수정
+   *
+   * @author 조희주
+   */
+  async updateUserNicknameByUserIdx(idx: number, nickname: string) {
+    return await this.prisma.user.update({
+      where: { idx },
+      data: { nickname },
+      select: {
+        idx: true,
+        nickname: true,
+      },
+    });
   }
 }
