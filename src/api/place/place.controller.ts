@@ -33,4 +33,9 @@ export class PlaceController {
 
     return { place };
   }
+
+  @Get('/test')
+  async testFunc() {
+    return null;
+  }
 }
