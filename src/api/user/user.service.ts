@@ -6,7 +6,7 @@ import { MyInfoResponseDto } from './dto/my-info-response.dto';
 import { MyProfileImageResponseDto } from './dto/my-profile-image-response.dto';
 import { MyProfileImageDto } from './dto/my-profile-image.dto';
 
-// TODO : 프로필 수정 / 닉네임 수정 / 회원 탈퇴
+// TODO : 닉네임 수정 / 회원 탈퇴
 
 // TODO : updateMyProfileImageByUserIdx service/controller 의 input DTO type 재정의 필요
 

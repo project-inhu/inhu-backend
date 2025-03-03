@@ -2,13 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { generateTemporaryNickname } from '../utils/random-nickname.util';
-import { dmmfToRuntimeDataModel } from '@prisma/client/runtime/library';
+
+// TODO : getUserCount 방식 좋지 않음 -> 수정 필요
 
 @Injectable()
 export class UserRepository {
   constructor(private readonly prisma: PrismaService) {}
   /**
-   * SNS ID를 기반으로 사용자 정보 조회
+   * SNS ID를 기반으로 사용자 조회
    *
    * @author 조희주
    */
@@ -53,36 +54,38 @@ export class UserRepository {
   }
 
   /**
-   * 사용자의 프로필, 닉네임 정보 조회
+   * 모든 사용자 조회
    *
    * @author 조희주
    */
-  async selectUserInfoByUserIdx(idx: number): Promise<UserInfo> {
-    return await this.prisma.user.findUniqueOrThrow({
-      where: { idx },
-      select: {
-        nickname: true,
-        profileImagePath: true,
-      },
+  async selectAllUsers(): Promise<User[]> {
+    return await this.prisma.user.findMany({
+      where: { deletedAt: null },
+      include: { userProvider: true },
     });
   }
 
   /**
-   * 사용자의 프로필 이미지 수정
+   * UserIdx를 기반으로 사용자 조회
    *
    * @author 조희주
    */
-  async updateUserProfileImageByUserIdx(
-    idx: number,
-    profileImagePath: string | null,
-  ): Promise<UserProfileImage> {
+  async selectUserByIdx(idx: number): Promise<User | null> {
+    return await this.prisma.user.findUnique({
+      where: { idx, deletedAt: null },
+      include: { userProvider: true },
+    });
+  }
+
+  /**
+   * 사용자 정보 수정
+   *
+   * @author 조희주
+   */
+  async updateUserByIdx(idx: number, data: Partial<User>): Promise<User> {
     return await this.prisma.user.update({
-      where: { idx },
-      data: { profileImagePath },
-      select: {
-        idx: true,
-        profileImagePath: true,
-      },
+      where: { idx, deletedAt: null },
+      data,
     });
   }
 
@@ -94,25 +97,21 @@ export class UserRepository {
    */
   async isDuplicatedNickname(nickname: string): Promise<boolean> {
     const user = await this.prisma.user.findFirst({
-      where: { nickname },
+      where: { nickname, deletedAt: null },
     });
 
     return user !== null;
   }
 
   /**
-   * 사용자의 닉네임 수정
+   * 사용자 삭제 (soft delete)
    *
    * @author 조희주
    */
-  async updateUserNicknameByUserIdx(idx: number, nickname: string) {
+  async deleteUserByIdx(idx: number): Promise<User> {
     return await this.prisma.user.update({
       where: { idx },
-      data: { nickname },
-      select: {
-        idx: true,
-        nickname: true,
-      },
+      data: { deletedAt: new Date() },
     });
   }
 }
