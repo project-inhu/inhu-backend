@@ -43,7 +43,7 @@ export class AuthService {
    *
    * @author 조희주
    */
-  private saveRefreshToken(userIdx: number, refreshToken: string): void {
+  public saveRefreshToken(userIdx: number, refreshToken: string): void {
     this.REFRESH_TOKEN_STORE[userIdx] = refreshToken;
   }
 
@@ -52,7 +52,7 @@ export class AuthService {
    *
    * @author 조희주
    */
-  private getRefreshToken(userIdx: number): string | null {
+  public getRefreshToken(userIdx: number): string | null {
     return this.REFRESH_TOKEN_STORE[userIdx] || null;
   }
 
