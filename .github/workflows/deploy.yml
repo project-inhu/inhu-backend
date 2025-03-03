@@ -24,6 +24,7 @@ jobs:
       - name: test e2e
         run: npm run test:e2e
   deploy:
+    name: Deploy to EC2
     runs-on: ubuntu-latest
     needs: test
     steps:
