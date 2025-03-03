@@ -5,7 +5,6 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { UserRepository } from './repository/user.repository';
-import { RegisterUserResponseDto } from './dto/register-user-response.dto';
 import { UserInfoEntity } from './entity/user-info.entity';
 import { SocialUserEntity } from './entity/social-user.entity';
 import { RegisterUserEntity } from './entity/register-user.entity';
