@@ -11,8 +11,10 @@ env:
   ENV_FILE: ${{ secrets.ENV_FILE }}
 
 jobs:
-  setup-env:
+  test:
+    name: Run Tests
     runs-on: ubuntu-latest
+    needs: setup-env
     steps:
       - name: Decode and create .env file
         run: echo "$ENV_FILE" | base64 --decode > .env
@@ -20,11 +22,6 @@ jobs:
       - name: Load environment variables globally
         run: cat .env >> $GITHUB_ENV
 
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
-    needs: setup-env
-    steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
