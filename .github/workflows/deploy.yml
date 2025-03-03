@@ -24,6 +24,7 @@ jobs:
           chmod 400 key.pem
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST << 'EOF'
             cd ./inhu-backend
+            git reset --hard
             git pull origin develop
             npx pm2 reload inhu-backend          
           EOF
