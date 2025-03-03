@@ -5,14 +5,25 @@ on:
     branches:
       - master
       - develop
+      - config
+
+env:
+  ENV_FILE: ${{ secrets.ENV_FILE }}
 
 jobs:
+  setup-env:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Decode and create .env file
+        run: echo "$ENV_FILE" | base64 --decode > .env
+
+      - name: Load environment variables globally
+        run: cat .env >> $GITHUB_ENV
+
   test:
     name: Run Tests
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      JWT_SECRET: 'test-secret-key'
+    needs: setup-env
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -28,7 +39,7 @@ jobs:
       - name: Start docker services
         run: npm run dev:infra:up
 
-      - name: test e2e
+      - name: Test e2e
         run: npm run test:e2e
   deploy:
     name: Deploy to EC2
