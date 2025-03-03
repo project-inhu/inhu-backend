@@ -1,5 +1,4 @@
-import { PrismaService } from 'src/common/module/prisma/prisma.service';
-import { UserRepository } from '../repository/user.repository';
+import { UserRepository } from '../user.repository';
 
 /**
  * 새로운 사용자를 위한 임시 닉네임을 생성하는 함수
