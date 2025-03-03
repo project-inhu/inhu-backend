@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
-import { generateTemporaryNickname } from '../utils/random-nickname.util';
+import { generateTemporaryNickname } from './utils/random-nickname.util';
 
 // TODO : getUserCount 방식 좋지 않음 -> 수정 필요
 
