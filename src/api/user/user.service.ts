@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { UserRepository } from './repository/user.repository';
 import { RegisterUserResponseDto } from './dto/register-user-response.dto';
-import { SocialUserInfoDto } from 'src/auth/dto/social-common/social-user-info.dto';
-import { MyInfoResponseDto } from './dto/my-info-response.dto';
-import { MyProfileImageResponseDto } from './dto/my-profile-image-response.dto';
-import { MyProfileImageDto } from './dto/my-profile-image.dto';
-
-// TODO : 닉네임 수정 / 회원 탈퇴
-
-// TODO : updateMyProfileImageByUserIdx service/controller 의 input DTO type 재정의 필요
+import { UserInfoEntity } from './entity/user-info.entity';
+import { SocialUserEntity } from './entity/social-user.entity';
+import { RegisterUserEntity } from './entity/register-user.entity';
 
 @Injectable()
 export class UserService {
@@ -18,10 +18,12 @@ export class UserService {
    *
    * @author 조희주
    */
-  async registerUser(
-    userInfo: SocialUserInfoDto,
-  ): Promise<RegisterUserResponseDto> {
-    const snsId = userInfo.id;
+  async registerUser(userInfo: SocialUserEntity): Promise<RegisterUserEntity> {
+    if (!userInfo.snsId || !userInfo.provider) {
+      throw new BadRequestException('SNS ID and provider are required.');
+    }
+
+    const snsId = userInfo.snsId;
     const provider = userInfo.provider;
 
     const user = await this.userRepository.selectUserBySnsId(snsId);
@@ -34,26 +36,90 @@ export class UserService {
   }
 
   /**
-   * 내 프로필 조회 (프로필 이미지, 닉네임)
+   * 내 정보 조회 (프로필 이미지, 닉네임)
    *
    * @author 조희주
    */
-  async getMyInfoByUserIdx(idx: number): Promise<MyInfoResponseDto> {
-    return await this.userRepository.selectUserInfoByUserIdx(idx);
+  async getMyInfo(idx: number): Promise<UserInfoEntity> {
+    const user = await this.userRepository.selectUserByIdx(idx);
+
+    if (!user) {
+      throw new InternalServerErrorException(
+        'Failed to retrieve user information due to an internal server error.',
+      );
+    }
+
+    return {
+      idx: user.idx,
+      nickname: user.nickname,
+      profileImagePath: user.profileImagePath,
+      createdAt: user.createdAt,
+      deletedAt: user.deletedAt,
+    };
   }
 
   /**
-   * 내 프로필 이미지 수정
+   * 내 정보 수정
    *
    * @author 조희주
    */
-  async updateMyProfileImageByUserIdx(
-    myProfileImage: MyProfileImageDto,
-  ): Promise<MyProfileImageResponseDto> {
-    const { idx, profileImagePath } = myProfileImage;
-    return await this.userRepository.updateUserProfileImageByUserIdx(
+  async updateMyInfoByUserIdx(
+    idx: number,
+    updateData: Partial<UserInfoEntity>,
+  ): Promise<UserInfoEntity> {
+    const user = await this.userRepository.selectUserByIdx(idx);
+
+    if (!user) {
+      throw new InternalServerErrorException(
+        'Failed to retrieve user information due to an internal server error.',
+      );
+    }
+
+    if (updateData.nickname) {
+      const isDuplicate = await this.userRepository.isDuplicatedNickname(
+        updateData.nickname,
+      );
+      if (isDuplicate) {
+        throw new ConflictException('This nickname is already in use.');
+      }
+    }
+
+    const updatedUser = await this.userRepository.updateUserByIdx(
       idx,
-      profileImagePath,
+      updateData,
     );
+
+    return {
+      idx: updatedUser.idx,
+      nickname: updatedUser.nickname,
+      profileImagePath: updatedUser.profileImagePath,
+      createdAt: updatedUser.createdAt,
+      deletedAt: user.deletedAt,
+    };
+  }
+
+  /**
+   * 회원 탈퇴
+   *
+   * @author 조희주
+   */
+  async deleteUser(idx: number): Promise<UserInfoEntity> {
+    const user = await this.userRepository.selectUserByIdx(idx);
+
+    if (!user) {
+      throw new InternalServerErrorException(
+        'Failed to retrieve user information due to an internal server error.',
+      );
+    }
+
+    const deletedUser = await this.userRepository.deleteUserByIdx(idx);
+
+    return {
+      idx: deletedUser.idx,
+      nickname: deletedUser.nickname,
+      profileImagePath: deletedUser.profileImagePath,
+      createdAt: deletedUser.createdAt,
+      deletedAt: deletedUser.deletedAt,
+    };
   }
 }
