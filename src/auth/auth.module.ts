@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './services/auth.service';
 import { JwtModule } from '@nestjs/jwt';
@@ -17,7 +17,7 @@ import { UserModule } from 'src/api/user/user.module';
         secret: configService.get<string>('JWT_SECRET'),
       }),
     }),
-    UserModule,
+    forwardRef(() => UserModule),
   ],
   controllers: [AuthController],
   providers: [AuthService, AuthGuard, KakaoStrategy, LoginTokenService],
