@@ -4,6 +4,7 @@ import { GetReviewsByPlaceIdxDto } from './dto/get-reviews-by-place-idx.dto';
 import { CreateReviewByPlaceIdxDto } from './dto/create-review-by-place-idx.dto';
 import { ReviewEntity } from './entity/review.entity';
 import { AuthGuard } from 'src/auth/common/guards/auth.guard';
+import { GetReviewsByPlaceIdxResponseDto } from './dto/get-reviews-by-place-idx-response.dto';
 
 @Controller('')
 export class ReviewController {
@@ -13,7 +14,7 @@ export class ReviewController {
   @Get('places/:placeIdx/reviews')
   async getReviewsByPlaceIdx(
     @Param() getReviewsByPlaceIdxDto: GetReviewsByPlaceIdxDto,
-  ): Promise<ReviewEntity[] | null> {
+  ): Promise<GetReviewsByPlaceIdxResponseDto | null> {
     return this.reviewService.getReviewsByPlaceIdx(getReviewsByPlaceIdxDto);
   }
 

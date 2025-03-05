@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ReviewRepository } from './review.repository';
 import { GetReviewsByPlaceIdxDto } from './dto/get-reviews-by-place-idx.dto';
 import { ReviewEntity } from './entity/review.entity';
@@ -39,18 +39,9 @@ export class ReviewService {
     const { placeIdx, content, reviewImages, keywordIdxList } =
       createReviewByPlaceIdxDto;
 
-    // const validPlace =
-    //   await this.placeRepository.selectPlaceByIdx(placeIdx);
-    // if (!validPlace) {
-    //   return null;
-    // }
+    // await this.placeService.existsPlace(placeIdx);
 
-    // const validKeyword =
-    //   await this.keywordRepository.selectKeywordByIdxList(keywordIdxList);
-
-    // if (validKeyword.length !== keywordIdxList.length) {
-    //   return null;
-    // }
+    // await this.keywordService.existKeyword(keywordIdxList);
 
     const { idx: reviewIdx } =
       await this.reviewRepository.createReviewByPlaceIdx(
@@ -68,5 +59,14 @@ export class ReviewService {
       return null;
     }
     return ReviewEntity.createEntityFromPrisma(review);
+  }
+
+  async existsReview(reviewIdx: number): Promise<void> {
+    const review =
+      await this.reviewRepository.selectReviewByReviewIdx(reviewIdx);
+
+    if (!review) {
+      throw new NotFoundException('Review not found');
+    }
   }
 }
