@@ -35,7 +35,7 @@ export class UserService {
   }
 
   /**
-   * 내 정보 조회 (프로필 이미지, 닉네임)
+   * 내 정보 조회
    *
    * @author 조희주
    */

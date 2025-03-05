@@ -12,7 +12,6 @@ import { MyInfoResponseDto } from './dto/my-info-response.dto';
 import { LoginUser } from './common/decorator/login-user.dcorator';
 import { UserEntity } from './entity/user.entity';
 import { MyInfoDto } from './dto/my-info.dto';
-import path from 'path';
 
 @Controller('user')
 export class UserController {
