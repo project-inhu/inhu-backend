@@ -22,7 +22,7 @@ export class UserEntity {
   nickname: string;
 
   @Expose()
-  profileImagePath?: string | null;
+  profileImagePath: string | null;
 
   @Expose()
   createdAt: Date;

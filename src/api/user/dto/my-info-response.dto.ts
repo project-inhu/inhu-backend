@@ -1,11 +1,13 @@
 /**
- * 내 정보 조회 응답 DTO
- * - 사용자 프로필 정보(닉네임, 프로필 이미지)를 반환
+ * 내 정보 응답 DTO
  *
  * @author 조희주
  */
 
 export class MyInfoResponseDto {
+  idx: number;
   nickname: string;
   profileImagePath: string | null;
+  createdAt: Date;
+  deletedAt?: Date | null;
 }
