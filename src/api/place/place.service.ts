@@ -21,11 +21,11 @@ export class PlaceService {
     ).map(PlaceOverviewEntity.createEntityFromPrisma);
   }
 
-  async getPlaceByPlaceIdx(
+  async getPlaceByIdx(
     getPlaceByPlaceIdxDto: GetPlaceByPlaceIdxDto,
   ): Promise<PlaceEntity | null> {
-    const place = await this.placeRepository.selectPlaceByPlaceIdx(
-      getPlaceByPlaceIdxDto,
+    const place = await this.placeRepository.selectPlaceByIdx(
+      getPlaceByPlaceIdxDto.idx,
     );
 
     if (place) {

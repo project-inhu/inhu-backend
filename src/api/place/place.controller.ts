@@ -24,18 +24,11 @@ export class PlaceController {
 
   @ApiOkResponse({ type: PlaceByPlaceIdxResponseDto })
   @Get('/:idx')
-  async getPlaceByPlaceIdx(
+  async getPlaceByIdx(
     @Param() getPlaceByPlaceIdxDto: GetPlaceByPlaceIdxDto,
   ): Promise<PlaceByPlaceIdxResponseDto> {
-    const place = await this.placeService.getPlaceByPlaceIdx(
-      getPlaceByPlaceIdxDto,
-    );
+    const place = await this.placeService.getPlaceByIdx(getPlaceByPlaceIdxDto);
 
     return { place };
-  }
-
-  @Get('/test')
-  async testFunc() {
-    return null;
   }
 }

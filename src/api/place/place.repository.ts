@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { GetAllPlaceOverviewDto } from './dto/get-all-place-overview.dto';
-import { GetPlaceByPlaceIdxDto } from './dto/get-place-detail.dto';
 import { PlaceQueryResult } from './interfaces/place-query-result.interface';
 
 @Injectable()
@@ -46,12 +45,10 @@ export class PlaceRepository {
     });
   }
 
-  async selectPlaceByPlaceIdx(
-    getPlaceByPlaceIdxDto: GetPlaceByPlaceIdxDto,
+  async selectPlaceByIdx(
+    idx: number,
+    userIdx?: number,
   ): Promise<PlaceQueryResult | null> {
-    const { idx } = getPlaceByPlaceIdxDto;
-    const userIdx = 1;
-
     return await this.prisma.place.findFirst({
       where: {
         idx,
@@ -73,9 +70,7 @@ export class PlaceRepository {
           },
         },
         bookmark: {
-          where: {
-            userIdx: userIdx,
-          },
+          where: userIdx ? { userIdx } : undefined,
           select: {
             idx: true,
           },
