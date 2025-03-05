@@ -46,7 +46,9 @@ export class ReviewRepository {
     });
   }
 
-  async selectReviewByIdx(idx: number): Promise<ReviewQueryResult | null> {
+  async selectReviewByReviewIdx(
+    idx: number,
+  ): Promise<ReviewQueryResult | null> {
     return await this.prisma.review.findUnique({
       where: {
         idx,

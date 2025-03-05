@@ -5,29 +5,32 @@ import { ReviewEntity } from './entity/review.entity';
 import { CreateReviewByPlaceIdxDto } from './dto/create-review-by-place-idx.dto';
 import { PlaceRepository } from '../place/place.repository';
 import { KeywordRepository } from '../keyword/keyword.repository';
+import { GetReviewsByPlaceIdxResponseDto } from './dto/get-reviews-by-place-idx-response.dto';
 
 @Injectable()
 export class ReviewService {
   constructor(
     private readonly reviewRepository: ReviewRepository,
     // private readonly placeRepository: PlaceRepository,
-    private readonly keywordRepository: KeywordRepository,
+    // private readonly keywordRepository: KeywordRepository,
   ) {}
 
   async getReviewsByPlaceIdx(
     getReviewsByPlaceIdxDto: GetReviewsByPlaceIdxDto,
-  ): Promise<ReviewEntity[] | null> {
+  ): Promise<GetReviewsByPlaceIdxResponseDto> {
     const { placeIdx } = getReviewsByPlaceIdxDto;
 
     // const validPlace =
-    //   await this.placeRepository.exitsPlaceByIdx(placeIdx);
+    //   await this.placeRepository.selectPlaceByIdx(placeIdx);
     // if (!validPlace) {
     //   return null;
     // }
 
-    return (await this.reviewRepository.selectReviewsByPlaceIdx(placeIdx)).map(
-      ReviewEntity.createEntityFromPrisma,
-    );
+    const reviews = (
+      await this.reviewRepository.selectReviewsByPlaceIdx(placeIdx)
+    ).map(ReviewEntity.createEntityFromPrisma);
+
+    return { reviews };
   }
 
   async createReviewByPlaceIdx(
@@ -36,17 +39,18 @@ export class ReviewService {
     const { placeIdx, content, reviewImages, keywordIdxList } =
       createReviewByPlaceIdxDto;
 
-    // const validPlace = await this.reviewRepository.selectPlaceByIdx(placeIdx);
-    // if(!validPlace){
+    // const validPlace =
+    //   await this.placeRepository.selectPlaceByIdx(placeIdx);
+    // if (!validPlace) {
     //   return null;
     // }
 
-    const areAllKeywordsValid =
-      await this.keywordRepository.existKeywordsByIdx(keywordIdxList);
+    // const validKeyword =
+    //   await this.keywordRepository.selectKeywordByIdxList(keywordIdxList);
 
-    if (!areAllKeywordsValid) {
-      return null;
-    }
+    // if (validKeyword.length !== keywordIdxList.length) {
+    //   return null;
+    // }
 
     const { idx: reviewIdx } =
       await this.reviewRepository.createReviewByPlaceIdx(
@@ -57,7 +61,9 @@ export class ReviewService {
         keywordIdxList,
       );
 
-    const review = await this.reviewRepository.selectReviewByIdx(reviewIdx);
+    const review =
+      await this.reviewRepository.selectReviewByReviewIdx(reviewIdx);
+
     if (!review) {
       return null;
     }
