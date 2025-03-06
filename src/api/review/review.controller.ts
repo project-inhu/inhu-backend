@@ -10,6 +10,11 @@ import { GetReviewsByPlaceIdxResponseDto } from './dto/get-reviews-by-place-idx-
 export class ReviewController {
   constructor(private reviewService: ReviewService) {}
 
+  /**
+   * 특정 장소에 대한 리뷰 목록 조회
+   *
+   * @author 강정연
+   */
   // @UseGuards(AuthGuard)
   @Get('places/:placeIdx/reviews')
   async getReviewsByPlaceIdx(
@@ -18,6 +23,11 @@ export class ReviewController {
     return this.reviewService.getReviewsByPlaceIdx(getReviewsByPlaceIdxDto);
   }
 
+  /**
+   * 특정 장소에 대한 리뷰 생성
+   *
+   * @author 강정연
+   */
   // @UseGuards(AuthGuard)
   @Post('review')
   async createReviewByPlaceIdx(

@@ -18,6 +18,11 @@ export class ReviewService {
     // private readonly keywordRepository: KeywordRepository,
   ) {}
 
+  /**
+   * 특정 장소의 리뷰 목록 조회
+   *
+   * @author 강정연
+   */
   async getReviewsByPlaceIdx(
     getReviewsByPlaceIdxDto: GetReviewsByPlaceIdxDto,
   ): Promise<GetReviewsByPlaceIdxResponseDto> {
@@ -36,6 +41,11 @@ export class ReviewService {
     return { reviews };
   }
 
+  /**
+   * 특정 리뷰 Idx로 리뷰 조회
+   *
+   * @author 강정연
+   */
   async getReviewByReviewIdx(
     getReviewByReviewIdx: getReviewByReviewIdxDto,
   ): Promise<GetReviewByReviewIdxResponseDto> {
@@ -50,6 +60,11 @@ export class ReviewService {
     return ReviewEntity.createEntityFromPrisma(review);
   }
 
+  /**
+   * 특정 장소에 리뷰 생성
+   *
+   * @author 강정연
+   */
   async createReviewByPlaceIdx(
     createReviewByPlaceIdxDto: CreateReviewByPlaceIdxDto,
   ): Promise<CreateReviewByPlaceIdxResponseDto> {
@@ -57,17 +72,15 @@ export class ReviewService {
       createReviewByPlaceIdxDto;
 
     // await this.placeService.existsPlace(placeIdx);
-
     // await this.keywordService.existKeyword(keywordIdxList);
 
-    const { idx: reviewIdx } =
-      await this.reviewRepository.createReviewByPlaceIdx(
-        placeIdx,
-        content,
-        1,
-        reviewImages,
-        keywordIdxList,
-      );
+    const reviewIdx = await this.reviewRepository.createReviewByPlaceIdx(
+      placeIdx,
+      content,
+      1,
+      reviewImages,
+      keywordIdxList,
+    );
 
     const review = await this.getReviewByReviewIdx({ reviewIdx });
 

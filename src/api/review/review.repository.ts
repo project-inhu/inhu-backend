@@ -6,6 +6,11 @@ import { ReviewQueryResult } from './interfaces/review-query-result.interface';
 export class ReviewRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * 특정 장소에 대한 리뷰 목록 조회
+   *
+   * @author 강정연
+   */
   async selectReviewsByPlaceIdx(
     placeIdx: number,
   ): Promise<ReviewQueryResult[]> {
@@ -46,6 +51,11 @@ export class ReviewRepository {
     });
   }
 
+  /**
+   * 특정 리뷰 Idx로 리뷰 조회
+   *
+   * @author 강정연
+   */
   async selectReviewByReviewIdx(
     idx: number,
   ): Promise<ReviewQueryResult | null> {
@@ -86,34 +96,35 @@ export class ReviewRepository {
     });
   }
 
+  /**
+   * 특정 장소에 리뷰 생성
+   *
+   * @author 강정연
+   */
   async createReviewByPlaceIdx(
     placeIdx: number,
     content: string,
     userIdx: number,
     reviewImages: string[],
     keywordIdxs: number[],
-  ): Promise<{ idx: number }> {
-    const review = await this.prisma.review.create({
+  ): Promise<number> {
+    const { idx: reviewIdx } = await this.prisma.review.create({
       data: {
         placeIdx,
         content,
         userIdx,
         reviewImage: {
-          create: reviewImages.map((imagePath) => ({
-            imagePath,
-          })),
+          create: reviewImages.map((imagePath) => ({ imagePath })),
         },
         reviewKeywordMapping: {
           create: keywordIdxs.map((keywordIdx) => ({
-            keyword: {
-              connect: { idx: keywordIdx },
-            },
+            keyword: { connect: { idx: keywordIdx } },
           })),
         },
       },
       select: { idx: true },
     });
 
-    return review;
+    return reviewIdx;
   }
 }
