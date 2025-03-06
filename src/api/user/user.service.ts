@@ -9,6 +9,8 @@ import { UserInfoEntity } from './entity/user-info.entity';
 import { SocialUserEntity } from './entity/social-user.entity';
 import { RegisterUserEntity } from './entity/register-user.entity';
 
+// TODO : social-user, register-user Entity 사용에 관한 것 수정 필요
+
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
@@ -48,13 +50,7 @@ export class UserService {
       );
     }
 
-    return {
-      idx: user.idx,
-      nickname: user.nickname,
-      profileImagePath: user.profileImagePath,
-      createdAt: user.createdAt,
-      deletedAt: user.deletedAt,
-    };
+    return UserInfoEntity.createEntityFromPrisma(user);
   }
 
   /**
@@ -88,13 +84,7 @@ export class UserService {
       updateData,
     );
 
-    return {
-      idx: updatedUser.idx,
-      nickname: updatedUser.nickname,
-      profileImagePath: updatedUser.profileImagePath,
-      createdAt: updatedUser.createdAt,
-      deletedAt: user.deletedAt,
-    };
+    return UserInfoEntity.createEntityFromPrisma(updatedUser);
   }
 
   /**
@@ -113,12 +103,6 @@ export class UserService {
 
     const deletedUser = await this.userRepository.deleteUserByIdx(idx);
 
-    return {
-      idx: deletedUser.idx,
-      nickname: deletedUser.nickname,
-      profileImagePath: deletedUser.profileImagePath,
-      createdAt: deletedUser.createdAt,
-      deletedAt: deletedUser.deletedAt,
-    };
+    return UserInfoEntity.createEntityFromPrisma(deletedUser);
   }
 }
