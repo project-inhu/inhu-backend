@@ -1,10 +1,10 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsNotEmpty, Min } from 'class-validator';
 
-export class GetReviewsByPlaceIdxDto {
+export class getReviewByReviewIdxDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
   @IsNotEmpty()
-  placeIdx: number;
+  reviewIdx: number;
 }

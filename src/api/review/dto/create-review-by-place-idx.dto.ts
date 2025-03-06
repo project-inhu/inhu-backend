@@ -28,6 +28,7 @@ export class CreateReviewByPlaceIdxDto {
   @ArrayMaxSize(5)
   reviewImages: string[];
 
+  @Type(() => Number)
   @IsArray()
   @IsInt({ each: true })
   @ArrayMaxSize(5)

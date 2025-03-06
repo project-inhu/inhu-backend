@@ -6,6 +6,9 @@ import { CreateReviewByPlaceIdxDto } from './dto/create-review-by-place-idx.dto'
 import { PlaceRepository } from '../place/place.repository';
 import { KeywordRepository } from '../keyword/keyword.repository';
 import { GetReviewsByPlaceIdxResponseDto } from './dto/get-reviews-by-place-idx-response.dto';
+import { CreateReviewByPlaceIdxResponseDto } from './dto/create-review-by-place-idx-response.dto';
+import { getReviewByReviewIdxDto } from './dto/get-review-by-review-idx.dto';
+import { GetReviewByReviewIdxResponseDto } from './dto/get-review-by-review-idx-response.dto';
 
 @Injectable()
 export class ReviewService {
@@ -33,9 +36,23 @@ export class ReviewService {
     return { reviews };
   }
 
+  async getReviewByReviewIdx(
+    getReviewByReviewIdx: getReviewByReviewIdxDto,
+  ): Promise<GetReviewByReviewIdxResponseDto> {
+    const { reviewIdx } = getReviewByReviewIdx;
+
+    const review =
+      await this.reviewRepository.selectReviewByReviewIdx(reviewIdx);
+    if (!review) {
+      throw new NotFoundException('review not found');
+    }
+
+    return ReviewEntity.createEntityFromPrisma(review);
+  }
+
   async createReviewByPlaceIdx(
     createReviewByPlaceIdxDto: CreateReviewByPlaceIdxDto,
-  ): Promise<ReviewEntity | null> {
+  ): Promise<CreateReviewByPlaceIdxResponseDto> {
     const { placeIdx, content, reviewImages, keywordIdxList } =
       createReviewByPlaceIdxDto;
 
@@ -52,21 +69,8 @@ export class ReviewService {
         keywordIdxList,
       );
 
-    const review =
-      await this.reviewRepository.selectReviewByReviewIdx(reviewIdx);
+    const review = await this.getReviewByReviewIdx({ reviewIdx });
 
-    if (!review) {
-      return null;
-    }
-    return ReviewEntity.createEntityFromPrisma(review);
-  }
-
-  async existsReview(reviewIdx: number): Promise<void> {
-    const review =
-      await this.reviewRepository.selectReviewByReviewIdx(reviewIdx);
-
-    if (!review) {
-      throw new NotFoundException('Review not found');
-    }
+    return review;
   }
 }
