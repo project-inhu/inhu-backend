@@ -1,10 +1,12 @@
-import { Query, Controller, Get, Param } from '@nestjs/common';
+import { Query, Controller, Get, Param, Post, Body } from '@nestjs/common';
 import { PlaceService } from './place.service';
 import { GetAllPlaceOverviewDto } from './dto/get-all-place-overview.dto';
 import { AllPlaceOverviewResponseDto } from './dto/all-place-overview-response.dto';
 import { GetPlaceByPlaceIdxDto } from './dto/get-place-detail.dto';
-import { ApiOkResponse } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { PlaceByPlaceIdxResponseDto } from './dto/place-by-place-idx-response.dto';
+import { CreatePlaceDto } from './dto/create-place.dto';
+import { Place } from '@prisma/client';
 
 @Controller('place')
 export class PlaceController {
@@ -40,5 +42,16 @@ export class PlaceController {
     const place = await this.placeService.getPlaceByIdx(getPlaceByPlaceIdxDto);
 
     return { place };
+  }
+
+  /**
+   * place 생성
+   *
+   * @author 이수인
+   */
+  @ApiCreatedResponse()
+  @Post()
+  async createPlace(@Body() createPlaceDto: CreatePlaceDto): Promise<Place> {
+    return this.placeService.createPlace(createPlaceDto);
   }
 }

@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { GetAllPlaceOverviewDto } from './dto/get-all-place-overview.dto';
 import { PlaceQueryResult } from './interfaces/place-query-result.interface';
+import { Place } from '@prisma/client';
+import { CreatePlaceDto } from './dto/create-place.dto';
 
 @Injectable()
 export class PlaceRepository {
@@ -83,6 +85,37 @@ export class PlaceRepository {
         review: {
           select: {
             idx: true,
+          },
+        },
+      },
+    });
+  }
+
+  async createPlace(createPlaceDto: CreatePlaceDto): Promise<Place> {
+    console.log(createPlaceDto.week);
+    return await this.prisma.place.create({
+      data: {
+        name: createPlaceDto.name,
+        tel: createPlaceDto.tel,
+        address: createPlaceDto.address,
+        addressX: createPlaceDto.addressX,
+        addressY: createPlaceDto.addressY,
+        placeHours: {
+          createMany: {
+            data: Object.entries(createPlaceDto.week).map(
+              ([weekDay, schedule]) => ({
+                day: weekDay,
+                startAt: schedule?.startAt ?? null,
+                endAt: schedule?.endAt ?? null,
+              }),
+            ),
+          },
+        },
+        placeImage: {
+          createMany: {
+            data: createPlaceDto.placeImage.map((imagePath) => ({
+              imagePath,
+            })),
           },
         },
       },

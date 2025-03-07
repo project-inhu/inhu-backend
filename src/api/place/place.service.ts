@@ -5,6 +5,8 @@ import { GetAllPlaceOverviewDto } from './dto/get-all-place-overview.dto';
 import { PlaceOverviewEntity } from './entity/place-overview.entity';
 import { GetPlaceByPlaceIdxDto } from './dto/get-place-detail.dto';
 import { PlaceEntity } from './entity/place.entity';
+import { CreatePlaceDto } from './dto/create-place.dto';
+import { Place } from '@prisma/client';
 
 @Injectable()
 export class PlaceService {
@@ -33,5 +35,9 @@ export class PlaceService {
     } else {
       return null;
     }
+  }
+
+  async createPlace(createPlaceDto: CreatePlaceDto): Promise<Place> {
+    return this.placeRepository.createPlace(createPlaceDto);
   }
 }

@@ -4,23 +4,23 @@ import { WeekInfoDto } from './week-info.dto';
 
 export class WeekScheduleDto {
   @ApiProperty({ type: () => WeekInfoDto, example: null })
-  [WEEKS.MON]: WeekInfoDto | null;
+  [WEEKS.MON]: WeekInfoDto | null = null;
 
   @ApiProperty({ type: () => WeekInfoDto })
-  [WEEKS.TUE]: WeekInfoDto | null;
+  [WEEKS.TUE]: WeekInfoDto | null = null;
 
   @ApiProperty({ type: () => WeekInfoDto })
-  [WEEKS.WED]: WeekInfoDto | null;
+  [WEEKS.WED]: WeekInfoDto | null = null;
 
   @ApiProperty({ type: () => WeekInfoDto, example: null })
-  [WEEKS.THU]: WeekInfoDto | null;
+  [WEEKS.THU]: WeekInfoDto | null = null;
 
   @ApiProperty({ type: () => WeekInfoDto })
-  [WEEKS.FRI]: WeekInfoDto | null;
+  [WEEKS.FRI]: WeekInfoDto | null = null;
 
   @ApiProperty({ type: () => WeekInfoDto })
-  [WEEKS.SAT]: WeekInfoDto | null;
+  [WEEKS.SAT]: WeekInfoDto | null = null;
 
   @ApiProperty({ type: () => WeekInfoDto })
-  [WEEKS.SUN]: WeekInfoDto | null;
+  [WEEKS.SUN]: WeekInfoDto | null = null;
 }
