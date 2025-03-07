@@ -33,6 +33,7 @@ export class CreateReviewByPlaceIdxDto {
   @IsNotEmpty()
   @MinLength(3)
   @MaxLength(400)
+  @Transform(({ value }) => value.trim())
   content: string;
 
   /**
@@ -42,7 +43,7 @@ export class CreateReviewByPlaceIdxDto {
   @IsArray()
   @IsString({ each: true })
   @ArrayMaxSize(5)
-  reviewImages: string[];
+  reviewImages?: string[];
 
   /**
    * 리뷰에 포함된 키워드 Idx 리스트
@@ -54,5 +55,5 @@ export class CreateReviewByPlaceIdxDto {
   @ArrayMaxSize(5)
   @Min(1, { each: true })
   @Transform(({ value }) => [...new Set(value)])
-  keywordIdxList: number[];
+  keywordIdxList?: number[];
 }
