@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import {
   User,
@@ -15,40 +16,76 @@ import {
  * @author 조희주
  */
 export class UserEntity {
-  @Expose()
+  @ApiProperty({ description: '사용자 고유 idx', example: 1 })
   idx: number;
 
-  @Expose()
+  @ApiProperty({ description: '사용자 닉네임', example: 'heeju' })
   nickname: string;
 
-  @Expose()
+  @ApiProperty({
+    description: '프로필 이미지 경로',
+    example: 'https://inhu.s3.ap-northeast-2.amazonaws.com/user123/profile.jpg',
+    nullable: true,
+  })
   profileImagePath: string | null;
 
-  @Expose()
+  @ApiProperty({
+    description: '계정 생성일',
+    example: '2025-03-07T08:50:21.451Z',
+  })
   createdAt: Date;
 
-  @Expose()
+  @ApiProperty({
+    description: '계정 삭제일 (삭제되지 않은 경우 null)',
+    example: '2025-03-10T08:50:21.451Z',
+    nullable: true,
+  })
   deletedAt?: Date | null;
 
-  @Expose()
+  @ApiProperty({ description: 'SNS ID', example: '3906895819', nullable: true })
   snsId?: string;
 
-  @Expose()
+  @ApiProperty({ description: 'SNS 제공자', example: 'kakao', nullable: true })
   provider?: string;
 
-  @Expose()
+  @ApiProperty({
+    description: '사용자의 북마크 목록',
+    type: () => Object,
+    isArray: true,
+    nullable: true,
+  })
   bookmark?: Bookmark[];
 
-  @Expose()
+  @ApiProperty({
+    description: '사용자가 작성한 리뷰 목록',
+    type: () => Object,
+    isArray: true,
+    nullable: true,
+  })
   review?: Review[];
 
-  @Expose()
+  @ApiProperty({
+    description: 'Service1 결과 목록',
+    type: () => Object,
+    isArray: true,
+    nullable: true,
+  })
   service1Result?: Service1Result[];
 
-  @Expose()
+  @ApiProperty({
+    description: 'Service2 결과 목록',
+    type: () => Object,
+    isArray: true,
+    nullable: true,
+  })
   service2Result?: Service2Result[];
 
-  @Expose()
+  @ApiProperty({
+    description: '회원 탈퇴시에 진행하는 서비스 조사 결과 목록',
+    type: () => Object,
+    isArray: true,
+    nullable: true,
+  })
   withdrawServiceResult?: WithdrawServiceResult[];
 
   constructor(partial: Partial<UserEntity>) {

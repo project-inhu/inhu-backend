@@ -1,7 +1,6 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { UserEntity } from './user.entity';
 import { User } from '@prisma/client';
-import { exhaustMap } from 'rxjs';
 
 /**
  * 사용자 정보 엔티티
