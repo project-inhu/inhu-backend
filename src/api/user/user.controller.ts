@@ -12,6 +12,8 @@ import { MyInfoResponseDto } from './dto/my-info-response.dto';
 import { LoginUser } from './common/decorator/login-user.dcorator';
 import { UserEntity } from './entity/user.entity';
 import { MyInfoDto } from './dto/my-info.dto';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { UserInfoEntity } from './entity/user-info.entity';
 
 @Controller('user')
 export class UserController {
@@ -24,6 +26,8 @@ export class UserController {
    */
   @UseGuards(AuthGuard)
   @Get()
+  @ApiResponse({ status: 200, description: '성공', type: UserInfoEntity })
+  @ApiResponse({ status: 401, description: '인증실패' })
   async getMyInfoByUserIdx(
     @LoginUser() user: UserEntity,
   ): Promise<MyInfoResponseDto> {
