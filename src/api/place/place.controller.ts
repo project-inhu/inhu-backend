@@ -1,4 +1,4 @@
-import { Query, Controller, Get, Param, Post, Body } from '@nestjs/common';
+import { Query, Controller, Get, Param, Post, Body, Put } from '@nestjs/common';
 import { PlaceService } from './place.service';
 import { GetAllPlaceOverviewDto } from './dto/get-all-place-overview.dto';
 import { AllPlaceOverviewResponseDto } from './dto/all-place-overview-response.dto';
@@ -7,6 +7,7 @@ import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { PlaceByPlaceIdxResponseDto } from './dto/place-by-place-idx-response.dto';
 import { CreatePlaceDto } from './dto/create-place.dto';
 import { Place } from '@prisma/client';
+import { UploadPlaceImageByPlaceIdxDto } from './dto/upload-place-image-by-place-idx.dto';
 
 @Controller('place')
 export class PlaceController {
@@ -53,5 +54,22 @@ export class PlaceController {
   @Post()
   async createPlace(@Body() createPlaceDto: CreatePlaceDto): Promise<Place> {
     return this.placeService.createPlace(createPlaceDto);
+  }
+
+  /**
+   * place image 추가, 수정, 삭제
+   *
+   * @author 이수인
+   */
+  @ApiOkResponse()
+  @Put('/:idx/image')
+  async uploadPlaceImageByPlaceIdx(
+    @Body() uploadPlaceImageByPlaceIdxDto: UploadPlaceImageByPlaceIdxDto,
+    @Param('idx') placeIdx: number,
+  ): Promise<void> {
+    return this.placeService.uploadPlaceImageByPlaceIdx(
+      uploadPlaceImageByPlaceIdxDto,
+      placeIdx,
+    );
   }
 }
