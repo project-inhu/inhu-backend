@@ -48,12 +48,12 @@ export class PlaceRepository {
   }
 
   async selectPlaceByIdx(
-    idx: number,
+    placeIdx: number,
     userIdx?: number,
   ): Promise<PlaceQueryResult | null> {
     return await this.prisma.place.findFirst({
       where: {
-        idx,
+        idx: placeIdx,
         deletedAt: null,
       },
       select: {

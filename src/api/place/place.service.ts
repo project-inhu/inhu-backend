@@ -3,11 +3,9 @@ import { PlaceRepository } from './place.repository';
 import { KeywordRepository } from '../keyword/keyword.repository';
 import { GetAllPlaceOverviewDto } from './dto/get-all-place-overview.dto';
 import { PlaceOverviewEntity } from './entity/place-overview.entity';
-import { GetPlaceByPlaceIdxDto } from './dto/get-place-detail.dto';
 import { PlaceEntity } from './entity/place.entity';
 import { CreatePlaceDto } from './dto/create-place.dto';
 import { Place } from '@prisma/client';
-import { UploadPlaceImageByPlaceIdxDto } from './dto/upload-place-image-by-place-idx.dto';
 
 @Injectable()
 export class PlaceService {
@@ -24,12 +22,8 @@ export class PlaceService {
     ).map(PlaceOverviewEntity.createEntityFromPrisma);
   }
 
-  async getPlaceByIdx(
-    getPlaceByPlaceIdxDto: GetPlaceByPlaceIdxDto,
-  ): Promise<PlaceEntity | null> {
-    const place = await this.placeRepository.selectPlaceByIdx(
-      getPlaceByPlaceIdxDto.idx,
-    );
+  async getPlaceByIdx(placeIdx: number): Promise<PlaceEntity | null> {
+    const place = await this.placeRepository.selectPlaceByIdx(placeIdx);
 
     if (place) {
       return PlaceEntity.createEntityFromPrisma(place);
@@ -43,11 +37,11 @@ export class PlaceService {
   }
 
   async uploadPlaceImageByPlaceIdx(
-    uploadPlaceImageByPlaceIdxDto: UploadPlaceImageByPlaceIdxDto,
+    placeImageList: string[],
     placeIdx: number,
   ): Promise<void> {
     return this.placeRepository.uploadPlaceImageByPlaceIdx(
-      uploadPlaceImageByPlaceIdxDto.placeImageList,
+      placeImageList,
       placeIdx,
     );
   }

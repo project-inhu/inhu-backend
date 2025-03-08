@@ -2,12 +2,12 @@ import { Query, Controller, Get, Param, Post, Body, Put } from '@nestjs/common';
 import { PlaceService } from './place.service';
 import { GetAllPlaceOverviewDto } from './dto/get-all-place-overview.dto';
 import { AllPlaceOverviewResponseDto } from './dto/all-place-overview-response.dto';
-import { GetPlaceByPlaceIdxDto } from './dto/get-place-detail.dto';
 import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { PlaceByPlaceIdxResponseDto } from './dto/place-by-place-idx-response.dto';
 import { CreatePlaceDto } from './dto/create-place.dto';
 import { Place } from '@prisma/client';
 import { UploadPlaceImageByPlaceIdxDto } from './dto/upload-place-image-by-place-idx.dto';
+import { PlaceIdxDto } from './dto/place-idx.dto';
 
 @Controller('place')
 export class PlaceController {
@@ -36,11 +36,11 @@ export class PlaceController {
    * @author 이수인
    */
   @ApiOkResponse({ type: PlaceByPlaceIdxResponseDto })
-  @Get('/:idx')
+  @Get('/:placeIdx')
   async getPlaceByIdx(
-    @Param() getPlaceByPlaceIdxDto: GetPlaceByPlaceIdxDto,
+    @Param() placeIdxDto: PlaceIdxDto,
   ): Promise<PlaceByPlaceIdxResponseDto> {
-    const place = await this.placeService.getPlaceByIdx(getPlaceByPlaceIdxDto);
+    const place = await this.placeService.getPlaceByIdx(placeIdxDto.placeIdx);
 
     return { place };
   }
@@ -62,14 +62,14 @@ export class PlaceController {
    * @author 이수인
    */
   @ApiOkResponse()
-  @Put('/:idx/image')
+  @Put('/:placeIdx/image')
   async uploadPlaceImageByPlaceIdx(
     @Body() uploadPlaceImageByPlaceIdxDto: UploadPlaceImageByPlaceIdxDto,
-    @Param('idx') placeIdx: number,
+    @Param() placeIdxDto: PlaceIdxDto,
   ): Promise<void> {
     return this.placeService.uploadPlaceImageByPlaceIdx(
-      uploadPlaceImageByPlaceIdxDto,
-      placeIdx,
+      uploadPlaceImageByPlaceIdxDto.placeImageList,
+      placeIdxDto.placeIdx,
     );
   }
 }
