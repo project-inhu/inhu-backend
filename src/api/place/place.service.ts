@@ -7,6 +7,7 @@ import { GetPlaceByPlaceIdxDto } from './dto/get-place-detail.dto';
 import { PlaceEntity } from './entity/place.entity';
 import { CreatePlaceDto } from './dto/create-place.dto';
 import { Place } from '@prisma/client';
+import { UploadPlaceImageByPlaceIdxDto } from './dto/upload-place-image-by-place-idx.dto';
 
 @Injectable()
 export class PlaceService {
@@ -39,5 +40,15 @@ export class PlaceService {
 
   async createPlace(createPlaceDto: CreatePlaceDto): Promise<Place> {
     return this.placeRepository.createPlace(createPlaceDto);
+  }
+
+  async uploadPlaceImageByPlaceIdx(
+    uploadPlaceImageByPlaceIdxDto: UploadPlaceImageByPlaceIdxDto,
+    placeIdx: number,
+  ): Promise<void> {
+    return this.placeRepository.uploadPlaceImageByPlaceIdx(
+      uploadPlaceImageByPlaceIdxDto.placeImage,
+      placeIdx,
+    );
   }
 }
