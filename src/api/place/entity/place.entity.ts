@@ -46,10 +46,10 @@ export class PlaceEntity {
     description: '특정 장소에서 가장 많이 사용된 review keyword 상위 2개',
     example: ['맛있어요.', '가성비 좋아요.'],
   })
-  keyword: string[];
+  keywordList: string[];
 
   @ApiProperty({ description: '특정 장소 사진 path list', example: ['1234'] })
-  imagePath: string[];
+  imagePathList: string[];
 
   constructor(data: PlaceEntity) {
     Object.assign(this, data);
@@ -82,8 +82,8 @@ export class PlaceEntity {
       ),
       reviewCount: place.review.length,
       bookmark: place.bookmark.length > 0 ? true : false,
-      keyword: [],
-      imagePath: place.placeImage.map((path) => path.imagePath ?? ''),
+      keywordList: [],
+      imagePathList: place.placeImage.map((path) => path.imagePath ?? ''),
     });
   }
 }

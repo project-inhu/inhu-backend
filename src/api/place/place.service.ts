@@ -47,7 +47,7 @@ export class PlaceService {
     placeIdx: number,
   ): Promise<void> {
     return this.placeRepository.uploadPlaceImageByPlaceIdx(
-      uploadPlaceImageByPlaceIdxDto.placeImage,
+      uploadPlaceImageByPlaceIdxDto.placeImageList,
       placeIdx,
     );
   }

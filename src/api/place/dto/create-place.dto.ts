@@ -24,5 +24,5 @@ export class CreatePlaceDto {
 
   @IsArray()
   @IsString({ each: true })
-  placeImage: string[];
+  placeImageList: string[];
 }
