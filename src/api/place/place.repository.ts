@@ -112,7 +112,7 @@ export class PlaceRepository {
         },
         placeImage: {
           createMany: {
-            data: createPlaceDto.placeImage.map((imagePath) => ({
+            data: createPlaceDto.placeImageList.map((imagePath) => ({
               imagePath,
             })),
           },
@@ -121,13 +121,13 @@ export class PlaceRepository {
     });
   }
 
-  async updatePlaceImageByPlaceIdx(placeImage: string[], placeIdx: number) {
+  async updatePlaceImageByPlaceIdx(placeImageList: string[], placeIdx: number) {
     return this.prisma.place.update({
       where: { idx: placeIdx },
       data: {
         placeImage: {
           createMany: {
-            data: placeImage.map((imagePath) => ({
+            data: placeImageList.map((imagePath) => ({
               imagePath,
             })),
           },
@@ -150,12 +150,12 @@ export class PlaceRepository {
   }
 
   async uploadPlaceImageByPlaceIdx(
-    placeImage: string[],
+    placeImageList: string[],
     placeIdx: number,
   ): Promise<void> {
     return this.prisma.$transaction(async () => {
       this.deletePlaceImageByPlaceIdx(placeIdx);
-      this.updatePlaceImageByPlaceIdx(placeImage, placeIdx);
+      this.updatePlaceImageByPlaceIdx(placeImageList, placeIdx);
     });
   }
 }

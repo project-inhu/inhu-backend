@@ -7,7 +7,7 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
   'address',
   'reviewCount',
   'bookmark',
-  'imagePath',
+  'imagePathList',
 ]) {
   constructor(data: PlaceOverviewEntity) {
     super();
@@ -24,7 +24,7 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
       reviewCount: place.review.length,
       bookmark: place.bookmark.length > 0 ? true : false,
       // keyword: [],
-      imagePath: place.placeImage.map((path) => path.imagePath ?? ''),
+      imagePathList: place.placeImage.map((path) => path.imagePath ?? ''),
     });
   }
 }
