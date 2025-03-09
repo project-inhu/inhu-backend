@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { ReviewQueryResult } from './interfaces/review-query-result.interface';
+import { Review } from '@prisma/client';
 
 @Injectable()
 export class ReviewRepository {
@@ -107,8 +108,8 @@ export class ReviewRepository {
     userIdx: number,
     reviewImages: string[],
     keywordIdxs: number[],
-  ): Promise<number> {
-    const { idx: reviewIdx } = await this.prisma.review.create({
+  ): Promise<Review> {
+    return await this.prisma.review.create({
       data: {
         placeIdx,
         content,
@@ -122,10 +123,7 @@ export class ReviewRepository {
           })),
         },
       },
-      select: { idx: true },
     });
-
-    return reviewIdx;
   }
 
   /**
