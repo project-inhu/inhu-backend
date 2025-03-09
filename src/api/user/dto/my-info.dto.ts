@@ -5,6 +5,6 @@
  */
 
 export class MyInfoDto {
-  nickname: string;
-  profileImagePath: string | null;
+  nickname?: string;
+  profileImagePath?: string | null;
 }

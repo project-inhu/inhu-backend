@@ -3,7 +3,7 @@
  *
  * @author 조희주
  */
-export class RegisterUserInput {
+export class CreateUserInput {
   snsId: string;
   provider: string;
 }

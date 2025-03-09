@@ -31,7 +31,7 @@ export class UserController {
   async getMyInfoByUserIdx(
     @LoginUser() user: UserEntity,
   ): Promise<MyInfoResponseDto> {
-    return await this.userService.getMyInfo(user.idx);
+    return await this.userService.getMyInfo({ idx: user.idx });
   }
 
   /**
@@ -56,6 +56,6 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Delete()
   async deleteUser(@LoginUser() user: UserEntity): Promise<MyInfoResponseDto> {
-    return this.userService.deleteUser(user.idx);
+    return this.userService.deleteUser({ idx: user.idx });
   }
 }

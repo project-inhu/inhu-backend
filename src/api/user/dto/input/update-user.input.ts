@@ -5,5 +5,5 @@
  */
 export class UpdateUserInput {
   nickname?: string;
-  profileImagePath?: string;
+  profileImagePath?: string | null;
 }

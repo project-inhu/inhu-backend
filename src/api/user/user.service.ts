@@ -6,10 +6,11 @@ import {
 } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { UserInfoEntity } from './entity/user-info.entity';
-import { SocialUserEntity } from './entity/social-user.entity';
 import { RegisterUserEntity } from './entity/register-user.entity';
-
-// TODO : social-user, register-user Entity 사용에 관한 것 수정 필요
+import { CreateUserInput } from './dto/input/create-user.input';
+import { GetUserInput } from './dto/input/get-user.input';
+import { UpdateUserInput } from './dto/input/update-user.input';
+import { DeleteUserInput } from './dto/input/delete-user.input';
 
 @Injectable()
 export class UserService {
@@ -19,13 +20,15 @@ export class UserService {
    *
    * @author 조희주
    */
-  async registerUser(userInfo: SocialUserEntity): Promise<RegisterUserEntity> {
-    if (!userInfo.snsId || !userInfo.provider) {
+  async registerUser(
+    createUserInput: CreateUserInput,
+  ): Promise<RegisterUserEntity> {
+    if (!createUserInput.snsId || !createUserInput.provider) {
       throw new BadRequestException('SNS ID and provider are required.');
     }
 
-    const snsId = userInfo.snsId;
-    const provider = userInfo.provider;
+    const snsId = createUserInput.snsId;
+    const provider = createUserInput.provider;
 
     const user = await this.userRepository.selectUserBySnsId(snsId);
     if (user) {
@@ -41,8 +44,8 @@ export class UserService {
    *
    * @author 조희주
    */
-  async getMyInfo(idx: number): Promise<UserInfoEntity> {
-    const user = await this.userRepository.selectUserByIdx(idx);
+  async getMyInfo(getUserInput: GetUserInput): Promise<UserInfoEntity> {
+    const user = await this.userRepository.selectUserByIdx(getUserInput.idx);
 
     if (!user) {
       throw new InternalServerErrorException(
@@ -60,7 +63,7 @@ export class UserService {
    */
   async updateMyInfoByUserIdx(
     idx: number,
-    updateData: Partial<UserInfoEntity>,
+    updateUserInput: UpdateUserInput,
   ): Promise<UserInfoEntity> {
     const user = await this.userRepository.selectUserByIdx(idx);
 
@@ -70,9 +73,9 @@ export class UserService {
       );
     }
 
-    if (updateData.nickname) {
+    if (updateUserInput.nickname) {
       const isDuplicate = await this.userRepository.isDuplicatedNickname(
-        updateData.nickname,
+        updateUserInput.nickname,
       );
       if (isDuplicate) {
         throw new ConflictException('This nickname is already in use.');
@@ -81,7 +84,7 @@ export class UserService {
 
     const updatedUser = await this.userRepository.updateUserByIdx(
       idx,
-      updateData,
+      updateUserInput,
     );
 
     return UserInfoEntity.createEntityFromPrisma(updatedUser);
@@ -92,8 +95,8 @@ export class UserService {
    *
    * @author 조희주
    */
-  async deleteUser(idx: number): Promise<UserInfoEntity> {
-    const user = await this.userRepository.selectUserByIdx(idx);
+  async deleteUser(deleteUserInput: DeleteUserInput): Promise<UserInfoEntity> {
+    const user = await this.userRepository.selectUserByIdx(deleteUserInput.idx);
 
     if (!user) {
       throw new InternalServerErrorException(
@@ -101,7 +104,9 @@ export class UserService {
       );
     }
 
-    const deletedUser = await this.userRepository.deleteUserByIdx(idx);
+    const deletedUser = await this.userRepository.deleteUserByIdx(
+      deleteUserInput.idx,
+    );
 
     return UserInfoEntity.createEntityFromPrisma(deletedUser);
   }
