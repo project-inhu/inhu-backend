@@ -1,6 +1,13 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ReviewService } from './review.service';
-import { GetReviewsByPlaceIdxDto } from './dto/get-reviews-by-place-idx.dto';
 import { CreateReviewByPlaceIdxDto } from './dto/create-review-by-place-idx.dto';
 import { ReviewEntity } from './entity/review.entity';
 import { AuthGuard } from 'src/auth/common/guards/auth.guard';
@@ -16,11 +23,11 @@ export class ReviewController {
    * @author 강정연
    */
   // @UseGuards(AuthGuard)
-  @Get('places/:placeIdx/reviews')
+  @Get('place/:placeIdx/reviews')
   async getReviewsByPlaceIdx(
-    @Param() getReviewsByPlaceIdxDto: GetReviewsByPlaceIdxDto,
+    @Param('placeIdx', ParseIntPipe) placeIdx: number,
   ): Promise<GetReviewsByPlaceIdxResponseDto | null> {
-    return this.reviewService.getReviewsByPlaceIdx(getReviewsByPlaceIdxDto);
+    return this.reviewService.getReviewsByPlaceIdx(placeIdx);
   }
 
   /**

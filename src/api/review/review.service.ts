@@ -1,13 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ReviewRepository } from './review.repository';
-import { GetReviewsByPlaceIdxDto } from './dto/get-reviews-by-place-idx.dto';
 import { ReviewEntity } from './entity/review.entity';
 import { CreateReviewByPlaceIdxDto } from './dto/create-review-by-place-idx.dto';
 import { PlaceRepository } from '../place/place.repository';
 import { KeywordRepository } from '../keyword/keyword.repository';
 import { GetReviewsByPlaceIdxResponseDto } from './dto/get-reviews-by-place-idx-response.dto';
 import { CreateReviewByPlaceIdxResponseDto } from './dto/create-review-by-place-idx-response.dto';
-import { getReviewByReviewIdxDto } from './dto/get-review-by-review-idx.dto';
 import { GetReviewByReviewIdxResponseDto } from './dto/get-review-by-review-idx-response.dto';
 
 @Injectable()
@@ -24,10 +22,8 @@ export class ReviewService {
    * @author 강정연
    */
   async getReviewsByPlaceIdx(
-    getReviewsByPlaceIdxDto: GetReviewsByPlaceIdxDto,
+    placeIdx: number,
   ): Promise<GetReviewsByPlaceIdxResponseDto> {
-    const { placeIdx } = getReviewsByPlaceIdxDto;
-
     // const validPlace =
     //   await this.placeRepository.selectPlaceByIdx(placeIdx);
     // if (!validPlace) {
@@ -47,10 +43,8 @@ export class ReviewService {
    * @author 강정연
    */
   async getReviewByReviewIdx(
-    getReviewByReviewIdx: getReviewByReviewIdxDto,
+    reviewIdx: number,
   ): Promise<GetReviewByReviewIdxResponseDto> {
-    const { reviewIdx } = getReviewByReviewIdx;
-
     const review =
       await this.reviewRepository.selectReviewByReviewIdx(reviewIdx);
     if (!review) {
@@ -68,8 +62,12 @@ export class ReviewService {
   async createReviewByPlaceIdx(
     createReviewByPlaceIdxDto: CreateReviewByPlaceIdxDto,
   ): Promise<CreateReviewByPlaceIdxResponseDto> {
-    const { placeIdx, content, reviewImages, keywordIdxList } =
-      createReviewByPlaceIdxDto;
+    const {
+      placeIdx,
+      content,
+      reviewImages = [],
+      keywordIdxList = [],
+    } = createReviewByPlaceIdxDto;
 
     // await this.placeService.existsPlace(placeIdx);
     // await this.keywordService.existKeyword(keywordIdxList);
@@ -82,7 +80,7 @@ export class ReviewService {
       keywordIdxList,
     );
 
-    const review = await this.getReviewByReviewIdx({ reviewIdx });
+    const review = await this.getReviewByReviewIdx(reviewIdx);
 
     return review;
   }

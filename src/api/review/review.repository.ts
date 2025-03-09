@@ -127,4 +127,91 @@ export class ReviewRepository {
 
     return reviewIdx;
   }
+
+  /**
+   * 특정 사용자 Idx로 작성한 리뷰 리스트 조회
+   *
+   * @author 강정연
+   */
+  async selectReviewsByUserIdx(userIdx: number): Promise<ReviewQueryResult[]> {
+    return await this.prisma.review.findMany({
+      where: {
+        userIdx,
+        deletedAt: null,
+      },
+      select: {
+        idx: true,
+        userIdx: true,
+        placeIdx: true,
+        content: true,
+        createdAt: true,
+        reviewImage: {
+          select: {
+            imagePath: true,
+          },
+        },
+        reviewKeywordMapping: {
+          select: {
+            keyword: {
+              select: { content: true },
+            },
+          },
+        },
+        user: {
+          select: {
+            nickname: true,
+          },
+        },
+        place: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+  }
+
+  async updateReviewByReviewIdx(
+    idx: number,
+    content?: string,
+    reviewImages?: string[],
+    keywordIdxs?: number[],
+  ) {
+    const updateData: { content?: string } = {};
+
+    if (!content) {
+      updateData.content = content;
+    }
+
+    const { idx: reviewIdx } = await this.prisma.review.update({
+      where: { idx, deletedAt: null },
+      data: {
+        ...updateData,
+        reviewImage: reviewImages
+          ? {
+              deleteMany: {},
+              create:
+                reviewImages.length > 0
+                  ? reviewImages.map((imagePath) => ({ imagePath }))
+                  : undefined,
+            }
+          : undefined,
+
+        reviewKeywordMapping: keywordIdxs
+          ? {
+              deleteMany: {},
+              create:
+                keywordIdxs.length > 0
+                  ? keywordIdxs.map((keywordIdx) => ({
+                      keyword: { connect: { idx: keywordIdx } },
+                    }))
+                  : undefined,
+            }
+          : undefined,
+      },
+      select: { idx: true },
+    });
+
+    return reviewIdx;
+  }
 }
