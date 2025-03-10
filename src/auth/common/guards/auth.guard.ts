@@ -33,9 +33,10 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('Access token not found');
     }
 
-    const payload = await this.loginTokenService.verifyAccessToken(accessToken);
+    let payload = await this.loginTokenService.verifyAccessToken(accessToken);
+
     if (!payload) {
-      const newAccessToken =
+      const { newAccessToken, payload: newPayload } =
         await this.authService.regenerateAccessTokenFromRefreshToken(
           request.cookies?.refreshToken,
         );
@@ -44,6 +45,8 @@ export class AuthGuard implements CanActivate {
         httpOnly: true,
         sameSite: 'lax',
       });
+
+      payload = newPayload;
     }
 
     request['user'] = payload;

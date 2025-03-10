@@ -43,7 +43,9 @@ export class LoginTokenService {
         throw new UnauthorizedException('invalid token');
       }
 
-      return payload;
+      const { exp, iat, ...newPayload } = payload;
+
+      return newPayload;
     } catch (err) {
       return null;
     }
@@ -55,21 +57,22 @@ export class LoginTokenService {
    * @author 이수인
    */
   async signAccessToken(payload: AccessTokenPayload): Promise<string> {
-    const token = await this.jwtService.signAsync(payload, { expiresIn: '3s' });
+    const token = await this.jwtService.signAsync(payload, {
+      expiresIn: '10m',
+    });
     if (!token) {
       throw new Error('not implement');
     }
 
     return token;
   }
-
   /**
    * 주어진 payload로 Refresh Token을 생성한다.
    *
    * @author 이수인
    */
   async signRefreshToken(payload: RefreshTokenPayload): Promise<string> {
-    const token = await this.jwtService.signAsync(payload, { expiresIn: '1m' });
+    const token = await this.jwtService.signAsync(payload, { expiresIn: '1h' });
     if (!token) {
       throw new Error('not implement');
     }
