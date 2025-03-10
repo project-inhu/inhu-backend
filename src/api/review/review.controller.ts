@@ -12,6 +12,7 @@ import { CreateReviewByPlaceIdxDto } from './dto/create-review-by-place-idx.dto'
 import { ReviewEntity } from './entity/review.entity';
 import { AuthGuard } from 'src/auth/common/guards/auth.guard';
 import { GetReviewsByPlaceIdxResponseDto } from './dto/get-reviews-by-place-idx-response.dto';
+import { CreateReviewByPlaceIdxResponseDto } from './dto/create-review-by-place-idx-response.dto';
 
 @Controller('')
 export class ReviewController {
@@ -27,7 +28,8 @@ export class ReviewController {
   async getReviewsByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
   ): Promise<GetReviewsByPlaceIdxResponseDto | null> {
-    return this.reviewService.getReviewsByPlaceIdx(placeIdx);
+    const reviews = await this.reviewService.getReviewsByPlaceIdx(placeIdx);
+    return { reviews };
   }
 
   /**
@@ -39,7 +41,13 @@ export class ReviewController {
   @Post('review')
   async createReviewByPlaceIdx(
     @Body() createReviewByPlaceIdxDto: CreateReviewByPlaceIdxDto,
-  ) {
-    return this.reviewService.createReviewByPlaceIdx(createReviewByPlaceIdxDto);
+  ): Promise<CreateReviewByPlaceIdxResponseDto> {
+    const review = await this.reviewService.createReviewByPlaceIdx({
+      placeIdx: createReviewByPlaceIdxDto.placeIdx,
+      content: createReviewByPlaceIdxDto.content,
+      reviewImages: createReviewByPlaceIdxDto.reviewImages,
+      keywordIdxList: createReviewByPlaceIdxDto.keywordIdxList,
+    });
+    return { review };
   }
 }

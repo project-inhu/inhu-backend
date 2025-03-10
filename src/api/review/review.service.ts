@@ -1,12 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ReviewRepository } from './review.repository';
 import { ReviewEntity } from './entity/review.entity';
-import { CreateReviewByPlaceIdxDto } from './dto/create-review-by-place-idx.dto';
 import { PlaceRepository } from '../place/place.repository';
 import { KeywordRepository } from '../keyword/keyword.repository';
-import { GetReviewsByPlaceIdxResponseDto } from './dto/get-reviews-by-place-idx-response.dto';
-import { CreateReviewByPlaceIdxResponseDto } from './dto/create-review-by-place-idx-response.dto';
-import { GetReviewByReviewIdxResponseDto } from './dto/get-review-by-review-idx-response.dto';
+import { CreateReviewByPlaceIdxInput } from './input/create-review-by-place-idx.input';
 
 @Injectable()
 export class ReviewService {
@@ -21,9 +18,7 @@ export class ReviewService {
    *
    * @author 강정연
    */
-  async getReviewsByPlaceIdx(
-    placeIdx: number,
-  ): Promise<GetReviewsByPlaceIdxResponseDto> {
+  async getReviewsByPlaceIdx(placeIdx: number): Promise<ReviewEntity[]> {
     // const validPlace =
     //   await this.placeRepository.selectPlaceByIdx(placeIdx);
     // if (!validPlace) {
@@ -34,7 +29,7 @@ export class ReviewService {
       await this.reviewRepository.selectReviewsByPlaceIdx(placeIdx)
     ).map(ReviewEntity.createEntityFromPrisma);
 
-    return { reviews };
+    return reviews;
   }
 
   /**
@@ -42,9 +37,7 @@ export class ReviewService {
    *
    * @author 강정연
    */
-  async getReviewByReviewIdx(
-    reviewIdx: number,
-  ): Promise<GetReviewByReviewIdxResponseDto> {
+  async getReviewByReviewIdx(reviewIdx: number): Promise<ReviewEntity> {
     const review =
       await this.reviewRepository.selectReviewByReviewIdx(reviewIdx);
     if (!review) {
@@ -60,28 +53,15 @@ export class ReviewService {
    * @author 강정연
    */
   async createReviewByPlaceIdx(
-    createReviewByPlaceIdxDto: CreateReviewByPlaceIdxDto,
-  ): Promise<CreateReviewByPlaceIdxResponseDto> {
-    const {
-      placeIdx,
-      content,
-      reviewImages = [],
-      keywordIdxList = [],
-    } = createReviewByPlaceIdxDto;
-
+    createReviewByPlaceIdxInput: CreateReviewByPlaceIdxInput,
+  ): Promise<ReviewEntity> {
     // await this.placeService.existsPlace(placeIdx);
     // await this.keywordService.existKeyword(keywordIdxList);
 
-    const reviewIdx = await this.reviewRepository.createReviewByPlaceIdx(
-      placeIdx,
-      content,
-      1,
-      reviewImages,
-      keywordIdxList,
+    const review = await this.reviewRepository.createReviewByPlaceIdx(
+      createReviewByPlaceIdxInput,
     );
 
-    const review = await this.getReviewByReviewIdx(reviewIdx);
-
-    return review;
+    return await this.getReviewByReviewIdx(review.idx);
   }
 }

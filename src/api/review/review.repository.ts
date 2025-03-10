@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { ReviewQueryResult } from './interfaces/review-query-result.interface';
 import { Review } from '@prisma/client';
+import { CreateReviewByPlaceIdxInput } from './input/create-review-by-place-idx.input';
 
 @Injectable()
 export class ReviewRepository {
@@ -58,11 +59,11 @@ export class ReviewRepository {
    * @author 강정연
    */
   async selectReviewByReviewIdx(
-    idx: number,
+    reviewIdx: number,
   ): Promise<ReviewQueryResult | null> {
     return await this.prisma.review.findUnique({
       where: {
-        idx,
+        idx: reviewIdx,
         deletedAt: null,
       },
       select: {
@@ -103,24 +104,24 @@ export class ReviewRepository {
    * @author 강정연
    */
   async createReviewByPlaceIdx(
-    placeIdx: number,
-    content: string,
-    userIdx: number,
-    reviewImages: string[],
-    keywordIdxs: number[],
+    createReviewByPlaceIdxInput: CreateReviewByPlaceIdxInput,
   ): Promise<Review> {
     return await this.prisma.review.create({
       data: {
-        placeIdx,
-        content,
-        userIdx,
+        placeIdx: createReviewByPlaceIdxInput.placeIdx,
+        content: createReviewByPlaceIdxInput.content,
+        userIdx: 1,
         reviewImage: {
-          create: reviewImages.map((imagePath) => ({ imagePath })),
+          create: (createReviewByPlaceIdxInput.reviewImages ?? []).map(
+            (imagePath) => ({ imagePath }),
+          ),
         },
         reviewKeywordMapping: {
-          create: keywordIdxs.map((keywordIdx) => ({
-            keyword: { connect: { idx: keywordIdx } },
-          })),
+          create: (createReviewByPlaceIdxInput.keywordIdxList ?? []).map(
+            (keywordIdx) => ({
+              keyword: { connect: { idx: keywordIdx } },
+            }),
+          ),
         },
       },
     });
