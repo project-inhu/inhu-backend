@@ -89,7 +89,7 @@ export class AuthService {
    */
   public async regenerateAccessTokenFromRefreshToken(
     refreshToken: string,
-  ): Promise<string> {
+  ): Promise<{ newAccessToken: string; payload: RefreshTokenPayload }> {
     const payload =
       await this.loginTokenService.verifyRefreshToken(refreshToken);
 
@@ -100,6 +100,9 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
-    return await this.loginTokenService.signAccessToken(payload);
+    return {
+      newAccessToken: await this.loginTokenService.signAccessToken(payload),
+      payload,
+    };
   }
 }
