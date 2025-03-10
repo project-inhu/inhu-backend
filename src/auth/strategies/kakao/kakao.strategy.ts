@@ -47,7 +47,7 @@ export class KakaoStrategy extends SocialAuthBaseStrategy<
   }
 
   public extractUserInfo(userInfo: KakaoUserInfoDto): SocialUserInfoDto {
-    return { id: userInfo.id.toString(), provider: AuthProvider.KAKAO };
+    return { snsId: userInfo.id.toString(), provider: AuthProvider.KAKAO };
   }
 
   public async getUserInfo(accessToken: string): Promise<KakaoUserInfoDto> {
