@@ -9,7 +9,7 @@ export class SocialUserInfoDto {
   /**
    * 소셜 로그인 제공자에서 발급한 사용자 고유 ID
    */
-  id: string;
+  snsId: string;
 
   /**
    * 사용자가 로그인한 소셜 제공자 (AuthProvider Enum)
