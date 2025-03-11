@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -40,14 +41,21 @@ export class ReviewController {
   // @UseGuards(AuthGuard)
   @Post('review')
   async createReviewByPlaceIdx(
+    @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @Body() createReviewByPlaceIdxDto: CreateReviewByPlaceIdxDto,
   ): Promise<CreateReviewByPlaceIdxResponseDto> {
     const review = await this.reviewService.createReviewByPlaceIdx({
-      placeIdx: createReviewByPlaceIdxDto.placeIdx,
+      placeIdx,
       content: createReviewByPlaceIdxDto.content,
       reviewImages: createReviewByPlaceIdxDto.reviewImages,
       keywordIdxList: createReviewByPlaceIdxDto.keywordIdxList,
     });
     return { review };
   }
+
+  @Patch('review/:reviewIdx')
+  async updateReviewByReviewIdx(
+    @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
+    @Body() updateReviewByReviewIdxDto,
+  ) {}
 }

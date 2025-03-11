@@ -17,15 +17,6 @@ import {
  */
 export class CreateReviewByPlaceIdxDto {
   /**
-   * 리뷰를 등록할 장소 Idx
-   */
-  @Type(() => Number)
-  @IsInt()
-  @IsNotEmpty()
-  @Min(1)
-  placeIdx: number;
-
-  /**
    * 리뷰 내용
    * 최소 3자, 최대 400자
    */
