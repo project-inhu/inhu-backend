@@ -4,12 +4,14 @@ import { ReviewEntity } from './entity/review.entity';
 import { PlaceRepository } from '../place/place.repository';
 import { KeywordRepository } from '../keyword/keyword.repository';
 import { CreateReviewByPlaceIdxInput } from './input/create-review-by-place-idx.input';
+import { UpdateReviewByReviewIdxInput } from './input/update-review-by-review-idx.input';
+import { PlaceService } from '../place/place.service';
 
 @Injectable()
 export class ReviewService {
   constructor(
     private readonly reviewRepository: ReviewRepository,
-    // private readonly placeRepository: PlaceRepository,
+    // private readonly placeService: PlaceService,
     // private readonly keywordRepository: KeywordRepository,
   ) {}
 
@@ -55,7 +57,9 @@ export class ReviewService {
   async createReviewByPlaceIdx(
     createReviewByPlaceIdxInput: CreateReviewByPlaceIdxInput,
   ): Promise<ReviewEntity> {
-    // await this.placeService.existsPlace(placeIdx);
+    // await this.placeService.getPlaceByPlaceIdx(
+    //   createReviewByPlaceIdxInput.placeIdx,
+    // );
     // await this.keywordService.existKeyword(keywordIdxList);
 
     const review = await this.reviewRepository.createReviewByPlaceIdx(
@@ -63,5 +67,17 @@ export class ReviewService {
     );
 
     return await this.getReviewByReviewIdx(review.idx);
+  }
+
+  async updateReviewByReviewIdx(
+    updateReviewByReviewIdxInput: UpdateReviewByReviewIdxInput,
+  ) {
+    await this.getReviewByReviewIdx(updateReviewByReviewIdxInput.reviewIdx);
+
+    const updatedReview = await this.reviewRepository.updateReviewByReviewIdx(
+      updateReviewByReviewIdxInput,
+    );
+
+    return await this.getReviewByReviewIdx(updatedReview.idx);
   }
 }

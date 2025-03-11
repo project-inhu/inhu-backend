@@ -3,6 +3,7 @@ import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { ReviewQueryResult } from './interfaces/review-query-result.interface';
 import { Review } from '@prisma/client';
 import { CreateReviewByPlaceIdxInput } from './input/create-review-by-place-idx.input';
+import { UpdateReviewByReviewIdxInput } from './input/update-review-by-review-idx.input';
 
 @Injectable()
 export class ReviewRepository {
@@ -171,19 +172,18 @@ export class ReviewRepository {
   }
 
   async updateReviewByReviewIdx(
-    idx: number,
-    content?: string,
-    reviewImages?: string[],
-    keywordIdxs?: number[],
+    updateReviewByReviewIdxInput: UpdateReviewByReviewIdxInput,
   ) {
+    const { reviewIdx, content, reviewImages, keywordIdxList } =
+      updateReviewByReviewIdxInput;
     const updateData: { content?: string } = {};
 
-    if (!content) {
+    if (content) {
       updateData.content = content;
     }
 
-    const { idx: reviewIdx } = await this.prisma.review.update({
-      where: { idx, deletedAt: null },
+    return await this.prisma.review.update({
+      where: { idx: reviewIdx, deletedAt: null },
       data: {
         ...updateData,
         reviewImage: reviewImages
@@ -196,21 +196,18 @@ export class ReviewRepository {
             }
           : undefined,
 
-        reviewKeywordMapping: keywordIdxs
+        reviewKeywordMapping: keywordIdxList
           ? {
               deleteMany: {},
               create:
-                keywordIdxs.length > 0
-                  ? keywordIdxs.map((keywordIdx) => ({
+                keywordIdxList.length > 0
+                  ? keywordIdxList.map((keywordIdx) => ({
                       keyword: { connect: { idx: keywordIdx } },
                     }))
                   : undefined,
             }
           : undefined,
       },
-      select: { idx: true },
     });
-
-    return reviewIdx;
   }
 }

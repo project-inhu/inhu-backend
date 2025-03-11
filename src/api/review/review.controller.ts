@@ -14,6 +14,7 @@ import { ReviewEntity } from './entity/review.entity';
 import { AuthGuard } from 'src/auth/common/guards/auth.guard';
 import { GetReviewsByPlaceIdxResponseDto } from './dto/get-reviews-by-place-idx-response.dto';
 import { CreateReviewByPlaceIdxResponseDto } from './dto/create-review-by-place-idx-response.dto';
+import { UpdateReviewByReviewIdxDto } from './dto/update-review-by-review-idx.dto';
 
 @Controller('')
 export class ReviewController {
@@ -39,7 +40,7 @@ export class ReviewController {
    * @author 강정연
    */
   // @UseGuards(AuthGuard)
-  @Post('review')
+  @Post('place/:placeIdx/review')
   async createReviewByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @Body() createReviewByPlaceIdxDto: CreateReviewByPlaceIdxDto,
@@ -56,6 +57,15 @@ export class ReviewController {
   @Patch('review/:reviewIdx')
   async updateReviewByReviewIdx(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
-    @Body() updateReviewByReviewIdxDto,
-  ) {}
+    @Body() updateReviewByReviewIdxDto: UpdateReviewByReviewIdxDto,
+  ) {
+    const review = await this.reviewService.updateReviewByReviewIdx({
+      reviewIdx,
+      content: updateReviewByReviewIdxDto.content,
+      reviewImages: updateReviewByReviewIdxDto.reviewImages,
+      keywordIdxList: updateReviewByReviewIdxDto.keywordIdxList,
+    });
+
+    return { review };
+  }
 }

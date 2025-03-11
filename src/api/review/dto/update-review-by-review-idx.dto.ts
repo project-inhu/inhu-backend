@@ -16,11 +16,12 @@ import {
  *
  * @author 강정연
  */
-export class CreateReviewByPlaceIdxDto {
+export class UpdateReviewByReviewIdxDto {
   /**
    * 리뷰 내용
    * 최소 3자, 최대 400자
    */
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   @MinLength(3)
