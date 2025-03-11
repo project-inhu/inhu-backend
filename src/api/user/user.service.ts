@@ -61,7 +61,7 @@ export class UserService {
    *
    * @author 조희주
    */
-  async updateMyInfoByUserIdx(
+  async updateMyInfo(
     idx: number,
     updateUserInput: UpdateUserInput,
   ): Promise<UserInfoEntity> {

@@ -45,7 +45,7 @@ export class UserController {
     @LoginUser() user: UserEntity,
     @Body() updateData: MyInfoDto,
   ): Promise<MyInfoResponseDto> {
-    return this.userService.updateMyInfoByUserIdx(user.idx, updateData);
+    return this.userService.updateMyInfo(user.idx, updateData);
   }
 
   /**
