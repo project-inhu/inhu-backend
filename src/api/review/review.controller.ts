@@ -28,7 +28,7 @@ export class ReviewController {
    * @author 강정연
    */
   @ApiOkResponse({ type: GetReviewsByPlaceIdxResponseDto })
-  // @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   @Get('place/:placeIdx/reviews')
   async getReviewsByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
