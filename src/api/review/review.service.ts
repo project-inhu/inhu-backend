@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ReviewRepository } from './review.repository';
 import { ReviewEntity } from './entity/review.entity';
 import { PlaceRepository } from '../place/place.repository';
@@ -73,7 +77,13 @@ export class ReviewService {
   async updateReviewByReviewIdx(
     updateReviewByReviewIdxInput: UpdateReviewByReviewIdxInput,
   ): Promise<ReviewEntity> {
-    await this.getReviewByReviewIdx(updateReviewByReviewIdxInput.reviewIdx);
+    const review = await this.getReviewByReviewIdx(
+      updateReviewByReviewIdxInput.reviewIdx,
+    );
+
+    if (review.userIdx !== updateReviewByReviewIdxInput.userIdx) {
+      throw new ForbiddenException('You are not allowed to update this review');
+    }
 
     const updatedReview = await this.reviewRepository.updateReviewByReviewIdx(
       updateReviewByReviewIdxInput,

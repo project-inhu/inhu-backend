@@ -17,6 +17,7 @@ import { CreateReviewByPlaceIdxResponseDto } from './dto/create-review-by-place-
 import { UpdateReviewByReviewIdxDto } from './dto/update-review-by-review-idx.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { UpdateReviewByReviewIdxResponseDto } from './dto/update-review-by-review-idx-response.dto';
+import { User } from 'src/common/decorator/user.decorator';
 
 @Controller('')
 export class ReviewController {
@@ -64,13 +65,16 @@ export class ReviewController {
    * @author 강정연
    */
   @ApiOkResponse({ type: UpdateReviewByReviewIdxResponseDto })
+  @UseGuards(AuthGuard)
   @Patch('review/:reviewIdx')
   async updateReviewByReviewIdx(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
     @Body() updateReviewByReviewIdxDto: UpdateReviewByReviewIdxDto,
+    @User() user: AccessTokenPayload,
   ): Promise<UpdateReviewByReviewIdxResponseDto> {
     const review = await this.reviewService.updateReviewByReviewIdx({
       reviewIdx,
+      userIdx: user.idx,
       content: updateReviewByReviewIdxDto.content,
       imagePathList: updateReviewByReviewIdxDto.imagePathList,
       keywordIdxList: updateReviewByReviewIdxDto.keywordIdxList,
