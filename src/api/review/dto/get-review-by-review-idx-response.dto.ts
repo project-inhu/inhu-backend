@@ -1,6 +1,4 @@
-import { IsNotEmpty, ValidateNested } from 'class-validator';
-import { ReviewEntity } from '../entity/review.entity';
-import { Type } from 'class-transformer';
+import { Review } from '@prisma/client';
 
 /**
  * 특정 리뷰 Idx로 조회한 리뷰 데이터를 반환하는 DTO
@@ -11,8 +9,5 @@ export class GetReviewByReviewIdxResponseDto {
   /**
    * 특정 리뷰 idx의 데이터
    */
-  @ValidateNested()
-  @Type(() => ReviewEntity)
-  @IsNotEmpty()
-  review: ReviewEntity;
+  review: Review;
 }

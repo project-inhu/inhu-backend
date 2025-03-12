@@ -6,6 +6,7 @@ import { KeywordRepository } from '../keyword/keyword.repository';
 import { CreateReviewByPlaceIdxInput } from './input/create-review-by-place-idx.input';
 import { UpdateReviewByReviewIdxInput } from './input/update-review-by-review-idx.input';
 import { PlaceService } from '../place/place.service';
+import { Review } from '@prisma/client';
 
 @Injectable()
 export class ReviewService {
@@ -71,7 +72,7 @@ export class ReviewService {
 
   async updateReviewByReviewIdx(
     updateReviewByReviewIdxInput: UpdateReviewByReviewIdxInput,
-  ) {
+  ): Promise<ReviewEntity> {
     await this.getReviewByReviewIdx(updateReviewByReviewIdxInput.reviewIdx);
 
     const updatedReview = await this.reviewRepository.updateReviewByReviewIdx(

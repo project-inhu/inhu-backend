@@ -107,23 +107,31 @@ export class ReviewRepository {
   async createReviewByPlaceIdx(
     createReviewByPlaceIdxInput: CreateReviewByPlaceIdxInput,
   ): Promise<Review> {
+    const {
+      placeIdx,
+      content,
+      imagePathList = [],
+      keywordIdxList = [],
+    } = createReviewByPlaceIdxInput;
     return await this.prisma.review.create({
       data: {
-        placeIdx: createReviewByPlaceIdxInput.placeIdx,
-        content: createReviewByPlaceIdxInput.content,
+        placeIdx,
+        content,
         userIdx: 1,
-        reviewImage: {
-          create: (createReviewByPlaceIdxInput.reviewImages ?? []).map(
-            (imagePath) => ({ imagePath }),
-          ),
-        },
-        reviewKeywordMapping: {
-          create: (createReviewByPlaceIdxInput.keywordIdxList ?? []).map(
-            (keywordIdx) => ({
-              keyword: { connect: { idx: keywordIdx } },
-            }),
-          ),
-        },
+        reviewImage:
+          imagePathList.length > 0
+            ? {
+                create: imagePathList.map((imagePath) => ({ imagePath })),
+              }
+            : undefined,
+        reviewKeywordMapping:
+          keywordIdxList.length > 0
+            ? {
+                create: keywordIdxList.map((keywordIdx) => ({
+                  keyword: { connect: { idx: keywordIdx } },
+                })),
+              }
+            : undefined,
       },
     });
   }
@@ -173,8 +181,8 @@ export class ReviewRepository {
 
   async updateReviewByReviewIdx(
     updateReviewByReviewIdxInput: UpdateReviewByReviewIdxInput,
-  ) {
-    const { reviewIdx, content, reviewImages, keywordIdxList } =
+  ): Promise<Review> {
+    const { reviewIdx, content, imagePathList, keywordIdxList } =
       updateReviewByReviewIdxInput;
     const updateData: { content?: string } = {};
 
@@ -186,27 +194,29 @@ export class ReviewRepository {
       where: { idx: reviewIdx, deletedAt: null },
       data: {
         ...updateData,
-        reviewImage: reviewImages
-          ? {
-              deleteMany: {},
-              create:
-                reviewImages.length > 0
-                  ? reviewImages.map((imagePath) => ({ imagePath }))
-                  : undefined,
-            }
-          : undefined,
+        reviewImage:
+          imagePathList !== undefined
+            ? {
+                deleteMany: {},
+                create:
+                  imagePathList.length > 0
+                    ? imagePathList.map((imagePath) => ({ imagePath }))
+                    : undefined,
+              }
+            : undefined,
 
-        reviewKeywordMapping: keywordIdxList
-          ? {
-              deleteMany: {},
-              create:
-                keywordIdxList.length > 0
-                  ? keywordIdxList.map((keywordIdx) => ({
-                      keyword: { connect: { idx: keywordIdx } },
-                    }))
-                  : undefined,
-            }
-          : undefined,
+        reviewKeywordMapping:
+          keywordIdxList !== undefined
+            ? {
+                deleteMany: {},
+                create:
+                  keywordIdxList.length > 0
+                    ? keywordIdxList.map((keywordIdx) => ({
+                        keyword: { connect: { idx: keywordIdx } },
+                      }))
+                    : undefined,
+              }
+            : undefined,
       },
     });
   }

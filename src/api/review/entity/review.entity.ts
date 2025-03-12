@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { ReviewQueryResult } from '../interfaces/review-query-result.interface';
 
 /**
@@ -7,14 +8,43 @@ import { ReviewQueryResult } from '../interfaces/review-query-result.interface';
  * @author 강정연
  */
 export class ReviewEntity {
+  @ApiProperty({ description: 'review idx', example: 1 })
   idx: number;
+
+  @ApiProperty({ description: 'review 작성자 idx', example: 1 })
   userIdx: number;
+
+  @ApiProperty({ description: 'review 등록할 place idx', example: 1 })
   placeIdx: number;
+
+  @ApiProperty({ description: 'review content', example: '너무 맛있어요!' })
   content: string;
+
+  @ApiProperty({
+    description: 'review 생성 날짜',
+    example: '2024-03-11T12:34:56.789Z',
+  })
   createdAt: Date;
-  imagePath: string[];
-  keyword: string[];
+
+  @ApiProperty({
+    description: 'review 사진 path list',
+    example: ['1234.jpg', '5678.jpg'],
+  })
+  imagePathList: string[];
+
+  @ApiProperty({
+    description: 'review keyword list',
+    example: ['맛있어요.', '가성비 좋아요.'],
+  })
+  keywordList: string[];
+
+  @ApiProperty({ description: 'review 작성자 nickname', example: 'gongsil' })
   userNickName: string;
+
+  @ApiProperty({
+    description: 'review 등록할 place name',
+    example: '동아리 닭갈비',
+  })
   placeName: string;
 
   /**
@@ -34,10 +64,12 @@ export class ReviewEntity {
       placeIdx: review.placeIdx,
       content: review.content,
       createdAt: review.createdAt,
-      imagePath: review.reviewImage.map((img) => img.imagePath ?? ''),
-      keyword: review.reviewKeywordMapping.map(
-        (mapping) => mapping.keyword.content,
-      ),
+      imagePathList:
+        review.reviewImage?.map((img) => img.imagePath || '') ?? [],
+      keywordList:
+        review.reviewKeywordMapping?.map(
+          (mapping) => mapping.keyword.content || '',
+        ) ?? [],
       userNickName: review.user.nickname,
       placeName: review.place.name,
     });
