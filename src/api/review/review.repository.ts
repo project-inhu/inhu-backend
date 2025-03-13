@@ -32,6 +32,9 @@ export class ReviewRepository {
           select: {
             imagePath: true,
           },
+          orderBy: {
+            idx: 'asc',
+          },
         },
         reviewKeywordMapping: {
           select: {
