@@ -11,6 +11,7 @@ import { CreateReviewByPlaceIdxInput } from './input/create-review-by-place-idx.
 import { UpdateReviewByReviewIdxInput } from './input/update-review-by-review-idx.input';
 import { PlaceService } from '../place/place.service';
 import { Review } from '@prisma/client';
+import { DeleteReviewByReviewIdxResponseDto } from './dto/delete-review-by-review-idx-response.dto';
 
 @Injectable()
 export class ReviewService {
@@ -90,5 +91,18 @@ export class ReviewService {
     );
 
     return await this.getReviewByReviewIdx(updatedReview.idx);
+  }
+
+  async deleteReviewByReviewIdx(
+    reviewIdx: number,
+    userIdx: number,
+  ): Promise<Review> {
+    const review = await this.getReviewByReviewIdx(reviewIdx);
+
+    if (review.userIdx != userIdx) {
+      throw new ForbiddenException('You are not allowed to delete this review');
+    }
+
+    return await this.reviewRepository.deleteReviewByReviewIdx(reviewIdx);
   }
 }

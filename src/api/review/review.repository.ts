@@ -220,4 +220,14 @@ export class ReviewRepository {
       },
     });
   }
+
+  async deleteReviewByReviewIdx(reviewIdx: number): Promise<Review> {
+    return await this.prisma.review.update({
+      where: {
+        idx: reviewIdx,
+        deletedAt: null,
+      },
+      data: { deletedAt: new Date() },
+    });
+  }
 }

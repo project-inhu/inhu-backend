@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -18,6 +19,7 @@ import { UpdateReviewByReviewIdxDto } from './dto/update-review-by-review-idx.dt
 import { ApiOkResponse } from '@nestjs/swagger';
 import { UpdateReviewByReviewIdxResponseDto } from './dto/update-review-by-review-idx-response.dto';
 import { User } from 'src/common/decorator/user.decorator';
+import { DeleteReviewByReviewIdxResponseDto } from './dto/delete-review-by-review-idx-response.dto';
 
 @Controller('')
 export class ReviewController {
@@ -81,5 +83,25 @@ export class ReviewController {
     });
 
     return { review };
+  }
+
+  /**
+   * 특정 리뷰 삭제
+   *
+   * @author 강정연
+   */
+  @ApiOkResponse({ type: DeleteReviewByReviewIdxResponseDto })
+  @Delete('review/:reviewIdx')
+  @UseGuards(AuthGuard)
+  async deleteReviewByReviewIdx(
+    @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
+    @User() user: AccessTokenPayload,
+  ): Promise<DeleteReviewByReviewIdxResponseDto> {
+    const review = await this.reviewService.deleteReviewByReviewIdx(
+      reviewIdx,
+      user.idx,
+    );
+
+    return new DeleteReviewByReviewIdxResponseDto(review);
   }
 }
