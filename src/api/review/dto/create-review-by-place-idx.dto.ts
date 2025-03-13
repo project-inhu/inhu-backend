@@ -8,9 +8,7 @@ import {
   IsOptional,
   IsString,
   Length,
-  MaxLength,
   Min,
-  MinLength,
 } from 'class-validator';
 
 /**
@@ -24,13 +22,13 @@ export class CreateReviewByPlaceIdxDto {
    * 최소 3자, 최대 400자
    */
   @ApiProperty({
-    description: 'review content (최소 3자, 최대 400자',
+    description: 'review content (최소 3자, 최대 400자)',
     example: '정말 맛있어요.',
   })
+  @Transform(({ value }) => value.trim())
   @IsString()
   @IsNotEmpty()
   @Length(3, 400)
-  @Transform(({ value }) => value.trim())
   content: string;
 
   /**
@@ -39,7 +37,10 @@ export class CreateReviewByPlaceIdxDto {
    */
   @ApiPropertyOptional({
     description: 'review 사진 path list (최대 5개)',
-    example: ['1234.jpg', '5678.jpg'],
+    example: [
+      'images/review/1/20240312/171923.jpg',
+      'images/review/1/20240312/17234.jpg',
+    ],
   })
   @IsOptional()
   @IsArray()
@@ -55,12 +56,12 @@ export class CreateReviewByPlaceIdxDto {
     description: 'review keyword idx list (최대 5개)',
     example: [1, 3],
   })
-  @IsOptional()
-  @Type(() => Number)
-  @IsArray()
-  @IsInt({ each: true })
-  @ArrayMaxSize(5)
-  @Min(1, { each: true })
   @Transform(({ value }) => [...new Set(value)])
+  @Type(() => Number)
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(5)
+  @IsInt({ each: true })
+  @Min(1, { each: true })
   keywordIdxList?: number[];
 }
