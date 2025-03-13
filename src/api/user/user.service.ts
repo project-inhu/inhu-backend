@@ -111,13 +111,7 @@ export class UserService {
    * @author 조희주
    */
   async deleteUser(deleteUserInput: DeleteUserInput): Promise<UserInfoEntity> {
-    const user = await this.userRepository.selectUserByIdx(deleteUserInput.idx);
-
-    if (!user) {
-      throw new InternalServerErrorException(
-        'Failed to retrieve user information due to an internal server error.',
-      );
-    }
+    await this.userRepository.selectUserByIdx(deleteUserInput.idx);
 
     const deletedUser = await this.userRepository.deleteUserByIdx(
       deleteUserInput.idx,
