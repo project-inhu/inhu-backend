@@ -7,6 +7,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  Length,
   MaxLength,
   Min,
   MinLength,
@@ -28,8 +29,7 @@ export class CreateReviewByPlaceIdxDto {
   })
   @IsString()
   @IsNotEmpty()
-  @MinLength(3)
-  @MaxLength(400)
+  @Length(3, 400)
   @Transform(({ value }) => value.trim())
   content: string;
 
