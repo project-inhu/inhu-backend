@@ -1,15 +1,15 @@
 services:
   postgres:
     image: postgres:15.4
-    container_name: inhu-postgres
+    container_name: inhu-test-postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1234
     ports:
-      - '5432:5432'
+      - '5433:5432'
     volumes:
-      - inhu-dev-data:/var/lib/postgresql/data
+      - inhu-test-data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
 volumes:
-  inhu-dev-data:
+  inhu-test-data:
