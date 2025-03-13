@@ -16,6 +16,16 @@ import { DeleteUserInput } from './dto/input/delete-user.input';
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
   /**
+   * 새로운 사용자를 위한 임시 닉네임 생성
+   *
+   * @author 조희주
+   */
+  async generateTemporaryNickname(): Promise<string> {
+    const userCount = await this.userRepository.getUserCount();
+    return `${userCount + 1}번째 인후러`;
+  }
+
+  /**
    * 소셜 로그인 후 사용자 조회 및 등록
    *
    * @author 조희주
@@ -35,7 +45,12 @@ export class UserService {
       return { idx: user.idx };
     }
 
-    const newUser = await this.userRepository.insertUser(snsId, provider);
+    const nickname = await this.generateTemporaryNickname();
+    const newUser = await this.userRepository.insertUser(
+      snsId,
+      provider,
+      nickname,
+    );
     return { idx: newUser.idx };
   }
 

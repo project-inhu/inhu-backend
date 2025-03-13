@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
-import { generateTemporaryNickname } from './utils/random-nickname.util';
 
-// TODO : getUserCount 방식 좋지 않음 -> 수정 필요
+// TODO : getUserCount 방식 수정 필요
 
 @Injectable()
 export class UserRepository {
@@ -38,8 +37,11 @@ export class UserRepository {
    *
    * @author 조희주
    */
-  async insertUser(snsId: string, provider: string): Promise<User> {
-    const nickname = await generateTemporaryNickname(this);
+  async insertUser(
+    snsId: string,
+    provider: string,
+    nickname: string,
+  ): Promise<User> {
     return await this.prisma.user.create({
       data: {
         nickname,
