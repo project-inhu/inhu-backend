@@ -33,10 +33,6 @@ export class UserService {
   async registerUser(
     createUserInput: CreateUserInput,
   ): Promise<RegisterUserEntity> {
-    if (!createUserInput.snsId || !createUserInput.provider) {
-      throw new BadRequestException('SNS ID and provider are required.');
-    }
-
     const snsId = createUserInput.snsId;
     const provider = createUserInput.provider;
 
