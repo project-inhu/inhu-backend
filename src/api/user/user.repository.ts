@@ -27,7 +27,7 @@ export class UserRepository {
    *
    * @author 조희주
    */
-  async selectUserByIdx(idx: number): Promise<User | null> {
+  async selectUserByIdx(idx: number): Promise<User> {
     return await this.prisma.user.findUniqueOrThrow({
       where: { idx, deletedAt: null },
       include: { userProvider: true },
