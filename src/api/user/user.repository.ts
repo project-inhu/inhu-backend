@@ -23,6 +23,29 @@ export class UserRepository {
   }
 
   /**
+   * UserIdx를 기반으로 사용자 조회
+   *
+   * @author 조희주
+   */
+  async selectUserByIdx(idx: number): Promise<User | null> {
+    return await this.prisma.user.findUniqueOrThrow({
+      where: { idx, deletedAt: null },
+      include: { userProvider: true },
+    });
+  }
+
+  /**
+   * nickname을 기반으로 사용자 조회
+   *
+   * @author 조희주
+   */
+  async selectUserByNickname(nickname: string): Promise<User | null> {
+    return await this.prisma.user.findFirst({
+      where: { nickname, deletedAt: null },
+    });
+  }
+
+  /**
    * 현재 데이터베이스에 등록된 전체 사용자 수 반환
    *
    * @author 조희주
@@ -68,18 +91,6 @@ export class UserRepository {
   }
 
   /**
-   * UserIdx를 기반으로 사용자 조회
-   *
-   * @author 조희주
-   */
-  async selectUserByIdx(idx: number): Promise<User | null> {
-    return await this.prisma.user.findUniqueOrThrow({
-      where: { idx, deletedAt: null },
-      include: { userProvider: true },
-    });
-  }
-
-  /**
    * 사용자 정보 수정
    *
    * @author 조희주
@@ -89,20 +100,6 @@ export class UserRepository {
       where: { idx, deletedAt: null },
       data,
     });
-  }
-
-  /**
-   * 닉네임 중복 확인
-   * - 중복이면 true / 중복이 아니면 false 반환
-   *
-   * @author 조희주
-   */
-  async isDuplicatedNickname(nickname: string): Promise<boolean> {
-    const user = await this.prisma.user.findFirst({
-      where: { nickname, deletedAt: null },
-    });
-
-    return user !== null;
   }
 
   /**

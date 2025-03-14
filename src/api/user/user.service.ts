@@ -85,10 +85,10 @@ export class UserService {
     }
 
     if (updateUserInput.nickname) {
-      const isDuplicate = await this.userRepository.isDuplicatedNickname(
+      const existingUser = await this.userRepository.selectUserByNickname(
         updateUserInput.nickname,
       );
-      if (isDuplicate) {
+      if (existingUser) {
         throw new ConflictException('This nickname is already in use.');
       }
     }
