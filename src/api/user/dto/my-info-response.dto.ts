@@ -1,12 +1,11 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { IsDate, IsInt, IsOptional, IsString } from 'class-validator';
+
 /**
  * 내 정보 응답 DTO
  *
  * @author 조희주
  */
-
-import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsInt, IsOptional, IsString } from 'class-validator';
-
 export class MyInfoResponseDto {
   @ApiProperty({ description: '사용자 고유 idx', example: 1 })
   @IsInt()

@@ -45,9 +45,6 @@ export class UserInfoEntity extends PickType(UserEntity, [
     Object.assign(this, partial);
   }
 
-  /**
-   * Prisma 쿼리 결과를 UserInfoEntity로 변환하는 메서드
-   */
   static createEntityFromPrisma(user: User): UserInfoEntity {
     return new UserInfoEntity({
       idx: user.idx,

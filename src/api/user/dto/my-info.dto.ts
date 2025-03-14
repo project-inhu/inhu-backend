@@ -1,12 +1,11 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
+
 /**
  * 내 정보 DTO
  *
  * @author 조희주
  */
-
-import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
-
 export class MyInfoDto {
   @ApiProperty({ description: '사용자 닉네임', example: 'heeju' })
   @IsString()
