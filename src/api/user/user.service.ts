@@ -57,13 +57,6 @@ export class UserService {
    */
   async getMyInfo(getUserInput: GetUserInput): Promise<UserInfoEntity> {
     const user = await this.userRepository.selectUserByIdx(getUserInput.idx);
-
-    if (!user) {
-      throw new InternalServerErrorException(
-        'Failed to retrieve user information due to an internal server error.',
-      );
-    }
-
     return UserInfoEntity.createEntityFromPrisma(user);
   }
 
@@ -76,13 +69,7 @@ export class UserService {
     idx: number,
     updateUserInput: UpdateUserInput,
   ): Promise<UserInfoEntity> {
-    const user = await this.userRepository.selectUserByIdx(idx);
-
-    if (!user) {
-      throw new InternalServerErrorException(
-        'Failed to retrieve user information due to an internal server error.',
-      );
-    }
+    await this.userRepository.selectUserByIdx(idx);
 
     if (updateUserInput.nickname) {
       const existingUser = await this.userRepository.selectUserByNickname(
