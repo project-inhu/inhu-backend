@@ -8,6 +8,17 @@ import { PrismaService } from 'src/common/module/prisma/prisma.service';
 export class UserRepository {
   constructor(private readonly prisma: PrismaService) {}
   /**
+   * 모든 사용자 조회
+   *
+   * @author 조희주
+   */
+  async selectAllUsers(): Promise<User[]> {
+    return await this.prisma.user.findMany({
+      where: { deletedAt: null },
+    });
+  }
+
+  /**
    * SNS ID를 기반으로 사용자 조회
    *
    * @author 조희주
@@ -75,18 +86,6 @@ export class UserRepository {
           },
         },
       },
-    });
-  }
-
-  /**
-   * 모든 사용자 조회
-   *
-   * @author 조희주
-   */
-  async selectAllUsers(): Promise<User[]> {
-    return await this.prisma.user.findMany({
-      where: { deletedAt: null },
-      include: { userProvider: true },
     });
   }
 
