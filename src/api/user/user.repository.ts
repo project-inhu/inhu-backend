@@ -112,7 +112,7 @@ export class UserRepository {
    */
   async deleteUserByIdx(idx: number): Promise<User> {
     return await this.prisma.user.update({
-      where: { idx },
+      where: { idx, deletedAt: null },
       data: { deletedAt: new Date() },
     });
   }
