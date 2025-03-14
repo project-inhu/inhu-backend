@@ -1,4 +1,4 @@
-import { IsInt } from 'class-validator';
+import { IsInt, IsPositive } from 'class-validator';
 
 /**
  * 사용자 정보를 조회하기 위한 입력 값
@@ -7,5 +7,6 @@ import { IsInt } from 'class-validator';
  */
 export class GetUserInput {
   @IsInt()
+  @IsPositive()
   idx: number;
 }

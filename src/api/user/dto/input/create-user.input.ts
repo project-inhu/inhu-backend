@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, isString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 /**
  * 소셜 로그인 후 사용자 등록을 위한 input
