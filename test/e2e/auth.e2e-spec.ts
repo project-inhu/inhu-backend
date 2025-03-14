@@ -1,15 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from 'src/app.module';
 import { AuthProvider } from 'src/auth/enums/auth-provider.enum';
 import { AuthService } from 'src/auth/services/auth.service';
 import { LoginTokenService } from 'src/auth/services/login-token.service';
 import { KakaoStrategy } from 'src/auth/strategies/kakao/kakao.strategy';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import * as request from 'supertest';
-import { PrismaTestingHelper } from '@chax-at/transactional-prisma-testing';
-import { extractCookieValue } from 'test/utils/extract-cookie-value.util';
+import { extractCookieValue } from 'test/common/utils/extract-cookie-value.util';
+import { TestManager } from 'test/common/helpers/test-manager';
 
 /**
  * authController e2e test
@@ -18,33 +16,15 @@ import { extractCookieValue } from 'test/utils/extract-cookie-value.util';
  */
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
-  let prisma: PrismaService;
-  let prismaTestingHelper: PrismaTestingHelper<PrismaService> | undefined;
+  let test = TestManager.create();
 
   beforeEach(async () => {
-    if (!prismaTestingHelper) {
-      prismaTestingHelper = new PrismaTestingHelper(new PrismaService());
-      prisma = prismaTestingHelper.getProxyClient();
-    }
-
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(PrismaService)
-      .useValue(prisma)
-      .compile();
-
-    app = moduleFixture.createNestApplication();
-
-    await prismaTestingHelper.startNewTransaction();
-
-    await app.init();
+    await test.init();
+    app = test.getApp();
   });
 
   afterEach(async () => {
-    jest.restoreAllMocks();
-    prismaTestingHelper?.rollbackCurrentTransaction();
-    await app.close();
+    await test.close();
   });
 
   describe('GET /auth/kakao/login', () => {
@@ -97,6 +77,7 @@ describe('AuthController (e2e)', () => {
       jest.spyOn(kakaoStrategy, 'getUserInfo').mockResolvedValue(kakaoUserInfo);
 
       // 최초 로그인 사용자 db에 존재하지 않은지 확인 (사용자 정보가 db에 반드시 등록되도록 보장하기 위함)
+      const prisma = app.get(PrismaService);
       let user = await prisma.user.findFirst({
         where: {
           userProvider: {
@@ -163,6 +144,7 @@ describe('AuthController (e2e)', () => {
       jest.spyOn(kakaoStrategy, 'getUserInfo').mockResolvedValue(kakaoUserInfo);
 
       // 기존 사용자임을 가정하기 위해 임의 값 등록
+      const prisma = app.get(PrismaService);
       await prisma.user.create({
         data: {
           nickname: 'mock-nickname',
