@@ -14,7 +14,6 @@ import { PrismaService } from 'src/common/module/prisma/prisma.service';
  *
  * @author 이수인
  */
-
 export class TestManager {
   private app: INestApplication;
   private prisma: PrismaService;
@@ -59,7 +58,6 @@ export class TestManager {
   }
 
   async close() {
-    jest.restoreAllMocks();
     this.prismaTestingHelper?.rollbackCurrentTransaction();
     await this.app.close();
   }
