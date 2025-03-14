@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 
-// TODO : getUserCount 방식 수정 필요
-
 @Injectable()
 export class UserRepository {
   constructor(private readonly prisma: PrismaService) {}
