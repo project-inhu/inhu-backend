@@ -10,6 +10,8 @@ import {
   Length,
   Min,
 } from 'class-validator';
+import { Trim } from '../common/decorators/trim.decorator';
+import { UniqueArray } from '../common/decorators/unique-array.decorator';
 
 /**
  * 특정 장소에 리뷰를 생성할 때 사용하는 DTO
@@ -24,7 +26,7 @@ export class CreateReviewByPlaceIdxDto {
   @ApiProperty({
     example: '정말 맛있어요.',
   })
-  @Transform(({ value }) => value.trim())
+  @Trim()
   @IsString()
   @IsNotEmpty()
   @Length(3, 400)
@@ -53,7 +55,7 @@ export class CreateReviewByPlaceIdxDto {
   @ApiPropertyOptional({
     example: [1, 3],
   })
-  @Transform(({ value }) => [...new Set(value)])
+  @UniqueArray()
   @Type(() => Number)
   @IsOptional()
   @IsArray()

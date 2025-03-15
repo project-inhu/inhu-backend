@@ -10,6 +10,8 @@ import {
   Length,
   Min,
 } from 'class-validator';
+import { Trim } from '../common/decorators/trim.decorator';
+import { UniqueArray } from '../common/decorators/unique-array.decorator';
 
 /**
  * 특정 장소에 리뷰를 생성할 때 사용하는 DTO
@@ -24,7 +26,7 @@ export class UpdateReviewByReviewIdxDto {
   @ApiPropertyOptional({
     example: '맛이 최고네요.',
   })
-  @Transform(({ value }) => value.trim())
+  @Trim()
   @IsOptional()
   @IsString()
   @IsNotEmpty()
@@ -51,7 +53,7 @@ export class UpdateReviewByReviewIdxDto {
   @ApiPropertyOptional({
     example: [2, 3],
   })
-  @Transform(({ value }) => [...new Set(value)])
+  @UniqueArray()
   @Type(() => Number)
   @IsOptional()
   @IsArray()
