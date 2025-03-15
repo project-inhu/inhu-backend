@@ -8,6 +8,6 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 export const User = createParamDecorator(
   (data: keyof AccessTokenPayload, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    return data ? request.user[data] : request.user;
+    return data ? (request.user?.[data] ?? null) : (request.user ?? null);
   },
 );
