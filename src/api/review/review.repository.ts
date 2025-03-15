@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
-import { ReviewSelectField } from './interfaces/review-select-field';
+import { ReviewSelectField } from './common/constants/review-select-field';
 import { Review } from '@prisma/client';
 import { CreateReviewByPlaceIdxInput } from './input/create-review-by-place-idx.input';
 import { UpdateReviewByReviewIdxInput } from './input/update-review-by-review-idx.input';

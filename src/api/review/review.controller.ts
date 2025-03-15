@@ -13,13 +13,9 @@ import { ReviewService } from './review.service';
 import { CreateReviewByPlaceIdxDto } from './dto/create-review-by-place-idx.dto';
 import { ReviewEntity } from './entity/review.entity';
 import { AuthGuard } from 'src/auth/common/guards/auth.guard';
-import { GetReviewsByPlaceIdxResponseDto } from './dto/get-reviews-by-place-idx-response.dto';
-import { CreateReviewByPlaceIdxResponseDto } from './dto/create-review-by-place-idx-response.dto';
 import { UpdateReviewByReviewIdxDto } from './dto/update-review-by-review-idx.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
-import { UpdateReviewByReviewIdxResponseDto } from './dto/update-review-by-review-idx-response.dto';
 import { User } from 'src/common/decorator/user.decorator';
-import { DeleteReviewByReviewIdxResponseDto } from './dto/delete-review-by-review-idx-response.dto';
 
 @Controller('')
 export class ReviewController {
@@ -30,14 +26,14 @@ export class ReviewController {
    *
    * @author 강정연
    */
-  @ApiOkResponse({ type: GetReviewsByPlaceIdxResponseDto })
+  @ApiOkResponse()
   @UseGuards(AuthGuard)
   @Get('place/:placeIdx/reviews')
   async getReviewsByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
-  ): Promise<GetReviewsByPlaceIdxResponseDto> {
+  ): Promise<ReviewEntity[]> {
     const reviews = await this.reviewService.getReviewsByPlaceIdx(placeIdx);
-    return { reviews };
+    return reviews;
   }
 
   /**
@@ -45,20 +41,20 @@ export class ReviewController {
    *
    * @author 강정연
    */
-  @ApiOkResponse({ type: CreateReviewByPlaceIdxResponseDto })
-  // @UseGuards(AuthGuard)
+  @ApiOkResponse()
+  @UseGuards(AuthGuard)
   @Post('place/:placeIdx/review')
   async createReviewByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @Body() createReviewByPlaceIdxDto: CreateReviewByPlaceIdxDto,
-  ): Promise<CreateReviewByPlaceIdxResponseDto> {
+  ): Promise<ReviewEntity> {
     const review = await this.reviewService.createReviewByPlaceIdx({
       placeIdx,
       content: createReviewByPlaceIdxDto.content,
       imagePathList: createReviewByPlaceIdxDto.imagePathList,
       keywordIdxList: createReviewByPlaceIdxDto.keywordIdxList,
     });
-    return { review };
+    return review;
   }
 
   /**
@@ -66,14 +62,14 @@ export class ReviewController {
    *
    * @author 강정연
    */
-  @ApiOkResponse({ type: UpdateReviewByReviewIdxResponseDto })
+  @ApiOkResponse()
   @UseGuards(AuthGuard)
   @Patch('review/:reviewIdx')
   async updateReviewByReviewIdx(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
     @Body() updateReviewByReviewIdxDto: UpdateReviewByReviewIdxDto,
     @User() user: AccessTokenPayload,
-  ): Promise<UpdateReviewByReviewIdxResponseDto> {
+  ): Promise<ReviewEntity> {
     const review = await this.reviewService.updateReviewByReviewIdx({
       reviewIdx,
       userIdx: user.idx,
@@ -82,7 +78,7 @@ export class ReviewController {
       keywordIdxList: updateReviewByReviewIdxDto.keywordIdxList,
     });
 
-    return { review };
+    return review;
   }
 
   /**
@@ -90,18 +86,17 @@ export class ReviewController {
    *
    * @author 강정연
    */
-  @ApiOkResponse({ type: DeleteReviewByReviewIdxResponseDto })
+  @ApiOkResponse()
   @Delete('review/:reviewIdx')
-  @UseGuards(AuthGuard)
   async deleteReviewByReviewIdx(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
     @User() user: AccessTokenPayload,
-  ): Promise<DeleteReviewByReviewIdxResponseDto> {
+  ): Promise<void> {
     const review = await this.reviewService.deleteReviewByReviewIdx(
       reviewIdx,
       user.idx,
     );
 
-    return new DeleteReviewByReviewIdxResponseDto(review);
+    return review;
   }
 }
