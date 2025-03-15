@@ -22,7 +22,6 @@ export class CreateReviewByPlaceIdxDto {
    * 최소 3자, 최대 400자
    */
   @ApiProperty({
-    description: 'review content (최소 3자, 최대 400자)',
     example: '정말 맛있어요.',
   })
   @Transform(({ value }) => value.trim())
@@ -36,7 +35,6 @@ export class CreateReviewByPlaceIdxDto {
    * 최대 5개
    */
   @ApiPropertyOptional({
-    description: 'review 사진 path list (최대 5개)',
     example: [
       'images/review/1/20240312/171923.jpg',
       'images/review/1/20240312/17234.jpg',
@@ -53,7 +51,6 @@ export class CreateReviewByPlaceIdxDto {
    * 중복 제거, 최대 5개
    */
   @ApiPropertyOptional({
-    description: 'review keyword idx list (최대 5개)',
     example: [1, 3],
   })
   @Transform(({ value }) => [...new Set(value)])

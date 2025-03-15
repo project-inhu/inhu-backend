@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   ArrayMaxSize,
@@ -7,9 +7,8 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  MaxLength,
+  Length,
   Min,
-  MinLength,
 } from 'class-validator';
 
 /**
@@ -23,15 +22,13 @@ export class UpdateReviewByReviewIdxDto {
    * 최소 3자, 최대 400자
    */
   @ApiPropertyOptional({
-    description: 'review content (최소 3자, 최대 400자)',
     example: '맛이 최고네요.',
   })
+  @Transform(({ value }) => value.trim())
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @MinLength(3)
-  @MaxLength(400)
-  @Transform(({ value }) => value.trim())
+  @Length(3, 400)
   content: string;
 
   /**
@@ -39,8 +36,7 @@ export class UpdateReviewByReviewIdxDto {
    * 최대 5개
    */
   @ApiPropertyOptional({
-    description: 'review 사진 path list (최대 5개)',
-    example: ['9101112.jpg'],
+    example: ['images/review/1/20240312/171923.jpg'],
   })
   @IsOptional()
   @IsArray()
@@ -53,15 +49,14 @@ export class UpdateReviewByReviewIdxDto {
    * 중복 제거, 최대 5개
    */
   @ApiPropertyOptional({
-    description: 'review keyword list (최대 5개)',
-    example: [2],
+    example: [2, 3],
   })
-  @IsOptional()
-  @Type(() => Number)
-  @IsArray()
-  @IsInt({ each: true })
-  @ArrayMaxSize(5)
-  @Min(1, { each: true })
   @Transform(({ value }) => [...new Set(value)])
+  @Type(() => Number)
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(5)
+  @IsInt({ each: true })
+  @Min(1, { each: true })
   keywordIdxList?: number[];
 }
