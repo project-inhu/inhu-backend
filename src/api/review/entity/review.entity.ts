@@ -1,9 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ReviewQueryResult } from '../interfaces/review-query-result.interface';
+import { ReviewSelectField } from '../common/constants/review-select-field';
 
 /**
  * 리뷰 엔티티 클래스
- * Prisma에서 조회한 리뷰 데이터를 객체 형태로 변환하여 사용
  *
  * @author 강정연
  */
@@ -57,19 +56,17 @@ export class ReviewEntity {
   /**
    * Prisma에서 조회한 리뷰 데이터를 `ReviewEntity`로 변환함
    */
-  static createEntityFromPrisma(review: ReviewQueryResult): ReviewEntity {
+  static createEntityFromPrisma(review: ReviewSelectField): ReviewEntity {
     return new ReviewEntity({
       idx: review.idx,
       userIdx: review.userIdx,
       placeIdx: review.placeIdx,
       content: review.content,
       createdAt: review.createdAt,
-      imagePathList:
-        review.reviewImage?.map((img) => img.imagePath || '') ?? [],
-      keywordList:
-        review.reviewKeywordMapping?.map(
-          (mapping) => mapping.keyword.content || '',
-        ) ?? [],
+      imagePathList: review.reviewImage.map(({ imagePath }) => imagePath),
+      keywordList: review.reviewKeywordMapping.map(
+        ({ keyword: { content } }) => content,
+      ),
       userNickName: review.user.nickname,
       placeName: review.place.name,
     });
