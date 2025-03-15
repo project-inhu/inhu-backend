@@ -5,8 +5,6 @@ import {
   Get,
   Patch,
   UseGuards,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from 'src/auth/common/guards/auth.guard';
@@ -18,7 +16,6 @@ import { ApiResponse } from '@nestjs/swagger';
 import { UserInfoEntity } from './entity/user-info.entity';
 
 @Controller('user')
-@UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 export class UserController {
   constructor(private userService: UserService) {}
 
