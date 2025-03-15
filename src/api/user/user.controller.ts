@@ -26,8 +26,6 @@ export class UserController {
    */
   @UseGuards(AuthGuard)
   @Get()
-  @ApiResponse({ status: 200, description: '성공', type: UserInfoEntity })
-  @ApiResponse({ status: 401, description: '인증실패' })
   async getMyInfoByUserIdx(
     @LoginUser() user: UserEntity,
   ): Promise<MyInfoResponseDto> {
