@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
-import { ReviewQueryResult } from './interfaces/review-query-result.interface';
+import { ReviewSelectField } from './interfaces/review-select-field';
 import { Review } from '@prisma/client';
 import { CreateReviewByPlaceIdxInput } from './input/create-review-by-place-idx.input';
 import { UpdateReviewByReviewIdxInput } from './input/update-review-by-review-idx.input';
@@ -16,7 +16,7 @@ export class ReviewRepository {
    */
   async selectReviewsByPlaceIdx(
     placeIdx: number,
-  ): Promise<ReviewQueryResult[]> {
+  ): Promise<ReviewSelectField[]> {
     return await this.prisma.review.findMany({
       where: {
         placeIdx,
@@ -58,13 +58,13 @@ export class ReviewRepository {
   }
 
   /**
-   * 특정 리뷰 Idx로 리뷰 조회
+   * 특정 idx의 리뷰 조회
    *
    * @author 강정연
    */
   async selectReviewByReviewIdx(
     reviewIdx: number,
-  ): Promise<ReviewQueryResult | null> {
+  ): Promise<ReviewSelectField | null> {
     return await this.prisma.review.findUnique({
       where: {
         idx: reviewIdx,
@@ -144,7 +144,7 @@ export class ReviewRepository {
    *
    * @author 강정연
    */
-  async selectReviewsByUserIdx(userIdx: number): Promise<ReviewQueryResult[]> {
+  async selectReviewsByUserIdx(userIdx: number): Promise<ReviewSelectField[]> {
     return await this.prisma.review.findMany({
       where: {
         userIdx,
@@ -182,6 +182,11 @@ export class ReviewRepository {
     });
   }
 
+  /**
+   * 특정 리뷰 Idx의 리뷰 수정
+   *
+   * @author 강정연
+   */
   async updateReviewByReviewIdx(
     updateReviewByReviewIdxInput: UpdateReviewByReviewIdxInput,
   ): Promise<Review> {
@@ -224,8 +229,13 @@ export class ReviewRepository {
     });
   }
 
-  async deleteReviewByReviewIdx(reviewIdx: number): Promise<Review> {
-    return await this.prisma.review.update({
+  /**
+   * 특정 idx의 리뷰 삭제
+   *
+   * @author 강정연
+   */
+  async deleteReviewByReviewIdx(reviewIdx: number): Promise<void> {
+    await this.prisma.review.update({
       where: {
         idx: reviewIdx,
         deletedAt: null,
