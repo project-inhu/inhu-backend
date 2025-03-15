@@ -3,9 +3,7 @@ import { UserRepository } from './user.repository';
 import { UserInfoEntity } from './entity/user-info.entity';
 import { RegisterUserEntity } from './entity/register-user.entity';
 import { CreateUserInput } from './dto/input/create-user.input';
-import { GetUserInput } from './dto/input/get-user.input';
 import { UpdateUserInput } from './dto/input/update-user.input';
-import { DeleteUserInput } from './dto/input/delete-user.input';
 
 @Injectable()
 export class UserService {
@@ -50,8 +48,8 @@ export class UserService {
    *
    * @author 조희주
    */
-  async getMyInfo(getUserInput: GetUserInput): Promise<UserInfoEntity> {
-    const user = await this.userRepository.selectUserByIdx(getUserInput.idx);
+  async getMyInfo(userIdx: number): Promise<UserInfoEntity> {
+    const user = await this.userRepository.selectUserByIdx(userIdx);
     return UserInfoEntity.createEntityFromPrisma(user);
   }
 
@@ -61,10 +59,10 @@ export class UserService {
    * @author 조희주
    */
   async updateMyInfo(
-    idx: number,
+    userIdx: number,
     updateUserInput: UpdateUserInput,
   ): Promise<UserInfoEntity> {
-    await this.userRepository.selectUserByIdx(idx);
+    await this.userRepository.selectUserByIdx(userIdx);
 
     if (updateUserInput.nickname) {
       const existingUser = await this.userRepository.selectUserByNickname(
@@ -76,7 +74,7 @@ export class UserService {
     }
 
     const updatedUser = await this.userRepository.updateUserByIdx(
-      idx,
+      userIdx,
       updateUserInput,
     );
 
@@ -88,13 +86,9 @@ export class UserService {
    *
    * @author 조희주
    */
-  async deleteUser(deleteUserInput: DeleteUserInput): Promise<UserInfoEntity> {
-    await this.userRepository.selectUserByIdx(deleteUserInput.idx);
-
-    const deletedUser = await this.userRepository.deleteUserByIdx(
-      deleteUserInput.idx,
-    );
-
+  async deleteUser(userIdx: number): Promise<UserInfoEntity> {
+    await this.userRepository.selectUserByIdx(userIdx);
+    const deletedUser = await this.userRepository.deleteUserByIdx(userIdx);
     return UserInfoEntity.createEntityFromPrisma(deletedUser);
   }
 }
