@@ -30,7 +30,7 @@ export class ReviewRepository {
         createdAt: true,
         reviewImage: {
           select: {
-            imagePath: true,
+            path: true,
           },
           orderBy: {
             idx: 'asc',
@@ -78,7 +78,7 @@ export class ReviewRepository {
         createdAt: true,
         reviewImage: {
           select: {
-            imagePath: true,
+            path: true,
           },
         },
         reviewKeywordMapping: {
@@ -124,7 +124,7 @@ export class ReviewRepository {
         reviewImage:
           imagePathList.length > 0
             ? {
-                create: imagePathList.map((imagePath) => ({ imagePath })),
+                create: imagePathList.map((path) => ({ path })),
               }
             : undefined,
         reviewKeywordMapping:
@@ -160,7 +160,7 @@ export class ReviewRepository {
         createdAt: true,
         reviewImage: {
           select: {
-            imagePath: true,
+            path: true,
           },
         },
         reviewKeywordMapping: {
@@ -210,7 +210,7 @@ export class ReviewRepository {
                 deleteMany: {},
                 create:
                   imagePathList.length > 0
-                    ? imagePathList.map((imagePath) => ({ imagePath }))
+                    ? imagePathList.map((path) => ({ path }))
                     : undefined,
               }
             : undefined,

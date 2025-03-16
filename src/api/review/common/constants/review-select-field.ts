@@ -16,7 +16,7 @@ const REVIEW_SELECT_FIELD = Prisma.validator<Prisma.ReviewDefaultArgs>()({
     createdAt: true,
     reviewImage: {
       select: {
-        imagePath: true,
+        path: true,
       },
       orderBy: {
         idx: 'asc',
