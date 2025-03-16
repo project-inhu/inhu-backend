@@ -83,6 +83,7 @@ export class ReviewController {
    *
    * @author 강정연
    */
+  @UseGuards(AuthGuard)
   @Delete('review/:reviewIdx')
   async deleteReviewByReviewIdx(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
