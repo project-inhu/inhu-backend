@@ -14,7 +14,7 @@ export class ReviewRepository {
    *
    * @author 강정연
    */
-  async selectReviewsByPlaceIdx(
+  async selectReviewListByPlaceIdx(
     placeIdx: number,
   ): Promise<ReviewSelectField[]> {
     return await this.prisma.review.findMany({
@@ -144,7 +144,9 @@ export class ReviewRepository {
    *
    * @author 강정연
    */
-  async selectReviewsByUserIdx(userIdx: number): Promise<ReviewSelectField[]> {
+  async selectReviewListByUserIdx(
+    userIdx: number,
+  ): Promise<ReviewSelectField[]> {
     return await this.prisma.review.findMany({
       where: {
         userIdx,

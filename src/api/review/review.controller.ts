@@ -14,7 +14,6 @@ import { CreateReviewByPlaceIdxDto } from './dto/create-review-by-place-idx.dto'
 import { ReviewEntity } from './entity/review.entity';
 import { AuthGuard } from 'src/auth/common/guards/auth.guard';
 import { UpdateReviewByReviewIdxDto } from './dto/update-review-by-review-idx.dto';
-import { ApiOkResponse } from '@nestjs/swagger';
 import { User } from 'src/common/decorator/user.decorator';
 
 @Controller('')
@@ -26,14 +25,14 @@ export class ReviewController {
    *
    * @author 강정연
    */
-  @ApiOkResponse()
   @UseGuards(AuthGuard)
-  @Get('place/:placeIdx/reviews')
-  async getReviewsByPlaceIdx(
+  @Get('place/:placeIdx/reviewList')
+  async getReviewListByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
   ): Promise<ReviewEntity[]> {
-    const reviews = await this.reviewService.getReviewsByPlaceIdx(placeIdx);
-    return reviews;
+    const reviewList =
+      await this.reviewService.getReviewListByPlaceIdx(placeIdx);
+    return reviewList;
   }
 
   /**
@@ -41,7 +40,6 @@ export class ReviewController {
    *
    * @author 강정연
    */
-  @ApiOkResponse()
   @UseGuards(AuthGuard)
   @Post('place/:placeIdx/review')
   async createReviewByPlaceIdx(
@@ -62,7 +60,6 @@ export class ReviewController {
    *
    * @author 강정연
    */
-  @ApiOkResponse()
   @UseGuards(AuthGuard)
   @Patch('review/:reviewIdx')
   async updateReviewByReviewIdx(
@@ -86,7 +83,6 @@ export class ReviewController {
    *
    * @author 강정연
    */
-  @ApiOkResponse()
   @Delete('review/:reviewIdx')
   async deleteReviewByReviewIdx(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,

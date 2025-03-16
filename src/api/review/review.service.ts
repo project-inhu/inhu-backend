@@ -5,32 +5,24 @@ import {
 } from '@nestjs/common';
 import { ReviewRepository } from './review.repository';
 import { ReviewEntity } from './entity/review.entity';
-import { KeywordService } from '../keyword/keyword.service';
 import { CreateReviewByPlaceIdxInput } from './input/create-review-by-place-idx.input';
 import { UpdateReviewByReviewIdxInput } from './input/update-review-by-review-idx.input';
-import { PlaceService } from '../place/place.service';
 
 @Injectable()
 export class ReviewService {
-  constructor(
-    private readonly reviewRepository: ReviewRepository,
-    // private readonly placeService: PlaceService,
-    // private readonly keywordService: KeywordService,
-  ) {}
+  constructor(private readonly reviewRepository: ReviewRepository) {}
 
   /**
    * 특정 장소의 리뷰 목록 조회
    *
    * @author 강정연
    */
-  async getReviewsByPlaceIdx(placeIdx: number): Promise<ReviewEntity[]> {
-    //   await this.placeRepository.selectPlaceByIdx(placeIdx);
-
-    const reviews = (
-      await this.reviewRepository.selectReviewsByPlaceIdx(placeIdx)
+  async getReviewListByPlaceIdx(placeIdx: number): Promise<ReviewEntity[]> {
+    const reviewList = (
+      await this.reviewRepository.selectReviewListByPlaceIdx(placeIdx)
     ).map(ReviewEntity.createEntityFromPrisma);
 
-    return reviews;
+    return reviewList;
   }
 
   /**
@@ -56,12 +48,6 @@ export class ReviewService {
   async createReviewByPlaceIdx(
     createReviewByPlaceIdxInput: CreateReviewByPlaceIdxInput,
   ): Promise<ReviewEntity> {
-    // await this.placeService.getPlaceByPlaceIdx(
-    //   createReviewByPlaceIdxInput.placeIdx,
-    // );
-
-    // await this.keywordService.getKeywordByKeywordList(keywordIdxList);
-
     const review = await this.reviewRepository.createReviewByPlaceIdx(
       createReviewByPlaceIdxInput,
     );
