@@ -6,6 +6,7 @@ import { PlaceModule } from './api/place/place.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { KeywordModule } from './api/keyword/keyword.module';
+import { ReviewModule } from './api/review/review.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { KeywordModule } from './api/keyword/keyword.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [AppService],
