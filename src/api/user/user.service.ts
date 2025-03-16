@@ -2,8 +2,8 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { UserInfoEntity } from './entity/user-info.entity';
 import { RegisterUserEntity } from './entity/register-user.entity';
-import { CreateUserInput } from './dto/input/create-user.input';
-import { UpdateUserInput } from './dto/input/update-user.input';
+import { CreateUserInput } from './input/create-user.input';
+import { UpdateUserInput } from './input/update-user.input';
 
 @Injectable()
 export class UserService {
