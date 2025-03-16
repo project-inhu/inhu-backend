@@ -43,7 +43,7 @@ model PlaceHours {
 model PlaceImage {
   idx       Int     @id @default(autoincrement())
   placeIdx  Int     @map("place_idx")
-  imagePath String? @map("image_path") @db.VarChar
+  path      String @map("image_path") @db.VarChar
   place     Place   @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_image_tb")
 
   @@map("place_image_tb")
@@ -107,7 +107,7 @@ model PlaceType {
 model ReviewImage {
   idx       Int    @id @default(autoincrement())
   reviewIdx Int    @map("review_idx")
-  imagePath String @map("image_path") @db.VarChar
+  path      String @map("image_path") @db.VarChar
   review    Review @relation(fields: [reviewIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_review_tb_to_review_image_tb")
 
   @@map("review_image_tb")
