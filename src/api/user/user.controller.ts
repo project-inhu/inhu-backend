@@ -40,7 +40,10 @@ export class UserController {
     @User('idx') userIdx: number,
     @Body() myInfoDto: MyInfoDto,
   ): Promise<MyInfoResponseDto> {
-    return this.userService.updateMyInfo(userIdx, myInfoDto);
+    return this.userService.updateMyInfo(userIdx, {
+      nickname: myInfoDto.nickname,
+      profileImagePath: myInfoDto.profileImagePath,
+    });
   }
 
   /**
