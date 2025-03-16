@@ -8,9 +8,9 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from 'src/auth/common/guards/auth.guard';
-import { MyInfoResponseDto } from './dto/my-info-response.dto';
 import { MyInfoDto } from './dto/my-info.dto';
 import { User } from 'src/common/decorator/user.decorator';
+import { UserInfoEntity } from './entity/user-info.entity';
 
 @Controller('user')
 export class UserController {
@@ -25,7 +25,7 @@ export class UserController {
   @Get()
   async getMyInfoByUserIdx(
     @User('idx') userIdx: number,
-  ): Promise<MyInfoResponseDto> {
+  ): Promise<UserInfoEntity> {
     return await this.userService.getMyInfo(userIdx);
   }
 
@@ -39,7 +39,7 @@ export class UserController {
   async updateMyInfoByUserIdx(
     @User('idx') userIdx: number,
     @Body() myInfoDto: MyInfoDto,
-  ): Promise<MyInfoResponseDto> {
+  ): Promise<UserInfoEntity> {
     return this.userService.updateMyInfo(userIdx, {
       nickname: myInfoDto.nickname,
       profileImagePath: myInfoDto.profileImagePath,
@@ -53,7 +53,7 @@ export class UserController {
    */
   @UseGuards(AuthGuard)
   @Delete()
-  async deleteUser(@User('idx') userIdx: number): Promise<MyInfoResponseDto> {
+  async deleteUser(@User('idx') userIdx: number): Promise<UserInfoEntity> {
     return this.userService.deleteUser(userIdx);
   }
 }
