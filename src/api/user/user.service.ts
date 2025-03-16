@@ -31,7 +31,7 @@ export class UserService {
 
     const user = await this.userRepository.selectUserBySnsId(snsId);
     if (user) {
-      return { idx: user.idx };
+      return RegisterUserEntity.createEntityFromPrisma(user);
     }
 
     const nickname = await this.generateTemporaryNickname();
@@ -40,7 +40,7 @@ export class UserService {
       provider,
       nickname,
     );
-    return { idx: newUser.idx };
+    return RegisterUserEntity.createEntityFromPrisma(newUser);
   }
 
   /**

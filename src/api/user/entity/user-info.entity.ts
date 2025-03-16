@@ -14,9 +14,9 @@ export class UserInfoEntity extends PickType(UserEntity, [
   'createdAt',
   'deletedAt',
 ] as const) {
-  constructor(partial: Partial<UserInfoEntity>) {
+  constructor(data: UserInfoEntity) {
     super();
-    Object.assign(this, partial);
+    Object.assign(this, data);
   }
 
   static createEntityFromPrisma(user: User): UserInfoEntity {
