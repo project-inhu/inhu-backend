@@ -32,11 +32,8 @@ export class CreateReviewByPlaceIdxDto {
   /**
    * 리뷰에 포함된 이미지 리스트
    * 최대 5개
-   * 
-   * @example [
-      'images/review/1/20240312/171923.jpg',
-      'images/review/1/20240312/17234.jpg'
-    ]
+   *
+   * @example ['images/review/1/20240312/171923.jpg','images/review/1/20240312/17234.jpg']
    */
   @IsOptional()
   @IsArray()

@@ -87,7 +87,7 @@ export class ReviewEntity {
       placeIdx: review.placeIdx,
       content: review.content,
       createdAt: review.createdAt,
-      imagePathList: review.reviewImage.map(({ imagePath }) => imagePath),
+      imagePathList: review.reviewImage.map(({ path }) => path),
       keywordList: review.reviewKeywordMapping.map(
         ({ keyword: { content } }) => content,
       ),
