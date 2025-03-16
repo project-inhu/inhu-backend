@@ -9,11 +9,8 @@ import {
 import { UserService } from './user.service';
 import { AuthGuard } from 'src/auth/common/guards/auth.guard';
 import { MyInfoResponseDto } from './dto/my-info-response.dto';
-import { LoginUser } from './common/decorator/login-user.dcorator';
-import { UserEntity } from './entity/user.entity';
 import { MyInfoDto } from './dto/my-info.dto';
-import { ApiResponse } from '@nestjs/swagger';
-import { UserInfoEntity } from './entity/user-info.entity';
+import { User } from 'src/common/decorator/user.decorator';
 
 @Controller('user')
 export class UserController {
@@ -27,9 +24,9 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get()
   async getMyInfoByUserIdx(
-    @LoginUser() user: UserEntity,
+    @User('idx') userIdx: number,
   ): Promise<MyInfoResponseDto> {
-    return await this.userService.getMyInfo({ idx: user.idx });
+    return await this.userService.getMyInfo(userIdx);
   }
 
   /**
@@ -40,10 +37,10 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Patch()
   async updateMyInfoByUserIdx(
-    @LoginUser() user: UserEntity,
-    @Body() updateData: MyInfoDto,
+    @User('idx') userIdx: number,
+    @Body() myInfoDto: MyInfoDto,
   ): Promise<MyInfoResponseDto> {
-    return this.userService.updateMyInfo(user.idx, updateData);
+    return this.userService.updateMyInfo(userIdx, myInfoDto);
   }
 
   /**
@@ -53,7 +50,7 @@ export class UserController {
    */
   @UseGuards(AuthGuard)
   @Delete()
-  async deleteUser(@LoginUser() user: UserEntity): Promise<MyInfoResponseDto> {
-    return this.userService.deleteUser({ idx: user.idx });
+  async deleteUser(@User('idx') userIdx: number): Promise<MyInfoResponseDto> {
+    return this.userService.deleteUser(userIdx);
   }
 }

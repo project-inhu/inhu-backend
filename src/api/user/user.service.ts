@@ -62,7 +62,7 @@ export class UserService {
     userIdx: number,
     updateUserInput: UpdateUserInput,
   ): Promise<UserInfoEntity> {
-    await this.userRepository.selectUserByIdx(userIdx);
+    const user = await this.userRepository.selectUserByIdx(userIdx);
 
     if (updateUserInput.nickname) {
       const existingUser = await this.userRepository.selectUserByNickname(
@@ -73,10 +73,11 @@ export class UserService {
       }
     }
 
-    const updatedUser = await this.userRepository.updateUserByIdx(
-      userIdx,
-      updateUserInput,
-    );
+    const updatedUser = await this.userRepository.updateUserByIdx(userIdx, {
+      nickname: updateUserInput.nickname ?? user.nickname,
+      profileImagePath:
+        updateUserInput.profileImagePath ?? user.profileImagePath,
+    });
 
     return UserInfoEntity.createEntityFromPrisma(updatedUser);
   }
