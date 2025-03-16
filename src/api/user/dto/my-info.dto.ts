@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, Length } from 'class-validator';
 
 /**
  * 내 정보 DTO
@@ -11,6 +11,8 @@ export class MyInfoDto {
    * @example "heeju"
    */
   @IsString()
+  @IsOptional()
+  @Length(1, 15)
   nickname?: string;
 
   /**
