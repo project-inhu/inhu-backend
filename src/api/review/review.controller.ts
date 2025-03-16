@@ -65,11 +65,11 @@ export class ReviewController {
   async updateReviewByReviewIdx(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
     @Body() updateReviewByReviewIdxDto: UpdateReviewByReviewIdxDto,
-    @User() user: AccessTokenPayload,
+    @User('idx') userIdx: number,
   ): Promise<ReviewEntity> {
     const review = await this.reviewService.updateReviewByReviewIdx({
       reviewIdx,
-      userIdx: user.idx,
+      userIdx,
       content: updateReviewByReviewIdxDto.content,
       imagePathList: updateReviewByReviewIdxDto.imagePathList,
       keywordIdxList: updateReviewByReviewIdxDto.keywordIdxList,
@@ -86,11 +86,11 @@ export class ReviewController {
   @Delete('review/:reviewIdx')
   async deleteReviewByReviewIdx(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
-    @User() user: AccessTokenPayload,
+    @User('idx') userIdx: number,
   ): Promise<void> {
     const review = await this.reviewService.deleteReviewByReviewIdx(
       reviewIdx,
-      user.idx,
+      userIdx,
     );
 
     return review;
