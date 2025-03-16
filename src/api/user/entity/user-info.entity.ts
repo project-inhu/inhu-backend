@@ -1,4 +1,4 @@
-import { ApiProperty, PickType } from '@nestjs/swagger';
+import { PickType } from '@nestjs/swagger';
 import { UserEntity } from './user.entity';
 import { User } from '@prisma/client';
 

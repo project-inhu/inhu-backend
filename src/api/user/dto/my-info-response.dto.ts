@@ -6,6 +6,7 @@
 export class MyInfoResponseDto {
   /**
    * 사용자 고유 idx
+   *
    * @example 1
    */
   idx: number;
