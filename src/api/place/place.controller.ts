@@ -1,13 +1,17 @@
-import { Query, Controller, Get, Param, Post, Body, Put } from '@nestjs/common';
+import {
+  Query,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  UseGuards,
+} from '@nestjs/common';
 import { PlaceService } from './place.service';
 import { GetAllPlaceOverviewDto } from './dto/get-all-place-overview.dto';
-import { AllPlaceOverviewResponseDto } from './dto/all-place-overview-response.dto';
-import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
-import { PlaceByPlaceIdxResponseDto } from './dto/place-by-place-idx-response.dto';
-import { CreatePlaceDto } from './dto/create-place.dto';
-import { Place } from '@prisma/client';
-import { UploadPlaceImageByPlaceIdxDto } from './dto/upload-place-image-by-place-idx.dto';
-import { PlaceIdxDto } from './dto/place-idx.dto';
+import { User } from 'src/common/decorator/user.decorator';
+import { AuthGuard } from 'src/auth/common/guards/auth.guard';
+import { PlaceOverviewEntity } from './entity/place-overview.entity';
+import { PlaceEntity } from './entity/place.entity';
 
 @Controller('place')
 export class PlaceController {
@@ -18,16 +22,16 @@ export class PlaceController {
    *
    * @author 이수인
    */
-  @ApiOkResponse({ type: AllPlaceOverviewResponseDto })
+  @UseGuards(AuthGuard)
   @Get('/all')
   async getAllPlaceOverview(
     @Query() getAllPlaceOverviewDto: GetAllPlaceOverviewDto,
-  ): Promise<AllPlaceOverviewResponseDto> {
-    const placeOverviewList = await this.placeService.getAllPlaceOverview(
-      getAllPlaceOverviewDto,
+    @User('idx') userIdx: number,
+  ): Promise<PlaceOverviewEntity[]> {
+    return await this.placeService.getAllPlaceOverview(
+      getAllPlaceOverviewDto.page,
+      userIdx,
     );
-
-    return { placeOverviewList };
   }
 
   /**
@@ -35,41 +39,12 @@ export class PlaceController {
    *
    * @author 이수인
    */
-  @ApiOkResponse({ type: PlaceByPlaceIdxResponseDto })
+  @UseGuards(AuthGuard)
   @Get('/:placeIdx')
   async getPlaceByIdx(
-    @Param() placeIdxDto: PlaceIdxDto,
-  ): Promise<PlaceByPlaceIdxResponseDto> {
-    const place = await this.placeService.getPlaceByIdx(placeIdxDto.placeIdx);
-
-    return { place };
-  }
-
-  /**
-   * place 생성
-   *
-   * @author 이수인
-   */
-  @ApiCreatedResponse()
-  @Post()
-  async createPlace(@Body() createPlaceDto: CreatePlaceDto): Promise<Place> {
-    return this.placeService.createPlace(createPlaceDto);
-  }
-
-  /**
-   * place image 추가, 수정, 삭제
-   *
-   * @author 이수인
-   */
-  @ApiOkResponse()
-  @Put('/:placeIdx/image')
-  async uploadPlaceImageByPlaceIdx(
-    @Body() uploadPlaceImageByPlaceIdxDto: UploadPlaceImageByPlaceIdxDto,
-    @Param() placeIdxDto: PlaceIdxDto,
-  ): Promise<void> {
-    return this.placeService.uploadPlaceImageByPlaceIdx(
-      uploadPlaceImageByPlaceIdxDto.placeImageList,
-      placeIdxDto.placeIdx,
-    );
+    @Param('placeIdx', ParseIntPipe) placeIdx: number,
+    @User('idx') userIdx: number,
+  ): Promise<PlaceEntity> {
+    return await this.placeService.getPlaceByIdx(placeIdx, userIdx);
   }
 }
