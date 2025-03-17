@@ -76,7 +76,7 @@ export class UserEntity {
    *   }
    * ]
    */
-  bookmark?: Bookmark[];
+  bookmarkList?: Bookmark[];
 
   /**
    * 사용자가 작성한 리뷰 목록
@@ -91,7 +91,7 @@ export class UserEntity {
    *   }
    * ]
    */
-  review?: Review[];
+  reviewList?: Review[];
 
   /**
    * Service1 결과 목록
@@ -106,7 +106,7 @@ export class UserEntity {
    *   }
    * ]
    */
-  service1Result?: Service1Result[];
+  service1ResultList?: Service1Result[];
 
   /**
    * Service2 결과 목록
@@ -121,7 +121,7 @@ export class UserEntity {
    *   }
    * ]
    */
-  service2Result?: Service2Result[];
+  service2ResultList?: Service2Result[];
 
   /**
    * 회원 탈퇴시에 진행하는 서비스 조사 결과 목록
@@ -135,7 +135,7 @@ export class UserEntity {
    *   }
    * ]
    */
-  withdrawServiceResult?: WithdrawServiceResult[];
+  withdrawServiceResultList?: WithdrawServiceResult[];
 
   constructor(data: UserEntity) {
     Object.assign(this, data);
@@ -162,11 +162,11 @@ export class UserEntity {
       deletedAt: user.deletedAt,
       snsId: user.userProvider?.snsId,
       provider: user.userProvider?.name,
-      bookmark: user.bookmark,
-      review: user.review,
-      service1Result: user.service1Result,
-      service2Result: user.service2Result,
-      withdrawServiceResult: user.withdrawServiceResult,
+      bookmarkList: user.bookmark,
+      reviewList: user.review,
+      service1ResultList: user.service1Result,
+      service2ResultList: user.service2Result,
+      withdrawServiceResultList: user.withdrawServiceResult,
     });
   }
 }
