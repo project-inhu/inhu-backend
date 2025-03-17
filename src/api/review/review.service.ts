@@ -7,10 +7,14 @@ import { ReviewRepository } from './review.repository';
 import { ReviewEntity } from './entity/review.entity';
 import { CreateReviewByPlaceIdxInput } from './input/create-review-by-place-idx.input';
 import { UpdateReviewByReviewIdxInput } from './input/update-review-by-review-idx.input';
+import { PlaceService } from '../place/place.service';
 
 @Injectable()
 export class ReviewService {
-  constructor(private readonly reviewRepository: ReviewRepository) {}
+  constructor(
+    private readonly reviewRepository: ReviewRepository,
+    private readonly placeService: PlaceService,
+  ) {}
 
   /**
    * 특정 장소의 리뷰 목록 조회
@@ -18,6 +22,8 @@ export class ReviewService {
    * @author 강정연
    */
   async getReviewListByPlaceIdx(placeIdx: number): Promise<ReviewEntity[]> {
+    await this.placeService.getPlaceByPlaceIdx(placeIdx);
+
     const reviewList = (
       await this.reviewRepository.selectReviewListByPlaceIdx(placeIdx)
     ).map(ReviewEntity.createEntityFromPrisma);
@@ -34,7 +40,7 @@ export class ReviewService {
     const review =
       await this.reviewRepository.selectReviewByReviewIdx(reviewIdx);
     if (!review) {
-      throw new NotFoundException('review not found');
+      throw new NotFoundException('Review does not exist');
     }
 
     return ReviewEntity.createEntityFromPrisma(review);
@@ -48,6 +54,9 @@ export class ReviewService {
   async createReviewByPlaceIdx(
     createReviewByPlaceIdxInput: CreateReviewByPlaceIdxInput,
   ): Promise<ReviewEntity> {
+    await this.placeService.getPlaceByPlaceIdx(
+      createReviewByPlaceIdxInput.placeIdx,
+    );
     const review = await this.reviewRepository.createReviewByPlaceIdx(
       createReviewByPlaceIdxInput,
     );
