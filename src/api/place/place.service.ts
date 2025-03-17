@@ -1,11 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PlaceRepository } from './place.repository';
 import { KeywordRepository } from '../keyword/keyword.repository';
-import { GetAllPlaceOverviewDto } from './dto/get-all-place-overview.dto';
 import { PlaceOverviewEntity } from './entity/place-overview.entity';
 import { PlaceEntity } from './entity/place.entity';
-import { CreatePlaceDto } from './dto/create-place.dto';
-import { Place } from '@prisma/client';
 
 @Injectable()
 export class PlaceService {
@@ -15,34 +12,27 @@ export class PlaceService {
   ) {}
 
   async getAllPlaceOverview(
-    getAllPlaceOverviewDto: GetAllPlaceOverviewDto,
+    page: number,
+    userIdx: number,
   ): Promise<PlaceOverviewEntity[]> {
     return (
-      await this.placeRepository.selectAllPlaceOverview(getAllPlaceOverviewDto)
+      await this.placeRepository.selectAllPlaceOverview(page, userIdx)
     ).map(PlaceOverviewEntity.createEntityFromPrisma);
   }
 
-  async getPlaceByIdx(placeIdx: number): Promise<PlaceEntity | null> {
-    const place = await this.placeRepository.selectPlaceByIdx(placeIdx);
-
-    if (place) {
-      return PlaceEntity.createEntityFromPrisma(place);
-    } else {
-      return null;
-    }
-  }
-
-  async createPlace(createPlaceDto: CreatePlaceDto): Promise<Place> {
-    return this.placeRepository.createPlace(createPlaceDto);
-  }
-
-  async uploadPlaceImageByPlaceIdx(
-    placeImageList: string[],
+  async getPlaceByIdx(
     placeIdx: number,
-  ): Promise<void> {
-    return this.placeRepository.uploadPlaceImageByPlaceIdx(
-      placeImageList,
+    userIdx?: number,
+  ): Promise<PlaceEntity> {
+    const place = await this.placeRepository.selectPlaceByIdx(
       placeIdx,
+      userIdx,
     );
+
+    if (!place) {
+      throw new NotFoundException('place not found');
+    }
+
+    return PlaceEntity.createEntityFromPrisma(place);
   }
 }
