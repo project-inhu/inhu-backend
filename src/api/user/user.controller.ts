@@ -40,7 +40,8 @@ export class UserController {
     @User('idx') userIdx: number,
     @Body() myInfoDto: MyInfoDto,
   ): Promise<UserInfoEntity> {
-    return this.userService.updateMyInfo(userIdx, {
+    return this.userService.updateMyInfo({
+      userIdx,
       nickname: myInfoDto.nickname,
       profileImagePath: myInfoDto.profileImagePath,
     });

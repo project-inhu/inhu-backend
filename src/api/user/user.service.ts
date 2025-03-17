@@ -59,24 +59,23 @@ export class UserService {
    * @author 조희주
    */
   async updateMyInfo(
-    userIdx: number,
     updateUserInput: UpdateUserInput,
   ): Promise<UserInfoEntity> {
+    const { userIdx, nickname, profileImagePath } = updateUserInput;
+
     const user = await this.userRepository.selectUserByIdx(userIdx);
 
-    if (updateUserInput.nickname) {
-      const existingUser = await this.userRepository.selectUserByNickname(
-        updateUserInput.nickname,
-      );
+    if (nickname) {
+      const existingUser =
+        await this.userRepository.selectUserByNickname(nickname);
       if (existingUser) {
         throw new ConflictException('This nickname is already in use.');
       }
     }
 
     const updatedUser = await this.userRepository.updateUserByIdx(userIdx, {
-      nickname: updateUserInput.nickname ?? user.nickname,
-      profileImagePath:
-        updateUserInput.profileImagePath ?? user.profileImagePath,
+      nickname: nickname ?? user.nickname,
+      profileImagePath: profileImagePath ?? user.profileImagePath,
     });
 
     return UserInfoEntity.createEntityFromPrisma(updatedUser);
