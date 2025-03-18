@@ -21,8 +21,8 @@ export class ReviewService {
    *
    * @author 강정연
    */
-  async getReviewListByPlaceIdx(placeIdx: number): Promise<ReviewEntity[]> {
-    await this.placeService.getPlaceByIdx(placeIdx);
+  async getReviewList(placeIdx: number): Promise<ReviewEntity[]> {
+    await this.placeService.getPlace(placeIdx);
 
     const reviewList = (
       await this.reviewRepository.selectReviewListByPlaceIdx(placeIdx)
@@ -36,7 +36,7 @@ export class ReviewService {
    *
    * @author 강정연
    */
-  async getReviewByReviewIdx(reviewIdx: number): Promise<ReviewEntity> {
+  async getReview(reviewIdx: number): Promise<ReviewEntity> {
     const review =
       await this.reviewRepository.selectReviewByReviewIdx(reviewIdx);
     if (!review) {
@@ -51,15 +51,15 @@ export class ReviewService {
    *
    * @author 강정연
    */
-  async createReviewByPlaceIdx(
+  async createReview(
     createReviewByPlaceIdxInput: CreateReviewByPlaceIdxInput,
   ): Promise<ReviewEntity> {
-    await this.placeService.getPlaceByIdx(createReviewByPlaceIdxInput.placeIdx);
+    await this.placeService.getPlace(createReviewByPlaceIdxInput.placeIdx);
     const review = await this.reviewRepository.createReviewByPlaceIdx(
       createReviewByPlaceIdxInput,
     );
 
-    return await this.getReviewByReviewIdx(review.idx);
+    return await this.getReview(review.idx);
   }
 
   /**
@@ -67,12 +67,10 @@ export class ReviewService {
    *
    * @author 강정연
    */
-  async updateReviewByReviewIdx(
+  async updateReview(
     updateReviewByReviewIdxInput: UpdateReviewByReviewIdxInput,
   ): Promise<ReviewEntity> {
-    const review = await this.getReviewByReviewIdx(
-      updateReviewByReviewIdxInput.reviewIdx,
-    );
+    const review = await this.getReview(updateReviewByReviewIdxInput.reviewIdx);
 
     if (review.userIdx !== updateReviewByReviewIdxInput.userIdx) {
       throw new ForbiddenException('You are not allowed to update this review');
@@ -82,7 +80,7 @@ export class ReviewService {
       updateReviewByReviewIdxInput,
     );
 
-    return await this.getReviewByReviewIdx(updatedReview.idx);
+    return await this.getReview(updatedReview.idx);
   }
 
   /**
@@ -90,11 +88,8 @@ export class ReviewService {
    *
    * @author 강정연
    */
-  async deleteReviewByReviewIdx(
-    reviewIdx: number,
-    userIdx: number,
-  ): Promise<void> {
-    const review = await this.getReviewByReviewIdx(reviewIdx);
+  async deleteReview(reviewIdx: number, userIdx: number): Promise<void> {
+    const review = await this.getReview(reviewIdx);
 
     if (review.userIdx != userIdx) {
       throw new ForbiddenException('You are not allowed to delete this review');

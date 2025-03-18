@@ -29,11 +29,10 @@ export class ReviewController {
   @Exception(404, 'PlaceIdx does not exist')
   @Exception(500, 'Internal Server Error')
   @Get('place/:placeIdx/reviewList')
-  async getReviewListByPlaceIdx(
+  async getReviewList(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
   ): Promise<ReviewEntity[]> {
-    const reviewList =
-      await this.reviewService.getReviewListByPlaceIdx(placeIdx);
+    const reviewList = await this.reviewService.getReviewList(placeIdx);
     return reviewList;
   }
 
@@ -47,12 +46,12 @@ export class ReviewController {
   @Exception(404, 'Place does not exist or keyword does not exist')
   @Exception(500, 'Internal Server Error')
   @Post('place/:placeIdx/review')
-  async createReviewByPlaceIdx(
+  async createReview(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @Body() createReviewByPlaceIdxDto: CreateReviewByPlaceIdxDto,
     @User('idx') userIdx: number,
   ): Promise<ReviewEntity> {
-    const review = await this.reviewService.createReviewByPlaceIdx({
+    const review = await this.reviewService.createReview({
       placeIdx,
       userIdx,
       content: createReviewByPlaceIdxDto.content,
@@ -73,12 +72,12 @@ export class ReviewController {
   @Exception(404, 'Review does not exist')
   @Exception(500, 'Internal Server Error')
   @Patch('review/:reviewIdx')
-  async updateReviewByReviewIdx(
+  async updateReview(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
     @Body() updateReviewByReviewIdxDto: UpdateReviewByReviewIdxDto,
     @User('idx') userIdx: number,
   ): Promise<ReviewEntity> {
-    const review = await this.reviewService.updateReviewByReviewIdx({
+    const review = await this.reviewService.updateReview({
       reviewIdx,
       userIdx,
       content: updateReviewByReviewIdxDto.content,
@@ -100,14 +99,11 @@ export class ReviewController {
   @Exception(404, 'Review does not exist')
   @Exception(500, 'Internal Server Error')
   @Delete('review/:reviewIdx')
-  async deleteReviewByReviewIdx(
+  async deleteReview(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
     @User('idx') userIdx: number,
   ): Promise<void> {
-    const review = await this.reviewService.deleteReviewByReviewIdx(
-      reviewIdx,
-      userIdx,
-    );
+    const review = await this.reviewService.deleteReview(reviewIdx, userIdx);
 
     return review;
   }
