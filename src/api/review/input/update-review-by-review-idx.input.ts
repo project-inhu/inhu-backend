@@ -1,5 +1,5 @@
 /**
- * Controller -> Service로 전달되는 리뷰 수정 DTO
+ * Controller -> Service로 전달되는 리뷰 수정 input
  *
  * @author 강정연
  */

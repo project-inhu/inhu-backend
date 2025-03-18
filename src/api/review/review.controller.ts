@@ -44,15 +44,17 @@ export class ReviewController {
    */
   @LoginAuth
   @Exception(400, 'PlaceIdx must be a number or Invalid request body')
-  @Exception(404, 'Place does not exist')
+  @Exception(404, 'Place does not exist or keyword does not exist')
   @Exception(500, 'Internal Server Error')
   @Post('place/:placeIdx/review')
   async createReviewByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @Body() createReviewByPlaceIdxDto: CreateReviewByPlaceIdxDto,
+    @User('idx') userIdx: number,
   ): Promise<ReviewEntity> {
     const review = await this.reviewService.createReviewByPlaceIdx({
       placeIdx,
+      userIdx,
       content: createReviewByPlaceIdxDto.content,
       imagePathList: createReviewByPlaceIdxDto.imagePathList,
       keywordIdxList: createReviewByPlaceIdxDto.keywordIdxList,

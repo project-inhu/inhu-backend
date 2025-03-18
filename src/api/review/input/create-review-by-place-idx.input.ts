@@ -5,6 +5,7 @@
  */
 export class CreateReviewByPlaceIdxInput {
   placeIdx: number;
+  userIdx: number;
   content: string;
   imagePathList?: string[];
   keywordIdxList?: number[];

@@ -112,6 +112,7 @@ export class ReviewRepository {
   ): Promise<Review> {
     const {
       placeIdx,
+      userIdx,
       content,
       imagePathList = [],
       keywordIdxList = [],
@@ -120,7 +121,7 @@ export class ReviewRepository {
       data: {
         placeIdx,
         content,
-        userIdx: 1,
+        userIdx,
         reviewImage:
           imagePathList.length > 0
             ? {
