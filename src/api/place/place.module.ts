@@ -3,10 +3,12 @@ import { PlaceController } from './place.controller';
 import { PlaceService } from './place.service';
 import { PlaceRepository } from './place.repository';
 import { KeywordModule } from '../keyword/keyword.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [KeywordModule],
+  imports: [KeywordModule, AuthModule],
   controllers: [PlaceController],
-  providers: [PlaceService, PlaceRepository]
+  providers: [PlaceService, PlaceRepository],
+  exports: [PlaceService, PlaceRepository],
 })
-export class PlaceModule { }
+export class PlaceModule {}

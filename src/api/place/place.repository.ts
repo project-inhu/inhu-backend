@@ -1,21 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
-import { GetAllPlaceOverviewDto } from './dto/get-all-place-overview.dto';
-import { GetPlaceByPlaceIdxDto } from './dto/get-place-detail.dto';
-import { PlaceQueryResult } from './interfaces/place-query-result.interface';
+import { PlaceOverviewSelectField } from './type/place-overview-select-field.type';
+import { PlaceSelectField } from './type/place-select-field.type';
 
 @Injectable()
 export class PlaceRepository {
   constructor(private prisma: PrismaService) {}
 
   async selectAllPlaceOverview(
-    getAllPlaceOverviewDto: GetAllPlaceOverviewDto,
-  ): Promise<PlaceOverviewQueryResult[]> {
-    const { page, userIdx } = getAllPlaceOverviewDto;
-
-    // keyword를 제외한 place 정보 읽어오기
+    page: number,
+    userIdx: number,
+  ): Promise<PlaceOverviewSelectField[]> {
     return await this.prisma.place.findMany({
-      skip: page - 1,
+      skip: (page - 1) * 10,
       take: 10,
       where: {
         deletedAt: null,
@@ -24,17 +21,12 @@ export class PlaceRepository {
         idx: true,
         name: true,
         address: true,
-        bookmark: {
-          where: {
-            userIdx,
-          },
-          select: {
-            idx: true,
-          },
-        },
+        bookmark: userIdx
+          ? { where: { userIdx }, select: { idx: true } }
+          : undefined,
         placeImage: {
           select: {
-            imagePath: true,
+            path: true,
           },
         },
         review: {
@@ -46,15 +38,13 @@ export class PlaceRepository {
     });
   }
 
-  async selectPlaceByPlaceIdx(
-    getPlaceByPlaceIdxDto: GetPlaceByPlaceIdxDto,
-  ): Promise<PlaceQueryResult | null> {
-    const { idx } = getPlaceByPlaceIdxDto;
-    const userIdx = 1;
-
+  async selectPlaceByIdx(
+    placeIdx: number,
+    userIdx?: number,
+  ): Promise<PlaceSelectField | null> {
     return await this.prisma.place.findFirst({
       where: {
-        idx,
+        idx: placeIdx,
         deletedAt: null,
       },
       select: {
@@ -72,17 +62,12 @@ export class PlaceRepository {
             endAt: true,
           },
         },
-        bookmark: {
-          where: {
-            userIdx: userIdx,
-          },
-          select: {
-            idx: true,
-          },
-        },
+        bookmark: userIdx
+          ? { where: { userIdx }, select: { idx: true } }
+          : undefined,
         placeImage: {
           select: {
-            imagePath: true,
+            path: true,
           },
         },
         review: {

@@ -1,9 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PlaceRepository } from './place.repository';
 import { KeywordRepository } from '../keyword/keyword.repository';
-import { GetAllPlaceOverviewDto } from './dto/get-all-place-overview.dto';
 import { PlaceOverviewEntity } from './entity/place-overview.entity';
-import { GetPlaceByPlaceIdxDto } from './dto/get-place-detail.dto';
 import { PlaceEntity } from './entity/place.entity';
 
 @Injectable()
@@ -14,24 +12,27 @@ export class PlaceService {
   ) {}
 
   async getAllPlaceOverview(
-    getAllPlaceOverviewDto: GetAllPlaceOverviewDto,
+    page: number,
+    userIdx: number,
   ): Promise<PlaceOverviewEntity[]> {
     return (
-      await this.placeRepository.selectAllPlaceOverview(getAllPlaceOverviewDto)
+      await this.placeRepository.selectAllPlaceOverview(page, userIdx)
     ).map(PlaceOverviewEntity.createEntityFromPrisma);
   }
 
-  async getPlaceByPlaceIdx(
-    getPlaceByPlaceIdxDto: GetPlaceByPlaceIdxDto,
-  ): Promise<PlaceEntity | null> {
-    const place = await this.placeRepository.selectPlaceByPlaceIdx(
-      getPlaceByPlaceIdxDto,
+  async getPlaceByIdx(
+    placeIdx: number,
+    userIdx?: number,
+  ): Promise<PlaceEntity> {
+    const place = await this.placeRepository.selectPlaceByIdx(
+      placeIdx,
+      userIdx,
     );
 
-    if (place) {
-      return PlaceEntity.createEntityFromPrisma(place);
-    } else {
-      return null;
+    if (!place) {
+      throw new NotFoundException('place not found');
     }
+
+    return PlaceEntity.createEntityFromPrisma(place);
   }
 }

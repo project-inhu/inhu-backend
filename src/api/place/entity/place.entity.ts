@@ -1,61 +1,93 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { Week } from '../type/week.type';
 import { Decimal } from '@prisma/client/runtime/library';
-import { PlaceQueryResult } from '../interfaces/place-query-result.interface';
 import { WEEKS } from '../common/constants/weeks.constant';
-import { WeekScheduleDto } from '../dto/week-schedule.dto';
+import { WeekSchedule } from '../type/week-schedule.type';
+import { PlaceSelectField } from '../type/place-select-field.type';
 
 export class PlaceEntity {
-  @ApiProperty({ description: 'place idx', example: 1 })
+  /**
+   * place Idx
+   *
+   * @example 1
+   */
   idx: number;
 
-  @ApiProperty({ description: 'place name', example: '동아리 닭갈비' })
+  /**
+   * place name
+   *
+   * @example '동아리 닭갈비'
+   */
   name: string;
 
-  @ApiProperty({ description: 'place tel', example: '032-1111-2222' })
+  /**
+   * place tel
+   *
+   * @example '032-1111-2222'
+   */
   tel: string;
 
-  @ApiProperty({ description: 'place address', example: '인천 미추홀구' })
+  /**
+   * place address
+   *
+   * @example '인천 미추홀구'
+   */
   address: string;
 
-  @ApiProperty({ description: 'place addressX', example: 37.1111 })
+  /**
+   * place addressX
+   *
+   * @example 37.1111
+   */
   addressX: Decimal;
 
-  @ApiProperty({ description: 'place addressY', example: 37.1111 })
+  /**
+   * place addressY
+   *
+   * @example 37.1111
+   */
   addressY: Decimal;
 
-  @ApiProperty({
-    description: '생성 날짜',
-    example: '2024-02-23T12:34:56.789Z',
-  })
+  /**
+   * 생성 날짜
+   */
   createdAt: Date;
 
-  @ApiProperty()
-  week: WeekScheduleDto;
+  /**
+   * 요일별 운영 시간 정보
+   */
+  week: WeekSchedule;
 
-  @ApiProperty({ description: 'review count', example: 1 })
+  /**
+   * review count
+   *
+   * @example 1
+   */
   reviewCount: number;
 
-  @ApiProperty({
-    description: '현재 사용자가 특정 항목을 북마크했는지 여부',
-    example: true,
-  })
+  /**
+   * 현재 사용자가 특정 항목을 북마크했는지 여부
+   */
   bookmark: boolean;
 
-  @ApiProperty({
-    description: '특정 장소에서 가장 많이 사용된 review keyword 상위 2개',
-    example: ['맛있어요.', '가성비 좋아요.'],
-  })
-  keyword: string[];
+  /**
+   * 특정 장소에서 가장 많이 사용된 review keyword 상위 2개
+   *
+   * @example ['맛있어요.', '가성비 좋아요.']
+   */
+  keywordList: string[];
 
-  @ApiProperty({ description: '특정 장소 사진 path list', example: ['1234'] })
-  imagePath: string[];
+  /**
+   * 특정 장소 image path list
+   *
+   * @example ['https://myapp-images.s3.amazonaws.com/uploads/profile123.jpg']
+   */
+  imagePathList: string[];
 
   constructor(data: PlaceEntity) {
     Object.assign(this, data);
   }
 
-  static createEntityFromPrisma(place: PlaceQueryResult): PlaceEntity {
+  static createEntityFromPrisma(place: PlaceSelectField): PlaceEntity {
     return new PlaceEntity({
       idx: place.idx,
       name: place.name,
@@ -64,7 +96,7 @@ export class PlaceEntity {
       addressX: place.addressX,
       addressY: place.addressY,
       createdAt: place.createdAt,
-      week: place.placeHours.reduce<WeekScheduleDto>(
+      week: place.placeHours.reduce<WeekSchedule>(
         (acc, item) => {
           const key = item.day as Week;
           acc[key] = { startAt: item.startAt, endAt: item.endAt };
@@ -81,9 +113,9 @@ export class PlaceEntity {
         },
       ),
       reviewCount: place.review.length,
-      bookmark: place.bookmark.length > 0 ? true : false,
-      keyword: [],
-      imagePath: place.placeImage.map((path) => path.imagePath ?? ''),
+      bookmark: place.bookmark?.length ? true : false,
+      keywordList: [],
+      imagePathList: place.placeImage.map((image) => image.path ?? ''),
     });
   }
 }

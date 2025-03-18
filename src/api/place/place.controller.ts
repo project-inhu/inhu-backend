@@ -1,41 +1,50 @@
-import { Query, Controller, Get, Param } from '@nestjs/common';
+import {
+  Query,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  UseGuards,
+} from '@nestjs/common';
 import { PlaceService } from './place.service';
 import { GetAllPlaceOverviewDto } from './dto/get-all-place-overview.dto';
-import { AllPlaceOverviewResponseDto } from './dto/all-place-overview-response.dto';
-import { GetPlaceByPlaceIdxDto } from './dto/get-place-detail.dto';
-import { ApiOkResponse } from '@nestjs/swagger';
-import { PlaceByPlaceIdxResponseDto } from './dto/place-by-place-idx-response.dto';
+import { User } from 'src/common/decorator/user.decorator';
+import { AuthGuard } from 'src/auth/common/guards/auth.guard';
+import { PlaceOverviewEntity } from './entity/place-overview.entity';
+import { PlaceEntity } from './entity/place.entity';
 
 @Controller('place')
 export class PlaceController {
   constructor(private placeService: PlaceService) {}
 
-  @ApiOkResponse({ type: AllPlaceOverviewResponseDto })
+  /**
+   * 모든 place 개요 가져오기
+   *
+   * @author 이수인
+   */
+  @UseGuards(AuthGuard)
   @Get('/all')
   async getAllPlaceOverview(
     @Query() getAllPlaceOverviewDto: GetAllPlaceOverviewDto,
-  ): Promise<AllPlaceOverviewResponseDto> {
-    const placeOverviewList = await this.placeService.getAllPlaceOverview(
-      getAllPlaceOverviewDto,
+    @User('idx') userIdx: number,
+  ): Promise<PlaceOverviewEntity[]> {
+    return await this.placeService.getAllPlaceOverview(
+      getAllPlaceOverviewDto.page,
+      userIdx,
     );
-
-    return { placeOverviewList };
   }
 
-  @ApiOkResponse({ type: PlaceByPlaceIdxResponseDto })
-  @Get('/:idx')
-  async getPlaceByPlaceIdx(
-    @Param() getPlaceByPlaceIdxDto: GetPlaceByPlaceIdxDto,
-  ): Promise<PlaceByPlaceIdxResponseDto> {
-    const place = await this.placeService.getPlaceByPlaceIdx(
-      getPlaceByPlaceIdxDto,
-    );
-
-    return { place };
-  }
-
-  @Get('/test')
-  async testFunc() {
-    return null;
+  /**
+   * place 관련 모든 정보 가져오기
+   *
+   * @author 이수인
+   */
+  @UseGuards(AuthGuard)
+  @Get('/:placeIdx')
+  async getPlaceByIdx(
+    @Param('placeIdx', ParseIntPipe) placeIdx: number,
+    @User('idx') userIdx: number,
+  ): Promise<PlaceEntity> {
+    return await this.placeService.getPlaceByIdx(placeIdx, userIdx);
   }
 }
