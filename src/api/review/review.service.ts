@@ -22,7 +22,7 @@ export class ReviewService {
    * @author 강정연
    */
   async getReviewListByPlaceIdx(placeIdx: number): Promise<ReviewEntity[]> {
-    await this.placeService.getPlaceByPlaceIdx(placeIdx);
+    await this.placeService.getPlaceByIdx(placeIdx);
 
     const reviewList = (
       await this.reviewRepository.selectReviewListByPlaceIdx(placeIdx)
@@ -54,9 +54,7 @@ export class ReviewService {
   async createReviewByPlaceIdx(
     createReviewByPlaceIdxInput: CreateReviewByPlaceIdxInput,
   ): Promise<ReviewEntity> {
-    await this.placeService.getPlaceByPlaceIdx(
-      createReviewByPlaceIdxInput.placeIdx,
-    );
+    await this.placeService.getPlaceByIdx(createReviewByPlaceIdxInput.placeIdx);
     const review = await this.reviewRepository.createReviewByPlaceIdx(
       createReviewByPlaceIdxInput,
     );

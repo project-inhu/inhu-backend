@@ -1,4 +1,4 @@
-import { ReviewSelectField } from '../common/constants/review-select-field';
+import { ReviewSelectField } from '../type/review-select-field';
 
 /**
  * 리뷰 엔티티 클래스
