@@ -14,7 +14,7 @@ import { ReviewEntity } from './entity/review.entity';
 import { UpdateReviewByReviewIdxDto } from './dto/update-review-by-review-idx.dto';
 import { User } from 'src/common/decorator/user.decorator';
 import { LoginAuth } from 'src/auth/common/decorators/login-auth.decorator';
-import { Execption } from 'src/common/decorator/exception.decorator';
+import { Exception } from 'src/common/decorator/exception.decorator';
 
 @Controller('')
 export class ReviewController {
@@ -25,9 +25,9 @@ export class ReviewController {
    *
    * @author 강정연
    */
-  @Execption(400, 'PlaceIdx must be a number')
-  @Execption(404, 'PlaceIdx does not exist')
-  @Execption(500, 'Internal Server Error')
+  @Exception(400, 'PlaceIdx must be a number')
+  @Exception(404, 'PlaceIdx does not exist')
+  @Exception(500, 'Internal Server Error')
   @Get('place/:placeIdx/reviewList')
   async getReviewListByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
@@ -43,10 +43,9 @@ export class ReviewController {
    * @author 강정연
    */
   @LoginAuth
-  @Execption(400, 'PlaceIdx must be a number')
-  @Execption(400, 'Invalid request body')
-  @Execption(404, 'Place does not exist')
-  @Execption(500, 'Internal Server Error')
+  @Exception(400, 'PlaceIdx must be a number or Invalid request body')
+  @Exception(404, 'Place does not exist')
+  @Exception(500, 'Internal Server Error')
   @Post('place/:placeIdx/review')
   async createReviewByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
@@ -67,11 +66,10 @@ export class ReviewController {
    * @author 강정연
    */
   @LoginAuth
-  @Execption(400, 'ReviewIdx must be a number or Invalid request')
-  @Execption(400, 'Invalid request body')
-  @Execption(403, 'You are not allowed to update this review')
-  @Execption(404, 'Review does not exist')
-  @Execption(500, 'Internal Server Error')
+  @Exception(400, 'ReviewIdx must be a number or Invalid request')
+  @Exception(403, 'You are not allowed to update this review')
+  @Exception(404, 'Review does not exist')
+  @Exception(500, 'Internal Server Error')
   @Patch('review/:reviewIdx')
   async updateReviewByReviewIdx(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
@@ -95,10 +93,10 @@ export class ReviewController {
    * @author 강정연
    */
   @LoginAuth
-  @Execption(400, 'ReviewIdx must be a number or Invalid request')
-  @Execption(403, 'You are not allowed to delete this review')
-  @Execption(404, 'Review does not exist')
-  @Execption(500, 'Internal Server Error')
+  @Exception(400, 'ReviewIdx must be a number or Invalid request')
+  @Exception(403, 'You are not allowed to delete this review')
+  @Exception(404, 'Review does not exist')
+  @Exception(500, 'Internal Server Error')
   @Delete('review/:reviewIdx')
   async deleteReviewByReviewIdx(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
