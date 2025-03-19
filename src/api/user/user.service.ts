@@ -4,6 +4,7 @@ import { UserInfoEntity } from './entity/user-info.entity';
 import { RegisterUserEntity } from './entity/register-user.entity';
 import { CreateUserInput } from './input/create-user.input';
 import { UpdateUserInput } from './input/update-user.input';
+import { CreateUserData } from './data/create-user.data';
 
 @Injectable()
 export class UserService {
@@ -26,8 +27,7 @@ export class UserService {
   async registerUser(
     createUserInput: CreateUserInput,
   ): Promise<RegisterUserEntity> {
-    const snsId = createUserInput.snsId;
-    const provider = createUserInput.provider;
+    const { snsId, provider } = createUserInput;
 
     const user = await this.userRepository.selectUserBySnsId(snsId);
     if (user) {
@@ -35,11 +35,9 @@ export class UserService {
     }
 
     const nickname = await this.generateTemporaryNickname();
-    const newUser = await this.userRepository.insertUser(
-      snsId,
-      provider,
-      nickname,
-    );
+    const createUserData = new CreateUserData(snsId, provider, nickname);
+    const newUser = await this.userRepository.createUser(createUserData);
+
     return RegisterUserEntity.createEntityFromPrisma(newUser);
   }
 
@@ -49,7 +47,7 @@ export class UserService {
    * @author 조희주
    */
   async getMyInfo(userIdx: number): Promise<UserInfoEntity> {
-    const user = await this.userRepository.selectUserByIdx(userIdx);
+    const user = await this.userRepository.selectUserByUserIdx(userIdx);
     return UserInfoEntity.createEntityFromPrisma(user);
   }
 
@@ -63,7 +61,7 @@ export class UserService {
   ): Promise<UserInfoEntity> {
     const { userIdx, nickname, profileImagePath } = updateUserInput;
 
-    const user = await this.userRepository.selectUserByIdx(userIdx);
+    const user = await this.userRepository.selectUserByUserIdx(userIdx);
 
     if (nickname) {
       const existingUser =
@@ -73,7 +71,8 @@ export class UserService {
       }
     }
 
-    const updatedUser = await this.userRepository.updateUserByIdx(userIdx, {
+    const updatedUser = await this.userRepository.updateUserByUserIdx({
+      userIdx,
       nickname: nickname ?? user.nickname,
       profileImagePath: profileImagePath ?? user.profileImagePath,
     });
@@ -87,8 +86,8 @@ export class UserService {
    * @author 조희주
    */
   async deleteUser(userIdx: number): Promise<UserInfoEntity> {
-    await this.userRepository.selectUserByIdx(userIdx);
-    const deletedUser = await this.userRepository.deleteUserByIdx(userIdx);
+    await this.userRepository.selectUserByUserIdx(userIdx);
+    const deletedUser = await this.userRepository.deleteUserByUserIdx(userIdx);
     return UserInfoEntity.createEntityFromPrisma(deletedUser);
   }
 }

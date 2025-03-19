@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
+import { UpdateUserInput } from './input/update-user.input';
+import { CreateUserData } from './data/create-user.data';
 
 @Injectable()
 export class UserRepository {
@@ -36,10 +38,9 @@ export class UserRepository {
    *
    * @author 조희주
    */
-  async selectUserByIdx(idx: number): Promise<User> {
+  async selectUserByUserIdx(userIdx: number): Promise<User> {
     return await this.prisma.user.findUniqueOrThrow({
-      where: { idx, deletedAt: null },
-      include: { userProvider: true },
+      where: { idx: userIdx, deletedAt: null },
     });
   }
 
@@ -69,11 +70,9 @@ export class UserRepository {
    *
    * @author 조희주
    */
-  async insertUser(
-    snsId: string,
-    provider: string,
-    nickname: string,
-  ): Promise<User> {
+  async createUser(createUserData: CreateUserData): Promise<User> {
+    const { snsId, provider, nickname } = createUserData;
+
     return await this.prisma.user.create({
       data: {
         nickname,
@@ -92,10 +91,15 @@ export class UserRepository {
    *
    * @author 조희주
    */
-  async updateUserByIdx(idx: number, data: Partial<User>): Promise<User> {
+  async updateUserByUserIdx(updateUserInput: UpdateUserInput): Promise<User> {
+    const { userIdx, nickname, profileImagePath } = updateUserInput;
+
     return await this.prisma.user.update({
-      where: { idx, deletedAt: null },
-      data,
+      where: { idx: userIdx, deletedAt: null },
+      data: {
+        nickname,
+        profileImagePath,
+      },
     });
   }
 
@@ -104,9 +108,9 @@ export class UserRepository {
    *
    * @author 조희주
    */
-  async deleteUserByIdx(idx: number): Promise<User> {
+  async deleteUserByUserIdx(userIdx: number): Promise<User> {
     return await this.prisma.user.update({
-      where: { idx, deletedAt: null },
+      where: { idx: userIdx, deletedAt: null },
       data: { deletedAt: new Date() },
     });
   }

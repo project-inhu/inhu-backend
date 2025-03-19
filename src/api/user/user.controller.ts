@@ -23,9 +23,7 @@ export class UserController {
    */
   @UseGuards(AuthGuard)
   @Get()
-  async getMyInfoByUserIdx(
-    @User('idx') userIdx: number,
-  ): Promise<UserInfoEntity> {
+  async getMyInfo(@User('idx') userIdx: number): Promise<UserInfoEntity> {
     return await this.userService.getMyInfo(userIdx);
   }
 
@@ -36,7 +34,7 @@ export class UserController {
    */
   @UseGuards(AuthGuard)
   @Patch()
-  async updateMyInfoByUserIdx(
+  async updateMyInfo(
     @User('idx') userIdx: number,
     @Body() myInfoDto: MyInfoDto,
   ): Promise<UserInfoEntity> {
