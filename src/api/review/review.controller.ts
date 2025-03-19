@@ -32,8 +32,7 @@ export class ReviewController {
   async getReviewList(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
   ): Promise<ReviewEntity[]> {
-    const reviewList = await this.reviewService.getReviewList(placeIdx);
-    return reviewList;
+    return await this.reviewService.getReviewList(placeIdx);
   }
 
   /**
@@ -51,14 +50,13 @@ export class ReviewController {
     @Body() createReviewByPlaceIdxDto: CreateReviewByPlaceIdxDto,
     @User('idx') userIdx: number,
   ): Promise<ReviewEntity> {
-    const review = await this.reviewService.createReview({
+    return await this.reviewService.createReview({
       placeIdx,
       userIdx,
       content: createReviewByPlaceIdxDto.content,
       imagePathList: createReviewByPlaceIdxDto.imagePathList,
       keywordIdxList: createReviewByPlaceIdxDto.keywordIdxList,
     });
-    return review;
   }
 
   /**
@@ -77,15 +75,13 @@ export class ReviewController {
     @Body() updateReviewByReviewIdxDto: UpdateReviewByReviewIdxDto,
     @User('idx') userIdx: number,
   ): Promise<ReviewEntity> {
-    const review = await this.reviewService.updateReview({
+    return await this.reviewService.updateReview({
       reviewIdx,
       userIdx,
       content: updateReviewByReviewIdxDto.content,
       imagePathList: updateReviewByReviewIdxDto.imagePathList,
       keywordIdxList: updateReviewByReviewIdxDto.keywordIdxList,
     });
-
-    return review;
   }
 
   /**
@@ -103,8 +99,6 @@ export class ReviewController {
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
     @User('idx') userIdx: number,
   ): Promise<void> {
-    const review = await this.reviewService.deleteReview(reviewIdx, userIdx);
-
-    return review;
+    return await this.reviewService.deleteReview(reviewIdx, userIdx);
   }
 }
