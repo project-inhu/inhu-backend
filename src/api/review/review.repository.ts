@@ -22,6 +22,9 @@ export class ReviewRepository {
         placeIdx,
         deletedAt: null,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
       select: {
         idx: true,
         userIdx: true,
@@ -37,9 +40,16 @@ export class ReviewRepository {
           },
         },
         reviewKeywordMapping: {
-          select: {
+          include: {
             keyword: {
-              select: { content: true },
+              select: {
+                content: true,
+              },
+            },
+          },
+          orderBy: {
+            keyword: {
+              idx: 'asc',
             },
           },
         },
@@ -82,9 +92,16 @@ export class ReviewRepository {
           },
         },
         reviewKeywordMapping: {
-          select: {
+          include: {
             keyword: {
-              select: { content: true },
+              select: {
+                content: true,
+              },
+            },
+          },
+          orderBy: {
+            keyword: {
+              idx: 'asc',
             },
           },
         },
@@ -152,6 +169,9 @@ export class ReviewRepository {
       where: {
         userIdx,
         deletedAt: null,
+      },
+      orderBy: {
+        createdAt: 'desc',
       },
       select: {
         idx: true,
