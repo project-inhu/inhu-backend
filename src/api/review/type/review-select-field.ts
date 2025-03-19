@@ -18,9 +18,6 @@ const REVIEW_SELECT_FIELD = Prisma.validator<Prisma.ReviewDefaultArgs>()({
       select: {
         path: true,
       },
-      orderBy: {
-        idx: 'asc',
-      },
     },
     reviewKeywordMapping: {
       select: {
