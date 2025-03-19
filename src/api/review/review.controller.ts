@@ -90,7 +90,7 @@ export class ReviewController {
    * @author 강정연
    */
   @LoginAuth
-  @Exception(400, 'ReviewIdx must be a number or Invalid request')
+  @Exception(400, 'ReviewIdx must be a number')
   @Exception(403, 'You are not allowed to delete this review')
   @Exception(404, 'Review does not exist')
   @Exception(500, 'Internal Server Error')
