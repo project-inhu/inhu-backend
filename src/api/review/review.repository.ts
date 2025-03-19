@@ -40,7 +40,7 @@ export class ReviewRepository {
           },
         },
         reviewKeywordMapping: {
-          include: {
+          select: {
             keyword: {
               select: {
                 content: true,
@@ -92,7 +92,7 @@ export class ReviewRepository {
           },
         },
         reviewKeywordMapping: {
-          include: {
+          select: {
             keyword: {
               select: {
                 content: true,
