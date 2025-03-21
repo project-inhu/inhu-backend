@@ -23,8 +23,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get()
   async getMyInfo(@User('idx') userIdx: number): Promise<UserInfoEntity> {
-    const user = await this.userService.getMyInfo(userIdx);
-    return user;
+    return await this.userService.getMyInfo(userIdx);
   }
 
   /**
