@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { UpdateUserInput } from './input/update-user.input';
 import { CreateUserInput } from './input/create-user.input';
@@ -121,7 +120,7 @@ export class UserRepository {
    *
    * @author 조희주
    */
-  async createUser(createUserInput: CreateUserInput): Promise<User> {
+  async createUser(createUserInput: CreateUserInput): Promise<UserSelectField> {
     const { snsId, provider, nickname } = createUserInput;
 
     if (!nickname) {
@@ -138,6 +137,18 @@ export class UserRepository {
           },
         },
       },
+      select: {
+        idx: true,
+        nickname: true,
+        profileImagePath: true,
+        createdAt: true,
+        deletedAt: true,
+        userProvider: {
+          select: { snsId: true, name: true },
+        },
+        bookmark: { select: { idx: true, placeIdx: true } },
+        review: { select: { idx: true, content: true } },
+      },
     });
   }
 
@@ -146,7 +157,9 @@ export class UserRepository {
    *
    * @author 조희주
    */
-  async updateUserByUserIdx(updateUserInput: UpdateUserInput): Promise<User> {
+  async updateUserByUserIdx(
+    updateUserInput: UpdateUserInput,
+  ): Promise<UserSelectField> {
     const { userIdx, nickname, profileImagePath } = updateUserInput;
 
     return await this.prisma.user.update({
@@ -154,6 +167,18 @@ export class UserRepository {
       data: {
         nickname,
         profileImagePath,
+      },
+      select: {
+        idx: true,
+        nickname: true,
+        profileImagePath: true,
+        createdAt: true,
+        deletedAt: true,
+        userProvider: {
+          select: { snsId: true, name: true },
+        },
+        bookmark: { select: { idx: true, placeIdx: true } },
+        review: { select: { idx: true, content: true } },
       },
     });
   }
@@ -163,10 +188,22 @@ export class UserRepository {
    *
    * @author 조희주
    */
-  async deleteUserByUserIdx(userIdx: number): Promise<User> {
+  async deleteUserByUserIdx(userIdx: number): Promise<UserSelectField> {
     return await this.prisma.user.update({
       where: { idx: userIdx, deletedAt: null },
       data: { deletedAt: new Date() },
+      select: {
+        idx: true,
+        nickname: true,
+        profileImagePath: true,
+        createdAt: true,
+        deletedAt: true,
+        userProvider: {
+          select: { snsId: true, name: true },
+        },
+        bookmark: { select: { idx: true, placeIdx: true } },
+        review: { select: { idx: true, content: true } },
+      },
     });
   }
 }
