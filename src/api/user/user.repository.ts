@@ -3,6 +3,7 @@ import { User } from '@prisma/client';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { UpdateUserInput } from './input/update-user.input';
 import { CreateUserInput } from './input/create-user.input';
+import { UserSelectField } from './type/user-select-field';
 
 @Injectable()
 export class UserRepository {
@@ -12,9 +13,21 @@ export class UserRepository {
    *
    * @author 조희주
    */
-  async selectAllUsers(): Promise<User[]> {
+  async selectAllUsers(): Promise<UserSelectField[]> {
     return await this.prisma.user.findMany({
       where: { deletedAt: null },
+      select: {
+        idx: true,
+        nickname: true,
+        profileImagePath: true,
+        createdAt: true,
+        deletedAt: true,
+        userProvider: {
+          select: { snsId: true, name: true },
+        },
+        bookmark: { select: { idx: true, placeIdx: true } },
+        review: { select: { idx: true, content: true } },
+      },
     });
   }
 
@@ -23,12 +36,24 @@ export class UserRepository {
    *
    * @author 조희주
    */
-  async selectUserBySnsId(snsId: string): Promise<User | null> {
+  async selectUserBySnsId(snsId: string): Promise<UserSelectField | null> {
     return await this.prisma.user.findFirst({
       where: {
         userProvider: {
           snsId,
         },
+      },
+      select: {
+        idx: true,
+        nickname: true,
+        profileImagePath: true,
+        createdAt: true,
+        deletedAt: true,
+        userProvider: {
+          select: { snsId: true, name: true },
+        },
+        bookmark: { select: { idx: true, placeIdx: true } },
+        review: { select: { idx: true, content: true } },
       },
     });
   }
@@ -38,9 +63,21 @@ export class UserRepository {
    *
    * @author 조희주
    */
-  async selectUserByUserIdx(userIdx: number): Promise<User> {
+  async selectUserByUserIdx(userIdx: number): Promise<UserSelectField> {
     return await this.prisma.user.findUniqueOrThrow({
       where: { idx: userIdx, deletedAt: null },
+      select: {
+        idx: true,
+        nickname: true,
+        profileImagePath: true,
+        createdAt: true,
+        deletedAt: true,
+        userProvider: {
+          select: { snsId: true, name: true },
+        },
+        bookmark: { select: { idx: true, placeIdx: true } },
+        review: { select: { idx: true, content: true } },
+      },
     });
   }
 
@@ -49,9 +86,23 @@ export class UserRepository {
    *
    * @author 조희주
    */
-  async selectUserByNickname(nickname: string): Promise<User | null> {
+  async selectUserByNickname(
+    nickname: string,
+  ): Promise<UserSelectField | null> {
     return await this.prisma.user.findFirst({
       where: { nickname, deletedAt: null },
+      select: {
+        idx: true,
+        nickname: true,
+        profileImagePath: true,
+        createdAt: true,
+        deletedAt: true,
+        userProvider: {
+          select: { snsId: true, name: true },
+        },
+        bookmark: { select: { idx: true, placeIdx: true } },
+        review: { select: { idx: true, content: true } },
+      },
     });
   }
 
