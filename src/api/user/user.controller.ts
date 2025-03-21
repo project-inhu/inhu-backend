@@ -15,7 +15,6 @@ import { UserInfoEntity } from './entity/user-info.entity';
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
-
   /**
    * 내 정보 조회
    *
@@ -24,7 +23,8 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get()
   async getMyInfo(@User('idx') userIdx: number): Promise<UserInfoEntity> {
-    return await this.userService.getMyInfo(userIdx);
+    const user = await this.userService.getMyInfo(userIdx);
+    return user;
   }
 
   /**

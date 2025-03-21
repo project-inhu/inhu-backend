@@ -4,7 +4,6 @@ import { UserInfoEntity } from './entity/user-info.entity';
 import { RegisterUserEntity } from './entity/register-user.entity';
 import { CreateUserInput } from './input/create-user.input';
 import { UpdateUserInput } from './input/update-user.input';
-import { CreateUserData } from './data/create-user.data';
 
 @Injectable()
 export class UserService {
@@ -35,7 +34,13 @@ export class UserService {
     }
 
     const nickname = await this.generateTemporaryNickname();
-    const createUserData = new CreateUserData(snsId, provider, nickname);
+
+    const createUserData = {
+      snsId,
+      provider,
+      nickname,
+    };
+
     const newUser = await this.userRepository.createUser(createUserData);
 
     return RegisterUserEntity.createEntityFromPrisma(newUser);
@@ -48,6 +53,7 @@ export class UserService {
    */
   async getMyInfo(userIdx: number): Promise<UserInfoEntity> {
     const user = await this.userRepository.selectUserByUserIdx(userIdx);
+
     return UserInfoEntity.createEntityFromPrisma(user);
   }
 
@@ -63,12 +69,11 @@ export class UserService {
 
     const user = await this.userRepository.selectUserByUserIdx(userIdx);
 
-    if (nickname) {
-      const existingUser =
-        await this.userRepository.selectUserByNickname(nickname);
-      if (existingUser) {
-        throw new ConflictException('This nickname is already in use.');
-      }
+    if (
+      nickname &&
+      (await this.userRepository.selectUserByNickname(nickname))
+    ) {
+      throw new ConflictException('This nickname is already in use.');
     }
 
     const updatedUser = await this.userRepository.updateUserByUserIdx({
@@ -88,6 +93,7 @@ export class UserService {
   async deleteUser(userIdx: number): Promise<UserInfoEntity> {
     await this.userRepository.selectUserByUserIdx(userIdx);
     const deletedUser = await this.userRepository.deleteUserByUserIdx(userIdx);
+
     return UserInfoEntity.createEntityFromPrisma(deletedUser);
   }
 }

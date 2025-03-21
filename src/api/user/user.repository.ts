@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { UpdateUserInput } from './input/update-user.input';
-import { CreateUserData } from './data/create-user.data';
+import { CreateUserInput } from './input/create-user.input';
 
 @Injectable()
 export class UserRepository {
@@ -70,8 +70,12 @@ export class UserRepository {
    *
    * @author 조희주
    */
-  async createUser(createUserData: CreateUserData): Promise<User> {
-    const { snsId, provider, nickname } = createUserData;
+  async createUser(createUserInput: CreateUserInput): Promise<User> {
+    const { snsId, provider, nickname } = createUserInput;
+
+    if (!nickname) {
+      throw new BadRequestException('Nickname is required');
+    }
 
     return await this.prisma.user.create({
       data: {
