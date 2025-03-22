@@ -52,14 +52,19 @@ export class TestManager {
       }),
     );
 
-    await this.prismaTestingHelper.startNewTransaction();
-
     await this.app.init();
   }
 
   async close() {
-    this.prismaTestingHelper?.rollbackCurrentTransaction();
     await this.app.close();
+  }
+
+  async startTransaction() {
+    await this.prismaTestingHelper?.startNewTransaction();
+  }
+
+  rollbackTransaction() {
+    this.prismaTestingHelper?.rollbackCurrentTransaction();
   }
 
   getApp() {
