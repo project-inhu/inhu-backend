@@ -18,13 +18,21 @@ describe('AuthController (e2e)', () => {
   let app: INestApplication;
   let test = TestManager.create();
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await test.init();
     app = test.getApp();
   });
 
-  afterEach(async () => {
+  beforeEach(async () => {
+    await test.startTransaction();
+  });
+
+  afterAll(async () => {
     await test.close();
+  });
+
+  afterEach(() => {
+    test.rollbackTransaction();
   });
 
   describe('GET /auth/kakao/login', () => {
