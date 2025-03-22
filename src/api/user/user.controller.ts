@@ -23,8 +23,10 @@ export class UserController {
    */
   @UseGuards(AuthGuard)
   @Get()
-  async getUser(@User('idx') userIdx: number): Promise<UserInfoEntity> {
-    return await this.userService.getUser(userIdx);
+  async getUserByUserIdx(
+    @User('idx') userIdx: number,
+  ): Promise<UserInfoEntity> {
+    return await this.userService.getUserByUserIdx(userIdx);
   }
 
   /**
@@ -34,11 +36,11 @@ export class UserController {
    */
   @UseGuards(AuthGuard)
   @Patch()
-  async updateUser(
+  async updateUserByUserIdx(
     @User('idx') userIdx: number,
     @Body() myInfoDto: MyInfoDto,
   ): Promise<UserInfoEntity> {
-    return this.userService.updateUser({
+    return this.userService.updateUserByUserIdx({
       userIdx,
       nickname: myInfoDto.nickname,
       profileImagePath: myInfoDto.profileImagePath,
@@ -52,7 +54,7 @@ export class UserController {
    */
   @UseGuards(AuthGuard)
   @Delete()
-  async deleteUser(@User('idx') userIdx: number): Promise<void> {
-    await this.userService.deleteUser(userIdx);
+  async deleteUserByUserIdx(@User('idx') userIdx: number): Promise<void> {
+    await this.userService.deleteUserByUserIdx(userIdx);
   }
 }

@@ -56,7 +56,7 @@ export class UserService {
    *
    * @author 조희주
    */
-  async getUser(userIdx: number): Promise<UserInfoEntity> {
+  async getUserByUserIdx(userIdx: number): Promise<UserInfoEntity> {
     const user = await this.userRepository.selectUserByUserIdx(userIdx);
     if (!user) {
       throw new NotFoundException('User not found');
@@ -70,7 +70,9 @@ export class UserService {
    *
    * @author 조희주
    */
-  async updateUser(updateUserInput: UpdateUserInput): Promise<UserInfoEntity> {
+  async updateUserByUserIdx(
+    updateUserInput: UpdateUserInput,
+  ): Promise<UserInfoEntity> {
     const { userIdx, nickname, profileImagePath } = updateUserInput;
 
     const user = await this.userRepository.selectUserByUserIdx(userIdx);
@@ -99,7 +101,7 @@ export class UserService {
    *
    * @author 조희주
    */
-  async deleteUser(userIdx: number): Promise<void> {
+  async deleteUserByUserIdx(userIdx: number): Promise<void> {
     const user = await this.userRepository.selectUserByUserIdx(userIdx);
     if (!user) {
       throw new NotFoundException('User not found');
