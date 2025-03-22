@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { UserInfoEntity } from './entity/user-info.entity';
 import { CreateUserEntity } from './entity/create-user.entity';
@@ -54,6 +58,9 @@ export class UserService {
    */
   async getUser(userIdx: number): Promise<UserInfoEntity> {
     const user = await this.userRepository.selectUserByUserIdx(userIdx);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
     return UserInfoEntity.createEntityFromPrisma(user);
   }
@@ -67,6 +74,9 @@ export class UserService {
     const { userIdx, nickname, profileImagePath } = updateUserInput;
 
     const user = await this.userRepository.selectUserByUserIdx(userIdx);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
     if (
       nickname &&
@@ -90,7 +100,10 @@ export class UserService {
    * @author 조희주
    */
   async deleteUser(userIdx: number): Promise<void> {
-    await this.userRepository.selectUserByUserIdx(userIdx);
+    const user = await this.userRepository.selectUserByUserIdx(userIdx);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
     await this.userRepository.deleteUserByUserIdx(userIdx);
   }
 }

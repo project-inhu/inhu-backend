@@ -63,8 +63,8 @@ export class UserRepository {
    *
    * @author 조희주
    */
-  async selectUserByUserIdx(userIdx: number): Promise<UserSelectField> {
-    return await this.prisma.user.findUniqueOrThrow({
+  async selectUserByUserIdx(userIdx: number): Promise<UserSelectField | null> {
+    return await this.prisma.user.findUnique({
       where: { idx: userIdx, deletedAt: null },
       select: {
         idx: true,
