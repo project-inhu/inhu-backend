@@ -8,6 +8,7 @@ import { UpdateUserInput } from './input/update-user.input';
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
+
   /**
    * 새로운 사용자를 위한 임시 닉네임 생성
    *

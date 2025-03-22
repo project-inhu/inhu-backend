@@ -15,6 +15,7 @@ import { UserInfoEntity } from './entity/user-info.entity';
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
+
   /**
    * 내 정보 조회
    *

@@ -7,6 +7,7 @@ import { UserSelectField } from './type/user-select-field';
 @Injectable()
 export class UserRepository {
   constructor(private readonly prisma: PrismaService) {}
+
   /**
    * 모든 사용자 조회
    *
