@@ -45,12 +45,12 @@ export class ReviewController {
   @Exception(404, 'Place does not exist or keyword does not exist')
   @Exception(500, 'Internal Server Error')
   @Post('place/:placeIdx/review')
-  async createReview(
+  async createReviewByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @Body() createReviewDto: CreateReviewDto,
     @User('idx') userIdx: number,
   ): Promise<ReviewEntity> {
-    return await this.reviewService.createReview({
+    return await this.reviewService.createReviewByPlaceIdx({
       placeIdx,
       userIdx,
       content: createReviewDto.content,
@@ -70,12 +70,12 @@ export class ReviewController {
   @Exception(404, 'Review does not exist')
   @Exception(500, 'Internal Server Error')
   @Patch('review/:reviewIdx')
-  async updateReview(
+  async updateReviewByReviewIdx(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
     @Body() updateReviewDto: UpdateReviewDto,
     @User('idx') userIdx: number,
   ): Promise<ReviewEntity> {
-    return await this.reviewService.updateReview({
+    return await this.reviewService.updateReviewByReviewIdx({
       reviewIdx,
       userIdx,
       content: updateReviewDto.content,
@@ -95,11 +95,11 @@ export class ReviewController {
   @Exception(404, 'Review does not exist')
   @Exception(500, 'Internal Server Error')
   @Delete('review/:reviewIdx')
-  async deleteReview(
+  async deleteReviewByReviewIdx(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
     @User('idx') userIdx: number,
   ): Promise<void> {
-    return await this.reviewService.deleteReview(reviewIdx, userIdx);
+    await this.reviewService.deleteReviewByReviewIdx(reviewIdx, userIdx);
   }
 
   /**
@@ -108,9 +108,8 @@ export class ReviewController {
    * @author 강정연
    */
   @LoginAuth
-  @Exception(404, 'UserIdx does not exist')
   @Exception(500, 'Internal Server Error')
-  @Get('user/review/all')
+  @Get('my/review/all')
   async getAllReviewByUserIdx(
     @User('idx') userIdx: number,
   ): Promise<ReviewEntity[]> {

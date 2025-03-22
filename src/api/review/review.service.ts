@@ -8,14 +8,12 @@ import { ReviewEntity } from './entity/review.entity';
 import { CreateReviewInput } from './input/create-review.input';
 import { UpdateReviewInput } from './input/update-review.input';
 import { PlaceService } from '../place/place.service';
-import { UserService } from '../user/user.service';
 
 @Injectable()
 export class ReviewService {
   constructor(
     private readonly reviewRepository: ReviewRepository,
     private readonly placeService: PlaceService,
-    private readonly userService: UserService,
   ) {}
 
   /**
@@ -24,7 +22,7 @@ export class ReviewService {
    * @author 강정연
    */
   async getAllReviewByPlaceIdx(placeIdx: number): Promise<ReviewEntity[]> {
-    await this.placeService.getPlace(placeIdx);
+    await this.placeService.getPlaceByIdx(placeIdx);
 
     return (
       await this.reviewRepository.selectAllReviewByPlaceIdx(placeIdx)
@@ -36,7 +34,7 @@ export class ReviewService {
    *
    * @author 강정연
    */
-  async getReview(reviewIdx: number): Promise<ReviewEntity> {
+  async getReviewByReviewIdx(reviewIdx: number): Promise<ReviewEntity> {
     const review =
       await this.reviewRepository.selectReviewByReviewIdx(reviewIdx);
     if (!review) {
@@ -51,14 +49,14 @@ export class ReviewService {
    *
    * @author 강정연
    */
-  async createReview(
+  async createReviewByPlaceIdx(
     createReviewInput: CreateReviewInput,
   ): Promise<ReviewEntity> {
-    await this.placeService.getPlace(createReviewInput.placeIdx);
+    await this.placeService.getPlaceByIdx(createReviewInput.placeIdx);
     const review =
       await this.reviewRepository.createReviewByPlaceIdx(createReviewInput);
 
-    return await this.getReview(review.idx);
+    return await this.getReviewByReviewIdx(review.idx);
   }
 
   /**
@@ -66,10 +64,10 @@ export class ReviewService {
    *
    * @author 강정연
    */
-  async updateReview(
+  async updateReviewByReviewIdx(
     updateReviewInput: UpdateReviewInput,
   ): Promise<ReviewEntity> {
-    const review = await this.getReview(updateReviewInput.reviewIdx);
+    const review = await this.getReviewByReviewIdx(updateReviewInput.reviewIdx);
 
     if (review.userIdx !== updateReviewInput.userIdx) {
       throw new ForbiddenException('You are not allowed to update this review');
@@ -78,7 +76,7 @@ export class ReviewService {
     const updatedReview =
       await this.reviewRepository.updateReviewByReviewIdx(updateReviewInput);
 
-    return await this.getReview(updatedReview.idx);
+    return await this.getReviewByReviewIdx(updatedReview.idx);
   }
 
   /**
@@ -86,8 +84,11 @@ export class ReviewService {
    *
    * @author 강정연
    */
-  async deleteReview(reviewIdx: number, userIdx: number): Promise<void> {
-    const review = await this.getReview(reviewIdx);
+  async deleteReviewByReviewIdx(
+    reviewIdx: number,
+    userIdx: number,
+  ): Promise<void> {
+    const review = await this.getReviewByReviewIdx(reviewIdx);
 
     if (review.userIdx != userIdx) {
       throw new ForbiddenException('You are not allowed to delete this review');
@@ -102,8 +103,6 @@ export class ReviewService {
    * @author 강정연
    */
   async getAllReviewByUserIdx(userIdx: number): Promise<ReviewEntity[]> {
-    await this.userService.getUser(userIdx);
-
     return (await this.reviewRepository.selectAllReviewByUserIdx(userIdx)).map(
       ReviewEntity.createEntityFromPrisma,
     );
