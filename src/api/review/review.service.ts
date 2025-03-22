@@ -24,7 +24,7 @@ export class ReviewService {
    * @author 강정연
    */
   async getAllReviewByPlaceIdx(placeIdx: number): Promise<ReviewEntity[]> {
-    await this.placeService.getPlaceByIdx(placeIdx);
+    await this.placeService.getPlace(placeIdx);
 
     return (
       await this.reviewRepository.selectAllReviewByPlaceIdx(placeIdx)
@@ -54,7 +54,7 @@ export class ReviewService {
   async createReview(
     createReviewInput: CreateReviewInput,
   ): Promise<ReviewEntity> {
-    await this.placeService.getPlaceByIdx(createReviewInput.placeIdx);
+    await this.placeService.getPlace(createReviewInput.placeIdx);
     const review =
       await this.reviewRepository.createReviewByPlaceIdx(createReviewInput);
 
