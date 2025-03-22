@@ -90,10 +90,8 @@ export class UserService {
    *
    * @author 조희주
    */
-  async deleteUser(userIdx: number): Promise<UserInfoEntity> {
+  async deleteUser(userIdx: number): Promise<void> {
     await this.userRepository.selectUserByUserIdx(userIdx);
-    const deletedUser = await this.userRepository.deleteUserByUserIdx(userIdx);
-
-    return UserInfoEntity.createEntityFromPrisma(deletedUser);
+    await this.userRepository.deleteUserByUserIdx(userIdx);
   }
 }

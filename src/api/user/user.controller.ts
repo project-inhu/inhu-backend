@@ -51,7 +51,7 @@ export class UserController {
    */
   @UseGuards(AuthGuard)
   @Delete()
-  async deleteUser(@User('idx') userIdx: number): Promise<UserInfoEntity> {
-    return this.userService.deleteUser(userIdx);
+  async deleteUser(@User('idx') userIdx: number): Promise<void> {
+    await this.userService.deleteUser(userIdx);
   }
 }

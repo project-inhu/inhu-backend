@@ -188,22 +188,10 @@ export class UserRepository {
    *
    * @author 조희주
    */
-  async deleteUserByUserIdx(userIdx: number): Promise<UserSelectField> {
-    return await this.prisma.user.update({
+  async deleteUserByUserIdx(userIdx: number): Promise<void> {
+    await this.prisma.user.update({
       where: { idx: userIdx, deletedAt: null },
       data: { deletedAt: new Date() },
-      select: {
-        idx: true,
-        nickname: true,
-        profileImagePath: true,
-        createdAt: true,
-        deletedAt: true,
-        userProvider: {
-          select: { snsId: true, name: true },
-        },
-        bookmark: { select: { idx: true, placeIdx: true } },
-        review: { select: { idx: true, content: true } },
-      },
     });
   }
 }
