@@ -23,8 +23,8 @@ export class UserController {
    */
   @UseGuards(AuthGuard)
   @Get()
-  async getMyInfo(@User('idx') userIdx: number): Promise<UserInfoEntity> {
-    return await this.userService.getMyInfo(userIdx);
+  async getUser(@User('idx') userIdx: number): Promise<UserInfoEntity> {
+    return await this.userService.getUser(userIdx);
   }
 
   /**
@@ -34,11 +34,11 @@ export class UserController {
    */
   @UseGuards(AuthGuard)
   @Patch()
-  async updateMyInfo(
+  async updateUser(
     @User('idx') userIdx: number,
     @Body() myInfoDto: MyInfoDto,
   ): Promise<UserInfoEntity> {
-    return this.userService.updateMyInfo({
+    return this.userService.updateUser({
       userIdx,
       nickname: myInfoDto.nickname,
       profileImagePath: myInfoDto.profileImagePath,

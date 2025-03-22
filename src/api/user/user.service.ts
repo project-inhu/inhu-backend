@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { UserInfoEntity } from './entity/user-info.entity';
-import { RegisterUserEntity } from './entity/register-user.entity';
+import { CreateUserEntity } from './entity/create-user.entity';
 import { CreateUserInput } from './input/create-user.input';
 import { UpdateUserInput } from './input/update-user.input';
 
@@ -24,14 +24,14 @@ export class UserService {
    *
    * @author 조희주
    */
-  async registerUser(
+  async createUser(
     createUserInput: CreateUserInput,
-  ): Promise<RegisterUserEntity> {
+  ): Promise<CreateUserEntity> {
     const { snsId, provider } = createUserInput;
 
     const user = await this.userRepository.selectUserBySnsId(snsId);
     if (user) {
-      return RegisterUserEntity.createEntityFromPrisma(user);
+      return CreateUserEntity.createEntityFromPrisma(user);
     }
 
     const nickname = await this.generateTemporaryNickname();
@@ -44,7 +44,7 @@ export class UserService {
 
     const newUser = await this.userRepository.createUser(createUserData);
 
-    return RegisterUserEntity.createEntityFromPrisma(newUser);
+    return CreateUserEntity.createEntityFromPrisma(newUser);
   }
 
   /**
@@ -52,7 +52,7 @@ export class UserService {
    *
    * @author 조희주
    */
-  async getMyInfo(userIdx: number): Promise<UserInfoEntity> {
+  async getUser(userIdx: number): Promise<UserInfoEntity> {
     const user = await this.userRepository.selectUserByUserIdx(userIdx);
 
     return UserInfoEntity.createEntityFromPrisma(user);
@@ -63,9 +63,7 @@ export class UserService {
    *
    * @author 조희주
    */
-  async updateMyInfo(
-    updateUserInput: UpdateUserInput,
-  ): Promise<UserInfoEntity> {
+  async updateUser(updateUserInput: UpdateUserInput): Promise<UserInfoEntity> {
     const { userIdx, nickname, profileImagePath } = updateUserInput;
 
     const user = await this.userRepository.selectUserByUserIdx(userIdx);

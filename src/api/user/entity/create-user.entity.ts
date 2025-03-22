@@ -7,14 +7,14 @@ import { User } from '@prisma/client';
  *
  * @author 조희주
  */
-export class RegisterUserEntity extends PickType(UserEntity, ['idx'] as const) {
-  constructor(data: RegisterUserEntity) {
+export class CreateUserEntity extends PickType(UserEntity, ['idx'] as const) {
+  constructor(data: CreateUserEntity) {
     super();
     Object.assign(this, data);
   }
 
-  static createEntityFromPrisma(user: User): RegisterUserEntity {
-    return new RegisterUserEntity({
+  static createEntityFromPrisma(user: User): CreateUserEntity {
+    return new CreateUserEntity({
       idx: user.idx,
     });
   }
