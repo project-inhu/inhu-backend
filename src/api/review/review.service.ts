@@ -5,15 +5,17 @@ import {
 } from '@nestjs/common';
 import { ReviewRepository } from './review.repository';
 import { ReviewEntity } from './entity/review.entity';
-import { CreateReviewByPlaceIdxInput } from './input/create-review-by-place-idx.input';
-import { UpdateReviewByReviewIdxInput } from './input/update-review-by-review-idx.input';
+import { CreateReviewInput } from './input/create-review.input';
+import { UpdateReviewInput } from './input/update-review.input';
 import { PlaceService } from '../place/place.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class ReviewService {
   constructor(
     private readonly reviewRepository: ReviewRepository,
     private readonly placeService: PlaceService,
+    private readonly userService: UserService,
   ) {}
 
   /**
@@ -21,14 +23,12 @@ export class ReviewService {
    *
    * @author 강정연
    */
-  async getReviewList(placeIdx: number): Promise<ReviewEntity[]> {
-    await this.placeService.getPlace(placeIdx);
+  async getAllReviewByPlaceIdx(placeIdx: number): Promise<ReviewEntity[]> {
+    await this.placeService.getPlaceByIdx(placeIdx);
 
-    const reviewList = (
-      await this.reviewRepository.selectReviewListByPlaceIdx(placeIdx)
+    return (
+      await this.reviewRepository.selectAllReviewByPlaceIdx(placeIdx)
     ).map(ReviewEntity.createEntityFromPrisma);
-
-    return reviewList;
   }
 
   /**
@@ -52,12 +52,11 @@ export class ReviewService {
    * @author 강정연
    */
   async createReview(
-    createReviewByPlaceIdxInput: CreateReviewByPlaceIdxInput,
+    createReviewInput: CreateReviewInput,
   ): Promise<ReviewEntity> {
-    await this.placeService.getPlace(createReviewByPlaceIdxInput.placeIdx);
-    const review = await this.reviewRepository.createReviewByPlaceIdx(
-      createReviewByPlaceIdxInput,
-    );
+    await this.placeService.getPlaceByIdx(createReviewInput.placeIdx);
+    const review =
+      await this.reviewRepository.createReviewByPlaceIdx(createReviewInput);
 
     return await this.getReview(review.idx);
   }
@@ -68,17 +67,16 @@ export class ReviewService {
    * @author 강정연
    */
   async updateReview(
-    updateReviewByReviewIdxInput: UpdateReviewByReviewIdxInput,
+    updateReviewInput: UpdateReviewInput,
   ): Promise<ReviewEntity> {
-    const review = await this.getReview(updateReviewByReviewIdxInput.reviewIdx);
+    const review = await this.getReview(updateReviewInput.reviewIdx);
 
-    if (review.userIdx !== updateReviewByReviewIdxInput.userIdx) {
+    if (review.userIdx !== updateReviewInput.userIdx) {
       throw new ForbiddenException('You are not allowed to update this review');
     }
 
-    const updatedReview = await this.reviewRepository.updateReviewByReviewIdx(
-      updateReviewByReviewIdxInput,
-    );
+    const updatedReview =
+      await this.reviewRepository.updateReviewByReviewIdx(updateReviewInput);
 
     return await this.getReview(updatedReview.idx);
   }
@@ -96,5 +94,18 @@ export class ReviewService {
     }
 
     await this.reviewRepository.deleteReviewByReviewIdx(reviewIdx);
+  }
+
+  /**
+   * 특정 사용자가 작성한 리뷰 목록 조회
+   *
+   * @author 강정연
+   */
+  async getAllReviewByUserIdx(userIdx: number): Promise<ReviewEntity[]> {
+    await this.userService.getUser(userIdx);
+
+    return (await this.reviewRepository.selectAllReviewByUserIdx(userIdx)).map(
+      ReviewEntity.createEntityFromPrisma,
+    );
   }
 }

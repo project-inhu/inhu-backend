@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { ReviewSelectField } from './type/review-select-field';
 import { Review } from '@prisma/client';
-import { CreateReviewByPlaceIdxInput } from './input/create-review-by-place-idx.input';
-import { UpdateReviewByReviewIdxInput } from './input/update-review-by-review-idx.input';
+import { CreateReviewInput } from './input/create-review.input';
+import { UpdateReviewInput } from './input/update-review.input';
 
 @Injectable()
 export class ReviewRepository {
@@ -14,7 +14,7 @@ export class ReviewRepository {
    *
    * @author 강정연
    */
-  async selectReviewListByPlaceIdx(
+  async selectAllReviewByPlaceIdx(
     placeIdx: number,
   ): Promise<ReviewSelectField[]> {
     return await this.prisma.review.findMany({
@@ -125,7 +125,7 @@ export class ReviewRepository {
    * @author 강정연
    */
   async createReviewByPlaceIdx(
-    createReviewByPlaceIdxInput: CreateReviewByPlaceIdxInput,
+    createReviewInput: CreateReviewInput,
   ): Promise<Review> {
     const {
       placeIdx,
@@ -133,7 +133,7 @@ export class ReviewRepository {
       content,
       imagePathList = [],
       keywordIdxList = [],
-    } = createReviewByPlaceIdxInput;
+    } = createReviewInput;
     return await this.prisma.review.create({
       data: {
         placeIdx,
@@ -162,7 +162,7 @@ export class ReviewRepository {
    *
    * @author 강정연
    */
-  async selectReviewListByUserIdx(
+  async selectAllReviewByUserIdx(
     userIdx: number,
   ): Promise<ReviewSelectField[]> {
     return await this.prisma.review.findMany({
@@ -211,10 +211,10 @@ export class ReviewRepository {
    * @author 강정연
    */
   async updateReviewByReviewIdx(
-    updateReviewByReviewIdxInput: UpdateReviewByReviewIdxInput,
+    updateReviewInput: UpdateReviewInput,
   ): Promise<Review> {
     const { reviewIdx, content, imagePathList, keywordIdxList } =
-      updateReviewByReviewIdxInput;
+      updateReviewInput;
     const updateData: { content?: string } = {};
 
     if (content) {
