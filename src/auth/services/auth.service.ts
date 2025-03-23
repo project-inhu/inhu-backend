@@ -69,7 +69,7 @@ export class AuthService {
     const userInfo = await socialAuthService.getUserInfo(accessToken);
     const extractedUserInfo = socialAuthService.extractUserInfo(userInfo);
 
-    const user = await this.userService.registerUser(extractedUserInfo);
+    const user = await this.userService.createUser(extractedUserInfo);
 
     const payload = { idx: user.idx };
     const jwtAccessToken =
