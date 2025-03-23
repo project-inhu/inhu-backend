@@ -3,8 +3,9 @@
  *
  * @author 강정연
  */
-export class CreateReviewByPlaceIdxInput {
+export class CreateReviewInput {
   placeIdx: number;
+  userIdx: number;
   content: string;
   imagePathList?: string[];
   keywordIdxList?: number[];

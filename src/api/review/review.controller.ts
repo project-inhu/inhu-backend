@@ -9,12 +9,12 @@ import {
   Post,
 } from '@nestjs/common';
 import { ReviewService } from './review.service';
-import { CreateReviewByPlaceIdxDto } from './dto/create-review-by-place-idx.dto';
+import { CreateReviewDto } from './dto/create-review.dto';
 import { ReviewEntity } from './entity/review.entity';
-import { UpdateReviewByReviewIdxDto } from './dto/update-review-by-review-idx.dto';
+import { UpdateReviewDto } from './dto/update-review.dto';
 import { User } from 'src/common/decorator/user.decorator';
 import { LoginAuth } from 'src/auth/common/decorators/login-auth.decorator';
-import { Execption } from 'src/common/decorator/exception.decorator';
+import { Exception } from 'src/common/decorator/exception.decorator';
 
 @Controller('')
 export class ReviewController {
@@ -25,16 +25,14 @@ export class ReviewController {
    *
    * @author 강정연
    */
-  @Execption(400, 'PlaceIdx must be a number')
-  @Execption(404, 'PlaceIdx does not exist')
-  @Execption(500, 'Internal Server Error')
-  @Get('place/:placeIdx/reviewList')
-  async getReviewListByPlaceIdx(
+  @Exception(400, 'PlaceIdx must be a number')
+  @Exception(404, 'PlaceIdx does not exist')
+  @Exception(500, 'Internal Server Error')
+  @Get('place/:placeIdx/review/all')
+  async getAllReviewByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
   ): Promise<ReviewEntity[]> {
-    const reviewList =
-      await this.reviewService.getReviewListByPlaceIdx(placeIdx);
-    return reviewList;
+    return await this.reviewService.getAllReviewByPlaceIdx(placeIdx);
   }
 
   /**
@@ -43,22 +41,22 @@ export class ReviewController {
    * @author 강정연
    */
   @LoginAuth
-  @Execption(400, 'PlaceIdx must be a number')
-  @Execption(400, 'Invalid request body')
-  @Execption(404, 'Place does not exist')
-  @Execption(500, 'Internal Server Error')
+  @Exception(400, 'PlaceIdx must be a number or Invalid request body')
+  @Exception(404, 'Place does not exist or keyword does not exist')
+  @Exception(500, 'Internal Server Error')
   @Post('place/:placeIdx/review')
   async createReviewByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
-    @Body() createReviewByPlaceIdxDto: CreateReviewByPlaceIdxDto,
+    @Body() createReviewDto: CreateReviewDto,
+    @User('idx') userIdx: number,
   ): Promise<ReviewEntity> {
-    const review = await this.reviewService.createReviewByPlaceIdx({
+    return await this.reviewService.createReviewByPlaceIdx({
       placeIdx,
-      content: createReviewByPlaceIdxDto.content,
-      imagePathList: createReviewByPlaceIdxDto.imagePathList,
-      keywordIdxList: createReviewByPlaceIdxDto.keywordIdxList,
+      userIdx,
+      content: createReviewDto.content,
+      imagePathList: createReviewDto.imagePathList,
+      keywordIdxList: createReviewDto.keywordIdxList,
     });
-    return review;
   }
 
   /**
@@ -67,26 +65,23 @@ export class ReviewController {
    * @author 강정연
    */
   @LoginAuth
-  @Execption(400, 'ReviewIdx must be a number or Invalid request')
-  @Execption(400, 'Invalid request body')
-  @Execption(403, 'You are not allowed to update this review')
-  @Execption(404, 'Review does not exist')
-  @Execption(500, 'Internal Server Error')
+  @Exception(400, 'ReviewIdx must be a number or Invalid request')
+  @Exception(403, 'You are not allowed to update this review')
+  @Exception(404, 'Review does not exist')
+  @Exception(500, 'Internal Server Error')
   @Patch('review/:reviewIdx')
   async updateReviewByReviewIdx(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
-    @Body() updateReviewByReviewIdxDto: UpdateReviewByReviewIdxDto,
+    @Body() updateReviewDto: UpdateReviewDto,
     @User('idx') userIdx: number,
   ): Promise<ReviewEntity> {
-    const review = await this.reviewService.updateReviewByReviewIdx({
+    return await this.reviewService.updateReviewByReviewIdx({
       reviewIdx,
       userIdx,
-      content: updateReviewByReviewIdxDto.content,
-      imagePathList: updateReviewByReviewIdxDto.imagePathList,
-      keywordIdxList: updateReviewByReviewIdxDto.keywordIdxList,
+      content: updateReviewDto.content,
+      imagePathList: updateReviewDto.imagePathList,
+      keywordIdxList: updateReviewDto.keywordIdxList,
     });
-
-    return review;
   }
 
   /**
@@ -95,20 +90,29 @@ export class ReviewController {
    * @author 강정연
    */
   @LoginAuth
-  @Execption(400, 'ReviewIdx must be a number or Invalid request')
-  @Execption(403, 'You are not allowed to delete this review')
-  @Execption(404, 'Review does not exist')
-  @Execption(500, 'Internal Server Error')
+  @Exception(400, 'ReviewIdx must be a number')
+  @Exception(403, 'You are not allowed to delete this review')
+  @Exception(404, 'Review does not exist')
+  @Exception(500, 'Internal Server Error')
   @Delete('review/:reviewIdx')
   async deleteReviewByReviewIdx(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
     @User('idx') userIdx: number,
   ): Promise<void> {
-    const review = await this.reviewService.deleteReviewByReviewIdx(
-      reviewIdx,
-      userIdx,
-    );
+    await this.reviewService.deleteReviewByReviewIdx(reviewIdx, userIdx);
+  }
 
-    return review;
+  /**
+   * 특정 사용자가 작성한 리뷰 목록 조회
+   *
+   * @author 강정연
+   */
+  @LoginAuth
+  @Exception(500, 'Internal Server Error')
+  @Get('my/review/all')
+  async getAllReviewByUserIdx(
+    @User('idx') userIdx: number,
+  ): Promise<ReviewEntity[]> {
+    return await this.reviewService.getAllReviewByUserIdx(userIdx);
   }
 }

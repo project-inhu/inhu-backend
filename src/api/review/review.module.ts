@@ -6,9 +6,10 @@ import { PrismaModule } from 'src/common/module/prisma/prisma.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { PlaceModule } from '../place/place.module';
 import { KeywordModule } from '../keyword/keyword.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, PlaceModule, KeywordModule],
+  imports: [PrismaModule, AuthModule, PlaceModule, KeywordModule, UserModule],
   controllers: [ReviewController],
   providers: [ReviewService, ReviewRepository],
   exports: [ReviewRepository, ReviewService],

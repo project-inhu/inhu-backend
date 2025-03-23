@@ -6,5 +6,5 @@ import { ApiResponse } from '@nestjs/swagger';
  *
  * @author 강정연
  */
-export const Execption = (status: number, message: string) =>
+export const Exception = (status: number, message: string) =>
   applyDecorators(ApiResponse({ status, description: message }));
