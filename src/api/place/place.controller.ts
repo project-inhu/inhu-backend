@@ -41,10 +41,10 @@ export class PlaceController {
    */
   @UseGuards(AuthGuard)
   @Get('/:placeIdx')
-  async getPlace(
+  async getPlaceByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @User('idx') userIdx: number,
   ): Promise<PlaceEntity> {
-    return await this.placeService.getPlace(placeIdx, userIdx);
+    return await this.placeService.getPlaceByPlaceIdx(placeIdx, userIdx);
   }
 }
