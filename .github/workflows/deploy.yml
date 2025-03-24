@@ -6,19 +6,18 @@ on:
       - master
       - develop
 
-env:
-  ENV_FILE: ${{ secrets.ENV_FILE }}
-
 jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
+    env:
+      ENV_TEST_FILE: ${{ secrets.ENV_TEST_FILE }}
     steps:
-      - name: Decode and create .env file
-        run: echo "$ENV_FILE" | base64 --decode > .env
+      - name: Decode and create .env.test file
+        run: echo "$ENV_TEST_FILE" | base64 --decode > .env.test
 
-      - name: Load environment variables globally
-        run: cat .env >> $GITHUB_ENV
+      - name: Load environment variables
+        run: cat .env.test >> $GITHUB_ENV
 
       - name: Checkout code
         uses: actions/checkout@v3
@@ -30,9 +29,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Start docker services
-        run: npm run dev:infra:up
 
       - name: Test e2e
         run: npm run test:e2e
