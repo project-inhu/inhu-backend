@@ -20,8 +20,11 @@ export class PlaceService {
     ).map(PlaceOverviewEntity.createEntityFromPrisma);
   }
 
-  async getPlace(placeIdx: number, userIdx?: number): Promise<PlaceEntity> {
-    const place = await this.placeRepository.selectPlaceByIdx(
+  async getPlaceByPlaceIdx(
+    placeIdx: number,
+    userIdx?: number,
+  ): Promise<PlaceEntity> {
+    const place = await this.placeRepository.selectPlaceByPlaceIdx(
       placeIdx,
       userIdx,
     );

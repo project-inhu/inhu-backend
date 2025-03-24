@@ -38,7 +38,7 @@ export class PlaceRepository {
     });
   }
 
-  async selectPlaceByIdx(
+  async selectPlaceByPlaceIdx(
     placeIdx: number,
     userIdx?: number,
   ): Promise<PlaceSelectField | null> {
