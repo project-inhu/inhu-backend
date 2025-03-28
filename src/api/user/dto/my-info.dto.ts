@@ -19,7 +19,7 @@ export class MyInfoDto {
   /**
    * 프로필 이미지 경로
    *
-   * @example "https://inhu.s3.ap-northeast-2.amazonaws.com/user123/profile.jpg"
+   * @example "user123/profile.jpg"
    */
   @IsOptional()
   @IsString()
