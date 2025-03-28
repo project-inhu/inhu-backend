@@ -107,12 +107,18 @@ export class UserRepository {
   }
 
   /**
-   * 현재 데이터베이스에 등록된 전체 사용자 수 반환
+   * 가장 큰 User idx 값 반환
+   * 유저가 없을시 0 반환
    *
    * @author 조희주
    */
-  async getUserCount(): Promise<number> {
-    return await this.prisma.user.count();
+  async getMaxUserIdx(): Promise<number> {
+    const maxIdxUser = await this.prisma.user.findFirst({
+      orderBy: { idx: 'desc' },
+      select: { idx: true },
+    });
+
+    return maxIdxUser ? maxIdxUser.idx : 0;
   }
 
   /**
