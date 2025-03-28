@@ -19,8 +19,8 @@ export class UserService {
    * @author 조희주
    */
   async generateTemporaryNickname(): Promise<string> {
-    const userCount = await this.userRepository.getUserCount();
-    return `${userCount + 1}번째 인후러`;
+    const maxIdx = await this.userRepository.getMaxUserIdx();
+    return `${maxIdx + 1}번째 인후러`;
   }
 
   /**
