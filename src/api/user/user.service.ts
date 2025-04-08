@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -78,6 +79,14 @@ export class UserService {
     const user = await this.userRepository.selectUserByUserIdx(userIdx);
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+
+    if (nickname && profileImagePath) {
+      throw new BadRequestException('Only one field can be updated at a time.');
+    }
+
+    if (!nickname && !profileImagePath) {
+      throw new BadRequestException('One field must be provided.');
     }
 
     if (
