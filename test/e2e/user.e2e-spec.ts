@@ -65,4 +65,70 @@ describe('UserController (e2e)', () => {
       prisma.user.findUnique = originalMethod;
     });
   });
+
+  describe('PATCH /user', () => {
+    it('should update only nickname when valid', async () => {
+      const user = await new UserSeedHelper(prisma).seed();
+      testManager.setUserIdx(user.idx);
+
+      const res = await request(app.getHttpServer())
+        .patch('/user')
+        .send({ nickname: 'newNicknameOnly' })
+        .expect(200);
+
+      expect(res.body).toEqual({
+        idx: user.idx,
+        nickname: 'newNicknameOnly',
+        profileImagePath: user.profileImagePath,
+        createdAt: expect.any(String),
+        deletedAt: null,
+      });
+    });
+
+    it('should update only profileImagePath when valid', async () => {
+      const user = await new UserSeedHelper(prisma).seed();
+      testManager.setUserIdx(user.idx);
+
+      const newProfile = 'user/new-profile.jpg';
+      const res = await request(app.getHttpServer())
+        .patch('/user')
+        .send({ profileImagePath: newProfile })
+        .expect(200);
+
+      expect(res.body).toEqual({
+        idx: user.idx,
+        nickname: user.nickname,
+        profileImagePath: newProfile,
+        createdAt: expect.any(String),
+        deletedAt: null,
+      });
+    });
+
+    it('should return 400 when both nickname and profileImagePath are provided', async () => {
+      const user = await new UserSeedHelper(prisma).seed();
+      testManager.setUserIdx(user.idx);
+
+      const res = await request(app.getHttpServer())
+        .patch('/user')
+        .send({
+          nickname: 'invalidBoth',
+          profileImagePath: 'user/invalid.jpg',
+        })
+        .expect(400);
+
+      expect(res.body.message).toBe('Only one field can be updated at a time.');
+    });
+
+    it('should return 400 when neither nickname nor profileImagePath is provided', async () => {
+      const user = await new UserSeedHelper(prisma).seed();
+      testManager.setUserIdx(user.idx);
+
+      const res = await request(app.getHttpServer())
+        .patch('/user')
+        .send({})
+        .expect(400);
+
+      expect(res.body.message).toBe('One field must be provided.');
+    });
+  });
 });
