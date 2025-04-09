@@ -18,6 +18,7 @@ export class TestManager {
   private app: INestApplication;
   private prisma: PrismaService;
   private prismaTestingHelper: PrismaTestingHelper<PrismaService> | undefined;
+  private currentUserIdx = 1;
 
   static create() {
     return new TestManager();
@@ -38,7 +39,7 @@ export class TestManager {
       .useValue({
         canActivate: (context: ExecutionContext) => {
           const req = context.switchToHttp().getRequest();
-          req.user = { idx: 1 };
+          req.user = { idx: this.currentUserIdx };
           return true;
         },
       })
@@ -69,5 +70,9 @@ export class TestManager {
 
   getApp() {
     return this.app;
+  }
+
+  setUserIdx(idx: number) {
+    this.currentUserIdx = idx;
   }
 }
