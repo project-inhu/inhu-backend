@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker/.';
 import { INestApplication } from '@nestjs/common';
 import { ReviewEntity } from 'src/api/review/entity/review.entity';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
@@ -64,10 +65,20 @@ describe('ReviewController', () => {
 
   describe('GET /place/:placeIdx/review/all', () => {
     it('should return reviewList of a place', async () => {
-      const review1 = await reviewSeedHelper.seed({ placeIdx: placeIdx });
-      const review2 = await reviewSeedHelper.seed({ placeIdx: placeIdx });
+      for (let i = 0; i < 2; i++) {
+        const keywordIdxList = (
+          await getRandomKeywordPairList(app.get(PrismaService))
+        ).map((k) => k.idx);
 
-      reviews.push(review1, review2);
+        const review = await reviewSeedHelper.seed({
+          placeIdx,
+          content: getRandomContent(),
+          imagePathList: getRandomImagePathList(),
+          keywordIdxList,
+        });
+
+        reviews.push(review);
+      }
 
       const response = await request(app.getHttpServer())
         .get(`/place/${placeIdx}/review/all`)
@@ -212,6 +223,7 @@ describe('ReviewController', () => {
       const keywordPairList = await getRandomKeywordPairList(
         app.get(PrismaService),
       );
+
       const keywordIdxList = keywordPairList.map((k) => k.idx);
       keywordList = keywordPairList.map((k) => k.content);
       imagePathList = getRandomImagePathList();
