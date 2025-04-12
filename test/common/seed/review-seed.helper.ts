@@ -1,64 +1,51 @@
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { SeedHelper } from './base/seed.helper';
 import { ReviewSeedInput } from './input/review-seed.input';
+import { ReviewEntity } from 'src/api/review/entity/review.entity';
+import {
+  getRandomContent,
+  getRandomImagePathList,
+  getRandomInt,
+  getRandomKeywordPairList,
+} from './utils/random-utils';
 
 export class ReviewSeedHelper extends SeedHelper<ReviewSeedInput> {
   constructor(private readonly prisma: PrismaService) {
     super();
   }
 
-  async seed(input: Partial<ReviewSeedInput> = {}) {
+  async seed(input: Partial<ReviewSeedInput> = {}): Promise<ReviewEntity> {
     const {
-      content = 'initial content',
-      keywordIdxList,
-      imagePathList,
+      userIdx: inputUserIdx,
+      placeIdx: inputPlaceIdx,
+      content: inputContent,
+      keywordIdxList: inputKeywordIdxList,
+      imagePathList: inputImagePathList,
     } = input;
 
-    const user = await this.prisma.user.create({
-      data: {
-        nickname: 'test-review-user',
-      },
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { idx: inputUserIdx || getRandomInt(1, 4) },
     });
 
-    const place = await this.prisma.place.create({
-      data: {
-        name: '테스트 장소',
-        tel: '010-0000-0000',
-        address: '서울시 어딘가',
-        addressX: 0,
-        addressY: 0,
-      },
+    const place = await this.prisma.place.findUniqueOrThrow({
+      where: { idx: inputPlaceIdx || getRandomInt(1, 2) },
     });
 
-    const defaultKeywordList = ['cozy', 'tasty', 'quiet'];
-
-    await this.prisma.keyword.createMany({
-      data: defaultKeywordList.map((content) => ({ content })),
-      skipDuplicates: true,
-    });
-
-    const keywordList = await this.prisma.keyword.findMany({
-      where: { content: { in: defaultKeywordList } },
-    });
+    const finalContent = inputContent ?? getRandomContent();
 
     const finalKeywordIdxList =
-      keywordIdxList ??
-      this.getRandomSubset(
-        keywordList.map((k) => k.idx),
-        this.getRandomInt(1, keywordList.length),
-      );
+      inputKeywordIdxList ||
+      (await getRandomKeywordPairList(this.prisma))
+        .map((k) => k.idx)
+        .sort((a, b) => a - b);
 
-    const finalImagePathList = imagePathList ?? [
-      'images/review/default1.jpg',
-      'images/review/default2.jpg',
-    ];
+    const finalImagePathList = inputImagePathList ?? getRandomImagePathList();
 
-    // ✅ review 생성
-    return this.prisma.review.create({
+    const createdReview = await this.prisma.review.create({
       data: {
         userIdx: user.idx,
         placeIdx: place.idx,
-        content,
+        content: finalContent,
         reviewKeywordMapping: {
           create: finalKeywordIdxList.map((keywordIdx) => ({ keywordIdx })),
         },
@@ -73,14 +60,7 @@ export class ReviewSeedHelper extends SeedHelper<ReviewSeedInput> {
         user: true,
       },
     });
-  }
 
-  private getRandomSubset<T>(array: T[], count: number): T[] {
-    const shuffled = [...array].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, count);
-  }
-
-  private getRandomInt(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    return ReviewEntity.createEntityFromPrisma(createdReview);
   }
 }
