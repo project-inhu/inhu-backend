@@ -2,12 +2,6 @@ import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { SeedHelper } from './base/seed.helper';
 import { ReviewSeedInput } from './input/review-seed.input';
 import { ReviewEntity } from 'src/api/review/entity/review.entity';
-import {
-  getRandomContent,
-  getRandomImagePathList,
-  getRandomInt,
-  getRandomKeywordPairList,
-} from './utils/random-utils';
 
 export class ReviewSeedHelper extends SeedHelper<ReviewSeedInput> {
   constructor(private readonly prisma: PrismaService) {
@@ -24,33 +18,32 @@ export class ReviewSeedHelper extends SeedHelper<ReviewSeedInput> {
     } = input;
 
     const user = await this.prisma.user.findUniqueOrThrow({
-      where: { idx: inputUserIdx || getRandomInt(1, 4) },
+      where: { idx: inputUserIdx ?? 1 },
     });
 
     const place = await this.prisma.place.findUniqueOrThrow({
-      where: { idx: inputPlaceIdx || getRandomInt(1, 2) },
+      where: { idx: inputPlaceIdx ?? 1 },
     });
 
-    const finalContent = inputContent ?? getRandomContent();
+    const content = inputContent ?? 'base review';
 
-    const finalKeywordIdxList =
-      inputKeywordIdxList ||
-      (await getRandomKeywordPairList(this.prisma))
-        .map((k) => k.idx)
-        .sort((a, b) => a - b);
+    const keywordIdxList = inputKeywordIdxList ?? [1, 2];
 
-    const finalImagePathList = inputImagePathList ?? getRandomImagePathList();
+    const imagePathList = inputImagePathList ?? [
+      'images/sample1.jpg',
+      'images/sample2.jpg',
+    ];
 
     const createdReview = await this.prisma.review.create({
       data: {
         userIdx: user.idx,
         placeIdx: place.idx,
-        content: finalContent,
+        content,
         reviewKeywordMapping: {
-          create: finalKeywordIdxList.map((keywordIdx) => ({ keywordIdx })),
+          create: keywordIdxList.map((keywordIdx) => ({ keywordIdx })),
         },
         reviewImage: {
-          create: finalImagePathList.map((path) => ({ path })),
+          create: imagePathList.map((path) => ({ path })),
         },
       },
       include: {
