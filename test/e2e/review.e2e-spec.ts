@@ -1,21 +1,30 @@
 import { INestApplication } from '@nestjs/common';
-import { Review } from '@prisma/client';
+import { ReviewEntity } from 'src/api/review/entity/review.entity';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import * as request from 'supertest';
 import { TestManager } from 'test/common/helpers/test-manager';
 import { ReviewSeedHelper } from 'test/common/seed/review-seed.helper';
+import {
+  getRandomContent,
+  getRandomImagePathList,
+  getRandomInt,
+  getRandomKeywordPairList,
+} from 'test/common/seed/utils/random-utils';
 
 describe('ReviewController', () => {
   let app: INestApplication;
   let test = TestManager.create();
   let reviewSeedHelper: ReviewSeedHelper;
+  let reviews: ReviewEntity[] = [];
   let reviewIdx: number;
   let placeIdx: number;
   let userIdx: number;
-  let keywordIdxList: number[];
-  let keywordContentMap: Map<number, string>;
+  let placeName: string;
+  let userNickName: string;
+  let createdAt: Date;
+  let content: string;
+  let keywordList: string[];
   let imagePathList: string[];
-  let originalKeywordContentList: string[];
 
   beforeAll(async () => {
     await test.init();
@@ -27,36 +36,23 @@ describe('ReviewController', () => {
 
   beforeEach(async () => {
     await test.startTransaction();
-    const review = await reviewSeedHelper.seed();
-    reviewIdx = review.idx;
-    placeIdx = review.place.idx;
-    userIdx = review.user.idx;
 
-    keywordIdxList = review.reviewKeywordMapping.map(
-      (mapping) => mapping.keyword.idx,
-    );
-    keywordContentMap = new Map(
-      review.reviewKeywordMapping.map((m) => [
-        m.keyword.idx,
-        m.keyword.content,
-      ]),
-    );
-    imagePathList = review.reviewImage.map((image) => image.path);
-    originalKeywordContentList = review.reviewKeywordMapping
-      .sort((a, b) => a.keyword.idx - b.keyword.idx)
-      .map((m) => m.keyword.content);
+    const review = await reviewSeedHelper.seed();
+
+    reviewIdx = review.idx;
+    placeIdx = review.placeIdx;
+    placeName = review.placeName;
+    userIdx = review.userIdx;
+    userNickName = review.userNickName;
+    createdAt = review.createdAt;
+    content = review.content;
+    imagePathList = review.imagePathList;
+    keywordList = review.keywordList;
+
+    reviews.push(review);
 
     test.setUserIdx(userIdx);
   });
-
-  function getRandomInt(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-
-  function getRandomSubset<T>(array: T[], count: number): T[] {
-    const shuffled = [...array].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, count);
-  }
 
   afterEach(() => {
     test.rollbackTransaction();
@@ -68,11 +64,34 @@ describe('ReviewController', () => {
 
   describe('GET /place/:placeIdx/review/all', () => {
     it('should return reviewList of a place', async () => {
+      const review1 = await reviewSeedHelper.seed({ placeIdx: placeIdx });
+      const review2 = await reviewSeedHelper.seed({ placeIdx: placeIdx });
+
+      reviews.push(review1, review2);
+
       const response = await request(app.getHttpServer())
         .get(`/place/${placeIdx}/review/all`)
         .expect(200);
 
       expect(response.body.length).toBeGreaterThan(0);
+
+      response.body.forEach((review: ReviewEntity) => {
+        const reviewEntity = reviews.find((r) => r.idx === review.idx);
+
+        expect(reviewEntity).toBeDefined();
+
+        if (reviewEntity) {
+          expect(review.idx).toBe(reviewEntity.idx);
+          expect(review.content).toBe(reviewEntity.content);
+          expect(review.imagePathList).toEqual(reviewEntity.imagePathList);
+          expect(review.keywordList).toEqual(reviewEntity.keywordList);
+          expect(review.userNickName).toBe(reviewEntity.userNickName);
+          expect(review.placeName).toBe(reviewEntity.placeName);
+          expect(new Date(review.createdAt).toISOString().slice(0, 16)).toEqual(
+            new Date(createdAt).toISOString().slice(0, 16),
+          );
+        }
+      });
     });
 
     it('should return an empty reviewList of a place', async () => {
@@ -108,41 +127,55 @@ describe('ReviewController', () => {
 
   describe('POST /place/:placeIdx/review', () => {
     it('should create a review without keyword and image', async () => {
+      content = getRandomContent();
+
       const response = await request(app.getHttpServer())
         .post(`/place/${placeIdx}/review`)
-        .send({ content: 'good taste' })
+        .send({ content })
         .expect(201);
 
       expect(response.body).toHaveProperty('idx');
-      expect(response.body.content).toBe('good taste');
+      expect(response.body.userIdx).toEqual(userIdx);
+      expect(response.body.placeIdx).toEqual(placeIdx);
+      expect(response.body.content).toEqual(content);
+      expect(
+        new Date(response.body.createdAt).toISOString().slice(0, 16),
+      ).toEqual(new Date(createdAt).toISOString().slice(0, 16));
       expect(response.body.keywordList).toEqual([]);
       expect(response.body.imagePathList).toEqual([]);
+      expect(response.body.userNickName).toEqual(userNickName);
+      expect(response.body.placeName).toEqual(placeName);
     });
 
     it('should create a review with keyword and image', async () => {
-      const count = getRandomInt(1, keywordIdxList.length);
-      const selectedKeywordIdxList = getRandomSubset(keywordIdxList, count);
-
-      const sortedKeywordIdxList = [...selectedKeywordIdxList].sort(
-        (a, b) => a - b,
+      content = getRandomContent();
+      const keywordPairList = await getRandomKeywordPairList(
+        app.get(PrismaService),
       );
-      const expectedKeywordList = sortedKeywordIdxList.map((idx) =>
-        keywordContentMap.get(idx),
-      );
+      const keywordIdxList = keywordPairList.map((k) => k.idx);
+      keywordList = keywordPairList.map((k) => k.content);
+      imagePathList = getRandomImagePathList();
 
       const response = await request(app.getHttpServer())
         .post(`/place/${placeIdx}/review`)
         .send({
-          content: 'good taste',
-          keywordIdxList: selectedKeywordIdxList,
+          content,
+          keywordIdxList,
           imagePathList,
         })
         .expect(201);
 
       expect(response.body).toHaveProperty('idx');
-      expect(response.body.content).toBe('good taste');
+      expect(response.body.userIdx).toEqual(userIdx);
+      expect(response.body.placeIdx).toEqual(placeIdx);
+      expect(response.body.content).toEqual(content);
+      expect(
+        new Date(response.body.createdAt).toISOString().slice(0, 16),
+      ).toEqual(new Date(createdAt).toISOString().slice(0, 16));
+      expect(response.body.keywordList).toEqual(keywordList);
       expect(response.body.imagePathList).toEqual(imagePathList);
-      expect(response.body.keywordList).toEqual(expectedKeywordList);
+      expect(response.body.userNickName).toEqual(userNickName);
+      expect(response.body.placeName).toEqual(placeName);
     });
 
     // it('should return 400 if keywordIdxList contains invalid keyword', async () => {
@@ -160,7 +193,7 @@ describe('ReviewController', () => {
       await request(app.getHttpServer())
         .post(`/place/test/review`)
         .send({
-          content: 'good taste',
+          content: getRandomContent(),
         })
         .expect(400);
     });
@@ -175,53 +208,74 @@ describe('ReviewController', () => {
 
   describe('PATCH /review/:reviewIdx', () => {
     it('should update a review', async () => {
-      const count = getRandomInt(1, keywordIdxList.length);
-      const selectedKeywordIdxList = getRandomSubset(keywordIdxList, count);
-      const sortedKeywordIdxList = [...selectedKeywordIdxList].sort(
-        (a, b) => a - b,
+      content = getRandomContent();
+      const keywordPairList = await getRandomKeywordPairList(
+        app.get(PrismaService),
       );
-      const expectedKeywordList = sortedKeywordIdxList.map((idx) =>
-        keywordContentMap.get(idx),
-      );
+      const keywordIdxList = keywordPairList.map((k) => k.idx);
+      keywordList = keywordPairList.map((k) => k.content);
+      imagePathList = getRandomImagePathList();
 
       const response = await request(app.getHttpServer())
         .patch(`/review/${reviewIdx}`)
         .send({
-          content: 'Very quiet',
-          imagePathList: ['images/new_review_image.jpg'],
-          keywordIdxList: selectedKeywordIdxList,
+          content,
+          imagePathList,
+          keywordIdxList,
         })
         .expect(200);
 
-      expect(response.body.content).toBe('Very quiet');
-      expect(response.body.imagePathList).toEqual([
-        'images/new_review_image.jpg',
-      ]);
-      expect(response.body.keywordList).toEqual(expectedKeywordList);
+      expect(response.body).toHaveProperty('idx');
+      expect(response.body.userIdx).toEqual(userIdx);
+      expect(response.body.placeIdx).toEqual(placeIdx);
+      expect(response.body.content).toEqual(content);
+      expect(
+        new Date(response.body.createdAt).toISOString().slice(0, 16),
+      ).toEqual(new Date(createdAt).toISOString().slice(0, 16));
+      expect(response.body.keywordList).toEqual(keywordList);
+      expect(response.body.imagePathList).toEqual(imagePathList);
+      expect(response.body.userNickName).toEqual(userNickName);
+      expect(response.body.placeName).toEqual(placeName);
     });
 
     it('should update a review content only', async () => {
+      content = getRandomContent();
       const response = await request(app.getHttpServer())
         .patch(`/review/${reviewIdx}`)
-        .send({ content: 'Very quiet' })
+        .send({ content })
         .expect(200);
 
-      expect(response.body.content).toBe('Very quiet');
+      expect(response.body).toHaveProperty('idx');
+      expect(response.body.userIdx).toEqual(userIdx);
+      expect(response.body.placeIdx).toEqual(placeIdx);
+      expect(response.body.content).toEqual(content);
+      expect(
+        new Date(response.body.createdAt).toISOString().slice(0, 16),
+      ).toEqual(new Date(createdAt).toISOString().slice(0, 16));
+      expect(response.body.keywordList).toEqual(keywordList);
       expect(response.body.imagePathList).toEqual(imagePathList);
-      expect(response.body.keywordList).toEqual(originalKeywordContentList);
+      expect(response.body.userNickName).toEqual(userNickName);
+      expect(response.body.placeName).toEqual(placeName);
     });
 
     it('should update a review image only', async () => {
+      imagePathList = getRandomImagePathList();
       const response = await request(app.getHttpServer())
         .patch(`/review/${reviewIdx}`)
-        .send({ imagePathList: ['images/new_review_image.jpg'] })
+        .send({ imagePathList })
         .expect(200);
 
-      expect(response.body.imagePathList).toEqual([
-        'images/new_review_image.jpg',
-      ]);
-      expect(response.body.content).toBe('initial content');
-      expect(response.body.keywordList).toEqual(originalKeywordContentList);
+      expect(response.body).toHaveProperty('idx');
+      expect(response.body.userIdx).toEqual(userIdx);
+      expect(response.body.placeIdx).toEqual(placeIdx);
+      expect(response.body.content).toEqual(content);
+      expect(
+        new Date(response.body.createdAt).toISOString().slice(0, 16),
+      ).toEqual(new Date(createdAt).toISOString().slice(0, 16));
+      expect(response.body.keywordList).toEqual(keywordList);
+      expect(response.body.imagePathList).toEqual(imagePathList);
+      expect(response.body.userNickName).toEqual(userNickName);
+      expect(response.body.placeName).toEqual(placeName);
     });
 
     it('should remove a review image only', async () => {
@@ -230,28 +284,42 @@ describe('ReviewController', () => {
         .send({ imagePathList: [] })
         .expect(200);
 
+      expect(response.body).toHaveProperty('idx');
+      expect(response.body.userIdx).toEqual(userIdx);
+      expect(response.body.placeIdx).toEqual(placeIdx);
+      expect(response.body.content).toEqual(content);
+      expect(
+        new Date(response.body.createdAt).toISOString().slice(0, 16),
+      ).toEqual(new Date(createdAt).toISOString().slice(0, 16));
+      expect(response.body.keywordList).toEqual(keywordList);
       expect(response.body.imagePathList).toEqual([]);
-      expect(response.body.content).toBe('initial content');
-      expect(response.body.keywordList).toEqual(originalKeywordContentList);
+      expect(response.body.userNickName).toEqual(userNickName);
+      expect(response.body.placeName).toEqual(placeName);
     });
 
     it('should update a review keyword list only', async () => {
-      const selectedKeywordIdxList = getRandomSubset(keywordIdxList, 2);
-      const sortedKeywordIdxList = [...selectedKeywordIdxList].sort(
-        (a, b) => a - b,
+      const keywordPairList = await getRandomKeywordPairList(
+        app.get(PrismaService),
       );
-      const expectedKeywordList = sortedKeywordIdxList.map((idx) =>
-        keywordContentMap.get(idx),
-      );
+      const keywordIdxList = keywordPairList.map((k) => k.idx);
+      keywordList = keywordPairList.map((k) => k.content);
 
       const response = await request(app.getHttpServer())
         .patch(`/review/${reviewIdx}`)
-        .send({ keywordIdxList: selectedKeywordIdxList })
+        .send({ keywordIdxList })
         .expect(200);
 
-      expect(response.body.keywordList).toEqual(expectedKeywordList);
-      expect(response.body.content).toBe('initial content');
+      expect(response.body).toHaveProperty('idx');
+      expect(response.body.userIdx).toEqual(userIdx);
+      expect(response.body.placeIdx).toEqual(placeIdx);
+      expect(response.body.content).toEqual(content);
+      expect(
+        new Date(response.body.createdAt).toISOString().slice(0, 16),
+      ).toEqual(new Date(createdAt).toISOString().slice(0, 16));
+      expect(response.body.keywordList).toEqual(keywordList);
       expect(response.body.imagePathList).toEqual(imagePathList);
+      expect(response.body.userNickName).toEqual(userNickName);
+      expect(response.body.placeName).toEqual(placeName);
     });
 
     it('should remove a keyword list only', async () => {
@@ -260,16 +328,24 @@ describe('ReviewController', () => {
         .send({ keywordIdxList: [] })
         .expect(200);
 
+      expect(response.body).toHaveProperty('idx');
+      expect(response.body.userIdx).toEqual(userIdx);
+      expect(response.body.placeIdx).toEqual(placeIdx);
+      expect(response.body.content).toEqual(content);
+      expect(
+        new Date(response.body.createdAt).toISOString().slice(0, 16),
+      ).toEqual(new Date(createdAt).toISOString().slice(0, 16));
       expect(response.body.keywordList).toEqual([]);
-      expect(response.body.content).toBe('initial content');
       expect(response.body.imagePathList).toEqual(imagePathList);
+      expect(response.body.userNickName).toEqual(userNickName);
+      expect(response.body.placeName).toEqual(placeName);
     });
 
     it('should return 400 if reviewIdx is not a number', async () => {
       await request(app.getHttpServer())
         .patch(`/review/test`)
         .send({
-          content: 'good taste',
+          content: getRandomImagePathList(),
         })
         .expect(400);
     });
@@ -284,27 +360,27 @@ describe('ReviewController', () => {
     });
 
     it('should return 403 if the user is not authorized', async () => {
-      const prisma = app.get(PrismaService);
-      const unauthorizedUser = await prisma.user.create({
-        data: { nickname: 'unauthorized user' },
-      });
-      test.setUserIdx(unauthorizedUser.idx);
+      let unauthorizedUser = getRandomInt(1, 4);
+
+      while (unauthorizedUser === userIdx) {
+        unauthorizedUser = getRandomInt(1, 4);
+      }
+
+      test.setUserIdx(unauthorizedUser);
 
       await request(app.getHttpServer())
         .patch(`/review/${reviewIdx}`)
         .send({
-          content: 'taste good',
+          content: getRandomContent(),
         })
         .expect(403);
-
-      test.setUserIdx(userIdx);
     });
 
     it('should return 404 if the review does not exist', async () => {
       await request(app.getHttpServer())
         .patch(`/review/9999`)
         .send({
-          content: 'taste good',
+          content: getRandomContent(),
         })
         .expect(404);
     });
@@ -312,17 +388,12 @@ describe('ReviewController', () => {
 
   describe('DELETE /review/:reviewIdx', () => {
     it('should delete a review', async () => {
-      const prisma = app.get(PrismaService);
-      let review = await prisma.review.findUnique({
-        where: { idx: reviewIdx },
-      });
-      expect(review?.deletedAt).toBeNull();
-
       await request(app.getHttpServer())
         .delete(`/review/${reviewIdx}`)
         .expect(200);
 
-      review = await prisma.review.findUnique({
+      const prisma = app.get(PrismaService);
+      const review = await prisma.review.findUnique({
         where: { idx: reviewIdx },
       });
 
@@ -334,17 +405,17 @@ describe('ReviewController', () => {
     });
 
     it('should return 403 if the user is not authorized to delete the review', async () => {
-      const prisma = app.get(PrismaService);
-      const unauthorizedUser = await prisma.user.create({
-        data: { nickname: 'unauthorized user' },
-      });
-      test.setUserIdx(unauthorizedUser.idx);
+      let unauthorizedUser = getRandomInt(1, 4);
+
+      while (unauthorizedUser === userIdx) {
+        unauthorizedUser = getRandomInt(1, 4);
+      }
+
+      test.setUserIdx(unauthorizedUser);
 
       await request(app.getHttpServer())
         .delete(`/review/${reviewIdx}`)
         .expect(403);
-
-      test.setUserIdx(userIdx);
     });
 
     it('should return 404 if the review does not exist', async () => {
@@ -354,11 +425,34 @@ describe('ReviewController', () => {
 
   describe('GET /my/review/all', () => {
     it('should return reviewList of a user', async () => {
+      const review1 = await reviewSeedHelper.seed({ userIdx });
+      const review2 = await reviewSeedHelper.seed({ userIdx });
+
+      reviews.push(review1, review2);
+
       const response = await request(app.getHttpServer())
         .get(`/my/review/all`)
         .expect(200);
 
       expect(response.body.length).toBeGreaterThan(0);
+
+      response.body.forEach((review: ReviewEntity) => {
+        const reviewEntity = reviews.find((r) => r.idx === review.idx);
+
+        expect(reviewEntity).toBeDefined();
+
+        if (reviewEntity) {
+          expect(review.idx).toBe(reviewEntity.idx);
+          expect(review.content).toBe(reviewEntity.content);
+          expect(review.imagePathList).toEqual(reviewEntity.imagePathList);
+          expect(review.keywordList).toEqual(reviewEntity.keywordList);
+          expect(review.userNickName).toBe(reviewEntity.userNickName);
+          expect(review.placeName).toBe(reviewEntity.placeName);
+          expect(new Date(review.createdAt).toISOString().slice(0, 16)).toEqual(
+            new Date(createdAt).toISOString().slice(0, 16),
+          );
+        }
+      });
     });
 
     it('should return an empty reviewList of a user', async () => {
