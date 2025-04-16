@@ -50,7 +50,7 @@ describe('UserController (e2e)', () => {
       expect(res.body.message).toBe('User not found');
     });
 
-    it('should return 500 if internal server error occurs', async () => {
+    it('should return 500 if an unexpected error occurs', async () => {
       const user = await new UserSeedHelper(prisma).seed();
       testManager.setUserIdx(user.idx);
 
@@ -60,6 +60,8 @@ describe('UserController (e2e)', () => {
       };
 
       const res = await request(app.getHttpServer()).get('/user').expect(500);
+
+      expect(res.body.statusCode).toBe(500);
       expect(res.body.message).toBe('Internal server error');
 
       prisma.user.findUnique = originalMethod;
@@ -129,6 +131,26 @@ describe('UserController (e2e)', () => {
         .expect(400);
 
       expect(res.body.message).toBe('One field must be provided.');
+    });
+
+    it('should return 500 if an unexpected error occurs', async () => {
+      const user = await new UserSeedHelper(prisma).seed();
+      testManager.setUserIdx(user.idx);
+
+      const originalFn = prisma.user.update;
+      prisma.user.update = () => {
+        throw new Error();
+      };
+
+      const res = await request(app.getHttpServer())
+        .patch('/user')
+        .send({ nickname: 'testError' })
+        .expect(500);
+
+      expect(res.body.statusCode).toBe(500);
+      expect(res.body.message).toBe('Internal server error');
+
+      prisma.user.update = originalFn;
     });
   });
 
