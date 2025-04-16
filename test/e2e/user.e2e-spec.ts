@@ -196,4 +196,47 @@ describe('UserController (e2e)', () => {
       prisma.user.update = originalFn;
     });
   });
+
+  describe('DELETE /user', () => {
+    it('should soft delete the user and set deletedAt', async () => {
+      const user = await new UserSeedHelper(prisma).seed();
+      testManager.setUserIdx(user.idx);
+
+      await request(app.getHttpServer()).delete('/user').expect(200);
+
+      const deletedUser = await prisma.user.findUnique({
+        where: { idx: user.idx },
+      });
+
+      expect(deletedUser).not.toBeNull();
+      expect(deletedUser?.deletedAt).toBeInstanceOf(Date);
+
+      await request(app.getHttpServer()).get('/user').expect(404);
+    });
+
+    it('should return 404 if user does not exist', async () => {
+      testManager.setUserIdx(99999);
+
+      await request(app.getHttpServer()).delete('/user').expect(404);
+    });
+
+    it('should return 500 if an unexpected error occurs', async () => {
+      const user = await new UserSeedHelper(prisma).seed();
+      testManager.setUserIdx(user.idx);
+
+      const originalFn = prisma.user.update;
+      prisma.user.update = () => {
+        throw new Error();
+      };
+
+      const res = await request(app.getHttpServer())
+        .delete('/user')
+        .expect(500);
+
+      expect(res.body.statusCode).toBe(500);
+      expect(res.body.message).toBe('Internal server error');
+
+      prisma.user.update = originalFn;
+    });
+  });
 });
