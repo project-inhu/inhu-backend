@@ -7,6 +7,11 @@ import { BookmarkSelectField } from './type/bookmark-select-field';
 export class BookmarkRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * 특정 장소에 대한 북마크 등록
+   *
+   * @author 강정연
+   */
   async createBookmarkByPlaceIdx(
     placeIdx: number,
     userIdx: number,
@@ -19,6 +24,11 @@ export class BookmarkRepository {
     });
   }
 
+  /**
+   * 특정 idx의 북마크 조회
+   *
+   * @author 강정연
+   */
   async selectBookmarkByBookmarkIdx(
     bookmarkIdx: number,
   ): Promise<BookmarkSelectField | null> {

@@ -9,6 +9,12 @@ export class BookmarkService {
     private readonly bookmarkRepository: BookmarkRepository,
     private readonly placeService: PlaceService,
   ) {}
+
+  /**
+   * 특정 장소에 대한 북마크 등록
+   *
+   * @author 강정연
+   */
   async createBookmarkByPlaceIdx(placeIdx: number, userIdx: number) {
     await this.placeService.getPlaceByPlaceIdx(placeIdx);
     const review = await this.bookmarkRepository.createBookmarkByPlaceIdx(
@@ -19,6 +25,11 @@ export class BookmarkService {
     return this.getBookmarkByBookmarkIdx(review.idx);
   }
 
+  /**
+   *  특정 Idx의 북마크 조회
+   *
+   * @author 강정연
+   */
   async getBookmarkByBookmarkIdx(bookmarkIdx: number): Promise<BookmarkEntity> {
     const bookmark =
       await this.bookmarkRepository.selectBookmarkByBookmarkIdx(bookmarkIdx);
