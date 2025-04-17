@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { KeywordModule } from './api/keyword/keyword.module';
 import { ReviewModule } from './api/review/review.module';
+import { BookmarkModule } from './api/bookmark/bookmark.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ReviewModule } from './api/review/review.module';
       isGlobal: true,
     }),
     ReviewModule,
+    BookmarkModule,
   ],
   controllers: [AppController],
   providers: [AppService],
