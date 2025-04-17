@@ -9,6 +9,8 @@ import {
 import { BookmarkService } from './bookmark.service';
 import { LoginAuth } from 'src/auth/common/decorators/login-auth.decorator';
 import { User } from 'src/common/decorator/user.decorator';
+import { BookmarkEntity } from './entity/bookmark.entity';
+import { Exception } from 'src/common/decorator/exception.decorator';
 
 @Controller('')
 export class BookmarkController {
@@ -20,11 +22,19 @@ export class BookmarkController {
    * @author 강정연
    */
   @LoginAuth
+  @Exception(400, 'PlaceIdx must be a number')
+  @Exception(404, 'Place does not exist')
+  @Exception(500, 'Internal Server Error')
   @Post('place/:placeIdx/bookmark')
   async createBookmarkByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @User('idx') userIdx: number,
-  ) {}
+  ): Promise<BookmarkEntity> {
+    return await this.bookmarkServie.createBookmarkByPlaceIdx(
+      placeIdx,
+      userIdx,
+    );
+  }
 
   /**
    * 특정 장소에 대한 북마크 삭제
