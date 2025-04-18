@@ -13,7 +13,7 @@ export class BookmarkRepository {
    *
    * @author 강정연
    */
-  async createBookmarkByPlaceIdx(
+  async createBookmarkByPlaceIdxAndUserIdx(
     placeIdx: number,
     userIdx: number,
   ): Promise<Bookmark> {

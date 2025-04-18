@@ -27,11 +27,11 @@ export class BookmarkController {
   @Exception(409, 'Bookmark already exists')
   @Exception(500, 'Internal Server Error')
   @Post('place/:placeIdx/bookmark')
-  async createBookmarkByPlaceIdx(
+  async createBookmarkByPlaceIdxAndUserIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @User('idx') userIdx: number,
   ): Promise<BookmarkEntity | null> {
-    return await this.bookmarkServie.createBookmarkByPlaceIdx(
+    return await this.bookmarkServie.createBookmarkByPlaceIdxAndUserIdx(
       placeIdx,
       userIdx,
     );
@@ -48,7 +48,7 @@ export class BookmarkController {
   @Exception(409, 'Bookmark already deleted')
   @Exception(500, 'Internal Server Error')
   @Delete('place/:placeIdx/bookmark')
-  async deleteBookmarkByPlaceIdx(
+  async deleteBookmarkByPlaceIdxAndUserIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @User('idx') userIdx: number,
   ) {
