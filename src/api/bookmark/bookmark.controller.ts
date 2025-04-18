@@ -24,12 +24,13 @@ export class BookmarkController {
   @LoginAuth
   @Exception(400, 'PlaceIdx must be a number')
   @Exception(404, 'Place does not exist')
+  @Exception(409, 'Bookmark already exists')
   @Exception(500, 'Internal Server Error')
   @Post('place/:placeIdx/bookmark')
   async createBookmarkByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @User('idx') userIdx: number,
-  ): Promise<BookmarkEntity> {
+  ): Promise<BookmarkEntity | null> {
     return await this.bookmarkServie.createBookmarkByPlaceIdx(
       placeIdx,
       userIdx,
@@ -37,15 +38,25 @@ export class BookmarkController {
   }
 
   /**
-   * 특정 장소에 대한 북마크 삭제
+   * 특정 북마크 삭제
    *
    * @author 강정연
    */
+  @LoginAuth
+  @Exception(400, 'PlaceIdx must be a number')
+  @Exception(404, 'Place or bookmark does not exist')
+  @Exception(409, 'Bookmark already deleted')
+  @Exception(500, 'Internal Server Error')
   @Delete('place/:placeIdx/bookmark')
   async deleteBookmarkByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @User('idx') userIdx: number,
-  ) {}
+  ) {
+    await this.bookmarkServie.deleteBookmarkByPlaceIdxAndUserIdx(
+      placeIdx,
+      userIdx,
+    );
+  }
 
   /**
    * 특정 사용자가 작성한 리뷰 목록 조회
