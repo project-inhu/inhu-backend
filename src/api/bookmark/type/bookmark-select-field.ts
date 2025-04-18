@@ -14,6 +14,7 @@ export const BOOKMARK_SELECT_FIELD =
       userIdx: true,
       placeIdx: true,
       createdAt: true,
+      deletedAt: true,
     },
   });
 
