@@ -59,6 +59,25 @@ export class BookmarkController {
   }
 
   /**
+   * 특정 북마크 삭제 (idx 제공 시)
+   *
+   * @author 강정연
+   */
+  @LoginAuth
+  @Exception(400, 'BookmarkIdx must be a number')
+  @Exception(404, 'Bookmark does not exist')
+  @Exception(403, 'You are not allowed to delete this bookmark')
+  @Exception(409, 'Bookmark already deleted')
+  @Exception(500, 'Internal Server Error')
+  @Delete('bookmark/:bookmarkIdx')
+  async deleteBookmarkByBookmarkIdx(
+    @Param('bookmarkIdx', ParseIntPipe) bookmarkIdx: number,
+    @User('idx') userIdx: number,
+  ): Promise<void> {
+    await this.bookmarkServie.deleteBookmarkByBookmarkIdx(bookmarkIdx, userIdx);
+  }
+
+  /**
    * 특정 사용자가 작성한 리뷰 목록 조회
    *
    * @author 강정연
