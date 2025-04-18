@@ -15,15 +15,15 @@ export class BookmarkService {
   ) {}
 
   /**
-   * 특정 장소에 대한 북마크 등록 혹은 복구
+   * 특정 장소와 사용자 조합에 대한 북마크 등록 혹은 복구
    *
-   * - 기존 북마크가 없으면 새로 생성
-   * - 이미 존재하면 예외 발생
+   * - 해당 유저가 해당 장소를 북마크한 이력이 없으면 새로 생성
+   * - 이미 북마크가 존재하면 예외 발생
    * - soft-delete 상태면 복구
    *
    * @author 강정연
    */
-  async createBookmarkByPlaceIdx(
+  async createBookmarkByPlaceIdxAndUserIdx(
     placeIdx: number,
     userIdx: number,
   ): Promise<BookmarkEntity | null> {
@@ -37,7 +37,7 @@ export class BookmarkService {
 
     if (!bookmark) {
       return BookmarkEntity.createEntityFromPrisma(
-        await this.bookmarkRepository.createBookmarkByPlaceIdx(
+        await this.bookmarkRepository.createBookmarkByPlaceIdxAndUserIdx(
           placeIdx,
           userIdx,
         ),
