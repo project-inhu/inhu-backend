@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Bookmark } from '@prisma/client';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { BookmarkSelectField } from './type/bookmark-select-field';
-import { BOOKMARK_SELECT_FIELD } from './type/bookmark-select-field';
 
 @Injectable()
 export class BookmarkRepository {
@@ -26,41 +25,42 @@ export class BookmarkRepository {
   }
 
   /**
-   * 특정 idx의 삭제되지 않은 북마크 조회
+   * 특정 idx의 삭제 여부 관계 없이 북마크 조회
    *
    * @author 강정연
    */
   async selectBookmarkByBookmarkIdx(
     bookmarkIdx: number,
-  ): Promise<Bookmark | null> {
+  ): Promise<BookmarkSelectField | null> {
     return await this.prisma.bookmark.findUnique({
       where: {
         idx: bookmarkIdx,
-        deletedAt: null,
-      },
-    });
-  }
-
-  /**
-   *  특정 장소와 사용자 조합의 삭제되지 않은 북마크 조회
-   *
-   * @author 강정연
-   */
-  async selectBookmarkByPlaceIdxAndUserIdx(
-    placeIdx: number,
-    userIdx: number,
-  ): Promise<BookmarkSelectField | null> {
-    return await this.prisma.bookmark.findFirst({
-      where: {
-        placeIdx,
-        userIdx,
-        deletedAt: null,
       },
       select: {
         idx: true,
         userIdx: true,
         placeIdx: true,
         createdAt: true,
+        deletedAt: true,
+      },
+    });
+  }
+
+  /**
+   * 특정 장소와 사용자 조합으로 삭제 여부 관계 없이 북마크 조회
+   *
+   * 내부 로직이므로 Bookmark로만 반환
+   *
+   * @author 강정연
+   */
+  async selectBookmarkByPlaceIdxAndUserIdx(
+    placeIdx: number,
+    userIdx: number,
+  ): Promise<Bookmark | null> {
+    return this.prisma.bookmark.findFirst({
+      where: {
+        placeIdx,
+        userIdx,
       },
     });
   }
@@ -81,28 +81,11 @@ export class BookmarkRepository {
   }
 
   /**
-   * 특정 장소와 사용자 조합으로 삭제 여부 관계 없이 북마크 조회
-   *
-   * @author 강정연
-   */
-  async selectBookmarkByPlaceIdxAndUserIdxIncludingDeleted(
-    placeIdx: number,
-    userIdx: number,
-  ): Promise<Bookmark | null> {
-    return this.prisma.bookmark.findFirst({
-      where: {
-        placeIdx,
-        userIdx,
-      },
-    });
-  }
-
-  /**
    * 삭제된 북마크를 복구
    *
    * @author 강정연
    */
-  async updateBookmarkDeletedAtToNullByBookmarkIdx(
+  async updateBookmarkDeletedAtAndCreatedAtByBookmarkIdx(
     bookmarkIdx: number,
   ): Promise<Bookmark> {
     return this.prisma.bookmark.update({

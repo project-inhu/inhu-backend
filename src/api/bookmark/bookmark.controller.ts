@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Delete,
-  Get,
-  Param,
-  ParseIntPipe,
-  Post,
-} from '@nestjs/common';
+import { Controller, Delete, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { BookmarkService } from './bookmark.service';
 import { LoginAuth } from 'src/auth/common/decorators/login-auth.decorator';
 import { User } from 'src/common/decorator/user.decorator';
@@ -76,14 +69,4 @@ export class BookmarkController {
   ): Promise<void> {
     await this.bookmarkServie.deleteBookmarkByBookmarkIdx(bookmarkIdx, userIdx);
   }
-
-  /**
-   * 특정 사용자가 작성한 리뷰 목록 조회
-   *
-   * @author 강정연
-   */
-  @Get('my/bookmark/all')
-  async getAllBookmarkByUserIdx(
-    @Param('placeIdx', ParseIntPipe) placeIdx: number,
-  ) {}
 }

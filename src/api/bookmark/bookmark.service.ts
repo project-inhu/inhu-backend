@@ -7,7 +7,6 @@ import {
 import { PlaceService } from '../place/place.service';
 import { BookmarkRepository } from './bookmark.repository';
 import { BookmarkEntity } from './entity/bookmark.entity';
-import { Bookmark } from '@prisma/client';
 
 @Injectable()
 export class BookmarkService {
@@ -32,57 +31,45 @@ export class BookmarkService {
     await this.placeService.getPlaceByPlaceIdx(placeIdx);
 
     const bookmark =
-      await this.bookmarkRepository.selectBookmarkByPlaceIdxAndUserIdxIncludingDeleted(
+      await this.bookmarkRepository.selectBookmarkByPlaceIdxAndUserIdx(
         placeIdx,
         userIdx,
       );
 
     if (!bookmark) {
-      return BookmarkEntity.createEntityFromPrisma(
+      const created =
         await this.bookmarkRepository.createBookmarkByPlaceIdxAndUserIdx(
           placeIdx,
           userIdx,
-        ),
-      );
+        );
+
+      return this.getBookmarkByBookmarkIdx(created.idx);
     } else if (!bookmark.deletedAt) {
       throw new ConflictException('bookmark already exist');
     } else {
       const recovered =
-        await this.bookmarkRepository.updateBookmarkDeletedAtToNullByBookmarkIdx(
+        await this.bookmarkRepository.updateBookmarkDeletedAtAndCreatedAtByBookmarkIdx(
           bookmark.idx,
         );
-      return BookmarkEntity.createEntityFromPrisma(recovered);
+
+      return this.getBookmarkByBookmarkIdx(recovered.idx);
     }
   }
 
   /**
-   *  특정 장소와 사용자 조합의 북마크 삭제
+   * 특정 idx의 북마크 조회
    *
    * @author 강정연
    */
-  async deleteBookmarkByPlaceIdxAndUserIdx(
-    placeIdx: number,
-    userIdx: number,
-  ): Promise<void> {
-    await this.placeService.getPlaceByPlaceIdx(placeIdx);
-
+  async getBookmarkByBookmarkIdx(bookmarkIdx: number) {
     const bookmark =
-      await this.bookmarkRepository.selectBookmarkByPlaceIdxAndUserIdxIncludingDeleted(
-        placeIdx,
-        userIdx,
-      );
+      await this.bookmarkRepository.selectBookmarkByBookmarkIdx(bookmarkIdx);
 
     if (!bookmark) {
       throw new NotFoundException('bookmark not found');
     }
 
-    if (bookmark.deletedAt) {
-      throw new ConflictException('bookmark already deleted');
-    }
-
-    return await this.bookmarkRepository.deleteBookmarkByBookmarkIdx(
-      bookmark.idx,
-    );
+    return BookmarkEntity.createEntityFromPrisma(bookmark);
   }
 
   /**
@@ -109,6 +96,36 @@ export class BookmarkService {
       throw new ForbiddenException(
         'You are not allowed to delete this bookmark',
       );
+    }
+
+    return await this.bookmarkRepository.deleteBookmarkByBookmarkIdx(
+      bookmark.idx,
+    );
+  }
+
+  /**
+   *  특정 장소와 사용자 조합의 북마크 삭제
+   *
+   * @author 강정연
+   */
+  async deleteBookmarkByPlaceIdxAndUserIdx(
+    placeIdx: number,
+    userIdx: number,
+  ): Promise<void> {
+    await this.placeService.getPlaceByPlaceIdx(placeIdx);
+
+    const bookmark =
+      await this.bookmarkRepository.selectBookmarkByPlaceIdxAndUserIdx(
+        placeIdx,
+        userIdx,
+      );
+
+    if (!bookmark) {
+      throw new NotFoundException('bookmark not found');
+    }
+
+    if (bookmark.deletedAt) {
+      throw new ConflictException('bookmark already deleted');
     }
 
     return await this.bookmarkRepository.deleteBookmarkByBookmarkIdx(
