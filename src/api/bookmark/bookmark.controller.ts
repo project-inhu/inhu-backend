@@ -51,7 +51,7 @@ export class BookmarkController {
   async deleteBookmarkByPlaceIdxAndUserIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @User('idx') userIdx: number,
-  ) {
+  ): Promise<void> {
     await this.bookmarkServie.deleteBookmarkByPlaceIdxAndUserIdx(
       placeIdx,
       userIdx,
