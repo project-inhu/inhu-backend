@@ -7,18 +7,19 @@ import { Prisma } from '@prisma/client';
  *
  * @author 강정연
  */
-const BOOKMARK_SELECT_FIELD = Prisma.validator<Prisma.BookmarkDefaultArgs>()({
-  select: {
-    idx: true,
-    userIdx: true,
-    placeIdx: true,
-    createdAt: true,
-  },
-});
+export const BOOKMARK_SELECT_FIELD =
+  Prisma.validator<Prisma.BookmarkDefaultArgs>()({
+    select: {
+      idx: true,
+      userIdx: true,
+      placeIdx: true,
+      createdAt: true,
+    },
+  });
 
 /**
  * `BOOKMARK_SELECT_FIELD`의 Prisma 반환 타입
  */
-export type BookmarkSelectField = Prisma.ReviewGetPayload<
+export type BookmarkSelectField = Prisma.BookmarkGetPayload<
   typeof BOOKMARK_SELECT_FIELD
 >;
