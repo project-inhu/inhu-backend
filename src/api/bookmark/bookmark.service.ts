@@ -1,11 +1,13 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { PlaceService } from '../place/place.service';
 import { BookmarkRepository } from './bookmark.repository';
 import { BookmarkEntity } from './entity/bookmark.entity';
+import { Bookmark } from '@prisma/client';
 
 @Injectable()
 export class BookmarkService {
@@ -54,49 +56,14 @@ export class BookmarkService {
   }
 
   /**
-   *  특정 Idx의 북마크 조회
-   *
-   * @author 강정연
-   */
-  async getBookmarkByBookmarkIdx(bookmarkIdx: number): Promise<BookmarkEntity> {
-    const bookmark =
-      await this.bookmarkRepository.selectBookmarkByBookmarkIdx(bookmarkIdx);
-
-    if (!bookmark) {
-      throw new NotFoundException('bookmark not found');
-    }
-
-    return BookmarkEntity.createEntityFromPrisma(bookmark);
-  }
-
-  /**
-   *  특정 장소와 사용자 조합으로 북마크 조회
-   *
-   * @author 강정연
-   */
-  async getBookmarkByPlaceIdxAndUserIdx(
-    placeIdx: number,
-    userIdx: number,
-  ): Promise<BookmarkEntity> {
-    const bookmark =
-      await this.bookmarkRepository.selectBookmarkByPlaceIdxAndUserIdx(
-        placeIdx,
-        userIdx,
-      );
-
-    if (!bookmark) {
-      throw new NotFoundException('bookmark not found');
-    }
-
-    return BookmarkEntity.createEntityFromPrisma(bookmark);
-  }
-
-  /**
    *  특정 장소와 사용자 조합의 북마크 삭제
    *
    * @author 강정연
    */
-  async deleteBookmarkByPlaceIdxAndUserIdx(placeIdx: number, userIdx: number) {
+  async deleteBookmarkByPlaceIdxAndUserIdx(
+    placeIdx: number,
+    userIdx: number,
+  ): Promise<void> {
     await this.placeService.getPlaceByPlaceIdx(placeIdx);
 
     const bookmark =
@@ -111,6 +78,37 @@ export class BookmarkService {
 
     if (bookmark.deletedAt) {
       throw new ConflictException('bookmark already deleted');
+    }
+
+    return await this.bookmarkRepository.deleteBookmarkByBookmarkIdx(
+      bookmark.idx,
+    );
+  }
+
+  /**
+   *  특정 Idx의 북마크 삭제 (idx 제공 시)
+   *
+   * @author 강정연
+   */
+  async deleteBookmarkByBookmarkIdx(
+    bookmarkIdx: number,
+    userIdx: number,
+  ): Promise<void> {
+    const bookmark =
+      await this.bookmarkRepository.selectBookmarkByBookmarkIdx(bookmarkIdx);
+
+    if (!bookmark) {
+      throw new NotFoundException('bookmark not found');
+    }
+
+    if (bookmark.deletedAt) {
+      throw new ConflictException('bookmark already deleted');
+    }
+
+    if (bookmark.userIdx !== userIdx) {
+      throw new ForbiddenException(
+        'You are not allowed to delete this bookmark',
+      );
     }
 
     return await this.bookmarkRepository.deleteBookmarkByBookmarkIdx(

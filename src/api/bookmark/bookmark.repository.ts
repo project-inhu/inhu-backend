@@ -32,17 +32,11 @@ export class BookmarkRepository {
    */
   async selectBookmarkByBookmarkIdx(
     bookmarkIdx: number,
-  ): Promise<BookmarkSelectField | null> {
+  ): Promise<Bookmark | null> {
     return await this.prisma.bookmark.findUnique({
       where: {
         idx: bookmarkIdx,
         deletedAt: null,
-      },
-      select: {
-        idx: true,
-        userIdx: true,
-        placeIdx: true,
-        createdAt: true,
       },
     });
   }
