@@ -126,4 +126,32 @@ describe('BookmarkController', () => {
         .expect(409);
     });
   });
+
+  describe('DELETE /bookmark/:bookmarkIdx', () => {
+    it('should delete a bookmark', async () => {
+      await request(app.getHttpServer())
+        .delete(`/bookmark/${bookmarkIdx}`)
+        .expect(200);
+    });
+
+    it('should return 400 if the bookmarkIdx is not a number', async () => {
+      await request(app.getHttpServer()).delete(`/bookmark/test`).expect(400);
+    });
+
+    it('should return 404 if the bookmark does not exist', async () => {
+      await request(app.getHttpServer()).delete(`/bookmark/999`).expect(404);
+    });
+
+    it('should return 409 if the bookmark already deleted', async () => {
+      const prisma = app.get(PrismaService);
+      await prisma.bookmark.update({
+        where: { idx: bookmarkIdx },
+        data: { deletedAt: new Date() },
+      });
+
+      await request(app.getHttpServer())
+        .delete(`/bookmark/${bookmarkIdx}`)
+        .expect(409);
+    });
+  });
 });
