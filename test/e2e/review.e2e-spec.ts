@@ -1,4 +1,3 @@
-import { faker } from '@faker-js/faker/.';
 import { INestApplication } from '@nestjs/common';
 import { ReviewEntity } from 'src/api/review/entity/review.entity';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
