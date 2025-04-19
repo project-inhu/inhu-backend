@@ -122,13 +122,13 @@ describe('ReviewController', () => {
       expect(response.body).toEqual([]);
     });
 
-    it('should return 404 if placeIdx dose not exist', async () => {
+    it('should return 404 if the place dose not exist', async () => {
       await request(app.getHttpServer())
         .get('/place/999/review/all')
         .expect(404);
     });
 
-    it('should return 400 if placeIdx is not number', async () => {
+    it('should return 400 if the placeIdx is not number', async () => {
       await request(app.getHttpServer())
         .get('/place/test/review/all')
         .expect(400);
@@ -197,7 +197,7 @@ describe('ReviewController', () => {
     //     .expect(400);
     // });
 
-    it('should return 400 if placeIdx is not a number', async () => {
+    it('should return 400 if the placeIdx is not a number', async () => {
       await request(app.getHttpServer())
         .post(`/place/test/review`)
         .send({
@@ -213,7 +213,7 @@ describe('ReviewController', () => {
         .expect(400);
     });
 
-    it('should return 404 if placeIdx dose not exist', async () => {
+    it('should return 404 if the place dose not exist', async () => {
       await request(app.getHttpServer())
         .post('/place/999/review/all')
         .expect(404);
@@ -356,7 +356,7 @@ describe('ReviewController', () => {
       expect(response.body.placeName).toBe(placeName);
     });
 
-    it('should return 400 if reviewIdx is not a number', async () => {
+    it('should return 400 if the reviewIdx is not a number', async () => {
       await request(app.getHttpServer())
         .patch(`/review/test`)
         .send({
@@ -409,7 +409,7 @@ describe('ReviewController', () => {
       expect(review?.deletedAt).not.toBeNull();
     });
 
-    it('should return 400 if reviewIdx is not a number', async () => {
+    it('should return 400 if the reviewIdx is not a number', async () => {
       await request(app.getHttpServer()).delete(`/review/test`).expect(400);
     });
 
