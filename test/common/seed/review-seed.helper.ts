@@ -34,7 +34,7 @@ export class ReviewSeedHelper extends SeedHelper<ReviewSeedInput> {
       'images/sample2.jpg',
     ];
 
-    const review = await this.prisma.review.create({
+    const createdReview = await this.prisma.review.create({
       data: {
         userIdx: user.idx,
         placeIdx: place.idx,
@@ -46,14 +46,25 @@ export class ReviewSeedHelper extends SeedHelper<ReviewSeedInput> {
           create: imagePathList.map((path) => ({ path })),
         },
       },
-      include: {
-        reviewKeywordMapping: { include: { keyword: true } },
-        reviewImage: true,
-        place: true,
-        user: true,
+    });
+
+    const selectedReview = await this.prisma.review.findUniqueOrThrow({
+      where: { idx: createdReview.idx },
+      select: {
+        idx: true,
+        userIdx: true,
+        placeIdx: true,
+        content: true,
+        createdAt: true,
+        reviewImage: { select: { path: true } },
+        reviewKeywordMapping: {
+          select: { keyword: { select: { content: true } } },
+        },
+        user: { select: { nickname: true } },
+        place: { select: { name: true } },
       },
     });
 
-    return ReviewEntity.createEntityFromPrisma(review);
+    return ReviewEntity.createEntityFromPrisma(selectedReview);
   }
 }
