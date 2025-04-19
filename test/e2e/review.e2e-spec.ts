@@ -369,13 +369,7 @@ describe('ReviewController', () => {
     });
 
     it('should return 403 if the user is not authorized', async () => {
-      let unauthorizedUser = getRandomInt(1, 4);
-
-      while (unauthorizedUser === userIdx) {
-        unauthorizedUser = getRandomInt(1, 4);
-      }
-
-      test.setUserIdx(unauthorizedUser);
+      test.setUserIdx(2);
 
       await request(app.getHttpServer())
         .patch(`/review/${reviewIdx}`)
@@ -414,13 +408,7 @@ describe('ReviewController', () => {
     });
 
     it('should return 403 if the user is not authorized to delete the review', async () => {
-      let unauthorizedUser = getRandomInt(1, 4);
-
-      while (unauthorizedUser === userIdx) {
-        unauthorizedUser = getRandomInt(1, 4);
-      }
-
-      test.setUserIdx(unauthorizedUser);
+      test.setUserIdx(2);
 
       await request(app.getHttpServer())
         .delete(`/review/${reviewIdx}`)
