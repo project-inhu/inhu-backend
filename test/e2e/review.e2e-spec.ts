@@ -212,6 +212,12 @@ describe('ReviewController', () => {
         .send({})
         .expect(400);
     });
+
+    it('should return 404 if placeIdx dose not exist', async () => {
+      await request(app.getHttpServer())
+        .post('/place/999/review/all')
+        .expect(404);
+    });
   });
 
   describe('PATCH /review/:reviewIdx', () => {
