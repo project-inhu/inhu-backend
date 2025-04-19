@@ -25,7 +25,7 @@ export async function getRandomKeywordPairList(
   prisma: PrismaService,
 ): Promise<{ idx: number; content: string }[]> {
   const keywordList = await prisma.keyword.findMany();
-  const count = getRandomInt(1, 3);
+  const count = getRandomInt(1, keywordList.length);
   const selectedKeywords = faker.helpers.arrayElements(keywordList, count);
   selectedKeywords.sort((a, b) => a.idx - b.idx);
 
