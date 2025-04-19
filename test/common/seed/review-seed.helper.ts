@@ -34,7 +34,7 @@ export class ReviewSeedHelper extends SeedHelper<ReviewSeedInput> {
       'images/sample2.jpg',
     ];
 
-    const createdReview = await this.prisma.review.create({
+    const review = await this.prisma.review.create({
       data: {
         userIdx: user.idx,
         placeIdx: place.idx,
@@ -54,6 +54,6 @@ export class ReviewSeedHelper extends SeedHelper<ReviewSeedInput> {
       },
     });
 
-    return ReviewEntity.createEntityFromPrisma(createdReview);
+    return ReviewEntity.createEntityFromPrisma(review);
   }
 }
