@@ -266,4 +266,18 @@ export class ReviewRepository {
       data: { deletedAt: new Date() },
     });
   }
+
+  /**
+   * 특정 장소의 리뷰 개수 조회
+   *
+   * @author 강정연
+   */
+  async selectReviewCountByPlaceIdx(placeIdx: number): Promise<number> {
+    return this.prisma.review.count({
+      where: {
+        placeIdx,
+        deletedAt: null,
+      },
+    });
+  }
 }

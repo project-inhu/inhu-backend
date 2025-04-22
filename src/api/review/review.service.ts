@@ -107,4 +107,13 @@ export class ReviewService {
       ReviewEntity.createEntityFromPrisma,
     );
   }
+
+  /**
+   * 특정 장소의 리뷰 개수 조회
+   *
+   * @author 강정연
+   */
+  async getReviewCountByPlaceIdx(placeIdx: number): Promise<number> {
+    return await this.reviewRepository.selectReviewCountByPlaceIdx(placeIdx);
+  }
 }
