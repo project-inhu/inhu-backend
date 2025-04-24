@@ -8,6 +8,7 @@ import { ReviewEntity } from './entity/review.entity';
 import { CreateReviewInput } from './input/create-review.input';
 import { UpdateReviewInput } from './input/update-review.input';
 import { PlaceService } from '../place/place.service';
+import { ReviewCountUpdateType } from '../place/common/constants/review-count-update-type.enum';
 
 @Injectable()
 export class ReviewService {
@@ -56,6 +57,11 @@ export class ReviewService {
     const review =
       await this.reviewRepository.createReviewByPlaceIdx(createReviewInput);
 
+    await this.placeService.updatePlaceReviewCount(
+      createReviewInput.placeIdx,
+      ReviewCountUpdateType.INCREASE,
+    );
+
     return await this.getReviewByReviewIdx(review.idx);
   }
 
@@ -95,6 +101,11 @@ export class ReviewService {
     }
 
     await this.reviewRepository.deleteReviewByReviewIdx(reviewIdx);
+
+    await this.placeService.updatePlaceReviewCount(
+      review.placeIdx,
+      ReviewCountUpdateType.DECREASE,
+    );
   }
 
   /**
