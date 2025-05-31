@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { ReviewSelectField } from './type/review-select-field';
-import { Review } from '@prisma/client';
+import { PrismaClient, Review } from '@prisma/client';
 import { CreateReviewInput } from './input/create-review.input';
 import { UpdateReviewInput } from './input/update-review.input';
 
@@ -126,7 +126,9 @@ export class ReviewRepository {
    */
   async createReviewByPlaceIdx(
     createReviewInput: CreateReviewInput,
+    tx?: PrismaClient,
   ): Promise<Review> {
+    const client = tx ?? this.prisma;
     const {
       placeIdx,
       userIdx,
@@ -257,7 +259,11 @@ export class ReviewRepository {
    *
    * @author 강정연
    */
-  async deleteReviewByReviewIdx(reviewIdx: number): Promise<void> {
+  async deleteReviewByReviewIdx(
+    reviewIdx: number,
+    tx?: PrismaClient,
+  ): Promise<void> {
+    const client = tx ?? this.prisma;
     await this.prisma.review.update({
       where: {
         idx: reviewIdx,

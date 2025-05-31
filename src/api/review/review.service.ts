@@ -9,10 +9,12 @@ import { CreateReviewInput } from './input/create-review.input';
 import { UpdateReviewInput } from './input/update-review.input';
 import { PlaceService } from '../place/place.service';
 import { ReviewCountUpdateType } from '../place/common/constants/review-count-update-type.enum';
+import { PrismaService } from 'src/common/module/prisma/prisma.service';
 
 @Injectable()
 export class ReviewService {
   constructor(
+    private readonly prisma: PrismaService,
     private readonly reviewRepository: ReviewRepository,
     private readonly placeService: PlaceService,
   ) {}
@@ -54,13 +56,20 @@ export class ReviewService {
     createReviewInput: CreateReviewInput,
   ): Promise<ReviewEntity> {
     await this.placeService.getPlaceByPlaceIdx(createReviewInput.placeIdx);
-    const review =
-      await this.reviewRepository.createReviewByPlaceIdx(createReviewInput);
+    const review = await this.prisma.$transaction(async (tx) => {
+      const createdReview = await this.reviewRepository.createReviewByPlaceIdx(
+        createReviewInput,
+        tx,
+      );
 
-    await this.placeService.updatePlaceReviewCount(
-      createReviewInput.placeIdx,
-      ReviewCountUpdateType.INCREASE,
-    );
+      await this.placeService.updatePlaceReviewCount(
+        createReviewInput.placeIdx,
+        ReviewCountUpdateType.INCREASE,
+        tx,
+      );
+
+      return createdReview;
+    });
 
     return await this.getReviewByReviewIdx(review.idx);
   }
@@ -100,12 +109,15 @@ export class ReviewService {
       throw new ForbiddenException('You are not allowed to delete this review');
     }
 
-    await this.reviewRepository.deleteReviewByReviewIdx(reviewIdx);
+    await this.prisma.$transaction(async (tx) => {
+      await this.reviewRepository.deleteReviewByReviewIdx(reviewIdx);
 
-    await this.placeService.updatePlaceReviewCount(
-      review.placeIdx,
-      ReviewCountUpdateType.DECREASE,
-    );
+      // place table에 있는 reviewCount를 1 감소하라
+      await this.placeService.updatePlaceReviewCount(
+        review.placeIdx,
+        ReviewCountUpdateType.DECREASE,
+      );
+    });
   }
 
   /**
