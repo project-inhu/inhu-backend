@@ -35,6 +35,13 @@ export class BookmarkEntity {
   createdAt: Date;
 
   /**
+   * bookmark 삭제 날짜
+   *
+   * @example '2024-03-12T10:04:54.999Z'
+   */
+  deletedAt: Date | null;
+
+  /**
    * BookmarkEntity 객체를 생성하는 생성자
    */
   constructor(data: BookmarkEntity) {
@@ -50,6 +57,7 @@ export class BookmarkEntity {
       userIdx: review.userIdx,
       placeIdx: review.placeIdx,
       createdAt: review.createdAt,
+      deletedAt: review.deletedAt,
     });
   }
 }
