@@ -31,28 +31,7 @@ export class BookmarkController {
   }
 
   /**
-   * 특정 북마크 삭제
-   *
-   * @author 강정연
-   */
-  @LoginAuth
-  @Exception(400, 'PlaceIdx must be a number')
-  @Exception(404, 'Place or bookmark does not exist')
-  @Exception(409, 'Bookmark already deleted')
-  @Exception(500, 'Internal Server Error')
-  @Delete('place/:placeIdx/bookmark')
-  async deleteBookmarkByPlaceIdxAndUserIdx(
-    @Param('placeIdx', ParseIntPipe) placeIdx: number,
-    @User('idx') userIdx: number,
-  ): Promise<void> {
-    await this.bookmarkServie.deleteBookmarkByPlaceIdxAndUserIdx(
-      placeIdx,
-      userIdx,
-    );
-  }
-
-  /**
-   * 특정 북마크 삭제 (idx 제공 시)
+   * 특정 idx 북마크 삭제
    *
    * @author 강정연
    */
