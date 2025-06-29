@@ -406,7 +406,8 @@ describe('ReviewController', () => {
         where: { idx: reviewIdx },
       });
 
-      expect(review?.deletedAt).not.toBeNull();
+      expect(review).toBeDefined();
+      expect(review!.deletedAt).not.toBeNull();
     });
 
     it('should return 400 if the reviewIdx is not a number', async () => {
