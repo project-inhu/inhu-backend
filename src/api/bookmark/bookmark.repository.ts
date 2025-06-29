@@ -25,11 +25,11 @@ export class BookmarkRepository {
   }
 
   /**
-   * 특정 idx의 삭제 여부 관계 없이 북마크 조회
+   * 특정 idx의 모든 상태의 북마크 조회
    *
    * @author 강정연
    */
-  async selectBookmarkByBookmarkIdx(
+  async selectRawBookmarkByBookmarkIdx(
     bookmarkIdx: number,
   ): Promise<BookmarkSelectField | null> {
     return await this.prisma.bookmark.findUnique({
@@ -47,7 +47,7 @@ export class BookmarkRepository {
   }
 
   /**
-   * 특정 장소와 사용자 조합으로 삭제 여부 관계 없이 북마크 조회
+   * 특정 장소와 사용자 조합으로 활성화된 북마크 조회
    *
    * 내부 로직이므로 Bookmark로만 반환
    *
@@ -61,6 +61,7 @@ export class BookmarkRepository {
       where: {
         placeIdx,
         userIdx,
+        deletedAt: null,
       },
     });
   }
@@ -77,20 +78,6 @@ export class BookmarkRepository {
         deletedAt: null,
       },
       data: { deletedAt: new Date() },
-    });
-  }
-
-  /**
-   * 삭제된 북마크를 복구
-   *
-   * @author 강정연
-   */
-  async updateBookmarkDeletedAtAndCreatedAtByBookmarkIdx(
-    bookmarkIdx: number,
-  ): Promise<Bookmark> {
-    return this.prisma.bookmark.update({
-      where: { idx: bookmarkIdx },
-      data: { deletedAt: null, createdAt: new Date() },
     });
   }
 }
