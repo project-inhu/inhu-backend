@@ -55,9 +55,10 @@ describe('BookmarkController', () => {
       expect(new Date(response.body.createdAt).toISOString().slice(0, 16)).toBe(
         new Date(createdAt).toISOString().slice(0, 16),
       );
+      expect(response.body.deletedAt).toBeNull();
     });
 
-    it('should recreate a bookmark that previously deleted', async () => {
+    it('should create a new bookmark for a previously soft-deleted one', async () => {
       const prisma = app.get(PrismaService);
       await prisma.bookmark.update({
         where: { idx: bookmarkIdx },
@@ -74,6 +75,7 @@ describe('BookmarkController', () => {
       expect(new Date(response.body.createdAt).toISOString().slice(0, 16)).toBe(
         new Date(createdAt).toISOString().slice(0, 16),
       );
+      expect(response.body.deletedAt).toBeNull();
     });
 
     it('should return 400 if the placeIdx is not a number', async () => {
@@ -95,47 +97,31 @@ describe('BookmarkController', () => {
     });
   });
 
-  describe('DELETE /place/:placeIdx/bookmark', () => {
-    it('should delete a bookmark', async () => {
-      await request(app.getHttpServer())
-        .delete(`/place/${placeIdx}/bookmark`)
-        .expect(200);
-    });
-
-    it('should return 400 if the placeIdx is not a number', async () => {
-      await request(app.getHttpServer())
-        .delete(`/place/test/bookmark`)
-        .expect(400);
-    });
-
-    it('should return 404 if the place does not exist', async () => {
-      await request(app.getHttpServer())
-        .delete(`/place/999/bookmark`)
-        .expect(404);
-    });
-
-    it('should return 409 if the bookmark already deleted', async () => {
-      const prisma = app.get(PrismaService);
-      await prisma.bookmark.update({
-        where: { idx: bookmarkIdx },
-        data: { deletedAt: new Date() },
-      });
-
-      await request(app.getHttpServer())
-        .delete(`/place/${placeIdx}/bookmark`)
-        .expect(409);
-    });
-  });
-
   describe('DELETE /bookmark/:bookmarkIdx', () => {
     it('should delete a bookmark', async () => {
       await request(app.getHttpServer())
         .delete(`/bookmark/${bookmarkIdx}`)
         .expect(200);
+
+      const prisma = app.get(PrismaService);
+      const bookmark = await prisma.bookmark.findUnique({
+        where: { idx: bookmarkIdx },
+      });
+
+      expect(bookmark).toBeDefined();
+      expect(bookmark!.deletedAt).not.toBeNull();
     });
 
     it('should return 400 if the bookmarkIdx is not a number', async () => {
       await request(app.getHttpServer()).delete(`/bookmark/test`).expect(400);
+    });
+
+    it('should return 403 if the user is not authorized to delete the bookmark', async () => {
+      test.setUserIdx(2);
+
+      await request(app.getHttpServer())
+        .delete(`/bookmark/${bookmarkIdx}`)
+        .expect(403);
     });
 
     it('should return 404 if the bookmark does not exist', async () => {
