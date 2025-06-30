@@ -4,6 +4,7 @@ import { ReviewSelectField } from './type/review-select-field';
 import { PrismaClient, Review } from '@prisma/client';
 import { CreateReviewInput } from './input/create-review.input';
 import { UpdateReviewInput } from './input/update-review.input';
+import { PrismaTransactionClient } from 'src/common/type/prisma.type';
 
 @Injectable()
 export class ReviewRepository {
@@ -126,7 +127,7 @@ export class ReviewRepository {
    */
   async createReviewByPlaceIdx(
     createReviewInput: CreateReviewInput,
-    tx?: PrismaClient,
+    tx?: PrismaTransactionClient,
   ): Promise<Review> {
     const client = tx ?? this.prisma;
     const {
@@ -136,7 +137,7 @@ export class ReviewRepository {
       imagePathList = [],
       keywordIdxList = [],
     } = createReviewInput;
-    return await this.prisma.review.create({
+    return await client.review.create({
       data: {
         placeIdx,
         content,
@@ -261,10 +262,10 @@ export class ReviewRepository {
    */
   async deleteReviewByReviewIdx(
     reviewIdx: number,
-    tx?: PrismaClient,
+    tx?: PrismaTransactionClient,
   ): Promise<void> {
     const client = tx ?? this.prisma;
-    await this.prisma.review.update({
+    await client.review.update({
       where: {
         idx: reviewIdx,
         deletedAt: null,

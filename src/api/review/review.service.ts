@@ -62,11 +62,11 @@ export class ReviewService {
         tx,
       );
 
-      await this.placeService.updatePlaceReviewCount(
-        createReviewInput.placeIdx,
-        ReviewCountUpdateType.INCREASE,
-        tx,
-      );
+      // await this.placeService.updatePlaceReviewCount(
+      //   createReviewInput.placeIdx,
+      //   ReviewCountUpdateType.INCREASE,
+      //   tx,
+      // );
 
       return createdReview;
     });
@@ -110,13 +110,14 @@ export class ReviewService {
     }
 
     await this.prisma.$transaction(async (tx) => {
-      await this.reviewRepository.deleteReviewByReviewIdx(reviewIdx);
+      await this.reviewRepository.deleteReviewByReviewIdx(reviewIdx, tx);
 
-      // place table에 있는 reviewCount를 1 감소하라
-      await this.placeService.updatePlaceReviewCount(
-        review.placeIdx,
-        ReviewCountUpdateType.DECREASE,
-      );
+      // // place table에 있는 reviewCount를 1 감소하라
+      // await this.placeService.updatePlaceReviewCount(
+      //   review.placeIdx,
+      //   ReviewCountUpdateType.DECREASE,
+      //   tx
+      // );
     });
   }
 
@@ -129,14 +130,5 @@ export class ReviewService {
     return (await this.reviewRepository.selectAllReviewByUserIdx(userIdx)).map(
       ReviewEntity.createEntityFromPrisma,
     );
-  }
-
-  /**
-   * 특정 장소의 리뷰 개수 조회
-   *
-   * @author 강정연
-   */
-  async getReviewCountByPlaceIdx(placeIdx: number): Promise<number> {
-    return await this.reviewRepository.selectReviewCountByPlaceIdx(placeIdx);
   }
 }
