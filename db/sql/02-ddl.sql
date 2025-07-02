@@ -1,9 +1,3 @@
-CREATE USER inhu_admin WITH PASSWORD '1234';
-
-CREATE DATABASE inhu OWNER inhu_admin;
-
-\c inhu inhu_admin
-
 CREATE TABLE bookmark_tb
 (
   idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,

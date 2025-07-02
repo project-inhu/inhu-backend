@@ -9,7 +9,7 @@ services:
       - '5432:5432'
     volumes:
       - inhu-dev-data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db:/docker-entrypoint-initdb.d
 
 volumes:
   inhu-dev-data:
