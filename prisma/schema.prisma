@@ -74,6 +74,7 @@ model Place {
   createdAt        DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt        DateTime?          @map("deleted_at") @db.Timestamptz(6)
   closedAt         DateTime?          @map("closed_at") @db.Timestamptz(6)
+  reviewCount      Int                @default(0) @map("review_count")
   bookmark         Bookmark[]
   placeHours       PlaceHours[]
   placeImage       PlaceImage[]

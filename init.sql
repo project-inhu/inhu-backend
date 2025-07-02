@@ -66,6 +66,7 @@ CREATE TABLE place_tb
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at timestamp with time zone,
   closed_at  timestamp with time zone,
+  review_count  int                   NOT NULL DEFAULT 0,
   PRIMARY KEY (idx)
 );
 
