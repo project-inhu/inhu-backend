@@ -87,6 +87,9 @@ export class AuthController {
     return { accessToken, refreshToken };
   }
 
+  /**
+   * Access Token을 갱신하는 엔드포인트
+   */
   @Get('regenerate-refresh-token')
   public async regenerateRefreshToken(@Req() req: Request): Promise<any> {
     const refreshToken = req.headers?.authorization?.split(' ')[1] ?? null;
