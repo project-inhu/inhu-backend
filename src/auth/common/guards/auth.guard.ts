@@ -28,7 +28,7 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const response = context.switchToHttp().getResponse();
 
-    const accessToken = request.cookies?.accessToken ?? null;
+    const accessToken = request.headers?.authorization?.split(' ')[1] ?? null;
     if (!accessToken) {
       throw new UnauthorizedException('Access token not found');
     }
@@ -36,17 +36,9 @@ export class AuthGuard implements CanActivate {
     let payload = await this.loginTokenService.verifyAccessToken(accessToken);
 
     if (!payload) {
-      const { newAccessToken, payload: newPayload } =
-        await this.authService.regenerateAccessTokenFromRefreshToken(
-          request.cookies?.refreshToken,
-        );
-
-      response.cookie('accessToken', newAccessToken, {
-        httpOnly: true,
-        sameSite: 'lax',
+      return response.status(401).json({
+        message: 'Invalid access token',
       });
-
-      payload = newPayload;
     }
 
     request['user'] = payload;

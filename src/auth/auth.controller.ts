@@ -1,7 +1,7 @@
-import { Controller, Get, Query, Res } from '@nestjs/common';
+import { Controller, Get, Query, Req, Res } from '@nestjs/common';
 import { AuthService } from './services/auth.service';
 import { AuthProvider } from './enums/auth-provider.enum';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { Provider } from './common/decorators/provider.decorator';
 
@@ -73,16 +73,28 @@ export class AuthController {
   }
 
   @Get('kakao-sdk')
-  public async sdkCallBack(
-    @Query('token') token: string,
-    @Res() res: Response,
-  ): Promise<any> {
+  public async sdkCallBack(@Query('token') token: string): Promise<any> {
     const { accessToken, refreshToken } =
       await this.authService.sdkLogin(token);
 
-    return res.send({
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-    });
+    return { accessToken, refreshToken };
+  }
+
+  @Get('regenerate-refresh-token')
+  public async regenerateRefreshToken(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<any> {
+    const refreshToken = req.headers?.authorization?.split(' ')[1] ?? null;
+    if (!refreshToken) {
+      return res.status(401).send({ message: 'Refresh token not found' });
+    }
+
+    const { newAccessToken, payload: newPayload } =
+      await this.authService.regenerateAccessTokenFromRefreshToken(
+        refreshToken,
+      );
+
+    return { accessToken: newAccessToken };
   }
 }
