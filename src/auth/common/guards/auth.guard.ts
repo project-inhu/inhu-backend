@@ -36,9 +36,7 @@ export class AuthGuard implements CanActivate {
     let payload = await this.loginTokenService.verifyAccessToken(accessToken);
 
     if (!payload) {
-      return response.status(401).json({
-        message: 'Invalid access token',
-      });
+      throw new UnauthorizedException('Invalid access token');
     }
 
     request['user'] = payload;

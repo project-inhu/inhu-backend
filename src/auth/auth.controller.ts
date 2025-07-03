@@ -1,4 +1,11 @@
-import { Controller, Get, Query, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  Req,
+  Res,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthService } from './services/auth.service';
 import { AuthProvider } from './enums/auth-provider.enum';
 import { Response, Request } from 'express';
@@ -81,19 +88,18 @@ export class AuthController {
   }
 
   @Get('regenerate-refresh-token')
-  public async regenerateRefreshToken(
-    @Req() req: Request,
-    @Res() res: Response,
-  ): Promise<any> {
+  public async regenerateRefreshToken(@Req() req: Request): Promise<any> {
     const refreshToken = req.headers?.authorization?.split(' ')[1] ?? null;
     if (!refreshToken) {
-      return res.status(401).send({ message: 'Refresh token not found' });
+      throw new UnauthorizedException('Refresh token not found');
     }
 
     const { newAccessToken, payload: newPayload } =
       await this.authService.regenerateAccessTokenFromRefreshToken(
         refreshToken,
       );
+
+    req['user'] = newPayload;
 
     return { accessToken: newAccessToken };
   }
