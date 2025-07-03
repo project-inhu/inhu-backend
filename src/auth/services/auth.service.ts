@@ -82,6 +82,25 @@ export class AuthService {
     return { accessToken: jwtAccessToken, refreshToken: jwtRefreshToken };
   }
 
+  public async sdkLogin(accessToken: string): Promise<TokenPair> {
+    const socialAuthService = this.getSocialAuthStrategy(AuthProvider.KAKAO);
+
+    const userInfo = await socialAuthService.getUserInfo(accessToken);
+    const extractedUserInfo = socialAuthService.extractUserInfo(userInfo);
+
+    const user = await this.userService.createUser(extractedUserInfo);
+
+    const payload = { idx: user.idx };
+    const jwtAccessToken =
+      await this.loginTokenService.signAccessToken(payload);
+    const jwtRefreshToken =
+      await this.loginTokenService.signRefreshToken(payload);
+
+    this.saveRefreshToken(user.idx, jwtRefreshToken);
+
+    return { accessToken: jwtAccessToken, refreshToken: jwtRefreshToken };
+  }
+
   /**
    * Refresh Token 검증 후 새로운 Access Token 발급
    *

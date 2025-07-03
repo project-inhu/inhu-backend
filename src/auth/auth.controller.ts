@@ -28,6 +28,7 @@ export class AuthController {
         this.configService.get<string>('MAIN_PAGE_URL') || '/',
       );
     }
+    // console.log(provider);
 
     const socialAuthService = this.authService.getSocialAuthStrategy(provider);
     return res.redirect(socialAuthService.getAuthLoginUrl());
@@ -69,5 +70,19 @@ export class AuthController {
     const mainPageUrl = this.configService.get<string>('MAIN_PAGE_URL') || '/';
 
     return res.redirect(mainPageUrl);
+  }
+
+  @Get('kakao-sdk/callback')
+  public async sdkCallBack(
+    @Query('token') token: string,
+    @Res() res: Response,
+  ): Promise<any> {
+    const { accessToken, refreshToken } =
+      await this.authService.sdkLogin(token);
+
+    return res.send({
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    });
   }
 }
