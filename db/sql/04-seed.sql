@@ -10,13 +10,13 @@ INSERT INTO place_menu_tb (place_idx, name, price) VALUES
 (1, '아메리카노', 4500), 
 (1, '카페라떼', 5000);
 INSERT INTO place_hours_tb (place_idx, day, start_at, end_at) VALUES 
-(1, '월요일', '08:00:00', '22:00:00'),
-(1, '화요일', '08:00:00', '22:00:00'),
-(1, '수요일', '08:00:00', '22:00:00'),
-(1, '목요일', '08:00:00', '22:00:00'),
-(1, '금요일', '08:00:00', '22:00:00'),
-(1, '토요일', '08:00:00', '22:00:00'),
-(1, '일요일', '08:00:00', '22:00:00');
+(1, 'mon', '08:00:00', '22:00:00'),
+(1, 'tue', '08:00:00', '22:00:00'),
+(1, 'wed', '08:00:00', '22:00:00'),
+(1, 'thu', '08:00:00', '22:00:00'),
+(1, 'fri', '08:00:00', '22:00:00'),
+(1, 'sat', '08:00:00', '22:00:00'),
+(1, 'sun', '08:00:00', '22:00:00');
 INSERT INTO place_image_tb (place_idx, image_path) VALUES
 (1, '/images/places/starbucks1.jpg');
 INSERT INTO place_type_mapping_tb (place_idx, place_type_idx) VALUES 
@@ -26,19 +26,19 @@ INSERT INTO place_menu_tb (place_idx, name, price) VALUES
 (2, '해물칼국수', 10000), 
 (2, '들깨칼국수', 9500);
 INSERT INTO place_hours_tb (place_idx, day, start_at, end_at) VALUES 
-(2, '월요일', '11:00:00', '15:30:00'),
-(2, '월요일', '16:30:00', '21:00:00'),
-(2, '화요일', '11:00:00', '15:30:00'),
-(2, '화요일', '16:30:00', '21:00:00'),
-(2, '수요일', NULL, NULL),
-(2, '목요일', '11:00:00', '15:30:00'),
-(2, '목요일', '16:30:00', '21:00:00'),
-(2, '금요일', '11:00:00', '15:30:00'),
-(2, '금요일', '16:30:00', '21:00:00'),
-(2, '토요일', '11:00:00', '15:30:00'),
-(2, '토요일', '16:30:00', '21:00:00'),
-(2, '일요일', '11:00:00', '15:30:00'),
-(2, '일요일', '16:30:00', '21:00:00');
+(2, 'mon', '11:00:00', '15:30:00'),
+(2, 'mon', '16:30:00', '21:00:00'),
+(2, 'tue', '11:00:00', '15:30:00'),
+(2, 'tue', '16:30:00', '21:00:00'),
+(2, 'wed', NULL, NULL),
+(2, 'thu', '11:00:00', '15:30:00'),
+(2, 'thu', '16:30:00', '21:00:00'),
+(2, 'fri', '11:00:00', '15:30:00'),
+(2, 'fri', '16:30:00', '21:00:00'),
+(2, 'sat', '11:00:00', '15:30:00'),
+(2, 'sat', '16:30:00', '21:00:00'),
+(2, 'sun', '11:00:00', '15:30:00'),
+(2, 'sun', '16:30:00', '21:00:00');
 INSERT INTO place_image_tb (place_idx, image_path) VALUES 
 (2, '/images/places/inhakalnoodle1.jpg');
 INSERT INTO place_type_mapping_tb (place_idx, place_type_idx) VALUES 
@@ -69,9 +69,3 @@ INSERT INTO bookmark_tb (user_idx, place_idx) VALUES
 
 UPDATE place_tb SET review_count = (SELECT COUNT(*) FROM review_tb WHERE place_idx = 1) WHERE idx = 1;
 UPDATE place_tb SET review_count = (SELECT COUNT(*) FROM review_tb WHERE place_idx = 2) WHERE idx = 2;
-
-
-
-
-
-
