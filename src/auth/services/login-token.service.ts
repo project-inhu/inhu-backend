@@ -70,6 +70,7 @@ export class LoginTokenService {
 
     return token;
   }
+
   /**
    * 주어진 payload로 Refresh Token을 생성한다.
    *
