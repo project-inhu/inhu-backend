@@ -52,5 +52,8 @@ jobs:
             cd ./inhu-backend
             git reset --hard
             git pull origin develop
-            npx pm2 reload inhu-backend          
+            npm install
+            npx prisma generate
+            npm run build
+            npx pm2 reload inhu-backend
           EOF
