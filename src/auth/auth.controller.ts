@@ -72,7 +72,7 @@ export class AuthController {
     return res.redirect(mainPageUrl);
   }
 
-  @Get('kakao-sdk/callback')
+  @Get('kakao-sdk')
   public async sdkCallBack(
     @Query('token') token: string,
     @Res() res: Response,
