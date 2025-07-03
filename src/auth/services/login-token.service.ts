@@ -1,9 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class LoginTokenService {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+  ) {}
 
   /**
    * Refresh Token을 검증하고, 유효한 경우 payload를 반환
@@ -58,7 +62,7 @@ export class LoginTokenService {
    */
   async signAccessToken(payload: AccessTokenPayload): Promise<string> {
     const token = await this.jwtService.signAsync(payload, {
-      expiresIn: '10m',
+      expiresIn: this.configService.get<string>('ACCESS_TOKEN_EXPIRATION'),
     });
     if (!token) {
       throw new Error('not implement');
@@ -72,7 +76,9 @@ export class LoginTokenService {
    * @author 이수인
    */
   async signRefreshToken(payload: RefreshTokenPayload): Promise<string> {
-    const token = await this.jwtService.signAsync(payload, { expiresIn: '1h' });
+    const token = await this.jwtService.signAsync(payload, {
+      expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXPIRATION'),
+    });
     if (!token) {
       throw new Error('not implement');
     }
