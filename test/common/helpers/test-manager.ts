@@ -18,6 +18,7 @@ export class TestManager {
   private app: INestApplication;
   private prisma: PrismaService;
   private prismaTestingHelper: PrismaTestingHelper<PrismaService> | undefined;
+  private currentUserIdx: number = 1;
 
   static create() {
     return new TestManager();
@@ -38,7 +39,7 @@ export class TestManager {
       .useValue({
         canActivate: (context: ExecutionContext) => {
           const req = context.switchToHttp().getRequest();
-          req.user = { idx: 1 };
+          req.user = { idx: this.currentUserIdx };
           return true;
         },
       })
@@ -65,6 +66,10 @@ export class TestManager {
 
   rollbackTransaction() {
     this.prismaTestingHelper?.rollbackCurrentTransaction();
+  }
+
+  setUserIdx(userIdx: number) {
+    this.currentUserIdx = userIdx;
   }
 
   getApp() {
