@@ -128,7 +128,7 @@ export class ReviewRepository {
     createReviewInput: CreateReviewInput,
     tx?: Prisma.TransactionClient,
   ): Promise<Review> {
-    const client = tx ?? this.prisma;
+    const db = tx ?? this.prisma;
     const {
       placeIdx,
       userIdx,
@@ -136,7 +136,7 @@ export class ReviewRepository {
       imagePathList = [],
       keywordIdxList = [],
     } = createReviewInput;
-    return await client.review.create({
+    return await db.review.create({
       data: {
         placeIdx,
         content,
@@ -263,8 +263,8 @@ export class ReviewRepository {
     reviewIdx: number,
     tx?: Prisma.TransactionClient,
   ): Promise<void> {
-    const client = tx ?? this.prisma;
-    await client.review.update({
+    const db = tx ?? this.prisma;
+    await db.review.update({
       where: {
         idx: reviewIdx,
         deletedAt: null,
