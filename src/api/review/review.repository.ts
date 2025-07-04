@@ -43,6 +43,7 @@ export class ReviewRepository {
           select: {
             keyword: {
               select: {
+                idx: true,
                 content: true,
               },
             },
@@ -56,11 +57,13 @@ export class ReviewRepository {
         user: {
           select: {
             nickname: true,
+            profileImagePath: true,
           },
         },
         place: {
           select: {
             name: true,
+            address: true,
           },
         },
       },
@@ -95,6 +98,7 @@ export class ReviewRepository {
           select: {
             keyword: {
               select: {
+                idx: true,
                 content: true,
               },
             },
@@ -108,11 +112,13 @@ export class ReviewRepository {
         user: {
           select: {
             nickname: true,
+            profileImagePath: true,
           },
         },
         place: {
           select: {
             name: true,
+            address: true,
           },
         },
       },
@@ -189,18 +195,23 @@ export class ReviewRepository {
         reviewKeywordMapping: {
           select: {
             keyword: {
-              select: { content: true },
+              select: {
+                idx: true,
+                content: true,
+              },
             },
           },
         },
         user: {
           select: {
             nickname: true,
+            profileImagePath: true,
           },
         },
         place: {
           select: {
             name: true,
+            address: true,
           },
         },
       },

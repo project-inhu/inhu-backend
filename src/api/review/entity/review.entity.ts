@@ -1,4 +1,22 @@
+import { PickType } from '@nestjs/swagger';
 import { ReviewSelectField } from '../type/review-select-field';
+import { UserInfoEntity } from 'src/api/user/entity/user-info.entity';
+import { PlaceOverviewEntity } from 'src/api/place/entity/place-overview.entity';
+import { KeywordEntity } from 'src/api/keyword/entity/keyword.entity';
+
+class ReviewAuthorEntity extends PickType(UserInfoEntity, [
+  'idx',
+  'nickname',
+  'profileImagePath',
+]) {}
+
+class ReviewPlaceEntity extends PickType(PlaceOverviewEntity, [
+  'idx',
+  'name',
+  'address',
+]) {}
+
+class ReviewKeywordEntity extends PickType(KeywordEntity, ['idx', 'content']) {}
 
 /**
  * 리뷰 엔티티 클래스
@@ -12,20 +30,6 @@ export class ReviewEntity {
    * @example 1
    */
   idx: number;
-
-  /**
-   * review 작성자 idx
-   *
-   * @example 1
-   */
-  userIdx: number;
-
-  /**
-   * review 등록할 place idx
-   *
-   * @example 1
-   */
-  placeIdx: number;
 
   /**
    * review content
@@ -42,33 +46,26 @@ export class ReviewEntity {
   createdAt: Date;
 
   /**
- * review 사진 path list
- *
- * @example ['images/review/1/20240312/171923.jpg',
-      'images/review/1/20240312/17234.jpg']
- */
+   * review 이미지 path list
+   *
+   * @example ['images/review/1/20240312/171923.jpg', 'images/review/1/20240312/17234.jpg']
+   */
   imagePathList: string[];
 
   /**
-   * review keyword list
-   *
-   * @example ['맛있어요.', '가성비 좋아요.']
+   * review keyword 목록
    */
-  keywordList: string[];
+  keywordList: ReviewKeywordEntity[];
 
   /**
-   * review 작성자 nickname
-   *
-   * @example 'gongsil'
+   * review 작성자 정보
    */
-  userNickName: string;
+  author: ReviewAuthorEntity;
 
   /**
-   * review 등록할 place name
-   *
-   * @example '동아리 닭갈비'
+   * review 등록한 place 정보
    */
-  placeName: string;
+  place: ReviewPlaceEntity;
 
   /**
    * ReviewEntity 객체를 생성하는 생성자
@@ -83,16 +80,23 @@ export class ReviewEntity {
   static createEntityFromPrisma(review: ReviewSelectField): ReviewEntity {
     return new ReviewEntity({
       idx: review.idx,
-      userIdx: review.userIdx,
-      placeIdx: review.placeIdx,
       content: review.content,
       createdAt: review.createdAt,
       imagePathList: review.reviewImage.map(({ path }) => path),
-      keywordList: review.reviewKeywordMapping.map(
-        ({ keyword: { content } }) => content,
-      ),
-      userNickName: review.user.nickname,
-      placeName: review.place.name,
+      keywordList: review.reviewKeywordMapping.map(({ keyword }) => ({
+        idx: keyword.idx,
+        content: keyword.content,
+      })),
+      author: {
+        idx: review.userIdx,
+        nickname: review.user.nickname,
+        profileImagePath: review.user.profileImagePath,
+      },
+      place: {
+        idx: review.placeIdx,
+        name: review.place.name,
+        address: review.place.address,
+      },
     });
   }
 }
