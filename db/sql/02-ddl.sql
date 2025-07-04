@@ -19,11 +19,14 @@ CREATE TABLE keyword_tb
 
 CREATE TABLE place_hours_tb
 (
-  idx       int     NOT NULL GENERATED ALWAYS AS IDENTITY,
-  place_idx int     NOT NULL,
-  day       varchar NOT NULL,
-  start_at  time   ,
-  end_at    time   ,
+  idx            int     NOT NULL GENERATED ALWAYS AS IDENTITY,
+  place_idx      int     NOT NULL,
+  day            varchar NOT NULL,
+  is_closed      boolean   ,
+  start_at       time   ,
+  end_at         time   ,
+  break_start_at time   ,
+  break_end_at   time   ,
   PRIMARY KEY (idx)
 );
 

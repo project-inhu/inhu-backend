@@ -9,14 +9,14 @@ INSERT INTO place_tb (name, tel, address, address_x, address_y) VALUES
 INSERT INTO place_menu_tb (place_idx, name, price) VALUES 
 (1, '아메리카노', 4500), 
 (1, '카페라떼', 5000);
-INSERT INTO place_hours_tb (place_idx, day, start_at, end_at) VALUES 
-(1, 'mon', '08:00:00', '22:00:00'),
-(1, 'tue', '08:00:00', '22:00:00'),
-(1, 'wed', '08:00:00', '22:00:00'),
-(1, 'thu', '08:00:00', '22:00:00'),
-(1, 'fri', '08:00:00', '22:00:00'),
-(1, 'sat', '08:00:00', '22:00:00'),
-(1, 'sun', '08:00:00', '22:00:00');
+INSERT INTO place_hours_tb (place_idx, day, is_closed, start_at, end_at, break_start_at, break_end_at) VALUES 
+(1, 'mon', false, '08:00:00', '22:00:00', NULL, NULL),
+(1, 'tue', false, '08:00:00', '22:00:00', NULL, NULL),
+(1, 'wed', false, '08:00:00', '22:00:00', NULL, NULL),
+(1, 'thu', false, '08:00:00', '22:00:00', NULL, NULL),
+(1, 'fri', false, '08:00:00', '22:00:00', NULL, NULL),
+(1, 'sat', false, '08:00:00', '22:00:00', NULL, NULL),
+(1, 'sun', false, '08:00:00', '22:00:00', NULL, NULL);
 INSERT INTO place_image_tb (place_idx, image_path) VALUES
 (1, '/images/places/starbucks1.jpg');
 INSERT INTO place_type_mapping_tb (place_idx, place_type_idx) VALUES 
@@ -25,20 +25,14 @@ INSERT INTO place_type_mapping_tb (place_idx, place_type_idx) VALUES
 INSERT INTO place_menu_tb (place_idx, name, price) VALUES 
 (2, '해물칼국수', 10000), 
 (2, '들깨칼국수', 9500);
-INSERT INTO place_hours_tb (place_idx, day, start_at, end_at) VALUES 
-(2, 'mon', '11:00:00', '15:30:00'),
-(2, 'mon', '16:30:00', '21:00:00'),
-(2, 'tue', '11:00:00', '15:30:00'),
-(2, 'tue', '16:30:00', '21:00:00'),
-(2, 'wed', NULL, NULL),
-(2, 'thu', '11:00:00', '15:30:00'),
-(2, 'thu', '16:30:00', '21:00:00'),
-(2, 'fri', '11:00:00', '15:30:00'),
-(2, 'fri', '16:30:00', '21:00:00'),
-(2, 'sat', '11:00:00', '15:30:00'),
-(2, 'sat', '16:30:00', '21:00:00'),
-(2, 'sun', '11:00:00', '15:30:00'),
-(2, 'sun', '16:30:00', '21:00:00');
+INSERT INTO place_hours_tb (place_idx, day, is_closed, start_at, end_at, break_start_at, break_end_at) VALUES 
+(2, 'mon', false, '08:00:00', '22:00:00', '12:00:00', '13:00:00'),
+(2, 'tue', false, '08:00:00', '22:00:00', '12:00:00', '13:00:00'),
+(2, 'wed', true, NULL, NULL, NULL, NULL),
+(2, 'thu', false, '08:00:00', '22:00:00', '12:00:00', '13:00:00'),
+(2, 'fri', false, '08:00:00', '22:00:00', '12:00:00', '13:00:00'),
+(2, 'sat', false, '09:00:00', '21:00:00', NULL, NULL),
+(2, 'sun', false, '09:00:00', '21:00:00', NULL, NULL);
 INSERT INTO place_image_tb (place_idx, image_path) VALUES 
 (2, '/images/places/inhakalnoodle1.jpg');
 INSERT INTO place_type_mapping_tb (place_idx, place_type_idx) VALUES 
