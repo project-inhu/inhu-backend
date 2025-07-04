@@ -105,18 +105,13 @@ export class AuthController {
     @ClientType() clientType: string | null,
     @Cookie('refreshToken') refreshToken: string | null,
   ): Promise<{ accessToken: string } | void> {
-    console.log('in auth.controller refreshToken:', refreshToken);
-
-    console.log('in auth.controller clientType:', clientType);
+    const tokenString =
+      (clientType === 'WEB' ? refreshToken : authorization) || '';
 
     const { newAccessToken } =
       await this.authService.regenerateAccessTokenFromRefreshToken(
-        (clientType === 'WEB'
-          ? refreshToken
-          : authorization?.replace('Bearer ', '')) || '',
+        tokenString.replace('Bearer ', ''),
       );
-
-    console.log('the end');
 
     return { accessToken: newAccessToken };
   }
