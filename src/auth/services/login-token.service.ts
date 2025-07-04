@@ -20,6 +20,11 @@ export class LoginTokenService {
     try {
       const payload = await this.jwtService.verifyAsync(token);
 
+      console.log(
+        'in login-token.service verifyRefreshToken payload:',
+        payload,
+      );
+
       if (!payload.idx) {
         throw new UnauthorizedException('invalid token');
       }

@@ -105,7 +105,7 @@ export class AuthController {
     @ClientType() clientType: string | null,
     @Cookie('refreshToken') refreshToken: string | null,
   ): Promise<{ accessToken: string } | void> {
-    console.log(refreshToken);
+    console.log('in auth.controller refreshToken:', refreshToken);
 
     const { newAccessToken } =
       await this.authService.regenerateAccessTokenFromRefreshToken(
