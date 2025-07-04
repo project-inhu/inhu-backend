@@ -27,6 +27,13 @@ export class S3Service {
     });
   }
 
+  /**
+   * S3에 파일 업로드
+   *
+   * @example 'e6b97g54-12d3-a456-426614174000-profile.jpg'
+   *
+   * @author 조희주
+   */
   async uploadFile(file: Express.Multer.File): Promise<string> {
     const key = `${uuid()}${file.originalname}`;
 
