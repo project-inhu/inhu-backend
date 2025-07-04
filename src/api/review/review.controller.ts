@@ -26,9 +26,8 @@ export class ReviewController {
    *
    * @author 강정연
    */
-  @Exception(400, 'PlaceIdx must be a number')
-  @Exception(404, 'PlaceIdx does not exist')
-  @Exception(500, 'Internal Server Error')
+  @Exception(400, 'Invalid placeIdx')
+  @Exception(404, 'Place not found')
   @Get('/place/:placeIdx/review/all')
   async getAllReviewByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
@@ -43,9 +42,8 @@ export class ReviewController {
    */
   @ApiBearerAuth()
   @LoginAuth
-  @Exception(400, 'PlaceIdx must be a number or Invalid request body')
-  @Exception(404, 'Place does not exist or keyword or user does not exist')
-  @Exception(500, 'Internal Server Error')
+  @Exception(400, 'Invalid placeIdx or request body')
+  @Exception(404, 'Place, keyword, or user not found')
   @Post('/place/:placeIdx/review')
   async createReviewByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
@@ -68,10 +66,9 @@ export class ReviewController {
    */
   @ApiBearerAuth()
   @LoginAuth
-  @Exception(400, 'ReviewIdx must be a number or Invalid request')
-  @Exception(403, 'You are not allowed to update this review')
-  @Exception(404, 'Review or user does not exist')
-  @Exception(500, 'Internal Server Error')
+  @Exception(400, 'Invalid reviewIdx or request body')
+  @Exception(403, 'Permission denied')
+  @Exception(404, 'Review or user not found')
   @Patch('/review/:reviewIdx')
   async updateReviewByReviewIdx(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
@@ -94,10 +91,9 @@ export class ReviewController {
    */
   @ApiBearerAuth()
   @LoginAuth
-  @Exception(400, 'ReviewIdx must be a number')
-  @Exception(403, 'You are not allowed to delete this review')
-  @Exception(404, 'Review or user does not exist')
-  @Exception(500, 'Internal Server Error')
+  @Exception(400, 'Invalid reviewIdx')
+  @Exception(403, 'Permission denied')
+  @Exception(404, 'Review or user not found')
   @Delete('/review/:reviewIdx')
   async deleteReviewByReviewIdx(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
@@ -113,8 +109,7 @@ export class ReviewController {
    */
   @ApiBearerAuth()
   @LoginAuth
-  @Exception(404, 'User does not exist')
-  @Exception(500, 'Internal Server Error')
+  @Exception(404, 'User not found')
   @Get('/my/review/all')
   async getAllReviewByUserIdx(
     @User('idx') userIdx: number,
