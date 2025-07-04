@@ -38,7 +38,7 @@ model PlaceHours {
   endAt        DateTime? @map("end_at") @db.Time(6)
   breakStartAt DateTime? @map("break_start_at") @db.Time(6)
   breakEndAt   DateTime? @map("break_end_at") @db.Time(6)
-  place    Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_hours_tb")
+  place        Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_hours_tb")
 
   @@map("place_hours_tb")
 }
