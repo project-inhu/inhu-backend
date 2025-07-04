@@ -62,24 +62,29 @@ export class AuthService {
    * @author 조희주
    */
   public async login(provider: AuthProvider, code: string): Promise<TokenPair> {
-    const socialAuthService = this.getSocialAuthStrategy(provider);
+    try {
+      const socialAuthService = this.getSocialAuthStrategy(provider);
 
-    const authToken = await socialAuthService.getToken(code);
-    const accessToken = socialAuthService.getAccessToken(authToken);
-    const userInfo = await socialAuthService.getUserInfo(accessToken);
-    const extractedUserInfo = socialAuthService.extractUserInfo(userInfo);
+      const authToken = await socialAuthService.getToken(code);
+      const accessToken = socialAuthService.getAccessToken(authToken);
+      const userInfo = await socialAuthService.getUserInfo(accessToken);
+      const extractedUserInfo = socialAuthService.extractUserInfo(userInfo);
 
-    const user = await this.userService.createUser(extractedUserInfo);
+      const user = await this.userService.createUser(extractedUserInfo);
 
-    const payload = { idx: user.idx };
-    const jwtAccessToken =
-      await this.loginTokenService.signAccessToken(payload);
-    const jwtRefreshToken =
-      await this.loginTokenService.signRefreshToken(payload);
+      const payload = { idx: user.idx };
+      const jwtAccessToken =
+        await this.loginTokenService.signAccessToken(payload);
+      const jwtRefreshToken =
+        await this.loginTokenService.signRefreshToken(payload);
 
-    this.saveRefreshToken(user.idx, jwtRefreshToken);
+      this.saveRefreshToken(user.idx, jwtRefreshToken);
 
-    return { accessToken: jwtAccessToken, refreshToken: jwtRefreshToken };
+      return { accessToken: jwtAccessToken, refreshToken: jwtRefreshToken };
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
   }
 
   public async sdkLogin(accessToken: string): Promise<TokenPair> {
