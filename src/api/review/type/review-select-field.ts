@@ -22,7 +22,10 @@ const REVIEW_SELECT_FIELD = Prisma.validator<Prisma.ReviewDefaultArgs>()({
     reviewKeywordMapping: {
       select: {
         keyword: {
-          select: { content: true },
+          select: {
+            idx: true,
+            content: true,
+          },
         },
       },
     },

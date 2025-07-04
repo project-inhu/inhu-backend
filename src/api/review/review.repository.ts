@@ -43,6 +43,7 @@ export class ReviewRepository {
           select: {
             keyword: {
               select: {
+                idx: true,
                 content: true,
               },
             },
@@ -97,6 +98,7 @@ export class ReviewRepository {
           select: {
             keyword: {
               select: {
+                idx: true,
                 content: true,
               },
             },
@@ -193,7 +195,10 @@ export class ReviewRepository {
         reviewKeywordMapping: {
           select: {
             keyword: {
-              select: { content: true },
+              select: {
+                idx: true,
+                content: true,
+              },
             },
           },
         },

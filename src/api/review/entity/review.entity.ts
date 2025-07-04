@@ -2,6 +2,7 @@ import { PickType } from '@nestjs/swagger';
 import { ReviewSelectField } from '../type/review-select-field';
 import { UserInfoEntity } from 'src/api/user/entity/user-info.entity';
 import { PlaceOverviewEntity } from 'src/api/place/entity/place-overview.entity';
+import { KeywordEntity } from 'src/api/keyword/entity/keyword.entity';
 
 class ReviewAuthorEntity extends PickType(UserInfoEntity, [
   'idx',
@@ -14,6 +15,8 @@ class ReviewPlaceEntity extends PickType(PlaceOverviewEntity, [
   'name',
   'address',
 ]) {}
+
+class ReviewKeywordEntity extends PickType(KeywordEntity, ['idx', 'content']) {}
 
 /**
  * 리뷰 엔티티 클래스
@@ -50,11 +53,9 @@ export class ReviewEntity {
   imagePathList: string[];
 
   /**
-   * review keyword list
-   *
-   * @example ['맛있어요.', '가성비 좋아요.']
+   * review keyword 목록
    */
-  keywordList: string[];
+  keywordList: ReviewKeywordEntity[];
 
   /**
    * review 작성자 정보
@@ -82,9 +83,10 @@ export class ReviewEntity {
       content: review.content,
       createdAt: review.createdAt,
       imagePathList: review.reviewImage.map(({ path }) => path),
-      keywordList: review.reviewKeywordMapping.map(
-        ({ keyword: { content } }) => content,
-      ),
+      keywordList: review.reviewKeywordMapping.map(({ keyword }) => ({
+        idx: keyword.idx,
+        content: keyword.content,
+      })),
       author: {
         idx: review.userIdx,
         nickname: review.user.nickname,
