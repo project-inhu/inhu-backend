@@ -1,0 +1,3 @@
+interface CookieData {
+  refreshToken?: string;
+}
