@@ -58,7 +58,7 @@ export class AuthController {
     @Provider() provider: AuthProvider | null,
     @Query('code') code: string,
     @Res() res: Response,
-  ): Promise<void> {
+  ) {
     if (!provider) {
       return res.redirect(
         this.configService.get<string>('MAIN_PAGE_URL') || '/',
@@ -84,7 +84,10 @@ export class AuthController {
 
     const mainPageUrl = this.configService.get<string>('MAIN_PAGE_URL') || '/';
 
-    return res.redirect(mainPageUrl);
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
   @Get('kakao-sdk')
