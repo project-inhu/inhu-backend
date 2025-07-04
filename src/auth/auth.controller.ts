@@ -70,7 +70,7 @@ export class AuthController {
       code,
     );
 
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie('refreshToken', `Bearer ${refreshToken}`, {
       httpOnly: true,
       sameSite: 'none',
       secure: true,
