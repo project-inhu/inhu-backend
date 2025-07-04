@@ -29,11 +29,13 @@ const REVIEW_SELECT_FIELD = Prisma.validator<Prisma.ReviewDefaultArgs>()({
     user: {
       select: {
         nickname: true,
+        profileImagePath: true,
       },
     },
     place: {
       select: {
         name: true,
+        address: true,
       },
     },
   },
