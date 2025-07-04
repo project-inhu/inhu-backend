@@ -9,9 +9,6 @@ import { Request } from 'express';
 export const ClientType = createParamDecorator(
   (data, ctx: ExecutionContext) => {
     const request: Request = ctx.switchToHttp().getRequest();
-
-    console.log(request.headers);
-
-    return request.headers['X-Client-Type'] || null;
+    return request.headers['x-client-type'] || null;
   },
 );
