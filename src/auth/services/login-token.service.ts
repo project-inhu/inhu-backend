@@ -18,6 +18,7 @@ export class LoginTokenService {
    */
   async verifyRefreshToken(token: string): Promise<RefreshTokenPayload> {
     try {
+      console.log('in login-token.service verifyRefreshToken token:', token);
       const payload = await this.jwtService.verifyAsync(token);
 
       console.log(

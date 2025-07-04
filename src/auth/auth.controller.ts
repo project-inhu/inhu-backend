@@ -114,6 +114,8 @@ export class AuthController {
           : authorization?.replace('Bearer ', '')) || '',
       );
 
+    console.log('the end');
+
     return { accessToken: newAccessToken };
   }
 }
