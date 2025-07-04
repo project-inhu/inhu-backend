@@ -5,6 +5,7 @@ import {
   Query,
   Req,
   Res,
+  Headers,
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './services/auth.service';
@@ -104,7 +105,7 @@ export class AuthController {
   )
   public async regenerateRefreshToken(
     @Req() req: Request,
-    @Res() res: Response,
+    @Headers('Authorization') authorization: string | null,
   ): Promise<{ accessToken: string } | void> {
     const clientType = req.headers?.['X-Client-Type'];
     let refreshToken: string | null = null;
@@ -112,7 +113,7 @@ export class AuthController {
     if (clientType === 'WEB') {
       refreshToken = req.cookies?.refreshToken ?? null;
     } else if (clientType === 'WEBVIEW') {
-      refreshToken = req.headers?.authorization?.split(' ')[1] ?? null;
+      refreshToken = authorization?.replace('Bearer ', '') ?? null;
     }
 
     if (!refreshToken) {
