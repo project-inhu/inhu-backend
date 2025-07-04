@@ -13,6 +13,7 @@ const PLACE_OVERVIEW_SELECT_FIELD = Prisma.validator<Prisma.PlaceDefaultArgs>()(
       idx: true,
       name: true,
       address: true,
+      reviewCount: true,
       bookmark: {
         select: {
           idx: true,
@@ -21,11 +22,6 @@ const PLACE_OVERVIEW_SELECT_FIELD = Prisma.validator<Prisma.PlaceDefaultArgs>()(
       placeImage: {
         select: {
           path: true,
-        },
-      },
-      review: {
-        select: {
-          idx: true,
         },
       },
     },

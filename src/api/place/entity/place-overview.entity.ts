@@ -22,7 +22,7 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
       idx: place.idx,
       name: place.name,
       address: place.address,
-      reviewCount: place.review.length,
+      reviewCount: place.reviewCount,
       bookmark: place.bookmark?.length ? true : false,
       imagePathList: place.placeImage.map((image) => image.path ?? ''),
     });

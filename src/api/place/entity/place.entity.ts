@@ -112,7 +112,7 @@ export class PlaceEntity {
           [WEEKS.SUN]: null,
         },
       ),
-      reviewCount: place.review.length,
+      reviewCount: place.reviewCount,
       bookmark: place.bookmark?.length ? true : false,
       keywordList: [],
       imagePathList: place.placeImage.map((image) => image.path ?? ''),
