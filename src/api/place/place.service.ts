@@ -1,8 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PlaceRepository } from './place.repository';
 import { KeywordRepository } from '../keyword/keyword.repository';
 import { PlaceOverviewEntity } from './entity/place-overview.entity';
 import { PlaceEntity } from './entity/place.entity';
+import { ReviewCountUpdateType } from './common/constants/review-count-update-type.enum';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PlaceService {
@@ -34,5 +40,19 @@ export class PlaceService {
     }
 
     return PlaceEntity.createEntityFromPrisma(place);
+  }
+
+  async updatePlaceReviewCountByPlaceIdx(
+    placeIdx: number,
+    updateType: ReviewCountUpdateType,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void> {
+    const value = updateType == ReviewCountUpdateType.INCREASE ? 1 : -1;
+
+    await this.placeRepository.updatePlaceReviewCountByPlaceIdx(
+      placeIdx,
+      value,
+      tx,
+    );
   }
 }

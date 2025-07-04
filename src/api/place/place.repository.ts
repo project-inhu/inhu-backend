@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { PlaceOverviewSelectField } from './type/place-overview-select-field.type';
 import { PlaceSelectField } from './type/place-select-field.type';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PlaceRepository {
@@ -21,17 +22,13 @@ export class PlaceRepository {
         idx: true,
         name: true,
         address: true,
+        reviewCount: true,
         bookmark: userIdx
           ? { where: { userIdx }, select: { idx: true } }
           : undefined,
         placeImage: {
           select: {
             path: true,
-          },
-        },
-        review: {
-          select: {
-            idx: true,
           },
         },
       },
@@ -55,6 +52,7 @@ export class PlaceRepository {
         addressX: true,
         addressY: true,
         createdAt: true,
+        reviewCount: true,
         placeHours: {
           select: {
             day: true,
@@ -70,10 +68,21 @@ export class PlaceRepository {
             path: true,
           },
         },
-        review: {
-          select: {
-            idx: true,
-          },
+      },
+    });
+  }
+
+  async updatePlaceReviewCountByPlaceIdx(
+    placeIdx: number,
+    value: number,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void> {
+    const db = tx ?? this.prisma;
+    await db.place.update({
+      where: { idx: placeIdx },
+      data: {
+        reviewCount: {
+          increment: value,
         },
       },
     });
