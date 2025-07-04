@@ -12,6 +12,8 @@ import { AuthProvider } from './enums/auth-provider.enum';
 import { Response, Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { Provider } from './common/decorators/provider.decorator';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { Exception } from 'src/common/decorator/exception.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -81,7 +83,7 @@ export class AuthController {
   }
 
   @Get('kakao-sdk')
-  public async sdkCallBack(@Query('token') token: string): Promise<any> {
+  public async sdkCallBack(@Query('token') token: string): Promise<TokenPair> {
     const { accessToken, refreshToken } =
       await this.authService.sdkLogin(token);
 
@@ -92,13 +94,32 @@ export class AuthController {
    * Access Token을 갱신하는 엔드포인트
    */
   @Post('refresh-token/regenerate')
-  public async regenerateRefreshToken(@Req() req: Request): Promise<any> {
-    const refreshToken = req.headers?.authorization?.split(' ')[1] ?? null;
-    if (!refreshToken) {
-      throw new UnauthorizedException('Refresh token not found');
+  @Exception(
+    401,
+    `
+    case 1) 토큰 없음 : refresh token not found
+    case 2) 토큰 유효하지 않음 : invalid token
+    case 3) 토큰 만료됨 : refresh Token expired
+  `,
+  )
+  public async regenerateRefreshToken(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<{ accessToken: string } | void> {
+    const clientType = req.headers?.['X-Client-Type'];
+    let refreshToken: string | null = null;
+
+    if (clientType === 'WEB') {
+      refreshToken = req.cookies?.refreshToken ?? null;
+    } else if (clientType === 'WEBVIEW') {
+      refreshToken = req.headers?.authorization?.split(' ')[1] ?? null;
     }
 
-    const { newAccessToken, payload: newPayload } =
+    if (!refreshToken) {
+      throw new UnauthorizedException('refresh token not found');
+    }
+
+    const { newAccessToken } =
       await this.authService.regenerateAccessTokenFromRefreshToken(
         refreshToken,
       );
