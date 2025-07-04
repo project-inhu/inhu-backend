@@ -10,7 +10,7 @@ export class PlaceRepository {
 
   async selectAllPlaceOverview(
     page: number,
-    userIdx: number,
+    userIdx?: number,
   ): Promise<PlaceOverviewSelectField[]> {
     return await this.prisma.place.findMany({
       skip: (page - 1) * 10,

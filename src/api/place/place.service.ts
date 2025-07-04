@@ -15,7 +15,7 @@ export class PlaceService {
 
   async getAllPlaceOverview(
     page: number,
-    userIdx: number,
+    userIdx?: number,
   ): Promise<PlaceOverviewEntity[]> {
     return (
       await this.placeRepository.selectAllPlaceOverview(page, userIdx)
