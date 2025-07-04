@@ -78,7 +78,7 @@ export class ReviewService {
   ): Promise<ReviewEntity> {
     const review = await this.getReviewByReviewIdx(updateReviewInput.reviewIdx);
 
-    if (review.userIdx !== updateReviewInput.userIdx) {
+    if (review.author.idx !== updateReviewInput.userIdx) {
       throw new ForbiddenException('You are not allowed to update this review');
     }
 
@@ -99,7 +99,7 @@ export class ReviewService {
   ): Promise<void> {
     const review = await this.getReviewByReviewIdx(reviewIdx);
 
-    if (review.userIdx != userIdx) {
+    if (review.author.idx != userIdx) {
       throw new ForbiddenException('You are not allowed to delete this review');
     }
 
