@@ -57,7 +57,7 @@ export class AuthController {
   public async callBack(
     @Provider() provider: AuthProvider | null,
     @Query('code') code: string,
-    @Res() res: Response,
+    @Res({ passthrough: true }) res: Response,
   ) {
     if (!provider) {
       return res.redirect(
