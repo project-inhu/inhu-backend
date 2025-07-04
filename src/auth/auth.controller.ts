@@ -107,6 +107,8 @@ export class AuthController {
   ): Promise<{ accessToken: string } | void> {
     console.log('in auth.controller refreshToken:', refreshToken);
 
+    console.log('in auth.controller clientType:', clientType);
+
     const { newAccessToken } =
       await this.authService.regenerateAccessTokenFromRefreshToken(
         (clientType === 'WEB'
