@@ -108,6 +108,9 @@ export class AuthController {
     const tokenString =
       (clientType === 'WEB' ? refreshToken : authorization) || '';
 
+    console.log(tokenString);
+    console.log(tokenString.replace('Bearer ', ''));
+
     const { newAccessToken } =
       await this.authService.regenerateAccessTokenFromRefreshToken(
         tokenString.replace('Bearer ', ''),
