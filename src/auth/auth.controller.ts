@@ -115,4 +115,23 @@ export class AuthController {
 
     return { accessToken: newAccessToken };
   }
+
+  /**
+   * 로그아웃 API
+   *
+   * 주의: 반드시 App환경에서도 호출하십시오.
+   *
+   * TODO: 로그아웃 시, refresh token store에서 refresh token을 삭제하는 로직이 필요합니다.
+   *
+   * @author jochongs
+   */
+  @Post('/logout')
+  public async logout(
+    @Res({
+      passthrough: true,
+    })
+    res: Response,
+  ): Promise<void> {
+    res.clearCookie('refreshToken');
+  }
 }
