@@ -65,8 +65,6 @@ export class AuthController {
       );
     }
 
-    console.log(`provider: ${provider}, code: ${code}`);
-
     const { accessToken, refreshToken } = await this.authService.login(
       provider,
       code,
