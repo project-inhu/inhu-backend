@@ -62,12 +62,6 @@ export class ReviewService {
         tx,
       );
 
-      await this.placeService.updatePlaceReviewCountByPlaceIdx(
-        createReviewInput.placeIdx,
-        ReviewCountUpdateType.INCREASE,
-        tx,
-      );
-
       return createdReview;
     });
 
@@ -111,12 +105,6 @@ export class ReviewService {
 
     await this.prisma.$transaction(async (tx) => {
       await this.reviewRepository.deleteReviewByReviewIdx(reviewIdx, tx);
-
-      await this.placeService.updatePlaceReviewCountByPlaceIdx(
-        review.placeIdx,
-        ReviewCountUpdateType.DECREASE,
-        tx,
-      );
     });
   }
 
