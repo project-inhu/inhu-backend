@@ -28,7 +28,7 @@ export class ReviewController {
   @Exception(400, 'PlaceIdx must be a number')
   @Exception(404, 'PlaceIdx does not exist')
   @Exception(500, 'Internal Server Error')
-  @Get('place/:placeIdx/review/all')
+  @Get('/place/:placeIdx/review/all')
   async getAllReviewByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
   ): Promise<ReviewEntity[]> {
@@ -44,7 +44,7 @@ export class ReviewController {
   @Exception(400, 'PlaceIdx must be a number or Invalid request body')
   @Exception(404, 'Place does not exist or keyword does not exist')
   @Exception(500, 'Internal Server Error')
-  @Post('place/:placeIdx/review')
+  @Post('/place/:placeIdx/review')
   async createReviewByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @Body() createReviewDto: CreateReviewDto,
@@ -69,7 +69,7 @@ export class ReviewController {
   @Exception(403, 'You are not allowed to update this review')
   @Exception(404, 'Review does not exist')
   @Exception(500, 'Internal Server Error')
-  @Patch('review/:reviewIdx')
+  @Patch('/review/:reviewIdx')
   async updateReviewByReviewIdx(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
     @Body() updateReviewDto: UpdateReviewDto,
@@ -94,7 +94,7 @@ export class ReviewController {
   @Exception(403, 'You are not allowed to delete this review')
   @Exception(404, 'Review does not exist')
   @Exception(500, 'Internal Server Error')
-  @Delete('review/:reviewIdx')
+  @Delete('/review/:reviewIdx')
   async deleteReviewByReviewIdx(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
     @User('idx') userIdx: number,
@@ -109,7 +109,7 @@ export class ReviewController {
    */
   @LoginAuth
   @Exception(500, 'Internal Server Error')
-  @Get('my/review/all')
+  @Get('/my/review/all')
   async getAllReviewByUserIdx(
     @User('idx') userIdx: number,
   ): Promise<ReviewEntity[]> {

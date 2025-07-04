@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { ReviewSelectField } from './type/review-select-field';
-import { Review } from '@prisma/client';
+import { Prisma, Review } from '@prisma/client';
 import { CreateReviewInput } from './input/create-review.input';
 import { UpdateReviewInput } from './input/update-review.input';
 
@@ -126,7 +126,9 @@ export class ReviewRepository {
    */
   async createReviewByPlaceIdx(
     createReviewInput: CreateReviewInput,
+    tx?: Prisma.TransactionClient,
   ): Promise<Review> {
+    const db = tx ?? this.prisma;
     const {
       placeIdx,
       userIdx,
@@ -134,7 +136,7 @@ export class ReviewRepository {
       imagePathList = [],
       keywordIdxList = [],
     } = createReviewInput;
-    return await this.prisma.review.create({
+    return await db.review.create({
       data: {
         placeIdx,
         content,
@@ -257,13 +259,31 @@ export class ReviewRepository {
    *
    * @author 강정연
    */
-  async deleteReviewByReviewIdx(reviewIdx: number): Promise<void> {
-    await this.prisma.review.update({
+  async deleteReviewByReviewIdx(
+    reviewIdx: number,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void> {
+    const db = tx ?? this.prisma;
+    await db.review.update({
       where: {
         idx: reviewIdx,
         deletedAt: null,
       },
       data: { deletedAt: new Date() },
+    });
+  }
+
+  /**
+   * 특정 장소의 리뷰 개수 조회
+   *
+   * @author 강정연
+   */
+  async selectReviewCountByPlaceIdx(placeIdx: number): Promise<number> {
+    return this.prisma.review.count({
+      where: {
+        placeIdx,
+        deletedAt: null,
+      },
     });
   }
 }
