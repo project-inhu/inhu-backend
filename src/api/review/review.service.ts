@@ -43,7 +43,7 @@ export class ReviewService {
     const review =
       await this.reviewRepository.selectReviewByReviewIdx(reviewIdx);
     if (!review) {
-      throw new NotFoundException('Review does not exist');
+      throw new NotFoundException('Review not found');
     }
 
     return ReviewEntity.createEntityFromPrisma(review);
@@ -91,7 +91,7 @@ export class ReviewService {
     const review = await this.getReviewByReviewIdx(updateReviewInput.reviewIdx);
 
     if (review.author.idx !== updateReviewInput.userIdx) {
-      throw new ForbiddenException('You are not allowed to update this review');
+      throw new ForbiddenException('Not permission to update');
     }
 
     const updatedReview =
@@ -114,7 +114,7 @@ export class ReviewService {
     const review = await this.getReviewByReviewIdx(reviewIdx);
 
     if (review.author.idx != userIdx) {
-      throw new ForbiddenException('You are not allowed to delete this review');
+      throw new ForbiddenException('Not permission to delete');
     }
 
     await this.prisma.$transaction(async (tx) => {
