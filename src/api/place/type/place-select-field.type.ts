@@ -16,6 +16,7 @@ const PLACE_SELECT_FIELD = Prisma.validator<Prisma.PlaceDefaultArgs>()({
     addressX: true,
     addressY: true,
     createdAt: true,
+    reviewCount: true,
     placeHours: {
       select: {
         day: true,
@@ -31,11 +32,6 @@ const PLACE_SELECT_FIELD = Prisma.validator<Prisma.PlaceDefaultArgs>()({
     placeImage: {
       select: {
         path: true,
-      },
-    },
-    review: {
-      select: {
-        idx: true,
       },
     },
   },
