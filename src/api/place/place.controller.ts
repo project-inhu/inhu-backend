@@ -1,15 +1,7 @@
-import {
-  Query,
-  Controller,
-  Get,
-  Param,
-  ParseIntPipe,
-  UseGuards,
-} from '@nestjs/common';
+import { Query, Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { PlaceService } from './place.service';
 import { GetAllPlaceOverviewDto } from './dto/get-all-place-overview.dto';
 import { User } from 'src/common/decorator/user.decorator';
-import { AuthGuard } from 'src/auth/common/guards/auth.guard';
 import { PlaceOverviewEntity } from './entity/place-overview.entity';
 import { PlaceEntity } from './entity/place.entity';
 
@@ -22,7 +14,6 @@ export class PlaceController {
    *
    * @author 이수인
    */
-  @UseGuards(AuthGuard)
   @Get('/all')
   async getAllPlaceOverview(
     @Query() getAllPlaceOverviewDto: GetAllPlaceOverviewDto,
@@ -39,7 +30,6 @@ export class PlaceController {
    *
    * @author 이수인
    */
-  @UseGuards(AuthGuard)
   @Get('/:placeIdx')
   async getPlaceByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
