@@ -34,7 +34,7 @@ export class KakaoStrategy extends SocialAuthBaseStrategy<
       grant_type: 'authorization_code',
       client_id: this.configService.get<string>('KAKAO_CLIENT_ID') ?? '',
       redirect_uri: this.configService.get<string>('KAKAO_REDIRECT_URI') ?? '',
-      code: code,
+      code: encodeURIComponent(code),
     };
   }
 
