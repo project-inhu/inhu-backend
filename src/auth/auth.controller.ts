@@ -70,21 +70,13 @@ export class AuthController {
       code,
     );
 
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      sameSite: 'none',
-    });
-
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       sameSite: 'none',
     });
 
-    const mainPageUrl = this.configService.get<string>('MAIN_PAGE_URL') || '/';
-
     return {
       accessToken,
-      refreshToken,
     };
   }
 
