@@ -109,15 +109,6 @@ export class AuthService {
     const payload =
       await this.loginTokenService.verifyRefreshToken(refreshToken);
 
-    console.log('in auth.service payload:', payload);
-
-    if (
-      !this.getRefreshToken(payload.idx) ||
-      this.getRefreshToken(payload.idx) !== refreshToken
-    ) {
-      throw new UnauthorizedException('Invalid refresh token');
-    }
-
     return {
       newAccessToken: await this.loginTokenService.signAccessToken(payload),
       payload,
