@@ -48,7 +48,7 @@ export class ReviewEntity {
   /**
    * review 이미지 path list
    *
-   * @example ['images/review/1/20240312/171923.jpg', 'images/review/1/20240312/17234.jpg']
+   * @example ['https://inhu.s3.ap-northeast-2.amazonaws.com/review/1/20240704_235922_5fd1a39a.jpg', 'https://inhu.s3.ap-northeast-2.amazonaws.com/review/1/20240704_235924_5321a39c.jpg']
    */
   imagePathList: string[];
 
