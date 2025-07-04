@@ -5,6 +5,7 @@ import {
   Query,
   Req,
   Res,
+  Headers,
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './services/auth.service';
@@ -12,6 +13,10 @@ import { AuthProvider } from './enums/auth-provider.enum';
 import { Response, Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { Provider } from './common/decorators/provider.decorator';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { Exception } from 'src/common/decorator/exception.decorator';
+import { ClientType } from 'src/common/decorator/client-type.decorator';
+import { Cookie } from 'src/common/decorator/cookie.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -81,7 +86,7 @@ export class AuthController {
   }
 
   @Get('kakao-sdk')
-  public async sdkCallBack(@Query('token') token: string): Promise<any> {
+  public async sdkCallBack(@Query('token') token: string): Promise<TokenPair> {
     const { accessToken, refreshToken } =
       await this.authService.sdkLogin(token);
 
@@ -92,15 +97,23 @@ export class AuthController {
    * Access Token을 갱신하는 엔드포인트
    */
   @Post('refresh-token/regenerate')
-  public async regenerateRefreshToken(@Req() req: Request): Promise<any> {
-    const refreshToken = req.headers?.authorization?.split(' ')[1] ?? null;
-    if (!refreshToken) {
-      throw new UnauthorizedException('Refresh token not found');
-    }
-
-    const { newAccessToken, payload: newPayload } =
+  @Exception(
+    401,
+    `
+    case 1) 토큰 유효하지 않음 : invalid token
+    case 2) 토큰 만료됨 : refresh Token expired
+  `,
+  )
+  public async regenerateRefreshToken(
+    @Headers('Authorization') authorization: string | null,
+    @ClientType() clientType: string | null,
+    @Cookie('refreshToken') refreshToken: string | null,
+  ): Promise<{ accessToken: string } | void> {
+    const { newAccessToken } =
       await this.authService.regenerateAccessTokenFromRefreshToken(
-        refreshToken,
+        (clientType === 'WEB'
+          ? refreshToken
+          : authorization?.replace('Bearer ', '')) || '',
       );
 
     return { accessToken: newAccessToken };
