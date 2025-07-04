@@ -72,12 +72,12 @@ export class AuthController {
 
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: 'none',
     });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: 'none',
     });
 
     const mainPageUrl = this.configService.get<string>('MAIN_PAGE_URL') || '/';
