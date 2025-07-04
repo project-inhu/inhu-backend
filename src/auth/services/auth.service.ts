@@ -56,16 +56,10 @@ export class AuthService {
     return this.REFRESH_TOKEN_STORE[userIdx] || null;
   }
 
-  /**
-   * 소셜 로그인 인증 코드(code)를 사용하여 사용자 인증 후 토큰 발급
-   *
-   * @author 조희주
-   */
-  public async login(provider: AuthProvider, code: string): Promise<TokenPair> {
-    const socialAuthService = this.getSocialAuthStrategy(provider);
-
-    const authToken = await socialAuthService.getToken(code);
-    const accessToken = socialAuthService.getAccessToken(authToken);
+  public async generateTokenPairWithSocialAuth(
+    socialAuthService: SocialAuthBaseStrategy,
+    accessToken: string,
+  ): Promise<TokenPair> {
     const userInfo = await socialAuthService.getUserInfo(accessToken);
     const extractedUserInfo = socialAuthService.extractUserInfo(userInfo);
 
@@ -82,23 +76,26 @@ export class AuthService {
     return { accessToken: jwtAccessToken, refreshToken: jwtRefreshToken };
   }
 
+  /**
+   * 소셜 로그인 인증 코드(code)를 사용하여 사용자 인증 후 토큰 발급
+   *
+   * @author 조희주
+   */
+  public async login(provider: AuthProvider, code: string): Promise<TokenPair> {
+    const socialAuthService = this.getSocialAuthStrategy(provider);
+
+    const authToken = await socialAuthService.getToken(code);
+    const accessToken = socialAuthService.getAccessToken(authToken);
+    return this.generateTokenPairWithSocialAuth(socialAuthService, accessToken);
+  }
+
+  /**
+   * Kakao SDK를 사용하여 로그인
+   */
   public async sdkLogin(accessToken: string): Promise<TokenPair> {
     const socialAuthService = this.getSocialAuthStrategy(AuthProvider.KAKAO);
 
-    const userInfo = await socialAuthService.getUserInfo(accessToken);
-    const extractedUserInfo = socialAuthService.extractUserInfo(userInfo);
-
-    const user = await this.userService.createUser(extractedUserInfo);
-
-    const payload = { idx: user.idx };
-    const jwtAccessToken =
-      await this.loginTokenService.signAccessToken(payload);
-    const jwtRefreshToken =
-      await this.loginTokenService.signRefreshToken(payload);
-
-    this.saveRefreshToken(user.idx, jwtRefreshToken);
-
-    return { accessToken: jwtAccessToken, refreshToken: jwtRefreshToken };
+    return this.generateTokenPairWithSocialAuth(socialAuthService, accessToken);
   }
 
   /**
@@ -111,6 +108,8 @@ export class AuthService {
   ): Promise<{ newAccessToken: string; payload: RefreshTokenPayload }> {
     const payload =
       await this.loginTokenService.verifyRefreshToken(refreshToken);
+
+    console.log('in auth.service payload:', payload);
 
     if (
       !this.getRefreshToken(payload.idx) ||
