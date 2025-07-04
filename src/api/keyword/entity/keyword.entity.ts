@@ -1,4 +1,4 @@
-export class ReviewKeywordEntity {
+export class KeywordEntity {
   /**
    * keyword idx
    * @example 1
@@ -17,7 +17,7 @@ export class ReviewKeywordEntity {
    */
   createdAt: Date;
 
-  constructor(data: ReviewKeywordEntity) {
+  constructor(data: KeywordEntity) {
     Object.assign(this, data);
   }
 }
