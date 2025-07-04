@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PlaceRepository } from './place.repository';
 import { KeywordRepository } from '../keyword/keyword.repository';
 import { PlaceOverviewEntity } from './entity/place-overview.entity';
