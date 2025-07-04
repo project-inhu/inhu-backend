@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Post,
   Query,
   Req,
   Res,
@@ -90,7 +91,7 @@ export class AuthController {
   /**
    * Access Token을 갱신하는 엔드포인트
    */
-  @Get('regenerate-refresh-token')
+  @Post('refresh-token/regenerate')
   public async regenerateRefreshToken(@Req() req: Request): Promise<any> {
     const refreshToken = req.headers?.authorization?.split(' ')[1] ?? null;
     if (!refreshToken) {
@@ -101,8 +102,6 @@ export class AuthController {
       await this.authService.regenerateAccessTokenFromRefreshToken(
         refreshToken,
       );
-
-    req['user'] = newPayload;
 
     return { accessToken: newAccessToken };
   }
