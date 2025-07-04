@@ -132,6 +132,10 @@ export class AuthController {
     })
     res: Response,
   ): Promise<void> {
-    res.clearCookie('refreshToken');
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+    });
   }
 }
