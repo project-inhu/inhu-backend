@@ -10,6 +10,7 @@ import { UpdateReviewInput } from './input/update-review.input';
 import { PlaceService } from '../place/place.service';
 import { ReviewCountUpdateType } from '../place/common/constants/review-count-update-type.enum';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class ReviewService {
@@ -17,6 +18,7 @@ export class ReviewService {
     private readonly prisma: PrismaService,
     private readonly reviewRepository: ReviewRepository,
     private readonly placeService: PlaceService,
+    private readonly userService: UserService,
   ) {}
 
   /**
@@ -55,10 +57,18 @@ export class ReviewService {
   async createReviewByPlaceIdx(
     createReviewInput: CreateReviewInput,
   ): Promise<ReviewEntity> {
+    await this.userService.getUserByUserIdx(createReviewInput.userIdx);
     await this.placeService.getPlaceByPlaceIdx(createReviewInput.placeIdx);
+
     const review = await this.prisma.$transaction(async (tx) => {
       const createdReview = await this.reviewRepository.createReviewByPlaceIdx(
         createReviewInput,
+        tx,
+      );
+
+      await this.placeService.updatePlaceReviewCountByPlaceIdx(
+        createReviewInput.placeIdx,
+        ReviewCountUpdateType.INCREASE,
         tx,
       );
 
@@ -76,6 +86,8 @@ export class ReviewService {
   async updateReviewByReviewIdx(
     updateReviewInput: UpdateReviewInput,
   ): Promise<ReviewEntity> {
+    await this.userService.getUserByUserIdx(updateReviewInput.userIdx);
+
     const review = await this.getReviewByReviewIdx(updateReviewInput.reviewIdx);
 
     if (review.author.idx !== updateReviewInput.userIdx) {
@@ -97,6 +109,8 @@ export class ReviewService {
     reviewIdx: number,
     userIdx: number,
   ): Promise<void> {
+    await this.userService.getUserByUserIdx(userIdx);
+
     const review = await this.getReviewByReviewIdx(reviewIdx);
 
     if (review.author.idx != userIdx) {
@@ -105,6 +119,12 @@ export class ReviewService {
 
     await this.prisma.$transaction(async (tx) => {
       await this.reviewRepository.deleteReviewByReviewIdx(reviewIdx, tx);
+
+      await this.placeService.updatePlaceReviewCountByPlaceIdx(
+        review.place.idx,
+        ReviewCountUpdateType.DECREASE,
+        tx,
+      );
     });
   }
 
@@ -114,6 +134,8 @@ export class ReviewService {
    * @author 강정연
    */
   async getAllReviewByUserIdx(userIdx: number): Promise<ReviewEntity[]> {
+    await this.userService.getUserByUserIdx(userIdx);
+
     return (await this.reviewRepository.selectAllReviewByUserIdx(userIdx)).map(
       ReviewEntity.createEntityFromPrisma,
     );

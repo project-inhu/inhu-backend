@@ -15,6 +15,7 @@ import { UpdateReviewDto } from './dto/update-review.dto';
 import { User } from 'src/common/decorator/user.decorator';
 import { LoginAuth } from 'src/auth/common/decorators/login-auth.decorator';
 import { Exception } from 'src/common/decorator/exception.decorator';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('')
 export class ReviewController {
@@ -40,9 +41,10 @@ export class ReviewController {
    *
    * @author 강정연
    */
+  @ApiBearerAuth()
   @LoginAuth
   @Exception(400, 'PlaceIdx must be a number or Invalid request body')
-  @Exception(404, 'Place does not exist or keyword does not exist')
+  @Exception(404, 'Place does not exist or keyword or user does not exist')
   @Exception(500, 'Internal Server Error')
   @Post('/place/:placeIdx/review')
   async createReviewByPlaceIdx(
@@ -64,10 +66,11 @@ export class ReviewController {
    *
    * @author 강정연
    */
+  @ApiBearerAuth()
   @LoginAuth
   @Exception(400, 'ReviewIdx must be a number or Invalid request')
   @Exception(403, 'You are not allowed to update this review')
-  @Exception(404, 'Review does not exist')
+  @Exception(404, 'Review or user does not exist')
   @Exception(500, 'Internal Server Error')
   @Patch('/review/:reviewIdx')
   async updateReviewByReviewIdx(
@@ -89,10 +92,11 @@ export class ReviewController {
    *
    * @author 강정연
    */
+  @ApiBearerAuth()
   @LoginAuth
   @Exception(400, 'ReviewIdx must be a number')
   @Exception(403, 'You are not allowed to delete this review')
-  @Exception(404, 'Review does not exist')
+  @Exception(404, 'Review or user does not exist')
   @Exception(500, 'Internal Server Error')
   @Delete('/review/:reviewIdx')
   async deleteReviewByReviewIdx(
@@ -107,7 +111,9 @@ export class ReviewController {
    *
    * @author 강정연
    */
+  @ApiBearerAuth()
   @LoginAuth
+  @Exception(404, 'User does not exist')
   @Exception(500, 'Internal Server Error')
   @Get('/my/review/all')
   async getAllReviewByUserIdx(
