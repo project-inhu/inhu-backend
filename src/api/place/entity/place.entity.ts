@@ -1,8 +1,9 @@
-import { Week } from '../type/week.type';
+import { PlaceWeekDay } from '../type/place-week-day.type';
 import { Decimal } from '@prisma/client/runtime/library';
 import { WEEKS } from '../common/constants/weeks.constant';
-import { WeekSchedule } from '../type/week-schedule.type';
 import { PlaceSelectField } from '../type/place-select-field.type';
+import { PlaceWeekSchedule } from '../type/place-week-schedule.type';
+import { PlaceWeekInfo } from '../type/place-week-info.type';
 
 export class PlaceEntity {
   /**
@@ -53,9 +54,9 @@ export class PlaceEntity {
   createdAt: Date;
 
   /**
-   * 요일별 운영 시간 정보
+   * 요일별 운영 시간 및 브레이크타임 정보
    */
-  week: WeekSchedule;
+  week: PlaceWeekSchedule;
 
   /**
    * review count
@@ -96,10 +97,18 @@ export class PlaceEntity {
       addressX: place.addressX,
       addressY: place.addressY,
       createdAt: place.createdAt,
-      week: place.placeHours.reduce<WeekSchedule>(
+      week: place.placeDayList.reduce<PlaceWeekSchedule>(
         (acc, item) => {
-          const key = item.day as Week;
-          acc[key] = { startAt: item.startAt, endAt: item.endAt };
+          const key = item.day as PlaceWeekDay;
+          const timeList: PlaceWeekInfo[] = item.placeHourList.map((hour) => ({
+            startAt: hour.startAt,
+            endAt: hour.endAt,
+            breakTimeList: hour.placeBreakTimeList.map((bt) => ({
+              startAt: bt.startAt,
+              endAt: bt.endAt,
+            })),
+          }));
+          acc[key] = timeList.length > 0 ? timeList : [];
           return acc;
         },
         {
