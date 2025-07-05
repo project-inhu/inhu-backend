@@ -17,7 +17,7 @@ export class PlaceController {
   @Get('/all')
   async getAllPlaceOverview(
     @Query() getAllPlaceOverviewDto: GetAllPlaceOverviewDto,
-    @User('idx') userIdx: number,
+    @User('idx') userIdx?: number,
   ): Promise<PlaceOverviewEntity[]> {
     return await this.placeService.getAllPlaceOverview(
       getAllPlaceOverviewDto.page,
@@ -33,7 +33,7 @@ export class PlaceController {
   @Get('/:placeIdx')
   async getPlaceByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
-    @User('idx') userIdx: number,
+    @User('idx') userIdx?: number,
   ): Promise<PlaceEntity> {
     return await this.placeService.getPlaceByPlaceIdx(placeIdx, userIdx);
   }
