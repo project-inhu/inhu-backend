@@ -14,12 +14,12 @@ const REVIEW_SELECT_FIELD = Prisma.validator<Prisma.ReviewDefaultArgs>()({
     placeIdx: true,
     content: true,
     createdAt: true,
-    reviewImage: {
+    reviewImageList: {
       select: {
         path: true,
       },
     },
-    reviewKeywordMapping: {
+    reviewKeywordMappingList: {
       select: {
         keyword: {
           select: {

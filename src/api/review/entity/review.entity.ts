@@ -82,8 +82,8 @@ export class ReviewEntity {
       idx: review.idx,
       content: review.content,
       createdAt: review.createdAt,
-      imagePathList: review.reviewImage.map(({ path }) => path),
-      keywordList: review.reviewKeywordMapping.map(({ keyword }) => ({
+      imagePathList: review.reviewImageList.map(({ path }) => path),
+      keywordList: review.reviewKeywordMappingList.map(({ keyword }) => ({
         idx: keyword.idx,
         content: keyword.content,
       })),

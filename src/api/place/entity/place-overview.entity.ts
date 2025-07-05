@@ -23,8 +23,8 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
       name: place.name,
       address: place.address,
       reviewCount: place.reviewCount,
-      bookmark: place.bookmark?.length ? true : false,
-      imagePathList: place.placeImage.map((image) => image.path ?? ''),
+      bookmark: place.bookmarkList?.length ? true : false,
+      imagePathList: place.placeImageList.map((image) => image.path ?? ''),
     });
   }
 }

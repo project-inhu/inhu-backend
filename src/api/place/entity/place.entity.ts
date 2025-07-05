@@ -24,7 +24,7 @@ export class PlaceEntity {
    *
    * @example '032-1111-2222'
    */
-  tel: string;
+  tel: string | null;
 
   /**
    * place address
@@ -113,9 +113,9 @@ export class PlaceEntity {
         },
       ),
       reviewCount: place.reviewCount,
-      bookmark: place.bookmark?.length ? true : false,
+      bookmark: place.bookmarkList?.length ? true : false,
       keywordList: [],
-      imagePathList: place.placeImage.map((image) => image.path ?? ''),
+      imagePathList: place.placeImageList.map((image) => image.path ?? ''),
     });
   }
 }

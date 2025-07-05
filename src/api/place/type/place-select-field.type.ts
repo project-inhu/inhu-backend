@@ -17,19 +17,29 @@ const PLACE_SELECT_FIELD = Prisma.validator<Prisma.PlaceDefaultArgs>()({
     addressY: true,
     createdAt: true,
     reviewCount: true,
-    placeHours: {
+    placeDayList: {
       select: {
         day: true,
-        startAt: true,
-        endAt: true,
+        placeHourList: {
+          select: {
+            startAt: true,
+            endAt: true,
+            placeBreakTimeList: {
+              select: {
+                startAt: true,
+                endAt: true,
+              },
+            },
+          },
+        },
       },
     },
-    bookmark: {
+    bookmarkList: {
       select: {
         idx: true,
       },
     },
-    placeImage: {
+    placeImageList: {
       select: {
         path: true,
       },

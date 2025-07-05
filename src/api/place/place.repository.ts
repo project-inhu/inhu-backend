@@ -23,10 +23,10 @@ export class PlaceRepository {
         name: true,
         address: true,
         reviewCount: true,
-        bookmark: userIdx
+        bookmarkList: userIdx
           ? { where: { userIdx }, select: { idx: true } }
           : undefined,
-        placeImage: {
+        placeImageList: {
           select: {
             path: true,
           },
@@ -53,17 +53,27 @@ export class PlaceRepository {
         addressY: true,
         createdAt: true,
         reviewCount: true,
-        placeHours: {
+        placeDayList: {
           select: {
             day: true,
-            startAt: true,
-            endAt: true,
+            placeHourList: {
+              select: {
+                startAt: true,
+                endAt: true,
+                placeBreakTimeList: {
+                  select: {
+                    startAt: true,
+                    endAt: true,
+                  },
+                },
+              },
+            },
           },
         },
-        bookmark: userIdx
+        bookmarkList: userIdx
           ? { where: { userIdx }, select: { idx: true } }
           : undefined,
-        placeImage: {
+        placeImageList: {
           select: {
             path: true,
           },

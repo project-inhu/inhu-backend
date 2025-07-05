@@ -20,13 +20,13 @@ const USER_SELECT_FIELD = Prisma.validator<Prisma.UserDefaultArgs>()({
         name: true,
       },
     },
-    bookmark: {
+    bookmarkList: {
       select: {
         idx: true,
         placeIdx: true,
       },
     },
-    review: {
+    reviewList: {
       select: {
         idx: true,
         content: true,
