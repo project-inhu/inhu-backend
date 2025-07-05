@@ -7,4 +7,5 @@ export enum S3Folder {
   MENU = 'menu',
   PLACE = 'place',
   PROFILE = 'profile',
+  BANNER = 'banner',
 }
