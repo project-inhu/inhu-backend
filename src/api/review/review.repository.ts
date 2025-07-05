@@ -31,7 +31,7 @@ export class ReviewRepository {
         placeIdx: true,
         content: true,
         createdAt: true,
-        reviewImage: {
+        reviewImageList: {
           select: {
             path: true,
           },
@@ -39,7 +39,7 @@ export class ReviewRepository {
             idx: 'asc',
           },
         },
-        reviewKeywordMapping: {
+        reviewKeywordMappingList: {
           select: {
             keyword: {
               select: {
@@ -89,12 +89,12 @@ export class ReviewRepository {
         placeIdx: true,
         content: true,
         createdAt: true,
-        reviewImage: {
+        reviewImageList: {
           select: {
             path: true,
           },
         },
-        reviewKeywordMapping: {
+        reviewKeywordMappingList: {
           select: {
             keyword: {
               select: {
@@ -147,13 +147,13 @@ export class ReviewRepository {
         placeIdx,
         content,
         userIdx,
-        reviewImage:
+        reviewImageList:
           imagePathList.length > 0
             ? {
                 create: imagePathList.map((path) => ({ path })),
               }
             : undefined,
-        reviewKeywordMapping:
+        reviewKeywordMappingList:
           keywordIdxList.length > 0
             ? {
                 create: keywordIdxList.map((keywordIdx) => ({
@@ -187,12 +187,12 @@ export class ReviewRepository {
         placeIdx: true,
         content: true,
         createdAt: true,
-        reviewImage: {
+        reviewImageList: {
           select: {
             path: true,
           },
         },
-        reviewKeywordMapping: {
+        reviewKeywordMappingList: {
           select: {
             keyword: {
               select: {
@@ -238,7 +238,7 @@ export class ReviewRepository {
       where: { idx: reviewIdx, deletedAt: null },
       data: {
         ...updateData,
-        reviewImage:
+        reviewImageList:
           imagePathList !== undefined
             ? {
                 deleteMany: {},
@@ -249,7 +249,7 @@ export class ReviewRepository {
               }
             : undefined,
 
-        reviewKeywordMapping:
+        reviewKeywordMappingList:
           keywordIdxList !== undefined
             ? {
                 deleteMany: {},
