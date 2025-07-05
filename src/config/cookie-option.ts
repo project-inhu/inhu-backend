@@ -5,3 +5,9 @@ export const devCookieOptions: CookieOptions = {
   sameSite: 'none',
   secure: true,
 };
+
+export const prodCookieOptions: CookieOptions = {
+  httpOnly: true,
+  secure: true,
+  sameSite: 'lax',
+};

@@ -8,7 +8,7 @@ import { Exception } from 'src/common/decorator/exception.decorator';
 import { ClientType } from 'src/common/decorator/client-type.decorator';
 import { Cookie } from 'src/common/decorator/cookie.decorator';
 import { LoginTokenService } from './services/login-token.service';
-import { devCookieOptions } from 'src/config/cookie-option';
+import { devCookieOptions, prodCookieOptions } from 'src/config/cookie-option';
 
 @Controller('auth')
 export class AuthController {
@@ -62,7 +62,13 @@ export class AuthController {
       code,
     );
 
-    res.cookie('refreshToken', `Bearer ${refreshToken}`, devCookieOptions);
+    res.cookie(
+      'refreshToken',
+      `Bearer ${refreshToken}`,
+      this.configService.get('NODE_ENV') === 'development'
+        ? devCookieOptions
+        : prodCookieOptions,
+    );
 
     return {
       accessToken,
@@ -120,6 +126,11 @@ export class AuthController {
     })
     res: Response,
   ): Promise<void> {
-    res.clearCookie('refreshToken', devCookieOptions);
+    res.clearCookie(
+      'refreshToken',
+      this.configService.get('NODE_ENV') === 'development'
+        ? devCookieOptions
+        : prodCookieOptions,
+    );
   }
 }
