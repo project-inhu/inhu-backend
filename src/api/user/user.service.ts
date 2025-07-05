@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -19,8 +20,8 @@ export class UserService {
    * @author 조희주
    */
   async generateTemporaryNickname(): Promise<string> {
-    const userCount = await this.userRepository.getUserCount();
-    return `${userCount + 1}번째 인후러`;
+    const maxIdx = await this.userRepository.getMaxUserIdx();
+    return `${maxIdx + 1}번째 인후러`;
   }
 
   /**
@@ -78,6 +79,14 @@ export class UserService {
     const user = await this.userRepository.selectUserByUserIdx(userIdx);
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+
+    if (nickname && profileImagePath) {
+      throw new BadRequestException('Only one field can be updated at a time.');
+    }
+
+    if (!nickname && !profileImagePath) {
+      throw new BadRequestException('One field must be provided.');
     }
 
     if (

@@ -31,7 +31,7 @@ export class UserEntity {
   /**
    * 프로필 이미지 경로
    *
-   * @example "https://inhu.s3.ap-northeast-2.amazonaws.com/user123/profile.jpg"
+   * @example "user123/profile.jpg"
    */
   profileImagePath: string | null;
 
@@ -63,80 +63,6 @@ export class UserEntity {
    */
   provider?: string;
 
-  /**
-   * 사용자의 북마크 목록
-   *
-   * @example [
-   *   {
-   *     "idx": 1,
-   *     "userIdx": 1,
-   *     "placeIdx": 5,
-   *     "createdAt": "2025-03-10T08:50:21.451Z",
-   *     "deletedAt": null
-   *   }
-   * ]
-   */
-  bookmarkList?: Bookmark[];
-
-  /**
-   * 사용자가 작성한 리뷰 목록
-   *
-   * @example [
-   *   {
-   *     "idx": 1,
-   *     "userIdx": 1,
-   *     "placeIdx": 5,
-   *     "createdAt": "2025-03-10T08:50:21.451Z",
-   *     "deletedAt": null
-   *   }
-   * ]
-   */
-  reviewList?: Review[];
-
-  /**
-   * Service1 결과 목록
-   *
-   * @example [
-   *   {
-   *     "idx": 1,
-   *     "userIdx": 1,
-   *     "service1Idx": 3,
-   *     "content": "인후를 사용하면서 전반적인 서비스 경험이 좋았어요.",
-   *     "createdAt": "2025-03-09T14:20:30.123Z"
-   *   }
-   * ]
-   */
-  service1ResultList?: Service1Result[];
-
-  /**
-   * Service2 결과 목록
-   *
-   * @example [
-   *   {
-   *     "idx": 2,
-   *     "userIdx": 1,
-   *     "service2Idx": 2,
-   *     "content": "추가적인 서비스가 있으면 좋겠어요.",
-   *     "createdAt": "2025-03-09T15:45:10.567Z"
-   *   }
-   * ]
-   */
-  service2ResultList?: Service2Result[];
-
-  /**
-   * 회원 탈퇴시에 진행하는 서비스 조사 결과 목록
-   *
-   * @example [
-   *   {
-   *     "idx": 1,
-   *     "userIdx": 1,
-   *     "withdrawServiceIdx": 4,
-   *     "createdAt": "2025-03-11T10:00:00.000Z"
-   *   }
-   * ]
-   */
-  withdrawServiceResultList?: WithdrawServiceResult[];
-
   constructor(data: UserEntity) {
     Object.assign(this, data);
   }
@@ -162,11 +88,6 @@ export class UserEntity {
       deletedAt: user.deletedAt,
       snsId: user.userProvider?.snsId,
       provider: user.userProvider?.name,
-      bookmarkList: user.bookmark,
-      reviewList: user.review,
-      service1ResultList: user.service1Result,
-      service2ResultList: user.service2Result,
-      withdrawServiceResultList: user.withdrawServiceResult,
     });
   }
 }
