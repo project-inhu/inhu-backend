@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Query,
-  Req,
-  Res,
-  Headers,
-} from '@nestjs/common';
+import { Controller, Get, Post, Query, Res, Headers } from '@nestjs/common';
 import { AuthService } from './services/auth.service';
 import { AuthProvider } from './enums/auth-provider.enum';
 import { Response } from 'express';
@@ -42,7 +34,6 @@ export class AuthController {
         this.configService.get<string>('MAIN_PAGE_URL') || '/',
       );
     }
-    // console.log(provider);
 
     const socialAuthService = this.authService.getSocialAuthStrategy(provider);
     return res.redirect(socialAuthService.getAuthLoginUrl());
@@ -105,8 +96,8 @@ export class AuthController {
     const tokenString =
       (clientType === 'WEB' ? refreshToken : authorization) || '';
 
-    const { newAccessToken } =
-      await this.loginTokenService.regenerateAccessTokenFromRefreshToken(
+    const newAccessToken =
+      await this.authService.regenerateAccessTokenFromRefreshToken(
         tokenString.replace('Bearer ', ''),
       );
 

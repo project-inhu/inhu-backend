@@ -7,6 +7,8 @@ import { AuthGuard } from './common/guards/auth.guard';
 import { KakaoStrategy } from './strategies/kakao/kakao.strategy';
 import { LoginTokenService } from './services/login-token.service';
 import { UserModule } from 'src/api/user/user.module';
+import { TokenStorageStrategy } from './strategies/base/token-storage.strategy';
+import { InMemoryTokenStorage } from './strategies/storages/in-memory-token.storage';
 
 @Module({
   imports: [
@@ -20,7 +22,13 @@ import { UserModule } from 'src/api/user/user.module';
     forwardRef(() => UserModule),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthGuard, KakaoStrategy, LoginTokenService],
+  providers: [
+    AuthService,
+    AuthGuard,
+    KakaoStrategy,
+    LoginTokenService,
+    { provide: TokenStorageStrategy, useClass: InMemoryTokenStorage },
+  ],
   exports: [AuthService, LoginTokenService],
 })
 export class AuthModule {}
