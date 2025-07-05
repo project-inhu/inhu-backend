@@ -87,8 +87,8 @@ model PlaceDay {
 model PlaceHour {
   idx              Int        @id @default(autoincrement())
   placeDayIdx      Int        @map("place_day_idx")
-  startAt          DateTime?  @map("start_at") @db.Time(6)
-  endAt            DateTime?  @map("end_at") @db.Time(6)
+  startAt          DateTime  @map("start_at") @db.Time(6)
+  endAt            DateTime  @map("end_at") @db.Time(6)
   placeBreakTimes  PlaceBreakTime[] 
   placeDay         PlaceDay   @relation(fields: [placeDayIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_day_tb_to_place_hour_tb")
 
@@ -98,8 +98,8 @@ model PlaceHour {
 model PlaceBreakTime {
   idx          Int        @id @default(autoincrement())
   placeHourIdx Int        @map("place_hour_idx")
-  startAt      DateTime?  @map("start_at") @db.Time(6)
-  endAt        DateTime?  @map("end_at") @db.Time(6)
+  startAt      DateTime  @map("start_at") @db.Time(6)
+  endAt        DateTime  @map("end_at") @db.Time(6)
   placeHour    PlaceHour  @relation(fields: [placeHourIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_hour_tb_to_place_break_time_tb")
 
   @@map("place_break_time_tb")
