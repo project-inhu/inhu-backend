@@ -80,7 +80,7 @@ export class PlaceEntity {
   /**
    * 특정 장소 image path list
    *
-   * @example ['https://myapp-images.s3.amazonaws.com/uploads/profile123.jpg']
+   * @example ['place/f9c2e36f-8e99-4b18-b3e8-7cd327682f94_20240706_124512.jpg']
    */
   imagePathList: string[];
 
