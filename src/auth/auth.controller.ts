@@ -6,23 +6,24 @@ import {
   Req,
   Res,
   Headers,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './services/auth.service';
 import { AuthProvider } from './enums/auth-provider.enum';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { Provider } from './common/decorators/provider.decorator';
-import { ApiBearerAuth } from '@nestjs/swagger';
 import { Exception } from 'src/common/decorator/exception.decorator';
 import { ClientType } from 'src/common/decorator/client-type.decorator';
 import { Cookie } from 'src/common/decorator/cookie.decorator';
+import { LoginTokenService } from './services/login-token.service';
+import { devCookieOptions } from 'src/config/cookie-option';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
+    private readonly loginTokenService: LoginTokenService,
   ) {}
 
   /**
@@ -70,11 +71,7 @@ export class AuthController {
       code,
     );
 
-    res.cookie('refreshToken', `Bearer ${refreshToken}`, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-    });
+    res.cookie('refreshToken', `Bearer ${refreshToken}`, devCookieOptions);
 
     return {
       accessToken,
@@ -109,7 +106,7 @@ export class AuthController {
       (clientType === 'WEB' ? refreshToken : authorization) || '';
 
     const { newAccessToken } =
-      await this.authService.regenerateAccessTokenFromRefreshToken(
+      await this.loginTokenService.regenerateAccessTokenFromRefreshToken(
         tokenString.replace('Bearer ', ''),
       );
 
@@ -132,10 +129,6 @@ export class AuthController {
     })
     res: Response,
   ): Promise<void> {
-    res.clearCookie('refreshToken', {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-    });
+    res.clearCookie('refreshToken', devCookieOptions);
   }
 }
