@@ -17,16 +17,6 @@ CREATE TABLE keyword_tb
   PRIMARY KEY (idx)
 );
 
-CREATE TABLE place_hours_tb
-(
-  idx       int     NOT NULL GENERATED ALWAYS AS IDENTITY,
-  place_idx int     NOT NULL,
-  day       varchar NOT NULL,
-  start_at  time   ,
-  end_at    time   ,
-  PRIMARY KEY (idx)
-);
-
 CREATE TABLE place_image_tb
 (
   idx        int     NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -43,7 +33,7 @@ CREATE TABLE place_menu_tb
   content     varchar                 ,
   price       int                     ,
   image_path  varchar                 ,
-  is_flexible boolean                 ,
+  is_flexible boolean                  NOT NULL DEFAULT false,
   created_at  timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at  timestamp with time zone,
   PRIMARY KEY (idx)
@@ -51,16 +41,39 @@ CREATE TABLE place_menu_tb
 
 CREATE TABLE place_tb
 (
-  idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
-  name       varchar                  NOT NULL,
-  tel        varchar                  NOT NULL UNIQUE,
-  address    varchar                  NOT NULL,
-  address_x  numeric                  NOT NULL,
-  address_y  numeric                  NOT NULL,
-  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
-  deleted_at timestamp with time zone,
-  closed_at  timestamp with time zone,
-  review_count  int                   NOT NULL DEFAULT 0,
+  idx          int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  name         varchar                  NOT NULL,
+  tel          varchar                  UNIQUE,
+  address      varchar                  NOT NULL,
+  address_x    numeric                  NOT NULL,
+  address_y    numeric                  NOT NULL,
+  created_at   timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at   timestamp with time zone,
+  closed_at    timestamp with time zone,
+  review_count  int                    NOT NULL DEFAULT 0,
+  PRIMARY KEY (idx)
+);
+
+CREATE TABLE place_day_tb (
+  idx        int     NOT NULL GENERATED ALWAYS AS IDENTITY,
+  place_idx  int     NOT NULL,
+  day        varchar NOT NULL,
+  PRIMARY KEY (idx)
+);
+
+CREATE TABLE place_hour_tb (
+  idx            int      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  place_day_idx  int      NOT NULL,
+  start_at       time,
+  end_at         time,
+  PRIMARY KEY (idx)
+);
+
+CREATE TABLE place_break_time_tb (
+  idx             int      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  place_hour_idx  int      NOT NULL,
+  start_at        time,
+  end_at          time,
   PRIMARY KEY (idx)
 );
 
@@ -264,7 +277,17 @@ ALTER TABLE user_provider_tb
     FOREIGN KEY (idx)
     REFERENCES user_tb (idx);
 
-ALTER TABLE place_hours_tb
-  ADD CONSTRAINT FK_place_tb_TO_place_hours_tb
+ALTER TABLE place_day_tb
+  ADD CONSTRAINT FK_place_tb_TO_place_day_tb
     FOREIGN KEY (place_idx)
     REFERENCES place_tb (idx);
+
+ALTER TABLE place_hour_tb
+  ADD CONSTRAINT FK_place_day_tb_TO_place_hour_tb
+    FOREIGN KEY (place_day_idx)
+    REFERENCES place_day_tb (idx);
+
+ALTER TABLE place_break_time_tb
+  ADD CONSTRAINT FK_place_hour_tb_TO_place_break_time_tb
+    FOREIGN KEY (place_hour_idx)
+    REFERENCES place_hour_tb (idx);

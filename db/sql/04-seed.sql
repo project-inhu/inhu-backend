@@ -9,38 +9,62 @@ INSERT INTO place_tb (name, tel, address, address_x, address_y) VALUES
 INSERT INTO place_menu_tb (place_idx, name, price) VALUES 
 (1, '아메리카노', 4500), 
 (1, '카페라떼', 5000);
-INSERT INTO place_hours_tb (place_idx, day, start_at, end_at) VALUES 
-(1, 'mon', '08:00:00', '22:00:00'),
-(1, 'tue', '08:00:00', '22:00:00'),
-(1, 'wed', '08:00:00', '22:00:00'),
-(1, 'thu', '08:00:00', '22:00:00'),
-(1, 'fri', '08:00:00', '22:00:00'),
-(1, 'sat', '08:00:00', '22:00:00'),
-(1, 'sun', '08:00:00', '22:00:00');
+INSERT INTO place_day_tb (place_idx, day) VALUES
+(1, 'mon'),
+(1, 'tue'),
+(1, 'wed'),
+(1, 'thu'),
+(1, 'fri'),
+(1, 'sat'),
+(1, 'sun');
+INSERT INTO place_hour_tb (place_day_idx, start_at, end_at) VALUES
+(1, '08:00:00', '22:00:00'),
+(2, '08:00:00', '22:00:00'),
+(3, '08:00:00', '22:00:00'),
+(4, '08:00:00', '22:00:00'),
+(5, '08:00:00', '22:00:00'),
+(6, '08:00:00', '22:00:00'),
+(7, '08:00:00', '22:00:00');
 INSERT INTO place_image_tb (place_idx, image_path) VALUES
-(1, '/images/places/starbucks1.jpg');
+(1, 'https://inhu.s3.ap-northeast-2.amazonaws.com/place/1/20240705_93821_akd832.jpg');
 INSERT INTO place_type_mapping_tb (place_idx, place_type_idx) VALUES 
 (1, 1);
 
 INSERT INTO place_menu_tb (place_idx, name, price) VALUES 
 (2, '해물칼국수', 10000), 
 (2, '들깨칼국수', 9500);
-INSERT INTO place_hours_tb (place_idx, day, start_at, end_at) VALUES 
-(2, 'mon', '11:00:00', '15:30:00'),
-(2, 'mon', '16:30:00', '21:00:00'),
-(2, 'tue', '11:00:00', '15:30:00'),
-(2, 'tue', '16:30:00', '21:00:00'),
-(2, 'wed', NULL, NULL),
-(2, 'thu', '11:00:00', '15:30:00'),
-(2, 'thu', '16:30:00', '21:00:00'),
-(2, 'fri', '11:00:00', '15:30:00'),
-(2, 'fri', '16:30:00', '21:00:00'),
-(2, 'sat', '11:00:00', '15:30:00'),
-(2, 'sat', '16:30:00', '21:00:00'),
-(2, 'sun', '11:00:00', '15:30:00'),
-(2, 'sun', '16:30:00', '21:00:00');
+INSERT INTO place_day_tb (place_idx, day) VALUES
+(2, 'mon'),
+(2, 'tue'),
+(2, 'wed'),
+(2, 'thu'),
+(2, 'fri'),
+(2, 'sat'),
+(2, 'sun');
+
+INSERT INTO place_hour_tb (place_day_idx, start_at, end_at) VALUES
+(8, '08:00:00', '12:00:00'),
+(8, '14:00:00', '20:00:00'),
+(9, '08:00:00', '12:00:00'),
+(9, '14:00:00', '20:00:00'),
+(11, '08:00:00', '12:00:00'),
+(11, '14:00:00', '20:00:00'),
+(12, '08:00:00', '12:00:00'),
+(12, '14:00:00', '20:00:00'),
+(13, '08:00:00', '20:00:00'),
+(14, '08:00:00', '20:00:00');
+
+INSERT INTO place_break_time_tb (place_hour_idx, start_at, end_at) VALUES
+(8, '10:00:00', '10:30:00'),
+(8, '17:00:00', '17:30:00'),
+(9, '10:00:00', '10:30:00'), 
+(9, '17:00:00', '17:30:00'),
+(11, '10:00:00', '10:30:00'), 
+(11, '17:00:00', '17:30:00'),
+(12, '10:00:00', '10:30:00'), 
+(12, '17:00:00', '17:30:00');
 INSERT INTO place_image_tb (place_idx, image_path) VALUES 
-(2, '/images/places/inhakalnoodle1.jpg');
+(2, 'https://inhu.s3.ap-northeast-2.amazonaws.com/place/2/20240706_45321_d8w3js.jpg');
 INSERT INTO place_type_mapping_tb (place_idx, place_type_idx) VALUES 
 (2, 2);
 
@@ -50,9 +74,9 @@ INSERT INTO review_tb (user_idx, place_idx, content) VALUES
 (2, 1, '비싸지만 맛있어요');
 
 INSERT INTO review_image_tb (review_idx, image_path) VALUES
-(2, '/images/reviews/review2_image1.jpg'),
-(2, '/images/reviews/review2_image2.jpg'),
-(3, '/images/reviews/review3_image1.jpg');
+(2, 'https://inhu.s3.ap-northeast-2.amazonaws.com/review/2/20240704_03921_00d82.jpg'),
+(2, 'https://inhu.s3.ap-northeast-2.amazonaws.com/review/2/20240704_45321_d8w3js.jpg'),
+(3, 'https://inhu.s3.ap-northeast-2.amazonaws.com/review/3/20240705_45371_8djk3.jpg');
 
 INSERT INTO review_keyword_mapping_tb (review_idx, keyword_idx) VALUES
 (1, 1),
