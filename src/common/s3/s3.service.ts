@@ -31,7 +31,7 @@ export class S3Service {
   /**
    * S3에 파일 업로드
    *
-   * @example 'e6b97g54-12d3-a456-426614174000-profile.jpg'
+   * @example 'menu/41ee298f-7745-43cd-b81b-374a0e692fc9-candies.jpg'
    *
    * @author 조희주
    */
