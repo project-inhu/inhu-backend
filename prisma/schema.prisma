@@ -20,11 +20,11 @@ model Bookmark {
 }
 
 model Keyword {
-  idx                  Int                    @id @default(autoincrement())
-  content              String                 @unique @db.VarChar
-  createdAt            DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt            DateTime?              @map("deleted_at") @db.Timestamptz(6)
-  reviewKeywordMapping ReviewKeywordMapping[]
+  idx                      Int                    @id @default(autoincrement())
+  content                  String                 @unique @db.VarChar
+  createdAt                DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                DateTime?              @map("deleted_at") @db.Timestamptz(6)
+  reviewKeywordMappingList ReviewKeywordMapping[]
 
   @@map("keyword_tb")
 }
@@ -54,43 +54,43 @@ model PlaceMenu {
 }
 
 model Place {
-  idx              Int                @id @default(autoincrement())
-  name             String             @db.VarChar
-  tel              String?            @unique @db.VarChar
-  address          String             @db.VarChar
-  addressX         Decimal            @map("address_x") @db.Decimal
-  addressY         Decimal            @map("address_y") @db.Decimal
-  createdAt        DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt        DateTime?          @map("deleted_at") @db.Timestamptz(6)
-  closedAt         DateTime?          @map("closed_at") @db.Timestamptz(6)
-  reviewCount      Int                @default(0) @map("review_count")
-  bookmark         Bookmark[]
-  placeDay         PlaceDay[]
-  placeImage       PlaceImage[]
-  placeMenu        PlaceMenu[]
-  placeTypeMapping PlaceTypeMapping[]
-  review           Review[]
+  idx                  Int                @id @default(autoincrement())
+  name                 String             @db.VarChar
+  tel                  String?            @unique @db.VarChar
+  address              String             @db.VarChar
+  addressX             Decimal            @map("address_x") @db.Decimal
+  addressY             Decimal            @map("address_y") @db.Decimal
+  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt            DateTime?          @map("deleted_at") @db.Timestamptz(6)
+  closedAt             DateTime?          @map("closed_at") @db.Timestamptz(6)
+  reviewCount          Int                @default(0) @map("review_count")
+  bookmarkList         Bookmark[]
+  placeDayList         PlaceDay[]
+  placeImageList       PlaceImage[]
+  placeMenuList        PlaceMenu[]
+  placeTypeMappingList PlaceTypeMapping[]
+  reviewList           Review[]
 
   @@map("place_tb")
 }
 
 model PlaceDay {
-  idx         Int       @id @default(autoincrement())
-  placeIdx    Int       @map("place_idx")
-  day         String    @db.VarChar
-  placeHour   PlaceHour[]
-  place       Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_day_tb")
+  idx           Int       @id @default(autoincrement())
+  placeIdx      Int       @map("place_idx")
+  day           String    @db.VarChar
+  placeHourList PlaceHour[]
+  place         Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_day_tb")
 
   @@map("place_day_tb")
 }
 
 model PlaceHour {
-  idx             Int        @id @default(autoincrement())
-  placeDayIdx     Int        @map("place_day_idx")
-  startAt         DateTime  @map("start_at") @db.Time(6)
-  endAt           DateTime  @map("end_at") @db.Time(6)
-  placeBreakTime  PlaceBreakTime[] 
-  placeDay        PlaceDay   @relation(fields: [placeDayIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_day_tb_to_place_hour_tb")
+  idx                Int        @id @default(autoincrement())
+  placeDayIdx        Int        @map("place_day_idx")
+  startAt            DateTime  @map("start_at") @db.Time(6)
+  endAt              DateTime  @map("end_at") @db.Time(6)
+  placeBreakTimeList PlaceBreakTime[] 
+  placeDay           PlaceDay   @relation(fields: [placeDayIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_day_tb_to_place_hour_tb")
 
   @@map("place_hour_tb")
 }
@@ -116,11 +116,11 @@ model PlaceTypeMapping {
 }
 
 model PlaceType {
-  idx              Int                @id @default(autoincrement())
-  content          String             @unique @db.VarChar
-  createdAt        DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt        DateTime?          @map("deleted_at") @db.Timestamptz(6)
-  placeTypeMapping PlaceTypeMapping[]
+  idx                  Int                @id @default(autoincrement())
+  content              String             @unique @db.VarChar
+  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt            DateTime?          @map("deleted_at") @db.Timestamptz(6)
+  placeTypeMappingList PlaceTypeMapping[]
 
   @@map("place_type_tb")
 }
@@ -145,16 +145,16 @@ model ReviewKeywordMapping {
 }
 
 model Review {
-  idx                  Int                    @id @default(autoincrement())
-  userIdx              Int                    @map("user_idx")
-  placeIdx             Int                    @map("place_idx")
-  content              String                 @db.VarChar
-  createdAt            DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt            DateTime?              @map("deleted_at") @db.Timestamptz(6)
-  reviewImage          ReviewImage[]
-  reviewKeywordMapping ReviewKeywordMapping[]
-  place                Place                  @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_review_tb")
-  user                 User                   @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_review_tb")
+  idx                      Int                    @id @default(autoincrement())
+  userIdx                  Int                    @map("user_idx")
+  placeIdx                 Int                    @map("place_idx")
+  content                  String                 @db.VarChar
+  createdAt                DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                DateTime?              @map("deleted_at") @db.Timestamptz(6)
+  reviewImageList          ReviewImage[]
+  reviewKeywordMappingList ReviewKeywordMapping[]
+  place                    Place                  @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_review_tb")
+  user                     User                   @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_review_tb")
 
   @@map("review_tb")
 }
@@ -172,9 +172,9 @@ model Service1Result {
 }
 
 model Service1 {
-  idx            Int              @id @default(autoincrement())
-  content        String?          @db.VarChar
-  service1Result Service1Result[]
+  idx                Int              @id @default(autoincrement())
+  content            String?          @db.VarChar
+  service1ResultList Service1Result[]
 
   @@map("service1_tb")
 }
@@ -192,9 +192,9 @@ model Service2Result {
 }
 
 model Service2 {
-  idx            Int              @id @default(autoincrement())
-  content        String?          @db.VarChar
-  service2Result Service2Result[]
+  idx                Int              @id @default(autoincrement())
+  content            String?          @db.VarChar
+  service2ResultList Service2Result[]
 
   @@map("service2_tb")
 }
@@ -209,17 +209,17 @@ model UserProvider {
 }
 
 model User {
-  idx                   Int                      @id @default(autoincrement())
-  nickname              String                   @db.VarChar
-  profileImagePath      String?                  @map("profile_image_path") @db.VarChar
-  createdAt             DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt             DateTime?               @map("deleted_at") @db.Timestamptz(6)
-  bookmark              Bookmark[]
-  review                Review[]
-  service1Result        Service1Result[]
-  service2Result        Service2Result[]
-  userProvider          UserProvider?
-  withdrawServiceResult WithdrawServiceResult[]
+  idx                       Int                      @id @default(autoincrement())
+  nickname                  String                   @db.VarChar
+  profileImagePath          String?                  @map("profile_image_path") @db.VarChar
+  createdAt                 DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                 DateTime?               @map("deleted_at") @db.Timestamptz(6)
+  bookmarkList              Bookmark[]
+  reviewList                Review[]
+  service1ResultList        Service1Result[]
+  service2ResultList        Service2Result[]
+  userProvider              UserProvider?
+  withdrawServiceResultList WithdrawServiceResult[]
 
   @@map("user_tb")
 }
@@ -236,9 +236,9 @@ model WithdrawServiceResult {
 }
 
 model WithdrawService {
-  idx                   Int                     @id @default(autoincrement())
-  content               String?                 @db.VarChar
-  withdrawServiceResult WithdrawServiceResult[]
+  idx                       Int                     @id @default(autoincrement())
+  content                   String?                 @db.VarChar
+  withdrawServiceResultList WithdrawServiceResult[]
 
   @@map("withdraw_service_tb")
 }
