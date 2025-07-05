@@ -9,14 +9,22 @@ INSERT INTO place_tb (name, tel, address, address_x, address_y) VALUES
 INSERT INTO place_menu_tb (place_idx, name, price) VALUES 
 (1, '아메리카노', 4500), 
 (1, '카페라떼', 5000);
-INSERT INTO place_hours_tb (place_idx, day, is_closed, start_at, end_at, break_start_at, break_end_at) VALUES 
-(2, 'mon', false, '08:00:00', '22:00:00', '12:00:00', '13:00:00'),
-(2, 'tue', false, '08:00:00', '22:00:00', '12:00:00', '13:00:00'),
-(2, 'wed', true, NULL, NULL, NULL, NULL),
-(2, 'thu', false, '08:00:00', '22:00:00', '12:00:00', '13:00:00'),
-(2, 'fri', false, '08:00:00', '22:00:00', '12:00:00', '13:00:00'),
-(2, 'sat', false, '09:00:00', '21:00:00', NULL, NULL),
-(2, 'sun', false, '09:00:00', '21:00:00', NULL, NULL);
+INSERT INTO place_day_tb (place_idx, day) VALUES
+(1, 'mon'),
+(1, 'tue'),
+(1, 'wed'),
+(1, 'thu'),
+(1, 'fri'),
+(1, 'sat'),
+(1, 'sun');
+INSERT INTO place_hour_tb (place_day_idx, start_at, end_at) VALUES
+(1, '08:00:00', '22:00:00'),
+(2, '08:00:00', '22:00:00'),
+(3, '08:00:00', '22:00:00'),
+(4, '08:00:00', '22:00:00'),
+(5, '08:00:00', '22:00:00'),
+(6, '08:00:00', '22:00:00'),
+(7, '08:00:00', '22:00:00');
 INSERT INTO place_image_tb (place_idx, image_path) VALUES
 (1, 'https://inhu.s3.ap-northeast-2.amazonaws.com/place/1/20240705_93821_akd832.jpg');
 INSERT INTO place_type_mapping_tb (place_idx, place_type_idx) VALUES 
@@ -25,14 +33,36 @@ INSERT INTO place_type_mapping_tb (place_idx, place_type_idx) VALUES
 INSERT INTO place_menu_tb (place_idx, name, price) VALUES 
 (2, '해물칼국수', 10000), 
 (2, '들깨칼국수', 9500);
-INSERT INTO place_hours_tb (place_idx, day, is_closed, start_at, end_at, break_start_at, break_end_at) VALUES 
-(2, 'mon', false, '08:00:00', '22:00:00', '12:00:00', '13:00:00'),
-(2, 'tue', false, '08:00:00', '22:00:00', '12:00:00', '13:00:00'),
-(2, 'wed', true, NULL, NULL, NULL, NULL),
-(2, 'thu', false, '08:00:00', '22:00:00', '12:00:00', '13:00:00'),
-(2, 'fri', false, '08:00:00', '22:00:00', '12:00:00', '13:00:00'),
-(2, 'sat', false, '09:00:00', '21:00:00', NULL, NULL),
-(2, 'sun', false, '09:00:00', '21:00:00', NULL, NULL);
+INSERT INTO place_day_tb (place_idx, day) VALUES
+(2, 'mon'),
+(2, 'tue'),
+(2, 'wed'),
+(2, 'thu'),
+(2, 'fri'),
+(2, 'sat'),
+(2, 'sun');
+
+INSERT INTO place_hour_tb (place_day_idx, start_at, end_at) VALUES
+(8, '08:00:00', '12:00:00'),
+(8, '14:00:00', '20:00:00'),
+(9, '08:00:00', '12:00:00'),
+(9, '14:00:00', '20:00:00'),
+(11, '08:00:00', '12:00:00'),
+(11, '14:00:00', '20:00:00'),
+(12, '08:00:00', '12:00:00'),
+(12, '14:00:00', '20:00:00'),
+(13, '08:00:00', '20:00:00'),
+(14, '08:00:00', '20:00:00');
+
+INSERT INTO place_break_time_tb (place_hour_idx, start_at, end_at) VALUES
+(8, '10:00:00', '10:30:00'),
+(8, '17:00:00', '17:30:00'),
+(9, '10:00:00', '10:30:00'), 
+(9, '17:00:00', '17:30:00'),
+(11, '10:00:00', '10:30:00'), 
+(11, '17:00:00', '17:30:00'),
+(12, '10:00:00', '10:30:00'), 
+(12, '17:00:00', '17:30:00');
 INSERT INTO place_image_tb (place_idx, image_path) VALUES 
 (2, 'https://inhu.s3.ap-northeast-2.amazonaws.com/place/2/20240706_45321_d8w3js.jpg');
 INSERT INTO place_type_mapping_tb (place_idx, place_type_idx) VALUES 
