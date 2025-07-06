@@ -6,10 +6,10 @@ INSERT INTO place_tb (name, tel, address, address_x, address_y) VALUES
 ('스타벅스 인하대점', '1522-3232', '인천 미추홀구 인하로59', 126.650892, 37.452601),
 ('인하칼국수 인하대후문점', '032-874-4067', '인천 미추홀구 경인남길30번길 35-1 1층', 126.654536, 37.460835);
 
-INSERT INTO place_menu_tb (place_idx, name, price) VALUES 
+INSERT INTO menu_tb (place_idx, name, price) VALUES 
 (1, '아메리카노', 4500), 
 (1, '카페라떼', 5000);
-INSERT INTO place_day_tb (place_idx, day) VALUES
+INSERT INTO operating_day_tb (place_idx, day) VALUES
 (1, 'mon'),
 (1, 'tue'),
 (1, 'wed'),
@@ -17,7 +17,7 @@ INSERT INTO place_day_tb (place_idx, day) VALUES
 (1, 'fri'),
 (1, 'sat'),
 (1, 'sun');
-INSERT INTO place_hour_tb (place_day_idx, start_at, end_at) VALUES
+INSERT INTO operating_hour_tb (operating_day_idx, start_at, end_at) VALUES
 (1, '08:00:00', '22:00:00'),
 (2, '08:00:00', '22:00:00'),
 (3, '08:00:00', '22:00:00'),
@@ -30,10 +30,10 @@ INSERT INTO place_image_tb (place_idx, image_path) VALUES
 INSERT INTO place_type_mapping_tb (place_idx, place_type_idx) VALUES 
 (1, 1);
 
-INSERT INTO place_menu_tb (place_idx, name, price) VALUES 
+INSERT INTO menu_tb (place_idx, name, price) VALUES 
 (2, '해물칼국수', 10000), 
 (2, '들깨칼국수', 9500);
-INSERT INTO place_day_tb (place_idx, day) VALUES
+INSERT INTO operating_day_tb (place_idx, day) VALUES
 (2, 'mon'),
 (2, 'wed'),
 (2, 'thu'),
@@ -41,7 +41,7 @@ INSERT INTO place_day_tb (place_idx, day) VALUES
 (2, 'sat'),
 (2, 'sun');
 
-INSERT INTO place_hour_tb (place_day_idx, start_at, end_at) VALUES
+INSERT INTO operating_hour_tb (operating_day_idx, start_at, end_at) VALUES
 (8, '08:00:00', '12:00:00'),
 (8, '14:00:00', '20:00:00'),
 (10, '08:00:00', '12:00:00'),
@@ -51,7 +51,7 @@ INSERT INTO place_hour_tb (place_day_idx, start_at, end_at) VALUES
 (12, '08:00:00', '20:00:00'),
 (13, '08:00:00', '20:00:00');
 
-INSERT INTO place_break_time_tb (place_hour_idx, start_at, end_at) VALUES
+INSERT INTO break_time_tb (operating_hour_idx, start_at, end_at) VALUES
 (8, '10:00:00', '10:30:00'),
 (9, '17:00:00', '17:30:00'),
 (10, '10:00:00', '10:30:00'), 
