@@ -17,14 +17,14 @@ const PLACE_SELECT_FIELD = Prisma.validator<Prisma.PlaceDefaultArgs>()({
     addressY: true,
     createdAt: true,
     reviewCount: true,
-    placeDayList: {
+    operatingDayList: {
       select: {
         day: true,
-        placeHourList: {
+        operatingHourList: {
           select: {
             startAt: true,
             endAt: true,
-            placeBreakTimeList: {
+            BreakTimeList: {
               select: {
                 startAt: true,
                 endAt: true,

@@ -1,12 +1,11 @@
 import { IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 
 /**
  * 단일 브레이크타임 구간 정보
  *
  * @author 강정연
  */
-export class PlaceBreakTimeInfo {
+export class BreakTimeInfo {
   /**
    * 브레이크타임 시작 시간
    *
