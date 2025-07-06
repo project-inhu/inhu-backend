@@ -19,6 +19,7 @@ export class PlaceController {
     @Query() getAllPlaceOverviewDto: GetAllPlaceOverviewDto,
     @User('idx') userIdx?: number,
   ): Promise<PlaceOverviewEntity[]> {
+    console.log('[DEBUG] getAllPlaceOverviewDto:', getAllPlaceOverviewDto);
     return await this.placeService.getAllPlaceOverview(
       getAllPlaceOverviewDto.page,
       getAllPlaceOverviewDto.orderBy,
