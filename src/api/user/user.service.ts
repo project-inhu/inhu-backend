@@ -8,9 +8,10 @@ import { UserRepository } from './user.repository';
 import { UserInfoEntity } from './entity/user-info.entity';
 import { CreateUserEntity } from './entity/create-user.entity';
 import { CreateUserInput } from './input/create-user.input';
-import { UpdateUserInput } from './input/update-user.input';
 import { S3Service } from 'src/common/s3/s3.service';
 import { S3Folder } from 'src/common/s3/enums/s3-folder.enum';
+import { UpdateUserInput } from './input/update-user.input';
+import { UpdateProfileImageInput } from './input/update-profile-image.input';
 
 @Injectable()
 export class UserService {
@@ -77,9 +78,10 @@ export class UserService {
    * @author 조희주
    */
   async updateNicknameByUserIdx(
-    userIdx: number,
-    nickname: string,
+    updateNicknameInput: UpdateUserInput,
   ): Promise<UserInfoEntity> {
+    const { userIdx, nickname } = updateNicknameInput;
+
     if (!nickname) {
       throw new BadRequestException('You need nickname.');
     }
@@ -107,9 +109,10 @@ export class UserService {
    * @author 조희주
    */
   async updateProfileImageByUserIdx(
-    userIdx: number,
-    file: Express.Multer.File,
+    updateProfileImageInput: UpdateProfileImageInput,
   ): Promise<UserInfoEntity> {
+    const { userIdx, file } = updateProfileImageInput;
+
     const user = await this.userRepository.selectUserByUserIdx(userIdx);
     if (!user) {
       throw new NotFoundException('User not found');

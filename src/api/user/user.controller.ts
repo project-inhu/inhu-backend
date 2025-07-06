@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from 'src/auth/common/guards/auth.guard';
-import { MyInfoDto } from './dto/my-info.dto';
 import { User } from 'src/common/decorator/user.decorator';
 import { UserInfoEntity } from './entity/user-info.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -43,7 +42,7 @@ export class UserController {
     @User('idx') userIdx: number,
     @Body('nickname') nickname: string,
   ): Promise<UserInfoEntity> {
-    return this.userService.updateNicknameByUserIdx(userIdx, nickname);
+    return this.userService.updateNicknameByUserIdx({ userIdx, nickname });
   }
 
   /**
@@ -58,7 +57,7 @@ export class UserController {
     @User('idx') userIdx: number,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<UserInfoEntity> {
-    return this.userService.updateProfileImageByUserIdx(userIdx, file);
+    return this.userService.updateProfileImageByUserIdx({ userIdx, file });
   }
 
   /**
