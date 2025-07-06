@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsInt, IsNotEmpty, Min } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsOptional, Min } from 'class-validator';
 import { PlaceOverviewOrderBy } from '../common/constants/enums/place-overview-order-by.enum';
 
 export class GetAllPlaceOverviewDto {
@@ -19,6 +19,7 @@ export class GetAllPlaceOverviewDto {
    *
    * @example createdAtDesc
    */
+  @IsOptional()
   @IsEnum(PlaceOverviewOrderBy)
   orderBy?: PlaceOverviewOrderBy;
 }
