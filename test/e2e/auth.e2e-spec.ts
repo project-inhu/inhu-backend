@@ -99,7 +99,7 @@ describe('AuthController (e2e)', () => {
       const res = await request(app.getHttpServer())
         .get('/auth/kakao/callback')
         .query({ code: 'mockingCode' })
-        .expect(200);
+        .expect(201);
 
       // 최초 로그인 사용자 정보 정상 등록 확인
       user = await prisma.user.findFirstOrThrow({
