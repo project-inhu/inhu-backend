@@ -10,6 +10,9 @@ export class PlaceRepository {
 
   async selectAllPlaceOverview(
     page: number,
+    orderByOption?:
+      | Prisma.PlaceOrderByWithRelationInput
+      | Prisma.PlaceOrderByWithRelationInput[],
     userIdx?: number,
   ): Promise<PlaceOverviewSelectField[]> {
     return await this.prisma.place.findMany({
@@ -18,6 +21,7 @@ export class PlaceRepository {
       where: {
         deletedAt: null,
       },
+      orderBy: orderByOption,
       select: {
         idx: true,
         name: true,

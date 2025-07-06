@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsNotEmpty, Min } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, Min } from 'class-validator';
+import { PlaceOverviewOrderBy } from '../common/constants/enums/place-overview-order-by.enum';
 
 export class GetAllPlaceOverviewDto {
   /**
@@ -12,4 +13,12 @@ export class GetAllPlaceOverviewDto {
   @IsInt()
   @Min(1)
   page: number;
+
+  /**
+   * 정렬 옵션
+   *
+   * @example createdAtDesc
+   */
+  @IsEnum(PlaceOverviewOrderBy)
+  orderBy?: PlaceOverviewOrderBy;
 }

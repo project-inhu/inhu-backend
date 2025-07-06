@@ -5,6 +5,7 @@ import { PlaceOverviewEntity } from './entity/place-overview.entity';
 import { PlaceEntity } from './entity/place.entity';
 import { ReviewCountUpdateType } from './common/constants/review-count-update-type.enum';
 import { Prisma } from '@prisma/client';
+import { PlaceOverviewOrderBy } from './common/constants/enums/place-overview-order-by.enum';
 
 @Injectable()
 export class PlaceService {
@@ -13,12 +14,34 @@ export class PlaceService {
     private keywordRepository: KeywordRepository,
   ) {}
 
+  // 클라이언트의 정렬 기준을 Prisma 쿼리 옵션(orderby)으로 매핑
+  private readonly orderByMap: Record<
+    PlaceOverviewOrderBy,
+    | Prisma.PlaceOrderByWithRelationInput
+    | Prisma.PlaceOrderByWithRelationInput[]
+  > = {
+    [PlaceOverviewOrderBy.CREATED_AT_DESC]: { createdAt: 'desc' },
+    [PlaceOverviewOrderBy.REVIEW_COUNT_DESC]: [
+      { reviewCount: 'desc' },
+      { createdAt: 'desc' },
+    ],
+  };
+
   async getAllPlaceOverview(
     page: number,
+    orderBy?: PlaceOverviewOrderBy,
     userIdx?: number,
   ): Promise<PlaceOverviewEntity[]> {
+    let orderByOption;
+    if (orderBy && this.orderByMap[orderBy]) {
+      orderByOption = this.orderByMap[orderBy];
+    }
     return (
-      await this.placeRepository.selectAllPlaceOverview(page, userIdx)
+      await this.placeRepository.selectAllPlaceOverview(
+        page,
+        orderByOption,
+        userIdx,
+      )
     ).map(PlaceOverviewEntity.createEntityFromPrisma);
   }
 
