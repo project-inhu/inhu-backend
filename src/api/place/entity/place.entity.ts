@@ -1,9 +1,10 @@
-import { PlaceWeekDay } from '../type/place-week-day.type';
+import { OperatingWeekDay } from '../type/operating-week-day.type';
 import { Decimal } from '@prisma/client/runtime/library';
 import { WEEKS } from '../common/constants/weeks.constant';
 import { PlaceSelectField } from '../type/place-select-field.type';
-import { PlaceWeekSchedule } from '../type/place-week-schedule.type';
-import { PlaceWeekInfo } from '../type/place-week-info.type';
+import { OperatingWeekSchedule } from '../type/operating-week-schedule.type';
+import { OperatingTimeInfo } from '../type/operating-time-info.type';
+import { formatTimeFromDate } from 'src/common/utils/date.util';
 
 export class PlaceEntity {
   /**
@@ -56,7 +57,7 @@ export class PlaceEntity {
   /**
    * 요일별 운영 시간 및 브레이크타임 정보
    */
-  week: PlaceWeekSchedule;
+  week: OperatingWeekSchedule;
 
   /**
    * review count
@@ -97,17 +98,19 @@ export class PlaceEntity {
       addressX: place.addressX,
       addressY: place.addressY,
       createdAt: place.createdAt,
-      week: place.placeDayList.reduce<PlaceWeekSchedule>(
+      week: place.operatingDayList.reduce<OperatingWeekSchedule>(
         (acc, item) => {
-          const key = item.day as PlaceWeekDay;
-          const timeList: PlaceWeekInfo[] = item.placeHourList.map((hour) => ({
-            startAt: hour.startAt,
-            endAt: hour.endAt,
-            breakTimeList: hour.placeBreakTimeList.map((bt) => ({
-              startAt: bt.startAt,
-              endAt: bt.endAt,
-            })),
-          }));
+          const key = item.day as OperatingWeekDay;
+          const timeList: OperatingTimeInfo[] = item.operatingHourList.map(
+            (hour) => ({
+              startAt: formatTimeFromDate(hour.startAt),
+              endAt: formatTimeFromDate(hour.endAt),
+              breakTimeList: hour.BreakTimeList.map((bt) => ({
+                startAt: formatTimeFromDate(bt.startAt),
+                endAt: formatTimeFromDate(bt.startAt),
+              })),
+            }),
+          );
           acc[key] = timeList.length > 0 ? timeList : [];
           return acc;
         },
