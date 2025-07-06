@@ -6,9 +6,9 @@ INSERT INTO place_tb (name, tel, address, address_x, address_y) VALUES
 ('스타벅스 인하대점', '1522-3232', '인천 미추홀구 인하로59', 126.650892, 37.452601),
 ('인하칼국수 인하대후문점', '032-874-4067', '인천 미추홀구 경인남길30번길 35-1 1층', 126.654536, 37.460835);
 
-INSERT INTO menu_tb (place_idx, name, price) VALUES 
-(1, '아메리카노', 4500), 
-(1, '카페라떼', 5000);
+INSERT INTO menu_tb (place_idx, name, content, price, image_path) VALUES 
+(1, '아메리카노', '깊고 진한 에스프레소의 깔끔한 맛', 4500, '/menu/c3b2d1a0-e9f8-7654-3210-fedcba987654-202507062_11400.jpg'), 
+(1, '카페라떼', '부드러운 우유와 에스프레소의 고소한 조화', 5000, '/menu/c3b2d1a0-e9f8-7654-3210-fedcba987655-20250706_211401.jpg');
 INSERT INTO operating_day_tb (place_idx, day) VALUES
 (1, 'mon'),
 (1, 'tue'),
@@ -30,8 +30,9 @@ INSERT INTO place_image_tb (place_idx, image_path) VALUES
 INSERT INTO place_type_mapping_tb (place_idx, place_type_idx) VALUES 
 (1, 1);
 
+INSERT INTO menu_tb (place_idx, name, content, price, is_flexible) VALUES 
+(2, '해물칼국수', '계절에 따라 달라요', 10000, true);
 INSERT INTO menu_tb (place_idx, name, price) VALUES 
-(2, '해물칼국수', 10000), 
 (2, '들깨칼국수', 9500);
 INSERT INTO operating_day_tb (place_idx, day) VALUES
 (2, 'mon'),
