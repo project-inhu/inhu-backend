@@ -8,6 +8,7 @@ import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import * as request from 'supertest';
 import { extractCookieValue } from 'test/common/utils/extract-cookie-value.util';
 import { TestManager } from 'test/common/helpers/test-manager';
+import { TokenStorageStrategy } from 'src/auth/strategies/base/token-storage.strategy';
 
 /**
  * authController e2e test
@@ -98,7 +99,7 @@ describe('AuthController (e2e)', () => {
       const res = await request(app.getHttpServer())
         .get('/auth/kakao/callback')
         .query({ code: 'mockingCode' })
-        .expect(302);
+        .expect(200);
 
       // 최초 로그인 사용자 정보 정상 등록 확인
       user = await prisma.user.findFirstOrThrow({
@@ -111,22 +112,21 @@ describe('AuthController (e2e)', () => {
       expect(user).not.toBeNull();
 
       // memory에 refresh 정상 등록 확인
-      expect(app.get(AuthService).getRefreshToken(user?.idx)).not.toBeNull();
+      expect(
+        app.get(TokenStorageStrategy).getRefreshToken(user?.idx),
+      ).not.toBeNull();
 
-      // access-token, refresh-token 쿠키에 정상 등록 확인
+      // refresh-token 쿠키에 정상 등록 확인
       const cookies = res.headers['set-cookie'];
-      const accessToken = extractCookieValue(cookies, 'accessToken');
       const refreshToken = extractCookieValue(cookies, 'refreshToken');
-      expect(accessToken).toBeTruthy();
       expect(refreshToken).toBeTruthy();
 
-      // access-token, refresh-token 이 의도한 값인지 확인
+      // refresh-token 이 의도한 값인지 확인
       const loginTokenService = app.get(LoginTokenService);
       await expect(
-        loginTokenService.verifyAccessToken(accessToken),
-      ).resolves.toMatchObject({ idx: user.idx });
-      await expect(
-        loginTokenService.verifyAccessToken(refreshToken),
+        loginTokenService.verifyRefreshToken(
+          refreshToken.replace('Bearer%20', ''),
+        ),
       ).resolves.toMatchObject({ idx: user.idx });
     });
 
@@ -179,7 +179,7 @@ describe('AuthController (e2e)', () => {
       const res = await request(app.getHttpServer())
         .get('/auth/kakao/callback')
         .query({ code: 'mockingCode' })
-        .expect(302);
+        .expect(200);
 
       // 기존 사용자 정보 정상 select 확인
       user = await prisma.user.findFirstOrThrow({
@@ -192,22 +192,21 @@ describe('AuthController (e2e)', () => {
       expect(user).not.toBeNull();
 
       // memory에 refresh 정상 등록 확인
-      expect(app.get(AuthService).getRefreshToken(user?.idx)).not.toBeNull();
+      expect(
+        app.get(TokenStorageStrategy).getRefreshToken(user?.idx),
+      ).not.toBeNull();
 
-      // access-token, refresh-token 쿠키에 정상 등록 확인
+      // refresh-token 쿠키에 정상 등록 확인
       const cookies = res.headers['set-cookie'];
-      const accessToken = extractCookieValue(cookies, 'accessToken');
       const refreshToken = extractCookieValue(cookies, 'refreshToken');
-      expect(accessToken).toBeTruthy();
       expect(refreshToken).toBeTruthy();
 
-      // access-token, refresh-token 이 의도한 값인지 확인
+      // refresh-token 이 의도한 값인지 확인
       const loginTokenService = app.get(LoginTokenService);
       await expect(
-        loginTokenService.verifyAccessToken(accessToken),
-      ).resolves.toMatchObject({ idx: user.idx });
-      await expect(
-        loginTokenService.verifyAccessToken(refreshToken),
+        loginTokenService.verifyRefreshToken(
+          refreshToken.replace('Bearer%20', ''),
+        ),
       ).resolves.toMatchObject({ idx: user.idx });
     });
 
