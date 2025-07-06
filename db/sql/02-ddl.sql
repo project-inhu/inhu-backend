@@ -87,7 +87,7 @@ CREATE TABLE menu_tb
   content     varchar                 ,
   price       int                     ,
   image_path  varchar                 ,
-  is_flexible boolean                  NOT NULL DEFAULT false,
+  is_flexible boolean                 DEFAULT false,
   created_at  timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at  timestamp with time zone,
   PRIMARY KEY (idx)
