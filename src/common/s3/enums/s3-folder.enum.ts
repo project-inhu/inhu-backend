@@ -8,4 +8,5 @@ export enum S3Folder {
   PLACE = 'place',
   PROFILE = 'profile',
   BANNER = 'banner',
+  REVIEW = 'review',
 }
