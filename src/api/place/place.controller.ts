@@ -21,6 +21,7 @@ export class PlaceController {
   ): Promise<PlaceOverviewEntity[]> {
     return await this.placeService.getAllPlaceOverview(
       getAllPlaceOverviewDto.page,
+      getAllPlaceOverviewDto.orderBy,
       userIdx,
     );
   }
