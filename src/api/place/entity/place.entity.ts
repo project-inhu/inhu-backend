@@ -4,6 +4,7 @@ import { WEEKS } from '../common/constants/weeks.constant';
 import { PlaceSelectField } from '../type/place-select-field.type';
 import { PlaceWeekSchedule } from '../type/place-week-schedule.type';
 import { PlaceWeekInfo } from '../type/place-week-info.type';
+import { formatTimeFromDate } from 'src/common/utils/date.util';
 
 export class PlaceEntity {
   /**
@@ -101,11 +102,11 @@ export class PlaceEntity {
         (acc, item) => {
           const key = item.day as PlaceWeekDay;
           const timeList: PlaceWeekInfo[] = item.placeHourList.map((hour) => ({
-            startAt: hour.startAt,
-            endAt: hour.endAt,
+            startAt: formatTimeFromDate(hour.startAt),
+            endAt: formatTimeFromDate(hour.endAt),
             breakTimeList: hour.placeBreakTimeList.map((bt) => ({
-              startAt: bt.startAt,
-              endAt: bt.endAt,
+              startAt: formatTimeFromDate(bt.startAt),
+              endAt: formatTimeFromDate(bt.startAt),
             })),
           }));
           acc[key] = timeList.length > 0 ? timeList : [];
