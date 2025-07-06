@@ -1,9 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { AuthProvider } from '../enums/auth-provider.enum';
 import { LoginTokenService } from '../services/login-token.service';
 import { SocialAuthBaseStrategy } from '../strategies/base/social-auth-base.strategy';
 import { KakaoStrategy } from '../strategies/kakao/kakao.strategy';
 import { UserService } from 'src/api/user/user.service';
+import { TokenStorageStrategy } from '../strategies/base/token-storage.strategy';
 
 @Injectable()
 export class AuthService {
@@ -12,17 +13,11 @@ export class AuthService {
     SocialAuthBaseStrategy
   >;
 
-  /**
-   * Refresh Token을 서버 메모리에서 관리 (DB 저장 X)
-   * - key: userIdx
-   * - value: refreshToken (string)
-   */
-  private readonly REFRESH_TOKEN_STORE: Record<number, string> = {};
-
   constructor(
     private readonly kakaoAuthService: KakaoStrategy,
     private readonly loginTokenService: LoginTokenService,
     private readonly userService: UserService,
+    private readonly tokenStorage: TokenStorageStrategy,
   ) {
     this.SOCIAL_LOGIN_MAP = {
       [AuthProvider.KAKAO]: this.kakaoAuthService,
@@ -36,24 +31,6 @@ export class AuthService {
    */
   public getSocialAuthStrategy(provider: AuthProvider): SocialAuthBaseStrategy {
     return this.SOCIAL_LOGIN_MAP[provider];
-  }
-
-  /**
-   * Refresh Token 메모리에 저장
-   *
-   * @author 조희주
-   */
-  public saveRefreshToken(userIdx: number, refreshToken: string): void {
-    this.REFRESH_TOKEN_STORE[userIdx] = refreshToken;
-  }
-
-  /**
-   * Refresh Token 조회
-   *
-   * @author 조희주
-   */
-  public getRefreshToken(userIdx: number): string | null {
-    return this.REFRESH_TOKEN_STORE[userIdx] || null;
   }
 
   public async generateTokenPairWithSocialAuth(
@@ -71,7 +48,7 @@ export class AuthService {
     const jwtRefreshToken =
       await this.loginTokenService.signRefreshToken(payload);
 
-    this.saveRefreshToken(user.idx, jwtRefreshToken);
+    this.tokenStorage.saveRefreshToken(user.idx, jwtRefreshToken);
 
     return { accessToken: jwtAccessToken, refreshToken: jwtRefreshToken };
   }
@@ -98,20 +75,11 @@ export class AuthService {
     return this.generateTokenPairWithSocialAuth(socialAuthService, accessToken);
   }
 
-  /**
-   * Refresh Token 검증 후 새로운 Access Token 발급
-   *
-   * @author 조희주
-   */
   public async regenerateAccessTokenFromRefreshToken(
     refreshToken: string,
-  ): Promise<{ newAccessToken: string; payload: RefreshTokenPayload }> {
-    const payload =
-      await this.loginTokenService.verifyRefreshToken(refreshToken);
-
-    return {
-      newAccessToken: await this.loginTokenService.signAccessToken(payload),
-      payload,
-    };
+  ): Promise<string> {
+    return this.tokenStorage.regenerateAccessTokenFromRefreshToken(
+      refreshToken,
+    );
   }
 }

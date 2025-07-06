@@ -8,7 +8,6 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 export const Cookie = createParamDecorator(
   (data: keyof CookieData, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    console.log('in cookie decorater request.cookies:', request.cookies);
     return request.cookies?.[data] ?? null;
   },
 );
