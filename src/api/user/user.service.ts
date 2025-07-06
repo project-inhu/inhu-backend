@@ -9,10 +9,15 @@ import { UserInfoEntity } from './entity/user-info.entity';
 import { CreateUserEntity } from './entity/create-user.entity';
 import { CreateUserInput } from './input/create-user.input';
 import { UpdateUserInput } from './input/update-user.input';
+import { S3Service } from 'src/common/s3/s3.service';
+import { S3Folder } from 'src/common/s3/enums/s3-folder.enum';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly s3Service: S3Service,
+  ) {}
 
   /**
    * 새로운 사용자를 위한 임시 닉네임 생성
@@ -67,39 +72,54 @@ export class UserService {
   }
 
   /**
-   * 내 정보 수정
+   * 닉네임 수정
    *
    * @author 조희주
    */
-  async updateUserByUserIdx(
-    updateUserInput: UpdateUserInput,
+  async updateNicknameByUserIdx(
+    userIdx: number,
+    nickname: string,
   ): Promise<UserInfoEntity> {
-    const { userIdx, nickname, profileImagePath } = updateUserInput;
+    if (!nickname) {
+      throw new BadRequestException('You need nickname.');
+    }
 
     const user = await this.userRepository.selectUserByUserIdx(userIdx);
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    if (nickname && profileImagePath) {
-      throw new BadRequestException('Only one field can be updated at a time.');
-    }
-
-    if (!nickname && !profileImagePath) {
-      throw new BadRequestException('One field must be provided.');
-    }
-
-    if (
-      nickname &&
-      (await this.userRepository.selectUserByNickname(nickname))
-    ) {
+    if (await this.userRepository.selectUserByNickname(nickname)) {
       throw new ConflictException('This nickname is already in use.');
     }
 
     const updatedUser = await this.userRepository.updateUserByUserIdx({
       userIdx,
-      nickname: nickname ?? user.nickname,
-      profileImagePath: profileImagePath ?? user.profileImagePath,
+      nickname,
+    });
+
+    return UserInfoEntity.createEntityFromPrisma(updatedUser);
+  }
+
+  /**
+   * 프로필 이미지 수정 (S3 업로드 & DB 업데이트)
+   *
+   * @author 조희주
+   */
+  async updateProfileImageByUserIdx(
+    userIdx: number,
+    file: Express.Multer.File,
+  ): Promise<UserInfoEntity> {
+    const user = await this.userRepository.selectUserByUserIdx(userIdx);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const imageKey = await this.s3Service.uploadFile(file, S3Folder.PROFILE);
+
+    const updatedUser = await this.userRepository.updateUserByUserIdx({
+      userIdx,
+      profileImagePath: imageKey,
     });
 
     return UserInfoEntity.createEntityFromPrisma(updatedUser);
