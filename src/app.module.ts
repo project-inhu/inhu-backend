@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { KeywordModule } from './api/keyword/keyword.module';
 import { ReviewModule } from './api/review/review.module';
+import { S3Module } from './common/s3/s3.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ReviewModule } from './api/review/review.module';
       isGlobal: true,
     }),
     ReviewModule,
+    S3Module,
   ],
   controllers: [AppController],
   providers: [AppService],
