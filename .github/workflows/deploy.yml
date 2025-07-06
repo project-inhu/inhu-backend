@@ -5,10 +5,41 @@ on:
     branches:
       - master
       - develop
+  pull_request:
+    branches:
+      - master
+      - develop
 
 jobs:
+  test_pr:
+    name: Run Tests on PR
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      ENV_TEST_FILE: ${{ secrets.ENV_TEST_FILE }}
+    steps:
+      - name: Decode and create .env.test file
+        run: echo "$ENV_TEST_FILE" | base64 --decode > .env.test
+
+      - name: Load environment variables
+        run: cat .env.test >> $GITHUB_ENV
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22.13.0
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Test e2e
+        run: npm run test:e2e
   deploy:
     name: Deploy to EC2
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
