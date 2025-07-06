@@ -38,21 +38,6 @@ model PlaceImage {
   @@map("place_image_tb")
 }
 
-model PlaceMenu {
-  idx        Int       @id @default(autoincrement())
-  placeIdx   Int       @map("place_idx")
-  name       String    @db.VarChar
-  content    String?   @db.VarChar
-  price      Int?
-  imagePath  String?   @map("image_path") @db.VarChar
-  isFlexible Boolean   @map("is_flexible") @default(false)
-  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt  DateTime? @map("deleted_at") @db.Timestamptz(6)
-  place      Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_menu_tb")
-
-  @@map("place_menu_tb")
-}
-
 model Place {
   idx                  Int                @id @default(autoincrement())
   name                 String             @db.VarChar
@@ -65,44 +50,44 @@ model Place {
   closedAt             DateTime?          @map("closed_at") @db.Timestamptz(6)
   reviewCount          Int                @default(0) @map("review_count")
   bookmarkList         Bookmark[]
-  placeDayList         PlaceDay[]
+  operatingDayList     OperatingDay[]
   placeImageList       PlaceImage[]
-  placeMenuList        PlaceMenu[]
+  menuList             Menu[]
   placeTypeMappingList PlaceTypeMapping[]
   reviewList           Review[]
 
   @@map("place_tb")
 }
 
-model PlaceDay {
-  idx           Int       @id @default(autoincrement())
-  placeIdx      Int       @map("place_idx")
-  day           String    @db.VarChar
-  placeHourList PlaceHour[]
-  place         Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_day_tb")
+model OperatingDay {
+  idx               Int       @id @default(autoincrement())
+  placeIdx          Int       @map("place_idx")
+  day               String    @db.VarChar
+  operatingHourList OperatingHour[]
+  place             Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_operating_day_tb")
 
-  @@map("place_day_tb")
+  @@map("operating_day_tb")
 }
 
-model PlaceHour {
-  idx                Int        @id @default(autoincrement())
-  placeDayIdx        Int        @map("place_day_idx")
-  startAt            DateTime  @map("start_at") @db.Time(6)
-  endAt              DateTime  @map("end_at") @db.Time(6)
-  placeBreakTimeList PlaceBreakTime[] 
-  placeDay           PlaceDay   @relation(fields: [placeDayIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_day_tb_to_place_hour_tb")
+model OperatingHour {
+  idx             Int        @id @default(autoincrement())
+  operatingDayIdx Int        @map("operating_day_idx")
+  startAt         DateTime   @map("start_at") @db.Time(6)
+  endAt           DateTime   @map("end_at") @db.Time(6)
+  BreakTimeList   BreakTime[] 
+  operatingDay    OperatingDay   @relation(fields: [operatingDayIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_operating_day_tb_to_operating_hour_tb")
 
-  @@map("place_hour_tb")
+  @@map("operating_hour_tb")
 }
 
-model PlaceBreakTime {
-  idx          Int        @id @default(autoincrement())
-  placeHourIdx Int        @map("place_hour_idx")
-  startAt      DateTime  @map("start_at") @db.Time(6)
-  endAt        DateTime  @map("end_at") @db.Time(6)
-  placeHour    PlaceHour  @relation(fields: [placeHourIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_hour_tb_to_place_break_time_tb")
+model BreakTime {
+  idx              Int        @id @default(autoincrement())
+  operatingHourIdx Int        @map("operating_hour_idx")
+  startAt          DateTime  @map("start_at") @db.Time(6)
+  endAt            DateTime  @map("end_at") @db.Time(6)
+  operatingHour    OperatingHour  @relation(fields: [operatingHourIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_operating_hour_tb_to_break_time_tb")
 
-  @@map("place_break_time_tb")
+  @@map("break_time_tb")
 }
 
 model PlaceTypeMapping {
@@ -123,6 +108,21 @@ model PlaceType {
   placeTypeMappingList PlaceTypeMapping[]
 
   @@map("place_type_tb")
+}
+
+model Menu {
+  idx        Int       @id @default(autoincrement())
+  placeIdx   Int       @map("place_idx")
+  name       String    @db.VarChar
+  content    String?   @db.VarChar
+  price      Int?
+  imagePath  String?   @map("image_path") @db.VarChar
+  isFlexible Boolean   @map("is_flexible") @default(false)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt  DateTime? @map("deleted_at") @db.Timestamptz(6)
+  place      Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_menu_tb")
+
+  @@map("menu_tb")
 }
 
 model ReviewImage {

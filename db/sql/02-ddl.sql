@@ -25,20 +25,6 @@ CREATE TABLE place_image_tb
   PRIMARY KEY (idx)
 );
 
-CREATE TABLE place_menu_tb
-(
-  idx         int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
-  place_idx   int                      NOT NULL,
-  name        varchar                  NOT NULL,
-  content     varchar                 ,
-  price       int                     ,
-  image_path  varchar                 ,
-  is_flexible boolean                  NOT NULL DEFAULT false,
-  created_at  timestamp with time zone NOT NULL DEFAULT NOW(),
-  deleted_at  timestamp with time zone,
-  PRIMARY KEY (idx)
-);
-
 CREATE TABLE place_tb
 (
   idx          int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -54,24 +40,24 @@ CREATE TABLE place_tb
   PRIMARY KEY (idx)
 );
 
-CREATE TABLE place_day_tb (
+CREATE TABLE operating_day_tb (
   idx        int     NOT NULL GENERATED ALWAYS AS IDENTITY,
   place_idx  int     NOT NULL,
   day        varchar NOT NULL,
   PRIMARY KEY (idx)
 );
 
-CREATE TABLE place_hour_tb (
+CREATE TABLE operating_hour_tb (
   idx            int      NOT NULL GENERATED ALWAYS AS IDENTITY,
-  place_day_idx  int      NOT NULL,
+  operating_day_idx  int      NOT NULL,
   start_at       time,
   end_at         time,
   PRIMARY KEY (idx)
 );
 
-CREATE TABLE place_break_time_tb (
+CREATE TABLE break_time_tb (
   idx             int      NOT NULL GENERATED ALWAYS AS IDENTITY,
-  place_hour_idx  int      NOT NULL,
+  operating_hour_idx  int      NOT NULL,
   start_at        time,
   end_at          time,
   PRIMARY KEY (idx)
@@ -90,6 +76,20 @@ CREATE TABLE place_type_tb
   content    varchar                  NOT NULL UNIQUE,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+
+CREATE TABLE menu_tb
+(
+  idx         int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  place_idx   int                      NOT NULL,
+  name        varchar                  NOT NULL,
+  content     varchar                 ,
+  price       int                     ,
+  image_path  varchar                 ,
+  is_flexible boolean                  NOT NULL DEFAULT false,
+  created_at  timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at  timestamp with time zone,
   PRIMARY KEY (idx)
 );
 
@@ -237,8 +237,8 @@ ALTER TABLE place_image_tb
     FOREIGN KEY (place_idx)
     REFERENCES place_tb (idx);
 
-ALTER TABLE place_menu_tb
-  ADD CONSTRAINT FK_place_tb_TO_place_menu_tb
+ALTER TABLE menu_tb
+  ADD CONSTRAINT FK_place_tb_TO_menu_tb
     FOREIGN KEY (place_idx)
     REFERENCES place_tb (idx);
 
@@ -277,17 +277,17 @@ ALTER TABLE user_provider_tb
     FOREIGN KEY (idx)
     REFERENCES user_tb (idx);
 
-ALTER TABLE place_day_tb
-  ADD CONSTRAINT FK_place_tb_TO_place_day_tb
+ALTER TABLE operating_day_tb
+  ADD CONSTRAINT FK_place_tb_TO_operating_day_tb
     FOREIGN KEY (place_idx)
     REFERENCES place_tb (idx);
 
-ALTER TABLE place_hour_tb
-  ADD CONSTRAINT FK_place_day_tb_TO_place_hour_tb
-    FOREIGN KEY (place_day_idx)
-    REFERENCES place_day_tb (idx);
+ALTER TABLE operating_hour_tb
+  ADD CONSTRAINT FK_operating_day_tb_TO_operating_hour_tb
+    FOREIGN KEY (operating_day_idx)
+    REFERENCES operating_day_tb (idx);
 
-ALTER TABLE place_break_time_tb
-  ADD CONSTRAINT FK_place_hour_tb_TO_place_break_time_tb
-    FOREIGN KEY (place_hour_idx)
-    REFERENCES place_hour_tb (idx);
+ALTER TABLE break_time_tb
+  ADD CONSTRAINT FK_operating_hour_tb_TO_break_time_tb
+    FOREIGN KEY (operating_hour_idx)
+    REFERENCES operating_hour_tb (idx);
