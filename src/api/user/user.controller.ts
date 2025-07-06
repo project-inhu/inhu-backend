@@ -4,13 +4,16 @@ import {
   Delete,
   Get,
   Patch,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from 'src/auth/common/guards/auth.guard';
 import { MyInfoDto } from './dto/my-info.dto';
 import { User } from 'src/common/decorator/user.decorator';
 import { UserInfoEntity } from './entity/user-info.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('user')
 export class UserController {
@@ -30,21 +33,32 @@ export class UserController {
   }
 
   /**
-   * 내 정보 수정
+   * 닉네임 수정
    *
    * @author 조희주
    */
   @UseGuards(AuthGuard)
-  @Patch()
-  async updateUserByUserIdx(
+  @Patch('/nickname')
+  async updateNicknameByUserIdx(
     @User('idx') userIdx: number,
-    @Body() myInfoDto: MyInfoDto,
+    @Body('nickname') nickname: string,
   ): Promise<UserInfoEntity> {
-    return this.userService.updateUserByUserIdx({
-      userIdx,
-      nickname: myInfoDto.nickname,
-      profileImagePath: myInfoDto.profileImagePath,
-    });
+    return this.userService.updateNicknameByUserIdx(userIdx, nickname);
+  }
+
+  /**
+   * 프로필 이미지 수정
+   *
+   * @author 조희주
+   */
+  @UseGuards(AuthGuard)
+  @Patch('/profile-image')
+  @UseInterceptors(FileInterceptor('file'))
+  async updateProfileImageByUserIdx(
+    @User('idx') userIdx: number,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<UserInfoEntity> {
+    return this.userService.updateProfileImageByUserIdx(userIdx, file);
   }
 
   /**
