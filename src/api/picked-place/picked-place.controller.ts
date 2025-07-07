@@ -13,7 +13,7 @@ export class PickedPlaceController {
    *
    * @author 강정연
    */
-  @Get()
+  @Get('/all')
   async getAllPickedPlace(
     @Query() getAllPickedPlaceDto: GetAllPickedPlaceDto,
     @User('idx') userIdx?: number,
