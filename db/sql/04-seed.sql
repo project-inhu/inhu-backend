@@ -172,5 +172,6 @@ INSERT INTO bookmark_tb (user_idx, place_idx) VALUES
 UPDATE place_tb SET review_count = (SELECT COUNT(*) FROM review_tb WHERE place_idx = place_tb.idx);
 
 INSERT INTO picked_place_tb (place_idx, title, content) VALUES
-(2, '깔끔한 분위기', '후문 가까이에 위치해 있어 밥약하기 좋아요'),
+(2, '깔끔한 분위기', '후문 가까이에 위치해 있어 밥약하기 좋아요');
+INSERT INTO picked_place_tb (place_idx, title, content) VALUES
 (3, '특별한 맛을 원한다면', '맛있는 피자');
