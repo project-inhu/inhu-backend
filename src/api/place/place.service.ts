@@ -3,9 +3,9 @@ import { PlaceRepository } from './place.repository';
 import { KeywordRepository } from '../keyword/keyword.repository';
 import { PlaceOverviewEntity } from './entity/place-overview.entity';
 import { PlaceEntity } from './entity/place.entity';
-import { ReviewCountUpdateType } from './common/constants/review-count-update-type.enum';
+import { ReviewCountUpdateType } from './common/enums/review-count-update-type.enum';
 import { Prisma } from '@prisma/client';
-import { PlaceOverviewOrderBy } from './common/constants/enums/place-overview-order-by.enum';
+import { PlaceOverviewOrderBy } from './common/enums/place-overview-order-by.enum';
 
 @Injectable()
 export class PlaceService {
