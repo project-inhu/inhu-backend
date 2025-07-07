@@ -8,6 +8,11 @@ import { AuthGuard } from './auth/common/guards/auth.guard';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  @Get()
+  getHello(): string {
+    return this.appService.getHello();
+  }
+
   @Get('/test')
   test(@Req() req: Request, @Res() res: Response) {
     const filePath = path.join(
