@@ -35,56 +35,16 @@
     ></script>
 
     <script type="text/javascript">
-      /**
-       * Apple 로그인 성공 시 실행되는 이벤트 리스너입니다.
-       * 이 함수 안에서 백엔드로 전달할 데이터를 얻을 수 있습니다.
-       */
+      // Listen for authorization success.
       document.addEventListener('AppleIDSignInOnSuccess', (event) => {
-        // 성공 응답 데이터 전체를 확인합니다.
-        console.log('Apple Login Success Event:', event.detail.data);
-
-        const authorization = event.detail.data.authorization;
-        const user = event.detail.data.user;
-
-        // 백엔드로 보낼 핵심 데이터: authorizationCode
-        const authCode = authorization.code;
-        console.log('Authorization Code:', authCode);
-
-        // 최초 로그인 시에만 user 객체(이름, 이메일)가 반환됩니다.
-        if (user) {
-          console.log('User Info (최초 로그인 시):', user);
-        }
-
-        alert('로그인 성공! 개발자 콘솔(F12)을 확인하세요.');
-
-        // ===================================================================
-        // TODO: 이 곳에서 백엔드 API를 호출하여 authCode와 user 정보를 전달하세요.
-        //
-        // 예시:
-        // const payload = {
-        //     authorizationCode: authCode,
-        //     userInfo: user // user 객체는 최초 로그인 시에만 존재합니다.
-        // };
-        //
-        // fetch('https://YOUR_BACKEND_API.com/login/apple', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(payload)
-        // })
-        // .then(response => response.json())
-        // .then(data => console.log('Backend response:', data))
-        // .catch(error => console.error('Error sending data to backend:', error));
-        // ===================================================================
+        // Handle successful response.
+        console.log(event.detail.data);
       });
 
-      /**
-       * Apple 로그인 실패 시 실행되는 이벤트 리스너입니다.
-       */
+      // Listen for authorization failures.
       document.addEventListener('AppleIDSignInOnFailure', (event) => {
-        console.error('Apple Login Failed:', event.detail.error);
-        alert(`로그인에 실패했습니다. 에러: ${event.detail.error}`);
+        // Handle error.
+        console.log(event.detail.error);
       });
     </script>
   </body>

@@ -16,7 +16,7 @@ export class AppController {
   @Get('/test')
   test(@Req() req: Request, @Res() res: Response) {
     const filePath = path.join(
-      '/home/ubuntu/inhu-backend/inhu-backend/public',
+      '/home/ubuntu/inhu-backend/public',
       'testKakao.html',
     );
     return res.sendFile(filePath);
