@@ -3,8 +3,7 @@ INSERT INTO user_tb (nickname) VALUES
 ('인덕이');
 
 INSERT INTO place_tb (name, tel, address, address_x, address_y) VALUES
-('스타벅스 인하대점', '1522-3232', '인천 미추홀구 인하로59', 126.650892, 37.452601),
-('인하칼국수 인하대후문점', '032-874-4067', '인천 미추홀구 경인남길30번길 35-1 1층', 126.654536, 37.460835);
+('스타벅스 인하대점', '1522-3232', '인천 미추홀구 인하로59', 126.650892, 37.452601);
 
 INSERT INTO menu_tb (place_idx, name, content, price, image_path) VALUES 
 (1, '아메리카노', '깊고 진한 에스프레소의 깔끔한 맛', 4500, '/menu/c3b2d1a0-e9f8-7654-3210-fedcba987654-202507062_11400.jpg'), 
@@ -29,6 +28,9 @@ INSERT INTO place_image_tb (place_idx, image_path) VALUES
 (1, 'place/f9c2e36f-8e99-4b18-b3e8-7cd327682f94_20240706_124512.jpg');
 INSERT INTO place_type_mapping_tb (place_idx, place_type_idx) VALUES 
 (1, 1);
+
+INSERT INTO place_tb (name, tel, address, address_x, address_y) VALUES
+('인하칼국수 인하대후문점', '032-874-4067', '인천 미추홀구 경인남길30번길 35-1 1층', 126.654536, 37.460835);
 
 INSERT INTO menu_tb (place_idx, name, content, price, is_flexible) VALUES 
 (2, '해물칼국수', '계절에 따라 달라요', 10000, true);
@@ -168,3 +170,7 @@ INSERT INTO bookmark_tb (user_idx, place_idx) VALUES
 (2, 2);
 
 UPDATE place_tb SET review_count = (SELECT COUNT(*) FROM review_tb WHERE place_idx = place_tb.idx);
+
+INSERT INTO picked_place_tb (place_idx, title, content) VALUES
+(2, '깔끔한 분위기', '후문 가까이에 위치해 있어 밥약하기 좋아요'),
+(3, '특별한 맛을 원한다면', '맛있는 피자');

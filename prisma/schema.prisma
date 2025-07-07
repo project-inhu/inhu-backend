@@ -55,8 +55,19 @@ model Place {
   menuList             Menu[]
   placeTypeMappingList PlaceTypeMapping[]
   reviewList           Review[]
+  pickedPlace          PickedPlace?
 
   @@map("place_tb")
+}
+
+model PickedPlace {
+  idx        Int      @id @default(autoincrement())
+  placeIdx   Int      @unique @map("place_idx")
+  title      String
+  content    String
+  place      Place    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_picked_place_tb")
+
+  @@map("picked_place_table")
 }
 
 model OperatingDay {

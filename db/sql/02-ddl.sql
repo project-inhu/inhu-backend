@@ -40,6 +40,15 @@ CREATE TABLE place_tb
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE picked_place_tb
+(
+  idx       int        NOT NULL GENERATED ALWAYS AS IDENTITY,
+  place_idx int        NOT NULL UNIQUE,
+  title     varchar    NOT NULL,
+  content   varchar    NOT NULL,
+  PRIMARY KEY (idx)
+);
+
 CREATE TABLE operating_day_tb (
   idx        int     NOT NULL GENERATED ALWAYS AS IDENTITY,
   place_idx  int     NOT NULL,
@@ -291,3 +300,8 @@ ALTER TABLE break_time_tb
   ADD CONSTRAINT FK_operating_hour_tb_TO_break_time_tb
     FOREIGN KEY (operating_hour_idx)
     REFERENCES operating_hour_tb (idx);
+
+ALTER TABLE picked_place_tb
+  ADD CONSTRAINT FK_place_tb_TO_picked_place_tb
+    FOREIGN KEY (place_idx)
+    REFERENCES place_tb (idx);
