@@ -42,10 +42,12 @@ CREATE TABLE place_tb
 
 CREATE TABLE picked_place_tb
 (
-  idx       int        NOT NULL GENERATED ALWAYS AS IDENTITY,
-  place_idx int        NOT NULL UNIQUE,
-  title     varchar    NOT NULL,
-  content   varchar    NOT NULL,
+  idx          int        NOT NULL GENERATED ALWAYS AS IDENTITY,
+  place_idx    int        NOT NULL UNIQUE,
+  title        varchar    NOT NULL,
+  content      varchar    NOT NULL,
+  created_at   timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at   timestamp with time zone,
   PRIMARY KEY (idx)
 );
 

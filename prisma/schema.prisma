@@ -61,11 +61,13 @@ model Place {
 }
 
 model PickedPlace {
-  idx        Int      @id @default(autoincrement())
-  placeIdx   Int      @unique @map("place_idx")
+  idx        Int        @id @default(autoincrement())
+  placeIdx   Int        @unique @map("place_idx")
   title      String
   content    String
-  place      Place    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_picked_place_tb")
+  createdAt  DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt  DateTime?  @map("deleted_at") @db.Timestamptz(6)
+  place      Place      @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_picked_place_tb")
 
   @@map("picked_place_table")
 }
