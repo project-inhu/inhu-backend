@@ -69,7 +69,7 @@ model PickedPlace {
   deletedAt  DateTime?  @map("deleted_at") @db.Timestamptz(6)
   place      Place      @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_picked_place_tb")
 
-  @@map("picked_place_table")
+  @@map("picked_place_tb")
 }
 
 model OperatingDay {
