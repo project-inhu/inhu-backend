@@ -4,6 +4,7 @@ import { GetAllPlaceOverviewDto } from './dto/get-all-place-overview.dto';
 import { User } from 'src/common/decorator/user.decorator';
 import { PlaceOverviewEntity } from './entity/place-overview.entity';
 import { PlaceEntity } from './entity/place.entity';
+import { Exception } from 'src/common/decorator/exception.decorator';
 
 @Controller('place')
 export class PlaceController {
@@ -14,6 +15,7 @@ export class PlaceController {
    *
    * @author 이수인
    */
+  @Exception(400, 'Invalid page number or orderBy')
   @Get('/all')
   async getAllPlaceOverview(
     @Query() getAllPlaceOverviewDto: GetAllPlaceOverviewDto,
@@ -31,6 +33,8 @@ export class PlaceController {
    *
    * @author 이수인
    */
+  @Exception(400, 'Invalid placeIdx')
+  @Exception(404, 'Place not found')
   @Get('/:placeIdx')
   async getPlaceByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,

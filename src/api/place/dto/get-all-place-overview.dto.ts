@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsEnum, IsInt, IsNotEmpty, IsOptional, Min } from 'class-validator';
-import { PlaceOverviewOrderBy } from '../common/constants/enums/place-overview-order-by.enum';
+import { PlaceOverviewOrderBy } from '../common/enums/place-overview-order-by.enum';
 
 export class GetAllPlaceOverviewDto {
   /**
