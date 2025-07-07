@@ -9,6 +9,7 @@ import { KeywordModule } from './api/keyword/keyword.module';
 import { ReviewModule } from './api/review/review.module';
 import { S3Module } from './common/s3/s3.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
+import { PickedPlaceModule } from './api/picked-place/picked-place.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { RedisModule } from '@nestjs-modules/ioredis';
       }),
       inject: [ConfigService],
     }),
+    PickedPlaceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
