@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Apple로 로그인 프론트엔드 구현 예시</title>
+
+    <meta name="appleid-signin-client-id" content="kr.co.inhu" />
+    <meta name="appleid-signin-scope" content="name" />
+    <meta
+      name="appleid-signin-redirect-uri"
+      content="https://inhu.co.kr/auth/apple/test"
+    />
+    <meta name="appleid-signin-state" content="tempcsrf" />
+    <meta name="appleid-signin-nonce" content="tempretry" />
+    <meta name="appleid-signin-use-popup" content="true" />
+  </head>
+  <body>
+    <h1>Apple로 로그인 기능 테스트</h1>
+    <p>
+      아래 버튼을 클릭하여 로그인을 진행하면, 성공 시 개발자 콘솔(F12)에 결과가
+      출력됩니다.
+    </p>
+
+    <div
+      id="appleid-signin"
+      data-color="black"
+      data-border="true"
+      data-type="sign-in"
+      style="width: 200px; height: 40px"
+    ></div>
+
+    <script
+      type="text/javascript"
+      src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"
+    ></script>
+
+    <script type="text/javascript">
+      /**
+       * Apple 로그인 성공 시 실행되는 이벤트 리스너입니다.
+       * 이 함수 안에서 백엔드로 전달할 데이터를 얻을 수 있습니다.
+       */
+      document.addEventListener('AppleIDSignInOnSuccess', (event) => {
+        // 성공 응답 데이터 전체를 확인합니다.
+        console.log('Apple Login Success Event:', event.detail.data);
+
+        const authorization = event.detail.data.authorization;
+        const user = event.detail.data.user;
+
+        // 백엔드로 보낼 핵심 데이터: authorizationCode
+        const authCode = authorization.code;
+        console.log('Authorization Code:', authCode);
+
+        // 최초 로그인 시에만 user 객체(이름, 이메일)가 반환됩니다.
+        if (user) {
+          console.log('User Info (최초 로그인 시):', user);
+        }
+
+        alert('로그인 성공! 개발자 콘솔(F12)을 확인하세요.');
+
+        // ===================================================================
+        // TODO: 이 곳에서 백엔드 API를 호출하여 authCode와 user 정보를 전달하세요.
+        //
+        // 예시:
+        // const payload = {
+        //     authorizationCode: authCode,
+        //     userInfo: user // user 객체는 최초 로그인 시에만 존재합니다.
+        // };
+        //
+        // fetch('https://YOUR_BACKEND_API.com/login/apple', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(payload)
+        // })
+        // .then(response => response.json())
+        // .then(data => console.log('Backend response:', data))
+        // .catch(error => console.error('Error sending data to backend:', error));
+        // ===================================================================
+      });
+
+      /**
+       * Apple 로그인 실패 시 실행되는 이벤트 리스너입니다.
+       */
+      document.addEventListener('AppleIDSignInOnFailure', (event) => {
+        console.error('Apple Login Failed:', event.detail.error);
+        alert(`로그인에 실패했습니다. 에러: ${event.detail.error}`);
+      });
+    </script>
+  </body>
+</html>
