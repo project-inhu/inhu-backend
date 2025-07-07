@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Query, Res, Headers } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Query,
+  Res,
+  Headers,
+  Body,
+} from '@nestjs/common';
 import { AuthService } from './services/auth.service';
 import { AuthProvider } from './enums/auth-provider.enum';
 import { Response } from 'express';
@@ -15,7 +23,6 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
-    private readonly loginTokenService: LoginTokenService,
   ) {}
 
   /**
@@ -121,5 +128,11 @@ export class AuthController {
     res: Response,
   ): Promise<void> {
     res.clearCookie('refreshToken', getCookieOption());
+  }
+
+  @Post('/apple/test')
+  public async appleLogin(@Body() body: Body) {
+    console.log(body);
+    return 1;
   }
 }
