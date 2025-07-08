@@ -6,6 +6,7 @@ import { PlaceEntity } from './entity/place.entity';
 import { ReviewCountUpdateType } from './common/enums/review-count-update-type.enum';
 import { Prisma } from '@prisma/client';
 import { PlaceOverviewOrderBy } from './common/enums/place-overview-order-by.enum';
+import { GetAllPlaceOverviewResponseDto } from './dto/get-all-place-overview-response.dto';
 
 @Injectable()
 export class PlaceService {
@@ -31,18 +32,29 @@ export class PlaceService {
     page: number,
     orderBy?: PlaceOverviewOrderBy,
     userIdx?: number,
-  ): Promise<PlaceOverviewEntity[]> {
+  ): Promise<GetAllPlaceOverviewResponseDto> {
+    const pageSize = 10;
+    const take = pageSize + 1;
+    const skip = (page - 1) * pageSize;
+
     let orderByOption;
     if (orderBy && this.orderByMap[orderBy]) {
       orderByOption = this.orderByMap[orderBy];
     }
-    return (
-      await this.placeRepository.selectAllPlaceOverview(
-        page,
-        orderByOption,
-        userIdx,
-      )
-    ).map(PlaceOverviewEntity.createEntityFromPrisma);
+    let placeList = await this.placeRepository.selectAllPlaceOverview(
+      skip,
+      take,
+      orderByOption,
+      userIdx,
+    );
+
+    const hasNext = !!placeList[pageSize];
+    placeList = placeList.slice(0, pageSize);
+
+    return {
+      data: placeList.map(PlaceOverviewEntity.createEntityFromPrisma),
+      hasNext,
+    };
   }
 
   async getPlaceByPlaceIdx(

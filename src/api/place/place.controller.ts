@@ -5,6 +5,7 @@ import { User } from 'src/common/decorator/user.decorator';
 import { PlaceOverviewEntity } from './entity/place-overview.entity';
 import { PlaceEntity } from './entity/place.entity';
 import { Exception } from 'src/common/decorator/exception.decorator';
+import { GetAllPlaceOverviewResponseDto } from './dto/get-all-place-overview-response.dto';
 
 @Controller('place')
 export class PlaceController {
@@ -20,7 +21,7 @@ export class PlaceController {
   async getAllPlaceOverview(
     @Query() getAllPlaceOverviewDto: GetAllPlaceOverviewDto,
     @User('idx') userIdx?: number,
-  ): Promise<PlaceOverviewEntity[]> {
+  ): Promise<GetAllPlaceOverviewResponseDto> {
     return await this.placeService.getAllPlaceOverview(
       getAllPlaceOverviewDto.page,
       getAllPlaceOverviewDto.orderBy,
