@@ -36,7 +36,7 @@ const PLACE_SELECT_FIELD = Prisma.validator<Prisma.PlaceDefaultArgs>()({
     },
     bookmarkList: {
       select: {
-        idx: true,
+        placeIdx: true,
       },
     },
     placeImageList: {

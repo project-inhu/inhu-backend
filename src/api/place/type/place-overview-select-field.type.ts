@@ -16,7 +16,7 @@ const PLACE_OVERVIEW_SELECT_FIELD = Prisma.validator<Prisma.PlaceDefaultArgs>()(
       reviewCount: true,
       bookmarkList: {
         select: {
-          idx: true,
+          placeIdx: true,
         },
       },
       placeImageList: {

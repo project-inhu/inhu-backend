@@ -1,11 +1,9 @@
 CREATE TABLE bookmark_tb
 (
-  idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
   user_idx   int                      NOT NULL,
   place_idx  int                      NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
-  deleted_at timestamp with time zone,
-  PRIMARY KEY (idx)
+  PRIMARY KEY (user_idx, place_idx)
 );
 
 CREATE TABLE keyword_tb

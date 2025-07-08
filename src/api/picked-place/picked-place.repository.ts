@@ -31,7 +31,7 @@ export class PickedPlaceRepository {
             bookmarkList: userIdx
               ? {
                   where: { userIdx },
-                  select: { idx: true },
+                  select: { placeIdx: true },
                 }
               : undefined,
             placeImageList: {
