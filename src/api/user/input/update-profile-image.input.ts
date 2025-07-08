@@ -5,5 +5,5 @@
  */
 export class UpdateProfileImageInput {
   userIdx: number;
-  file: Express.Multer.File;
+  file?: Express.Multer.File;
 }

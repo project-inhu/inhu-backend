@@ -118,7 +118,9 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
-    const imageKey = await this.s3Service.uploadFile(file, S3Folder.PROFILE);
+    const imageKey = file
+      ? await this.s3Service.uploadFile(file, S3Folder.PROFILE)
+      : null;
 
     const updatedUser = await this.userRepository.updateUserByUserIdx({
       userIdx,
