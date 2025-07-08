@@ -9,6 +9,7 @@ import { LoginTokenService } from './services/login-token.service';
 import { UserModule } from 'src/api/user/user.module';
 import { TokenStorageStrategy } from './strategies/base/token-storage.strategy';
 import { InMemoryTokenStorage } from './strategies/storages/in-memory-token.storage';
+import { AppleStrategy } from './strategies/apple/apple.strategy';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { InMemoryTokenStorage } from './strategies/storages/in-memory-token.stor
     AuthService,
     AuthGuard,
     KakaoStrategy,
+    AppleStrategy,
     LoginTokenService,
     { provide: TokenStorageStrategy, useClass: InMemoryTokenStorage },
   ],

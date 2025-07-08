@@ -76,7 +76,7 @@ describe('AuthController (e2e)', () => {
         refresh_token_expires_in: 111111,
         id_token: '11111',
       };
-      jest.spyOn(kakaoStrategy, 'getToken').mockResolvedValue(kakaoToken);
+      jest.spyOn(kakaoStrategy, 'getSocialToken').mockResolvedValue(kakaoToken);
 
       // getUserInfo mocking
       const kakaoId = 1111111111;
@@ -142,7 +142,7 @@ describe('AuthController (e2e)', () => {
         refresh_token_expires_in: 111111,
         id_token: '11111',
       };
-      jest.spyOn(kakaoStrategy, 'getToken').mockResolvedValue(kakaoToken);
+      jest.spyOn(kakaoStrategy, 'getSocialToken').mockResolvedValue(kakaoToken);
 
       // getUserInfo mocking
       const kakaoId = 1111111111;
