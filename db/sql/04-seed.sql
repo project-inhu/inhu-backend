@@ -250,15 +250,15 @@ INSERT INTO review_tb (user_idx, place_idx, content) VALUES
 (2, 12, '역시 믿고 먹는 싸이버거입니다.');
 
 INSERT INTO review_image_tb (review_idx, image_path) VALUES
-(2, '/review/b631f9d2-35d1-4b5f-a97f-52f4f41326e3_20240706_124512.jpg'),
-(2, '/review/b631f9d2-35d1-4b5f-a97f-52f4f41326e3_20240706_124512.jpg'),
-(3, '/review/b631f9d2-35d1-4b5f-a97f-52f4f41326e3_20240706_124512.jpg'),
-(4, '/review/b631f9d2-35d1-4b5f-a97f-52f4f41326e3_20240706_124512.jpg'),
-(4, '/review/b631f9d2-35d1-4b5f-a97f-52f4f41326e3_20240706_124512.jpg'),
-(8, '/review/b631f9d2-35d1-4b5f-a97f-52f4f41326e3_20240706_124512.jpg'),
-(9, '/review/b631f9d2-35d1-4b5f-a97f-52f4f41326e3_20240706_124512.jpg'),
-(11, '/review/b631f9d2-35d1-4b5f-a97f-52f4f41326e3_20240706_124512.jpg'),
-(13, '/review/b631f9d2-35d1-4b5f-a97f-52f4f41326e3_20240706_124512.jpg');
+(2, '/review/13072567-38f9-4941-9fb1-5eddb316f38d-bakery.jpg'),
+(2, '/review/38b902bb-38bb-41c6-b216-b9536a76088f-buns.jpg'),
+(3, '/review/4fbfbef0-b188-4816-820e-609e838ee5da-puppy.jpg'),
+(4, '/review/5525b1a6-85ea-4359-ad0d-ac54ed77ad54-cupcakes.jpg'),
+(4, '/review/b670f3ab-1512-49fa-9494-1e845570d300-cat.jpg'),
+(8, '/review/d32bdb09-7c3c-4b78-8a39-740cb34e3a16-school.jpg'),
+(9, '/review/13072567-38f9-4941-9fb1-5eddb316f38d-bakery.jpg'),
+(11, '/review/4fbfbef0-b188-4816-820e-609e838ee5da-puppy.jpg'),
+(13, '/review/5525b1a6-85ea-4359-ad0d-ac54ed77ad54-cupcakes.jpg');
 
 INSERT INTO review_keyword_mapping_tb (review_idx, keyword_idx) VALUES
 (1, 1),
