@@ -25,8 +25,6 @@ export class UserRepository {
         userProvider: {
           select: { snsId: true, name: true },
         },
-        bookmarkList: { select: { idx: true, placeIdx: true } },
-        reviewList: { select: { idx: true, content: true } },
       },
     });
   }
@@ -52,8 +50,6 @@ export class UserRepository {
         userProvider: {
           select: { snsId: true, name: true },
         },
-        bookmarkList: { select: { idx: true, placeIdx: true } },
-        reviewList: { select: { idx: true, content: true } },
       },
     });
   }
@@ -75,8 +71,6 @@ export class UserRepository {
         userProvider: {
           select: { snsId: true, name: true },
         },
-        bookmarkList: { select: { idx: true, placeIdx: true } },
-        reviewList: { select: { idx: true, content: true } },
       },
     });
   }
@@ -100,8 +94,6 @@ export class UserRepository {
         userProvider: {
           select: { snsId: true, name: true },
         },
-        bookmarkList: { select: { idx: true, placeIdx: true } },
-        reviewList: { select: { idx: true, content: true } },
       },
     });
   }
@@ -153,8 +145,6 @@ export class UserRepository {
         userProvider: {
           select: { snsId: true, name: true },
         },
-        bookmarkList: { select: { idx: true, placeIdx: true } },
-        reviewList: { select: { idx: true, content: true } },
       },
     });
   }
@@ -184,8 +174,6 @@ export class UserRepository {
         userProvider: {
           select: { snsId: true, name: true },
         },
-        bookmarkList: { select: { idx: true, placeIdx: true } },
-        reviewList: { select: { idx: true, content: true } },
       },
     });
   }

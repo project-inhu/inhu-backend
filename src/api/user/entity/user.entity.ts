@@ -1,8 +1,6 @@
 import {
   User,
   UserProvider,
-  Bookmark,
-  Review,
   Service1Result,
   Service2Result,
   WithdrawServiceResult,
@@ -73,8 +71,6 @@ export class UserEntity {
   static createEntityFromPrisma(
     user: User & {
       userProvider?: UserProvider;
-      bookmark?: Bookmark[];
-      review?: Review[];
       service1Result?: Service1Result[];
       service2Result?: Service2Result[];
       withdrawServiceResult?: WithdrawServiceResult[];
