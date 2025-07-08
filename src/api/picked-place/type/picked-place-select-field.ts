@@ -20,7 +20,7 @@ const PICKED_PLACE_SELECT_FIELD =
           reviewCount: true,
           bookmarkList: {
             select: {
-              idx: true,
+              placeIdx: true,
             },
           },
           placeImageList: {

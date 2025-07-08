@@ -28,7 +28,7 @@ export class PlaceRepository {
         address: true,
         reviewCount: true,
         bookmarkList: userIdx
-          ? { where: { userIdx }, select: { idx: true } }
+          ? { where: { userIdx }, select: { placeIdx: true } }
           : undefined,
         placeImageList: {
           select: {
@@ -75,7 +75,7 @@ export class PlaceRepository {
           },
         },
         bookmarkList: userIdx
-          ? { where: { userIdx }, select: { idx: true } }
+          ? { where: { userIdx }, select: { placeIdx: true } }
           : undefined,
         placeImageList: {
           select: {
