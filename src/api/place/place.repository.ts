@@ -9,15 +9,16 @@ export class PlaceRepository {
   constructor(private prisma: PrismaService) {}
 
   async selectAllPlaceOverview(
-    page: number,
+    skip: number,
+    take: number,
     orderByOption?:
       | Prisma.PlaceOrderByWithRelationInput
       | Prisma.PlaceOrderByWithRelationInput[],
     userIdx?: number,
   ): Promise<PlaceOverviewSelectField[]> {
     return await this.prisma.place.findMany({
-      skip: (page - 1) * 10,
-      take: 10,
+      skip,
+      take,
       where: {
         deletedAt: null,
       },
