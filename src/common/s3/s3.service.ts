@@ -31,7 +31,7 @@ export class S3Service {
   /**
    * S3에 파일 업로드
    *
-   * @example 'menu/41ee298f-7745-43cd-b81b-374a0e692fc9-candies.jpg'
+   * @example '/menu/41ee298f-7745-43cd-b81b-374a0e692fc9-candies.jpg'
    *
    * @author 조희주
    */
@@ -40,7 +40,7 @@ export class S3Service {
     file: Express.Multer.File,
     folder: S3Folder,
   ): Promise<string> {
-    const key = `${folder}/${uuid()}-${file.originalname}`;
+    const key = `/${folder}/${uuid()}-${file.originalname}`;
 
     const command = new PutObjectCommand({
       Bucket: this.bucketName,
