@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="appleid-signin-client-id" content="kr.co.inhu" />
-    <meta name="appleid-signin-scope" content="name" />
+    <meta name="appleid-signin-scope" content="name email" />
     <meta
       name="appleid-signin-redirect-uri"
       content="https://inhu.co.kr/auth/apple/test"
@@ -22,5 +22,36 @@
       type="text/javascript"
       src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"
     ></script>
+
+    <script>
+      // Listen for authorization success.
+      document.addEventListener('AppleIDSignInOnSuccess', (event) => {
+        // Handle successful response.
+        console.log('Apple 로그인 성공! 브라우저가 받은 데이터:', event.detail);
+
+        const code = event.detail.authorization;
+        fetch('https://inhu.co.kr/auth/apple/test', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ authorizationCode: code }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log('서버로부터의 최종 응답:', data);
+            alert('최종 로그인 성공!');
+          })
+          .catch((error) => {
+            console.error('서버 전송 실패:', error);
+          });
+      });
+
+      // Listen for authorization failures.
+      document.addEventListener('AppleIDSignInOnFailure', (event) => {
+        // Handle error.
+        console.log(event.detail.error);
+      });
+    </script>
   </body>
 </html>
