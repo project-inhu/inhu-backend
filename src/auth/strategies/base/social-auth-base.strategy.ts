@@ -19,21 +19,21 @@ export abstract class SocialAuthBaseStrategy<TToken = any, TUserInfo = any> {
   protected abstract authLoginUrl: string;
 
   /**
-   * 액세스 토큰을 요청하는 URL
+   * social 토큰을 요청하는 URL
    * - 사용자가 로그인 후 인가 코드(code)를 이용해 토큰을 발급받는 엔드포인트
    *
    * @author 이수인
    */
-  protected abstract tokenUrl: string;
+  protected abstract socialTokenUrl: string;
 
   /**
-   * 액세스 토큰 요청에 필요한 파라미터를 반환
+   * social 토큰 요청에 필요한 파라미터를 반환
    *
    * @param code 소셜 로그인에서 제공하는 인가 코드
    *
    * @author 이수인
    */
-  protected abstract getTokenParams(code: string): Record<string, string>;
+  protected abstract getSocialTokenParams(code: string): Record<string, string>;
 
   /**
    * 소셜 로그인 인증 페이지 URL을 반환
@@ -43,22 +43,22 @@ export abstract class SocialAuthBaseStrategy<TToken = any, TUserInfo = any> {
   public abstract getAuthLoginUrl(): string;
 
   /**
-   * 소셜 로그인 응답에서 액세스 토큰을 추출
+   * 소셜 로그인 응답에서 식별자 토큰을 추출
    *
-   * @param token 소셜 로그인에서 반환된 토큰 객체
+   * @param socialToken 소셜 로그인에서 반환된 토큰 객체
    *
    * @author 이수인
    */
-  public abstract getAccessToken(token: TToken): string;
+  public abstract getToken(socialToken: TToken): string;
 
   /**
-   * 액세스 토큰을 이용해 소셜 사용자 정보를 조회
+   * 토큰을 이용해 소셜 사용자 정보를 조회
    *
-   * @param accessToken 소셜 로그인에서 발급받은 액세스 토큰
+   * @param token 소셜 로그인에서 발급받은 식별자 토큰
    *
    * @author 이수인
    */
-  public abstract getUserInfo(accessToken: string): Promise<TUserInfo>;
+  public abstract getUserInfo(token: string): Promise<TUserInfo>;
 
   /**
    * 각 소셜 서비스의 사용자 정보를 공통 DTO(SocialUserInfoDto)로 변환
@@ -77,11 +77,11 @@ export abstract class SocialAuthBaseStrategy<TToken = any, TUserInfo = any> {
    *
    * @author 이수인
    */
-  public async getToken(code: string): Promise<TToken> {
-    const params = this.getTokenParams(code);
+  public async getSocialToken(code: string): Promise<TToken> {
+    const params = this.getSocialTokenParams(code);
 
     const response = await axios.post<TToken>(
-      this.tokenUrl,
+      this.socialTokenUrl,
       new URLSearchParams(params),
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
     );

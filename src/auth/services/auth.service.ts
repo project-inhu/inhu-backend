@@ -5,6 +5,7 @@ import { SocialAuthBaseStrategy } from '../strategies/base/social-auth-base.stra
 import { KakaoStrategy } from '../strategies/kakao/kakao.strategy';
 import { UserService } from 'src/api/user/user.service';
 import { TokenStorageStrategy } from '../strategies/base/token-storage.strategy';
+import { AppleStrategy } from '../strategies/apple/apple.strategy';
 
 @Injectable()
 export class AuthService {
@@ -12,15 +13,16 @@ export class AuthService {
     AuthProvider,
     SocialAuthBaseStrategy
   >;
-
   constructor(
     private readonly kakaoAuthService: KakaoStrategy,
+    private readonly appleAuthService: AppleStrategy,
     private readonly loginTokenService: LoginTokenService,
     private readonly userService: UserService,
     private readonly tokenStorage: TokenStorageStrategy,
   ) {
     this.SOCIAL_LOGIN_MAP = {
       [AuthProvider.KAKAO]: this.kakaoAuthService,
+      [AuthProvider.APPLE]: this.appleAuthService,
     };
   }
 
@@ -35,9 +37,9 @@ export class AuthService {
 
   public async generateTokenPairWithSocialAuth(
     socialAuthService: SocialAuthBaseStrategy,
-    accessToken: string,
+    token: string,
   ): Promise<TokenPair> {
-    const userInfo = await socialAuthService.getUserInfo(accessToken);
+    const userInfo = await socialAuthService.getUserInfo(token);
     const extractedUserInfo = socialAuthService.extractUserInfo(userInfo);
 
     const user = await this.userService.createUser(extractedUserInfo);
@@ -61,18 +63,18 @@ export class AuthService {
   public async login(provider: AuthProvider, code: string): Promise<TokenPair> {
     const socialAuthService = this.getSocialAuthStrategy(provider);
 
-    const authToken = await socialAuthService.getToken(code);
-    const accessToken = socialAuthService.getAccessToken(authToken);
-    return this.generateTokenPairWithSocialAuth(socialAuthService, accessToken);
+    const socialToken = await socialAuthService.getSocialToken(code);
+    const token = socialAuthService.getToken(socialToken);
+    return this.generateTokenPairWithSocialAuth(socialAuthService, token);
   }
 
   /**
    * Kakao SDK를 사용하여 로그인
    */
-  public async sdkLogin(accessToken: string): Promise<TokenPair> {
+  public async sdkLogin(token: string): Promise<TokenPair> {
     const socialAuthService = this.getSocialAuthStrategy(AuthProvider.KAKAO);
 
-    return this.generateTokenPairWithSocialAuth(socialAuthService, accessToken);
+    return this.generateTokenPairWithSocialAuth(socialAuthService, token);
   }
 
   public async regenerateAccessTokenFromRefreshToken(

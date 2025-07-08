@@ -15,7 +15,6 @@ import { Provider } from './common/decorators/provider.decorator';
 import { Exception } from 'src/common/decorator/exception.decorator';
 import { ClientType } from 'src/common/decorator/client-type.decorator';
 import { Cookie } from 'src/common/decorator/cookie.decorator';
-import { LoginTokenService } from './services/login-token.service';
 import { getCookieOption } from 'src/config/cookie-option';
 
 @Controller('auth')
@@ -48,40 +47,39 @@ export class AuthController {
 
   /**
    * 소셜 로그인 콜백 처리 엔드포인트
-   * - JWT 토큰을 발급하고 메인 페이지로 리다이렉트
    *
    * @author 강정연
    */
   @Get(':provider/callback')
-  public async callBack(
+  public async handleGetCallBack(
     @Provider() provider: AuthProvider | null,
     @Query('code') code: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    if (!provider) {
-      return res.redirect(
-        this.configService.get<string>('MAIN_PAGE_URL') || '/',
-      );
-    }
-
-    const { accessToken, refreshToken } = await this.authService.login(
-      provider,
-      code,
-    );
-
-    res.cookie('refreshToken', `Bearer ${refreshToken}`, getCookieOption());
-
-    return {
-      accessToken,
-    };
+    return this.login(res, provider, code);
   }
 
+  /**
+   * kakao sdk 를 요청하는 엔드포인트
+   */
   @Get('kakao-sdk')
   public async sdkCallBack(@Query('token') token: string): Promise<TokenPair> {
     const { accessToken, refreshToken } =
       await this.authService.sdkLogin(token);
 
     return { accessToken, refreshToken };
+  }
+
+  /**
+   * 소셜 로그인 콜백 처리 엔드포인트
+   */
+  @Post(':provider/callback')
+  public async handlePostCallBack(
+    @Provider() provider: AuthProvider | null,
+    @Body('code') code: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.login(res, provider, code);
   }
 
   /**
@@ -134,5 +132,28 @@ export class AuthController {
   public async appleLogin(@Body() body: Body) {
     console.log(body);
     return 1;
+  }
+
+  private async login(
+    res: Response,
+    provider: AuthProvider | null,
+    code: string,
+  ) {
+    if (!provider) {
+      return res.redirect(
+        this.configService.get<string>('MAIN_PAGE_URL') || '/',
+      );
+    }
+
+    const { accessToken, refreshToken } = await this.authService.login(
+      provider,
+      code,
+    );
+
+    res.cookie('refreshToken', `Bearer ${refreshToken}`, getCookieOption());
+
+    return {
+      accessToken,
+    };
   }
 }

@@ -27,9 +27,10 @@ export class KakaoStrategy extends SocialAuthBaseStrategy<
     `redirect_uri=${this.configService.get<string>('KAKAO_REDIRECT_URI')}&` +
     `client_id=${this.configService.get<string>('KAKAO_CLIENT_ID')}`;
 
-  protected tokenUrl = this.configService.get<string>('KAKAO_TOKEN_URL') ?? '';
+  protected socialTokenUrl =
+    this.configService.get<string>('KAKAO_TOKEN_URL') ?? '';
 
-  protected getTokenParams(code: string): Record<string, string> {
+  protected getSocialTokenParams(code: string): Record<string, string> {
     return {
       grant_type: 'authorization_code',
       client_id: this.configService.get<string>('KAKAO_CLIENT_ID') ?? '',
@@ -42,8 +43,8 @@ export class KakaoStrategy extends SocialAuthBaseStrategy<
     return this.authLoginUrl;
   }
 
-  public getAccessToken(token: KakaoTokenDto): string {
-    return token.access_token;
+  public getToken(socialToken: KakaoTokenDto): string {
+    return socialToken.access_token;
   }
 
   public extractUserInfo(userInfo: KakaoUserInfoDto): SocialUserInfoDto {
