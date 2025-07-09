@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { v4 as uuid } from 'uuid';
 import { S3Folder } from './enums/s3-folder.enum';
-import { promises } from 'dns';
 
 @Injectable()
 export class S3Service {
