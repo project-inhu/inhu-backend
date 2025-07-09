@@ -2,7 +2,7 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { PickedPlaceService } from './picked-place.service';
 import { GetAllPickedPlaceDto } from './dto/get-all-picked-place.dto';
 import { User } from 'src/common/decorator/user.decorator';
-import { PickedPlaceEntity } from './entity/picked-place.entity';
+import { PickedPlaceOverviewEntity } from './entity/picked-place-overview.entity';
 import { Exception } from 'src/common/decorator/exception.decorator';
 
 @Controller('picked-place')
@@ -19,7 +19,7 @@ export class PickedPlaceController {
   async getAllPickedPlace(
     @Query() getAllPickedPlaceDto: GetAllPickedPlaceDto,
     @User('idx') userIdx?: number,
-  ): Promise<PickedPlaceEntity[]> {
+  ): Promise<PickedPlaceOverviewEntity[]> {
     return await this.pickedPlaceService.getAllPickedPlace(
       getAllPickedPlaceDto.page,
       userIdx,

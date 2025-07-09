@@ -7,7 +7,7 @@ import { Prisma } from '@prisma/client';
  *
  * @author 이수인
  */
-const PLACE_SELECT_FIELD = Prisma.validator<Prisma.PlaceDefaultArgs>()({
+export const PLACE_SELECT_FIELD = Prisma.validator<Prisma.PlaceDefaultArgs>()({
   select: {
     idx: true,
     name: true,

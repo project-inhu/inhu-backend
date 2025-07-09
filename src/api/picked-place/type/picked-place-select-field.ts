@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { PLACE_SELECT_FIELD } from 'src/api/place/type/place-select-field.type';
 
 /**
  * Prisma에서 조회된 picked place 데이터
@@ -13,22 +14,7 @@ const PICKED_PLACE_SELECT_FIELD =
       title: true,
       content: true,
       place: {
-        select: {
-          idx: true,
-          name: true,
-          address: true,
-          reviewCount: true,
-          bookmarkList: {
-            select: {
-              placeIdx: true,
-            },
-          },
-          placeImageList: {
-            select: {
-              path: true,
-            },
-          },
-        },
+        select: PLACE_SELECT_FIELD.select,
       },
     },
   });

@@ -107,7 +107,7 @@ export class PlaceEntity {
               endAt: formatTimeFromDate(hour.endAt),
               breakTimeList: hour.BreakTimeList.map((bt) => ({
                 startAt: formatTimeFromDate(bt.startAt),
-                endAt: formatTimeFromDate(bt.startAt),
+                endAt: formatTimeFromDate(bt.endAt),
               })),
             }),
           );

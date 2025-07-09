@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
-import { PickedPlaceSelectField } from './type/picked-place-select-field';
+import { PickedPlaceOverviewSelectField } from './type/picked-place-overview-select-field';
 
 @Injectable()
 export class PickedPlaceRepository {
@@ -9,7 +9,7 @@ export class PickedPlaceRepository {
   async selectAllPickedPlace(
     page: number,
     userIdx?: number,
-  ): Promise<PickedPlaceSelectField[]> {
+  ): Promise<PickedPlaceOverviewSelectField[]> {
     return await this.prisma.pickedPlace.findMany({
       skip: (page - 1) * 10,
       take: 10,
