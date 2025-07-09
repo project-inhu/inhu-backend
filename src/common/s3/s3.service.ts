@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { v4 as uuid } from 'uuid';
 import { S3Folder } from './enums/s3-folder.enum';
+import { promises } from 'dns';
 
 @Injectable()
 export class S3Service {
@@ -29,14 +30,38 @@ export class S3Service {
   }
 
   /**
+   * 단일 파일 업로드
+   *
+   * @author 조희주
+   */
+  async uploadFile(
+    file: Express.Multer.File,
+    folder: S3Folder,
+  ): Promise<string> {
+    return this.upload(file, folder);
+  }
+
+  /**
+   * 다중 파일 업로드
+   *
+   * @author 조희주
+   */
+  async uploadFiles(
+    files: Express.Multer.File[],
+    folder: S3Folder,
+  ): Promise<string[]> {
+    const uploadPromises = files.map((file) => this.upload(file, folder));
+    return Promise.all(uploadPromises);
+  }
+
+  /**
    * S3에 파일 업로드
    *
    * @example '/menu/41ee298f-7745-43cd-b81b-374a0e692fc9-candies.jpg'
    *
    * @author 조희주
    */
-
-  async uploadFile(
+  private async upload(
     file: Express.Multer.File,
     folder: S3Folder,
   ): Promise<string> {
