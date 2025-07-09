@@ -72,6 +72,14 @@ CREATE TABLE break_time_tb (
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE place_keyword_count_tb
+(
+  place_idx   int NOT NULL,
+  keyword_idx int NOT NULL,
+  count       int NOT NULL DEFAULT 0,
+  PRIMARY KEY (place_idx, keyword_idx)
+);
+
 CREATE TABLE place_type_mapping_tb
 (
   place_type_idx int NOT NULL,
@@ -305,3 +313,13 @@ ALTER TABLE picked_place_tb
   ADD CONSTRAINT FK_place_tb_TO_picked_place_tb
     FOREIGN KEY (place_idx)
     REFERENCES place_tb (idx);
+
+ALTER TABLE place_keyword_count_tb
+  ADD CONSTRAINT FK_place_tb_TO_place_keyword_count_tb
+    FOREIGN KEY (place_idx)
+    REFERENCES place_tb (idx); 
+
+ALTER TABLE place_keyword_count_tb
+  ADD CONSTRAINT FK_keyword_tb_TO_place_keyword_count_tb
+    FOREIGN KEY (keyword_idx)
+    REFERENCES keyword_tb (idx);  
