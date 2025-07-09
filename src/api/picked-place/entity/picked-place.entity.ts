@@ -1,7 +1,7 @@
-import { PlaceOverviewEntity } from 'src/api/place/entity/place-overview.entity';
+import { PlaceEntity } from 'src/api/place/entity/place.entity';
 import { PickedPlaceSelectField } from '../type/picked-place-select-field';
 
-export class PickedPlaceEntity {
+export class PickedPlaceEntity extends PlaceEntity {
   /**
    * title
    *
@@ -16,22 +16,18 @@ export class PickedPlaceEntity {
    */
   content: string;
 
-  /**
-   * 등록한 place 정보
-   */
-  place: PlaceOverviewEntity;
-
   constructor(data: PickedPlaceEntity) {
-    Object.assign(this, data);
+    super(data);
+    this.title = data.title;
+    this.content = data.content;
   }
 
-  static createEntityFromPrisma(
-    pickedPlace: PickedPlaceSelectField,
-  ): PickedPlaceEntity {
+  static createEntity(data: PickedPlaceSelectField): PickedPlaceEntity {
+    const place = PlaceEntity.createEntityFromPrisma(data.place);
     return new PickedPlaceEntity({
-      title: pickedPlace.title,
-      content: pickedPlace.content,
-      place: PlaceOverviewEntity.createEntityFromPrisma(pickedPlace.place),
+      title: data.title,
+      content: data.content,
+      ...place,
     });
   }
 }

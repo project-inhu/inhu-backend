@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PickedPlaceRepository } from './picked-place.repository';
-import { PickedPlaceEntity } from './entity/picked-place.entity';
+import { PickedPlaceOverviewEntity } from './entity/picked-place-overview.entity';
 
 @Injectable()
 export class PickedPlaceService {
@@ -9,9 +9,9 @@ export class PickedPlaceService {
   async getAllPickedPlace(
     page: number,
     userIdx?: number,
-  ): Promise<PickedPlaceEntity[]> {
+  ): Promise<PickedPlaceOverviewEntity[]> {
     return (
       await this.pickedPlaceRepository.selectAllPickedPlace(page, userIdx)
-    ).map(PickedPlaceEntity.createEntityFromPrisma);
+    ).map(PickedPlaceOverviewEntity.createEntityFromPrisma);
   }
 }
