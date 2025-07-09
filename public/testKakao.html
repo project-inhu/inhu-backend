@@ -30,7 +30,7 @@
         console.log('Apple 로그인 성공! 브라우저가 받은 데이터:', event.detail);
 
         const code = event.detail.authorization;
-        fetch('https://inhu.co.kr/auth/apple/test', {
+        fetch('https://inhu.co.kr/auth/apple/callback', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
