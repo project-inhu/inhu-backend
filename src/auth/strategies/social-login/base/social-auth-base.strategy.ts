@@ -78,7 +78,10 @@ export abstract class SocialAuthBaseStrategy<TToken = any, TUserInfo = any> {
    * @author 이수인
    */
   public async getSocialToken(code: string): Promise<TToken> {
+    console.log('code: ', code);
     const params = this.getSocialTokenParams(code);
+    console.log('params: ', params);
+    console.log('socialTokenUrl: ', this.socialTokenUrl);
 
     const response = await axios.post<TToken>(
       this.socialTokenUrl,

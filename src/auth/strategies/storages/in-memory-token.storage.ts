@@ -1,15 +1,15 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginTokenService } from '../../services/login-token.service';
-import { TokenStorageStrategy } from '../base/token-storage.strategy';
+import { TokenStorageStrategy } from './base/token-storage.strategy';
 
 @Injectable()
 export class InMemoryTokenStorage extends TokenStorageStrategy {
   /**
    * Refresh Token을 서버 메모리에서 관리 (DB 저장 X)
-   * - key: userIdx
-   * - value: refreshToken (string)
+   * - key: refreshToken (string)
+   * - value: userIdx
    */
-  private readonly REFRESH_TOKEN_STORE: Record<number, string> = {};
+  private readonly REFRESH_TOKEN_STORE: Record<string, number> = {};
 
   constructor(private readonly loginTokenService: LoginTokenService) {
     super();
@@ -20,8 +20,11 @@ export class InMemoryTokenStorage extends TokenStorageStrategy {
    *
    * @author 이수인
    */
-  public saveRefreshToken(userIdx: number, refreshToken: string): void {
-    this.REFRESH_TOKEN_STORE[userIdx] = refreshToken;
+  public async saveRefreshToken(
+    userIdx: number,
+    refreshToken: string,
+  ): Promise<void> {
+    this.REFRESH_TOKEN_STORE[refreshToken] = userIdx;
   }
 
   /**
@@ -29,8 +32,8 @@ export class InMemoryTokenStorage extends TokenStorageStrategy {
    *
    * @author 이수인
    */
-  public getRefreshToken(userIdx: number): string | null {
-    return this.REFRESH_TOKEN_STORE[userIdx] || null;
+  public async getRefreshToken(refreshToken: string): Promise<number | null> {
+    return this.REFRESH_TOKEN_STORE[refreshToken] || null;
   }
 
   /**
@@ -44,20 +47,20 @@ export class InMemoryTokenStorage extends TokenStorageStrategy {
     const payload =
       await this.loginTokenService.verifyRefreshToken(refreshToken);
 
-    if (this.isRefreshTokenInvalid(payload, refreshToken)) {
+    if (await this.isRefreshTokenInvalid(payload, refreshToken)) {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
     return await this.loginTokenService.signAccessToken(payload);
   }
 
-  protected isRefreshTokenInvalid(
+  protected async isRefreshTokenInvalid(
     payload: RefreshTokenPayload,
     refreshToken: string,
-  ): boolean {
+  ): Promise<boolean> {
     return (
-      !this.getRefreshToken(payload.idx) ||
-      this.getRefreshToken(payload.idx) !== refreshToken
+      !(await this.getRefreshToken(refreshToken)) ||
+      (await this.getRefreshToken(refreshToken)) !== payload.idx
     );
   }
 }

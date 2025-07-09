@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { AuthProvider } from '../enums/auth-provider.enum';
 import { LoginTokenService } from '../services/login-token.service';
-import { SocialAuthBaseStrategy } from '../strategies/base/social-auth-base.strategy';
-import { KakaoStrategy } from '../strategies/kakao/kakao.strategy';
+import { SocialAuthBaseStrategy } from '../strategies/social-login/base/social-auth-base.strategy';
+import { KakaoStrategy } from '../strategies/social-login/kakao/kakao.strategy';
 import { UserService } from 'src/api/user/user.service';
-import { TokenStorageStrategy } from '../strategies/base/token-storage.strategy';
-import { AppleStrategy } from '../strategies/apple/apple.strategy';
+import { TokenStorageStrategy } from '../strategies/storages/base/token-storage.strategy';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { AppleStrategy } from '../strategies/social-login/apple/apple.strategy';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +15,7 @@ export class AuthService {
     AuthProvider,
     SocialAuthBaseStrategy
   >;
+
   constructor(
     private readonly kakaoAuthService: KakaoStrategy,
     private readonly appleAuthService: AppleStrategy,

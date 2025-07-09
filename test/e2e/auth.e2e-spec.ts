@@ -3,12 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { AuthProvider } from 'src/auth/enums/auth-provider.enum';
 import { AuthService } from 'src/auth/services/auth.service';
 import { LoginTokenService } from 'src/auth/services/login-token.service';
-import { KakaoStrategy } from 'src/auth/strategies/kakao/kakao.strategy';
+import { KakaoStrategy } from 'src/auth/strategies/social-login/kakao/kakao.strategy';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import * as request from 'supertest';
 import { extractCookieValue } from 'test/common/utils/extract-cookie-value.util';
 import { TestManager } from 'test/common/helpers/test-manager';
-import { TokenStorageStrategy } from 'src/auth/strategies/base/token-storage.strategy';
+import { TokenStorageStrategy } from 'src/auth/strategies/storages/base/token-storage.strategy';
 
 /**
  * authController e2e test
