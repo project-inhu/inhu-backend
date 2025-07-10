@@ -24,6 +24,7 @@ model Keyword {
   createdAt                DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt                DateTime?              @map("deleted_at") @db.Timestamptz(6)
   reviewKeywordMappingList ReviewKeywordMapping[]
+  PlaceKeywordCountList    PlaceKeywordCount[]
 
   @@map("keyword_tb")
 }
@@ -38,23 +39,24 @@ model PlaceImage {
 }
 
 model Place {
-  idx                  Int                @id @default(autoincrement())
-  name                 String             @db.VarChar
-  tel                  String?            @unique @db.VarChar
-  address              String             @db.VarChar
-  addressX             Decimal            @map("address_x") @db.Decimal
-  addressY             Decimal            @map("address_y") @db.Decimal
-  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt            DateTime?          @map("deleted_at") @db.Timestamptz(6)
-  closedAt             DateTime?          @map("closed_at") @db.Timestamptz(6)
-  reviewCount          Int                @default(0) @map("review_count")
-  bookmarkList         Bookmark[]
-  operatingDayList     OperatingDay[]
-  placeImageList       PlaceImage[]
-  menuList             Menu[]
-  placeTypeMappingList PlaceTypeMapping[]
-  reviewList           Review[]
-  pickedPlace          PickedPlace?
+  idx                         Int                @id @default(autoincrement())
+  name                        String             @db.VarChar
+  tel                         String?            @unique @db.VarChar
+  address                     String             @db.VarChar
+  addressX                    Decimal            @map("address_x") @db.Decimal
+  addressY                    Decimal            @map("address_y") @db.Decimal
+  createdAt                   DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                   DateTime?          @map("deleted_at") @db.Timestamptz(6)
+  closedAt                    DateTime?          @map("closed_at") @db.Timestamptz(6)
+  reviewCount                 Int                @default(0) @map("review_count")
+  bookmarkList                Bookmark[]
+  operatingDayList            OperatingDay[]
+  placeImageList              PlaceImage[]
+  menuList                    Menu[]
+  placeTypeMappingList        PlaceTypeMapping[]
+  reviewList                  Review[]
+  pickedPlace                 PickedPlace?
+  PlaceReviewKeywordCountList PlaceKeywordCount[]
 
   @@map("place_tb")
 }
@@ -100,6 +102,16 @@ model BreakTime {
   operatingHour    OperatingHour  @relation(fields: [operatingHourIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_operating_hour_tb_to_break_time_tb")
 
   @@map("break_time_tb")
+}
+
+model PlaceKeywordCount{
+  placeIdx     Int       @map("place_idx")
+  keywordIdx   Int       @map("keyword_idx")
+  count        Int       @default(0)
+  place        Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_keyword_count_tb")
+  keyword      Keyword   @relation(fields: [keywordIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_keyword_tb_to_place_keyword_count_tb")
+  @@id([placeIdx, keywordIdx])
+  @@map("place+_keyword_count_tb")
 }
 
 model PlaceTypeMapping {
