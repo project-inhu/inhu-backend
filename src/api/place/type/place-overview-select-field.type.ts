@@ -14,6 +14,21 @@ export const PLACE_OVERVIEW_SELECT_FIELD =
       name: true,
       address: true,
       reviewCount: true,
+      placeKeywordCountList: {
+        take: 2,
+        orderBy: {
+          count: 'desc',
+        },
+        select: {
+          count: true,
+          keyword: {
+            select: {
+              content: true,
+              idx: true,
+            },
+          },
+        },
+      },
       bookmarkList: {
         select: {
           placeIdx: true,

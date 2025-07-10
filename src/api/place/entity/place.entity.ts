@@ -5,6 +5,10 @@ import { PlaceSelectField } from '../type/place-select-field.type';
 import { OperatingWeekSchedule } from '../type/operating-week-schedule.type';
 import { OperatingTimeInfo } from '../type/operating-time-info.type';
 import { formatTimeFromDate } from 'src/common/utils/date.util';
+import { KeywordEntity } from 'src/api/keyword/entity/keyword.entity';
+import { PickType } from '@nestjs/swagger';
+
+class PlaceKeywordEntity extends PickType(KeywordEntity, ['idx', 'content']) {}
 
 export class PlaceEntity {
   /**
@@ -76,7 +80,7 @@ export class PlaceEntity {
    *
    * @example ['맛있어요.', '가성비 좋아요.']
    */
-  keywordList: string[];
+  keywordList: PlaceKeywordEntity[];
 
   /**
    * 특정 장소 image path list
@@ -126,7 +130,10 @@ export class PlaceEntity {
       ),
       reviewCount: place.reviewCount,
       bookmark: place.bookmarkList?.length ? true : false,
-      keywordList: [],
+      keywordList: place.placeKeywordCountList.map(({ keyword }) => ({
+        idx: keyword.idx,
+        content: keyword.content,
+      })),
       imagePathList: place.placeImageList.map((image) => image.path ?? ''),
     });
   }

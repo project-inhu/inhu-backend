@@ -28,6 +28,21 @@ export class PickedPlaceRepository {
             name: true,
             address: true,
             reviewCount: true,
+            placeKeywordCountList: {
+              take: 2,
+              orderBy: {
+                count: 'desc',
+              },
+              select: {
+                count: true,
+                keyword: {
+                  select: {
+                    content: true,
+                    idx: true,
+                  },
+                },
+              },
+            },
             bookmarkList: userIdx
               ? {
                   where: { userIdx },

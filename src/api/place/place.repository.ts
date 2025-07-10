@@ -28,6 +28,21 @@ export class PlaceRepository {
         name: true,
         address: true,
         reviewCount: true,
+        placeKeywordCountList: {
+          take: 2,
+          orderBy: {
+            count: 'desc',
+          },
+          select: {
+            count: true,
+            keyword: {
+              select: {
+                content: true,
+                idx: true,
+              },
+            },
+          },
+        },
         bookmarkList: userIdx
           ? { where: { userIdx }, select: { placeIdx: true } }
           : undefined,
@@ -58,6 +73,21 @@ export class PlaceRepository {
         addressY: true,
         createdAt: true,
         reviewCount: true,
+        placeKeywordCountList: {
+          take: 2,
+          orderBy: {
+            count: 'desc',
+          },
+          select: {
+            count: true,
+            keyword: {
+              select: {
+                content: true,
+                idx: true,
+              },
+            },
+          },
+        },
         operatingDayList: {
           select: {
             day: true,

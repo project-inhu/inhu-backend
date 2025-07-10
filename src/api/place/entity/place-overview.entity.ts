@@ -7,6 +7,7 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
   'name',
   'address',
   'reviewCount',
+  'keywordList',
   'bookmark',
   'imagePathList',
 ]) {
@@ -23,6 +24,10 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
       name: place.name,
       address: place.address,
       reviewCount: place.reviewCount,
+      keywordList: place.placeKeywordCountList.map(({ keyword }) => ({
+        idx: keyword.idx,
+        content: keyword.content,
+      })),
       bookmark: place.bookmarkList?.length ? true : false,
       imagePathList: place.placeImageList.map((image) => image.path ?? ''),
     });
