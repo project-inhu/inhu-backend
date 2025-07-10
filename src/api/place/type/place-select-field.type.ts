@@ -19,9 +19,7 @@ export const PLACE_SELECT_FIELD = Prisma.validator<Prisma.PlaceDefaultArgs>()({
     reviewCount: true,
     placeKeywordCountList: {
       take: 2,
-      orderBy: {
-        count: 'desc',
-      },
+      orderBy: [{ count: 'desc' }, { keyword: { idx: 'asc' } }],
       select: {
         count: true,
         keyword: {
@@ -55,6 +53,7 @@ export const PLACE_SELECT_FIELD = Prisma.validator<Prisma.PlaceDefaultArgs>()({
       },
     },
     placeImageList: {
+      orderBy: { idx: 'asc' },
       select: {
         path: true,
       },

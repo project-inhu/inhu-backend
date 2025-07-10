@@ -16,9 +16,7 @@ export const PLACE_OVERVIEW_SELECT_FIELD =
       reviewCount: true,
       placeKeywordCountList: {
         take: 2,
-        orderBy: {
-          count: 'desc',
-        },
+        orderBy: [{ count: 'desc' }, { keyword: { idx: 'asc' } }],
         select: {
           count: true,
           keyword: {
@@ -35,6 +33,7 @@ export const PLACE_OVERVIEW_SELECT_FIELD =
         },
       },
       placeImageList: {
+        orderBy: { idx: 'asc' },
         select: {
           path: true,
         },

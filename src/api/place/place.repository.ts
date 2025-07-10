@@ -30,9 +30,7 @@ export class PlaceRepository {
         reviewCount: true,
         placeKeywordCountList: {
           take: 2,
-          orderBy: {
-            count: 'desc',
-          },
+          orderBy: [{ count: 'desc' }, { keyword: { idx: 'asc' } }],
           select: {
             count: true,
             keyword: {
@@ -47,6 +45,7 @@ export class PlaceRepository {
           ? { where: { userIdx }, select: { placeIdx: true } }
           : undefined,
         placeImageList: {
+          orderBy: { idx: 'asc' },
           select: {
             path: true,
           },
@@ -75,9 +74,7 @@ export class PlaceRepository {
         reviewCount: true,
         placeKeywordCountList: {
           take: 2,
-          orderBy: {
-            count: 'desc',
-          },
+          orderBy: [{ count: 'desc' }, { keyword: { idx: 'asc' } }],
           select: {
             count: true,
             keyword: {
@@ -109,6 +106,7 @@ export class PlaceRepository {
           ? { where: { userIdx }, select: { placeIdx: true } }
           : undefined,
         placeImageList: {
+          orderBy: { idx: 'asc' },
           select: {
             path: true,
           },
