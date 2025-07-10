@@ -230,13 +230,13 @@ INSERT INTO operating_hour_tb (operating_day_idx, start_at, end_at) VALUES
 (42, '12:00:00', '22:00:00'), 
 (43, '12:00:00', '22:00:00'), 
 (44, '12:00:00', '22:00:00'), 
-(45, '12:00:00', '22:00:00'), 
+(45, '12:00:00', '22:00:00');
 INSERT INTO break_time_tb (operating_hour_idx, start_at, end_at) VALUES
 (40, '15:00:00', '16:30:00'), 
 (41, '15:00:00', '16:30:00'), 
 (42, '15:00:00', '16:30:00'), 
 (43, '15:00:00', '16:30:00');
-INSERT INTO menu_tb (place_idx, name, content, price, is_flexible, image_path) VALUES 
+INSERT INTO menu_tb (place_idx, name, content,is_flexible, image_path) VALUES 
 (7, '딸기빙수', '계절마다 달라요', true, '/menu/41ee298f-7745-43cd-b81b-374a0e692fc9-candies.jpg');
 INSERT INTO menu_tb (place_idx, name, content, price, image_path) VALUES 
 (7, '치즈케이크', '꾸덕한 뉴욕 치즈케이크', 6500, '/menu/41ee298f-7745-43cd-b81b-374a0e692fc9-candies.jpg');
