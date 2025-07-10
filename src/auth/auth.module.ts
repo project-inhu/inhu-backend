@@ -10,6 +10,7 @@ import { UserModule } from 'src/api/user/user.module';
 import { TokenStorageStrategy } from './strategies/storages/base/token-storage.strategy';
 import { InMemoryTokenStorage } from './strategies/storages/in-memory-token.storage';
 import { AppleStrategy } from './strategies/social-login/apple/apple.strategy';
+import { SocialTokenService } from './strategies/social-login/services/social-token.service';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AppleStrategy } from './strategies/social-login/apple/apple.strategy';
     AppleStrategy,
     LoginTokenService,
     { provide: TokenStorageStrategy, useClass: InMemoryTokenStorage },
+    SocialTokenService,
   ],
   exports: [AuthService, LoginTokenService],
 })

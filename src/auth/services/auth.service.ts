@@ -1,20 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { AuthProvider } from '../enums/auth-provider.enum';
 import { LoginTokenService } from '../services/login-token.service';
-import { SocialAuthBaseStrategy } from '../strategies/social-login/base/social-auth-base.strategy';
+import { ISocialAuthStrategy } from '../strategies/social-login/interfaces/social-auth-base.strategy';
 import { KakaoStrategy } from '../strategies/social-login/kakao/kakao.strategy';
 import { UserService } from 'src/api/user/user.service';
 import { TokenStorageStrategy } from '../strategies/storages/base/token-storage.strategy';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
 import { AppleStrategy } from '../strategies/social-login/apple/apple.strategy';
+import { SocialUserInfoDto } from '../dto/social-common/social-user-info.dto';
 
 @Injectable()
 export class AuthService {
-  private readonly SOCIAL_LOGIN_MAP: Record<
-    AuthProvider,
-    SocialAuthBaseStrategy
-  >;
+  private readonly SOCIAL_LOGIN_MAP: Record<AuthProvider, ISocialAuthStrategy>;
 
   constructor(
     private readonly kakaoAuthService: KakaoStrategy,
@@ -34,18 +30,14 @@ export class AuthService {
    *
    * @author 조희주
    */
-  public getSocialAuthStrategy(provider: AuthProvider): SocialAuthBaseStrategy {
+  public getSocialAuthStrategy(provider: AuthProvider): ISocialAuthStrategy {
     return this.SOCIAL_LOGIN_MAP[provider];
   }
 
   public async generateTokenPairWithSocialAuth(
-    socialAuthService: SocialAuthBaseStrategy,
-    token: string,
+    userInfo: SocialUserInfoDto,
   ): Promise<TokenPair> {
-    const userInfo = await socialAuthService.getUserInfo(token);
-    const extractedUserInfo = socialAuthService.extractUserInfo(userInfo);
-
-    const user = await this.userService.createUser(extractedUserInfo);
+    const user = await this.userService.createUser(userInfo);
 
     const payload = { idx: user.idx };
     const jwtAccessToken =
@@ -66,18 +58,16 @@ export class AuthService {
   public async login(provider: AuthProvider, code: string): Promise<TokenPair> {
     const socialAuthService = this.getSocialAuthStrategy(provider);
 
-    const socialToken = await socialAuthService.getSocialToken(code);
-    const token = socialAuthService.getToken(socialToken);
-    return this.generateTokenPairWithSocialAuth(socialAuthService, token);
+    const extractedUserInfo = await socialAuthService.login(code);
+    return this.generateTokenPairWithSocialAuth(extractedUserInfo);
   }
 
   /**
    * Kakao SDK를 사용하여 로그인
    */
   public async sdkLogin(token: string): Promise<TokenPair> {
-    const socialAuthService = this.getSocialAuthStrategy(AuthProvider.KAKAO);
-
-    return this.generateTokenPairWithSocialAuth(socialAuthService, token);
+    const extractedUserInfo = await this.kakaoAuthService.sdkLogin(token);
+    return this.generateTokenPairWithSocialAuth(extractedUserInfo);
   }
 
   public async regenerateAccessTokenFromRefreshToken(

@@ -3,7 +3,8 @@
  *
  * @author 이수인
  */
-class AppleUserInfoDto {
+
+class AppleDecodedDto {
   /**
    * 토큰 발급자
    * https://appleid.apple.com 으로 고정
