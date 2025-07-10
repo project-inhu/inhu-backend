@@ -1,13 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthProvider } from 'src/auth/enums/auth-provider.enum';
-import { AuthService } from 'src/auth/services/auth.service';
 import { LoginTokenService } from 'src/auth/services/login-token.service';
-import { KakaoStrategy } from 'src/auth/strategies/social-login/kakao/kakao.strategy';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import * as request from 'supertest';
 import { extractCookieValue } from 'test/common/utils/extract-cookie-value.util';
 import { TestManager } from 'test/common/helpers/test-manager';
+import { KakaoStrategy } from 'src/auth/strategies/social-login/kakao/kakao.strategy';
+import { SocialTokenService } from 'src/auth/strategies/social-login/services/social-token.service';
 import { TokenStorageStrategy } from 'src/auth/strategies/storages/base/token-storage.strategy';
 
 /**
@@ -65,25 +65,14 @@ describe('AuthController (e2e)', () => {
 
   describe('GET /auth/kakao/callback', () => {
     it('first login', async () => {
-      // getToken mocking
+      // login mocking
       const kakaoStrategy = app.get(KakaoStrategy);
-      const kakaoToken: KakaoTokenDto = {
-        access_token: 'mock-access-token',
-        token_type: 'bearer',
-        refresh_token: 'mock-refresh-token',
-        expires_in: 111111,
-        scope: '',
-        refresh_token_expires_in: 111111,
-        id_token: '11111',
-      };
-      jest.spyOn(kakaoStrategy, 'getSocialToken').mockResolvedValue(kakaoToken);
-
-      // getUserInfo mocking
       const kakaoId = 1111111111;
-      const kakaoUserInfo: KakaoUserInfoDto = {
-        id: kakaoId,
-      };
-      jest.spyOn(kakaoStrategy, 'getUserInfo').mockResolvedValue(kakaoUserInfo);
+      jest
+        .spyOn(kakaoStrategy, 'login')
+        .mockImplementation(async (code: string) => {
+          return { snsId: kakaoId.toString(), provider: AuthProvider.KAKAO };
+        });
 
       // 최초 로그인 사용자 db에 존재하지 않은지 확인 (사용자 정보가 db에 반드시 등록되도록 보장하기 위함)
       const prisma = app.get(PrismaService);
@@ -131,25 +120,14 @@ describe('AuthController (e2e)', () => {
     });
 
     it('second login', async () => {
-      // getToken mocking
+      // login mocking
       const kakaoStrategy = app.get(KakaoStrategy);
-      const kakaoToken: KakaoTokenDto = {
-        access_token: 'mock-access-token',
-        token_type: 'bearer',
-        refresh_token: 'mock-refresh-token',
-        expires_in: 111111,
-        scope: '',
-        refresh_token_expires_in: 111111,
-        id_token: '11111',
-      };
-      jest.spyOn(kakaoStrategy, 'getSocialToken').mockResolvedValue(kakaoToken);
-
-      // getUserInfo mocking
       const kakaoId = 1111111111;
-      const kakaoUserInfo: KakaoUserInfoDto = {
-        id: kakaoId,
-      };
-      jest.spyOn(kakaoStrategy, 'getUserInfo').mockResolvedValue(kakaoUserInfo);
+      jest
+        .spyOn(kakaoStrategy, 'login')
+        .mockImplementation(async (code: string) => {
+          return { snsId: kakaoId.toString(), provider: AuthProvider.KAKAO };
+        });
 
       // 기존 사용자임을 가정하기 위해 임의 값 등록
       const prisma = app.get(PrismaService);
