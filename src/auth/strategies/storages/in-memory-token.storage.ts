@@ -6,10 +6,10 @@ import { TokenStorageStrategy } from './base/token-storage.strategy';
 export class InMemoryTokenStorage extends TokenStorageStrategy {
   /**
    * Refresh Token을 서버 메모리에서 관리 (DB 저장 X)
-   * - key: refreshToken (string)
-   * - value: userIdx
+   * - key: userIdx (number)
+   * - value: refreshToken (string)
    */
-  private readonly REFRESH_TOKEN_STORE: Record<string, number> = {};
+  private readonly REFRESH_TOKEN_STORE: Record<number, string> = {};
 
   constructor(private readonly loginTokenService: LoginTokenService) {
     super();
@@ -24,7 +24,7 @@ export class InMemoryTokenStorage extends TokenStorageStrategy {
     userIdx: number,
     refreshToken: string,
   ): Promise<void> {
-    this.REFRESH_TOKEN_STORE[refreshToken] = userIdx;
+    this.REFRESH_TOKEN_STORE[userIdx] = refreshToken;
   }
 
   /**
@@ -32,8 +32,8 @@ export class InMemoryTokenStorage extends TokenStorageStrategy {
    *
    * @author 이수인
    */
-  public async getRefreshToken(refreshToken: string): Promise<number | null> {
-    return this.REFRESH_TOKEN_STORE[refreshToken] || null;
+  public async getRefreshToken(userIdx: number): Promise<string | null> {
+    return this.REFRESH_TOKEN_STORE[userIdx] || null;
   }
 
   /**
@@ -59,8 +59,8 @@ export class InMemoryTokenStorage extends TokenStorageStrategy {
     refreshToken: string,
   ): Promise<boolean> {
     return (
-      !(await this.getRefreshToken(refreshToken)) ||
-      (await this.getRefreshToken(refreshToken)) !== payload.idx
+      !(await this.getRefreshToken(payload.idx)) ||
+      (await this.getRefreshToken(payload.idx)) !== refreshToken
     );
   }
 }

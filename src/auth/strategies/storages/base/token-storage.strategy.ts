@@ -19,7 +19,7 @@ export abstract class TokenStorageStrategy {
    *
    * @author 이수인
    */
-  public abstract getRefreshToken(refreshToken: string): Promise<number | null>;
+  public abstract getRefreshToken(userIdx: number): Promise<string | null>;
 
   /**
    * Refresh Token 검증 후 새로운 Access Token 발급
