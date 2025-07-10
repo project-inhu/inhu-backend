@@ -111,7 +111,7 @@ model PlaceKeywordCount{
   place        Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_keyword_count_tb")
   keyword      Keyword   @relation(fields: [keywordIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_keyword_tb_to_place_keyword_count_tb")
   @@id([placeIdx, keywordIdx])
-  @@map("place+_keyword_count_tb")
+  @@map("place_keyword_count_tb")
 }
 
 model PlaceTypeMapping {
