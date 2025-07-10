@@ -28,10 +28,24 @@ export class PlaceRepository {
         name: true,
         address: true,
         reviewCount: true,
+        placeKeywordCountList: {
+          take: 2,
+          orderBy: [{ count: 'desc' }, { keyword: { idx: 'asc' } }],
+          select: {
+            count: true,
+            keyword: {
+              select: {
+                content: true,
+                idx: true,
+              },
+            },
+          },
+        },
         bookmarkList: userIdx
           ? { where: { userIdx }, select: { placeIdx: true } }
           : undefined,
         placeImageList: {
+          orderBy: { idx: 'asc' },
           select: {
             path: true,
           },
@@ -58,6 +72,19 @@ export class PlaceRepository {
         addressY: true,
         createdAt: true,
         reviewCount: true,
+        placeKeywordCountList: {
+          take: 2,
+          orderBy: [{ count: 'desc' }, { keyword: { idx: 'asc' } }],
+          select: {
+            count: true,
+            keyword: {
+              select: {
+                content: true,
+                idx: true,
+              },
+            },
+          },
+        },
         operatingDayList: {
           select: {
             day: true,
@@ -79,6 +106,7 @@ export class PlaceRepository {
           ? { where: { userIdx }, select: { placeIdx: true } }
           : undefined,
         placeImageList: {
+          orderBy: { idx: 'asc' },
           select: {
             path: true,
           },

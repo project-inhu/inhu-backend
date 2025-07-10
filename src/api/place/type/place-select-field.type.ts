@@ -17,6 +17,19 @@ export const PLACE_SELECT_FIELD = Prisma.validator<Prisma.PlaceDefaultArgs>()({
     addressY: true,
     createdAt: true,
     reviewCount: true,
+    placeKeywordCountList: {
+      take: 2,
+      orderBy: [{ count: 'desc' }, { keyword: { idx: 'asc' } }],
+      select: {
+        count: true,
+        keyword: {
+          select: {
+            content: true,
+            idx: true,
+          },
+        },
+      },
+    },
     operatingDayList: {
       select: {
         day: true,
@@ -40,6 +53,7 @@ export const PLACE_SELECT_FIELD = Prisma.validator<Prisma.PlaceDefaultArgs>()({
       },
     },
     placeImageList: {
+      orderBy: { idx: 'asc' },
       select: {
         path: true,
       },
