@@ -56,7 +56,7 @@ model Place {
   placeTypeMappingList        PlaceTypeMapping[]
   reviewList                  Review[]
   pickedPlace                 PickedPlace?
-  PlaceReviewKeywordCountList PlaceKeywordCount[]
+  placeKeywordCountList       PlaceKeywordCount[]
 
   @@map("place_tb")
 }
