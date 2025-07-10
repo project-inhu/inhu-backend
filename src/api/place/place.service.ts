@@ -52,8 +52,8 @@ export class PlaceService {
     placeList = placeList.slice(0, pageSize);
 
     return {
-      data: placeList.map(PlaceOverviewEntity.createEntityFromPrisma),
       hasNext,
+      data: placeList.map(PlaceOverviewEntity.createEntityFromPrisma),
     };
   }
 

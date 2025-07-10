@@ -22,6 +22,8 @@ export class PickedPlaceOverviewEntity extends PickType(PickedPlaceEntity, [
   ): PickedPlaceOverviewEntity {
     const place = data.place;
     return new PickedPlaceOverviewEntity({
+      title: data.title,
+      content: data.content,
       idx: place.idx,
       name: place.name,
       address: place.address,
@@ -32,8 +34,6 @@ export class PickedPlaceOverviewEntity extends PickType(PickedPlaceEntity, [
       })),
       bookmark: place.bookmarkList?.length ? true : false,
       imagePathList: place.placeImageList.map((image) => image.path ?? ''),
-      title: data.title,
-      content: data.content,
     });
   }
 }
