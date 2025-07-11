@@ -8,6 +8,11 @@ import { Prisma } from '@prisma/client';
 export class PlaceRepository {
   constructor(private prisma: PrismaService) {}
 
+  /**
+   * 모든 place 개요 가져오기
+   *
+   * @author 강정연
+   */
   async selectAllPlaceOverview(
     skip: number,
     take: number,
@@ -54,6 +59,11 @@ export class PlaceRepository {
     });
   }
 
+  /**
+   * 특정 idx의 place 관련 모든 정보 가져오기
+   *
+   * @author 강정연
+   */
   async selectPlaceByPlaceIdx(
     placeIdx: number,
     userIdx?: number,
@@ -115,6 +125,11 @@ export class PlaceRepository {
     });
   }
 
+  /**
+   * 특정 idx의 place review count 업데이트
+   *
+   * @author 강정연
+   */
   async updatePlaceReviewCountByPlaceIdx(
     placeIdx: number,
     value: number,

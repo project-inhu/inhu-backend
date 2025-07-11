@@ -10,6 +10,11 @@ import { PickType } from '@nestjs/swagger';
 
 class PlaceKeywordEntity extends PickType(KeywordEntity, ['idx', 'content']) {}
 
+/**
+ * place entity
+ *
+ * @author 강정연
+ */
 export class PlaceEntity {
   /**
    * place Idx

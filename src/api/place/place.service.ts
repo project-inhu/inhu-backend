@@ -15,7 +15,11 @@ export class PlaceService {
     private keywordRepository: KeywordRepository,
   ) {}
 
-  // 클라이언트의 정렬 기준을 Prisma 쿼리 옵션(orderby)으로 매핑
+  /**
+   * 클라이언트의 정렬 기준을 Prisma 쿼리 옵션(orderby)으로 매핑
+   *
+   * @author 강정연
+   */
   private readonly orderByMap: Record<
     PlaceOverviewOrderBy,
     | Prisma.PlaceOrderByWithRelationInput
@@ -28,6 +32,11 @@ export class PlaceService {
     ],
   };
 
+  /**
+   * 모든 place 개요 가져오기
+   *
+   * @author 강정연
+   */
   async getAllPlaceOverview(
     page: number,
     orderBy?: PlaceOverviewOrderBy,
@@ -57,6 +66,11 @@ export class PlaceService {
     };
   }
 
+  /**
+   * 특정 idx의 place 관련 모든 정보 가져오기
+   *
+   * @author 강정연
+   */
   async getPlaceByPlaceIdx(
     placeIdx: number,
     userIdx?: number,
@@ -73,6 +87,11 @@ export class PlaceService {
     return PlaceEntity.createEntityFromPrisma(place);
   }
 
+  /**
+   * 특정 idx의 place review count 업데이트
+   *
+   * @author 강정연
+   */
   async updatePlaceReviewCountByPlaceIdx(
     placeIdx: number,
     updateType: ReviewCountUpdateType,
