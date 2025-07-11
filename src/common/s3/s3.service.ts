@@ -1,8 +1,14 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { v4 as uuid } from 'uuid';
-import { S3Folder } from './enums/s3-folder.enum';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { GetPresignedUrlInput } from './input/get-presigned-url.input';
+import { GetPresignedUrlResponseDto } from './dto/get-presigned-url-response.dto';
 
 @Injectable()
 export class S3Service {
@@ -29,51 +35,33 @@ export class S3Service {
   }
 
   /**
-   * 단일 파일 업로드
+   * S3 업로드 위한 Presigned URL 생성
    *
    * @author 조희주
    */
-  async uploadFile(
-    file: Express.Multer.File,
-    folder: S3Folder,
-  ): Promise<string> {
-    return this.upload(file, folder);
-  }
+  async getPresignedUrl(
+    getPresignedUrl: GetPresignedUrlInput,
+  ): Promise<GetPresignedUrlResponseDto> {
+    const { folder, filename } = getPresignedUrl;
 
-  /**
-   * 다중 파일 업로드
-   *
-   * @author 조희주
-   */
-  async uploadFiles(
-    files: Express.Multer.File[],
-    folder: S3Folder,
-  ): Promise<string[]> {
-    const uploadPromises = files.map((file) => this.upload(file, folder));
-    return Promise.all(uploadPromises);
-  }
+    if (!filename) {
+      throw new BadRequestException('You need file.');
+    }
 
-  /**
-   * S3에 파일 업로드
-   *
-   * @example '/menu/41ee298f-7745-43cd-b81b-374a0e692fc9-candies.jpg'
-   *
-   * @author 조희주
-   */
-  private async upload(
-    file: Express.Multer.File,
-    folder: S3Folder,
-  ): Promise<string> {
-    const key = `/${folder}/${uuid()}-${file.originalname}`;
+    const key = `/${folder}/${uuid()}-${filename}`;
 
     const command = new PutObjectCommand({
       Bucket: this.bucketName,
       Key: key,
-      Body: file.buffer,
-      ContentType: file.mimetype,
     });
 
-    await this.s3Client.send(command);
-    return key;
+    const presignedUrl = await getSignedUrl(this.s3Client, command, {
+      expiresIn: 300,
+    });
+
+    return {
+      presignedUrl,
+      key,
+    };
   }
 }
