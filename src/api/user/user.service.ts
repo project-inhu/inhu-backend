@@ -12,6 +12,7 @@ import { S3Service } from 'src/common/s3/s3.service';
 import { S3Folder } from 'src/common/s3/enums/s3-folder.enum';
 import { UpdateUserInput } from './input/update-user.input';
 import { UpdateProfileImageInput } from './input/update-profile-image.input';
+import { GetPresignedUrlResponseDto } from 'src/common/s3/dto/get-presigned-url-response.dto';
 
 @Injectable()
 export class UserService {
@@ -104,23 +105,31 @@ export class UserService {
   }
 
   /**
-   * 프로필 이미지 수정 (S3 업로드 & DB 업데이트)
+   * 프로필 이미지 업로드를 위한 Presigned URL 생성
    *
    * @author 조희주
    */
-  async updateProfileImageByUserIdx(
+  async getPresignedUrl(filename: string): Promise<GetPresignedUrlResponseDto> {
+    return this.s3Service.getPresignedUrl({
+      folder: S3Folder.PROFILE,
+      filename: filename,
+    });
+  }
+
+  /**
+   * S3 업로드 후 파일 키를 DB에 저장
+   *
+   * @author 조희주
+   */
+  async updateProfileImagePathByUserIdx(
     updateProfileImageInput: UpdateProfileImageInput,
   ): Promise<UserInfoEntity> {
-    const { userIdx, file } = updateProfileImageInput;
+    const { userIdx, imageKey } = updateProfileImageInput;
 
     const user = await this.userRepository.selectUserByUserIdx(userIdx);
     if (!user) {
       throw new NotFoundException('User not found');
     }
-
-    const imageKey = file
-      ? await this.s3Service.uploadFile(file, S3Folder.PROFILE)
-      : null;
 
     const updatedUser = await this.userRepository.updateUserByUserIdx({
       userIdx,

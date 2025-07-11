@@ -4,15 +4,14 @@ import {
   Delete,
   Get,
   Patch,
-  UploadedFile,
+  Query,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from 'src/auth/common/guards/auth.guard';
 import { User } from 'src/common/decorator/user.decorator';
 import { UserInfoEntity } from './entity/user-info.entity';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { GetPresignedUrlResponseDto } from 'src/common/s3/dto/get-presigned-url-response.dto';
 
 @Controller('user')
 export class UserController {
@@ -46,18 +45,33 @@ export class UserController {
   }
 
   /**
-   * 프로필 이미지 수정
+   * 프로필 이미지 업로드를 위한 Presigned URL 발급
+   *
+   * @author 조희주
+   */
+  @UseGuards(AuthGuard)
+  @Get('/profile-image/presigned-url')
+  async getPresignedUrl(
+    @Query('filename') filename: string,
+  ): Promise<GetPresignedUrlResponseDto> {
+    return this.userService.getPresignedUrl(filename);
+  }
+
+  /**
+   * S3 업로드 완료 후, 이미지 키를 DB에 저장
    *
    * @author 조희주
    */
   @UseGuards(AuthGuard)
   @Patch('/profile-image')
-  @UseInterceptors(FileInterceptor('file'))
-  async updateProfileImageByUserIdx(
+  async updateProfileImagePathByUserIdx(
     @User('idx') userIdx: number,
-    @UploadedFile() file: Express.Multer.File,
+    @Body('imageKey') imageKey: string,
   ): Promise<UserInfoEntity> {
-    return this.userService.updateProfileImageByUserIdx({ userIdx, file });
+    return this.userService.updateProfileImagePathByUserIdx({
+      userIdx,
+      imageKey,
+    });
   }
 
   /**
