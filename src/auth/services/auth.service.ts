@@ -63,6 +63,8 @@ export class AuthService {
     provider: AuthProviderValue,
     dto: any,
   ): Promise<TokenPair> {
+    console.log('3. provider in auth.service.ts:', provider);
+    console.log('4. dto in auth.service.ts:', dto);
     return this.generateTokenPairWithSocialAuth(
       await this.getSocialAuthStrategy(provider).login(dto),
     );
