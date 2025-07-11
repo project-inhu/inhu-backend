@@ -13,6 +13,11 @@ export class SocialTokenService<TToken = any> {
     params: Record<string, string>,
     socialTokenUrl: string,
   ): Promise<TToken> {
+    console.log('8. params in social-token.service.ts:', params);
+    console.log(
+      '9. socialTokenUrl in social-token.service.ts:',
+      socialTokenUrl,
+    );
     const response = await axios.post<TToken>(
       socialTokenUrl,
       new URLSearchParams(params),

@@ -108,7 +108,12 @@ export class AuthController {
       );
     }
 
+    console.log('1. provider in auth.controller.ts:', provider);
     const socialAuthService = this.authService.getSocialAuthStrategy(provider);
+    console.log(
+      '2. extractDtoFromRequest in auth.controller.ts:',
+      socialAuthService.extractDtoFromRequest(req),
+    );
 
     const { accessToken, refreshToken } = await this.authService.login(
       provider,

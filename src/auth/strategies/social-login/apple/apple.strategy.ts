@@ -127,6 +127,15 @@ export class AppleStrategy
    * @author 이수인
    */
   public async login(dto: AppleCallbackBody): Promise<CreateUserEntity> {
+    console.log('5. dto in apple.strategy.ts:', dto);
+    console.log(
+      '6. getSocialTokenParams in apple.strategy.ts:',
+      this.getSocialTokenParams(dto.authorizationCode?.code ?? ''),
+    );
+    console.log(
+      '7. APPLE_TOKEN_URL in apple.strategy.ts:',
+      this.configService.get<string>('APPLE_TOKEN_URL') ?? '',
+    );
     const socialToken = await this.socialTokenService.requestSocialToken(
       this.getSocialTokenParams(dto.authorizationCode?.code ?? ''),
       this.configService.get<string>('APPLE_TOKEN_URL') ?? '',
