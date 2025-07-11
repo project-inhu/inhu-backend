@@ -5,11 +5,9 @@
  */
 
 interface AppleCallbackBody {
-  authorizationCode?: {
-    code: string;
-    id_token?: string;
-    state?: string;
-  };
+  code: string;
+  id_token?: string;
+  state?: string;
   user?: {
     email?: string;
     name?: {

@@ -130,14 +130,14 @@ export class AppleStrategy
     console.log('5. dto in apple.strategy.ts:', dto);
     console.log(
       '6. getSocialTokenParams in apple.strategy.ts:',
-      this.getSocialTokenParams(dto.authorizationCode?.code ?? ''),
+      this.getSocialTokenParams(dto.code),
     );
     console.log(
       '7. APPLE_TOKEN_URL in apple.strategy.ts:',
       this.configService.get<string>('APPLE_TOKEN_URL') ?? '',
     );
     const socialToken = await this.socialTokenService.requestSocialToken(
-      this.getSocialTokenParams(dto.authorizationCode?.code ?? ''),
+      this.getSocialTokenParams(dto.code),
       this.configService.get<string>('APPLE_TOKEN_URL') ?? '',
     );
     const decodedIdToken = await this.decodeIdToken(socialToken.id_token);
