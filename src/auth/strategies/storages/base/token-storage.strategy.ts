@@ -9,14 +9,17 @@ export abstract class TokenStorageStrategy {
    *
    * @author 이수인
    */
-  public abstract saveRefreshToken(userIdx: number, refreshToken: string): void;
+  public abstract saveRefreshToken(
+    userIdx: number,
+    refreshToken: string,
+  ): Promise<void>;
 
   /**
    * refresh token 조회
    *
    * @author 이수인
    */
-  public abstract getRefreshToken(userIdx: number): string | null;
+  public abstract getRefreshToken(userIdx: number): Promise<string | null>;
 
   /**
    * Refresh Token 검증 후 새로운 Access Token 발급
@@ -30,5 +33,5 @@ export abstract class TokenStorageStrategy {
   protected abstract isRefreshTokenInvalid(
     payload: RefreshTokenPayload,
     refreshToken: string,
-  ): boolean;
+  ): Promise<boolean>;
 }

@@ -5,17 +5,17 @@ import {
   Query,
   Res,
   Headers,
-  Body,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from './services/auth.service';
-import { AuthProvider } from './enums/auth-provider.enum';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { Provider } from './common/decorators/provider.decorator';
 import { Exception } from 'src/common/decorator/exception.decorator';
 import { ClientType } from 'src/common/decorator/client-type.decorator';
 import { Cookie } from 'src/common/decorator/cookie.decorator';
 import { getCookieOption } from 'src/config/cookie-option';
+import { AuthProviderValue } from './common/constants/auth-provider.constant';
 
 @Controller('auth')
 export class AuthController {
@@ -28,11 +28,11 @@ export class AuthController {
    * 소셜 로그인 요청을 처리하는 엔드포인트
    * - 해당 소셜 로그인 페이지로 리다이렉트
    *
-   * @author 강정연
+   * @author 이수인
    */
   @Get(':provider/login')
   public socialLogin(
-    @Provider() provider: AuthProvider | null,
+    @Provider() provider: AuthProviderValue | null,
     @Res() res: Response,
   ): void {
     if (!provider) {
@@ -48,19 +48,39 @@ export class AuthController {
   /**
    * 소셜 로그인 콜백 처리 엔드포인트
    *
-   * @author 강정연
+   * @author 이수인
    */
   @Get(':provider/callback')
   public async handleGetCallBack(
-    @Provider() provider: AuthProvider | null,
-    @Query('code') code: string,
+    @Provider() provider: AuthProviderValue | null,
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    return this.login(res, provider, code);
+    // ! POST /auth/:provider/callback 과 동일하므로 변경 시 동시에 변경 필요
+    if (!provider) {
+      return res.redirect(
+        this.configService.get<string>('MAIN_PAGE_URL') || '/',
+      );
+    }
+
+    const socialAuthService = this.authService.getSocialAuthStrategy(provider);
+
+    const { accessToken, refreshToken } = await this.authService.login(
+      provider,
+      socialAuthService.extractDtoFromRequest(req),
+    );
+
+    res.cookie('refreshToken', `Bearer ${refreshToken}`, getCookieOption());
+
+    return {
+      accessToken,
+    };
   }
 
   /**
    * kakao sdk 를 요청하는 엔드포인트
+   *
+   * @author 이수인
    */
   @Get('kakao-sdk')
   public async sdkCallBack(@Query('token') token: string): Promise<TokenPair> {
@@ -72,18 +92,40 @@ export class AuthController {
 
   /**
    * 소셜 로그인 콜백 처리 엔드포인트
+   *
+   * @author 이수인
    */
   @Post(':provider/callback')
   public async handlePostCallBack(
-    @Provider() provider: AuthProvider | null,
-    @Body('code') code: string,
+    @Provider() provider: AuthProviderValue | null,
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    return this.login(res, provider, code);
+    // ! GET /auth/:provider/callback 과 동일하므로 변경 시 동시에 변경 필요
+    if (!provider) {
+      return res.redirect(
+        this.configService.get<string>('MAIN_PAGE_URL') || '/',
+      );
+    }
+
+    const socialAuthService = this.authService.getSocialAuthStrategy(provider);
+
+    const { accessToken, refreshToken } = await this.authService.login(
+      provider,
+      socialAuthService.extractDtoFromRequest(req),
+    );
+
+    res.cookie('refreshToken', `Bearer ${refreshToken}`, getCookieOption());
+
+    return {
+      accessToken,
+    };
   }
 
   /**
    * Access Token을 갱신하는 엔드포인트
+   *
+   * @author 이수인
    */
   @Post('refresh-token/regenerate')
   @Exception(
@@ -126,34 +168,5 @@ export class AuthController {
     res: Response,
   ): Promise<void> {
     res.clearCookie('refreshToken', getCookieOption());
-  }
-
-  @Post('/apple/test')
-  public async appleLogin(@Body() body: Body) {
-    console.log(body);
-    return 1;
-  }
-
-  private async login(
-    res: Response,
-    provider: AuthProvider | null,
-    code: string,
-  ) {
-    if (!provider) {
-      return res.redirect(
-        this.configService.get<string>('MAIN_PAGE_URL') || '/',
-      );
-    }
-
-    const { accessToken, refreshToken } = await this.authService.login(
-      provider,
-      code,
-    );
-
-    res.cookie('refreshToken', `Bearer ${refreshToken}`, getCookieOption());
-
-    return {
-      accessToken,
-    };
   }
 }

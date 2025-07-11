@@ -1,12 +1,12 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginTokenService } from '../../services/login-token.service';
-import { TokenStorageStrategy } from '../base/token-storage.strategy';
+import { TokenStorageStrategy } from './base/token-storage.strategy';
 
 @Injectable()
 export class InMemoryTokenStorage extends TokenStorageStrategy {
   /**
    * Refresh Token을 서버 메모리에서 관리 (DB 저장 X)
-   * - key: userIdx
+   * - key: userIdx (number)
    * - value: refreshToken (string)
    */
   private readonly REFRESH_TOKEN_STORE: Record<number, string> = {};
@@ -20,7 +20,10 @@ export class InMemoryTokenStorage extends TokenStorageStrategy {
    *
    * @author 이수인
    */
-  public saveRefreshToken(userIdx: number, refreshToken: string): void {
+  public async saveRefreshToken(
+    userIdx: number,
+    refreshToken: string,
+  ): Promise<void> {
     this.REFRESH_TOKEN_STORE[userIdx] = refreshToken;
   }
 
@@ -29,7 +32,7 @@ export class InMemoryTokenStorage extends TokenStorageStrategy {
    *
    * @author 이수인
    */
-  public getRefreshToken(userIdx: number): string | null {
+  public async getRefreshToken(userIdx: number): Promise<string | null> {
     return this.REFRESH_TOKEN_STORE[userIdx] || null;
   }
 
@@ -44,20 +47,20 @@ export class InMemoryTokenStorage extends TokenStorageStrategy {
     const payload =
       await this.loginTokenService.verifyRefreshToken(refreshToken);
 
-    if (this.isRefreshTokenInvalid(payload, refreshToken)) {
+    if (await this.isRefreshTokenInvalid(payload, refreshToken)) {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
     return await this.loginTokenService.signAccessToken(payload);
   }
 
-  protected isRefreshTokenInvalid(
+  protected async isRefreshTokenInvalid(
     payload: RefreshTokenPayload,
     refreshToken: string,
-  ): boolean {
+  ): Promise<boolean> {
     return (
-      !this.getRefreshToken(payload.idx) ||
-      this.getRefreshToken(payload.idx) !== refreshToken
+      !(await this.getRefreshToken(payload.idx)) ||
+      (await this.getRefreshToken(payload.idx)) !== refreshToken
     );
   }
 }

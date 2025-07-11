@@ -1,4 +1,4 @@
-import { AuthProvider } from 'src/auth/enums/auth-provider.enum';
+import { AuthProviderValue } from 'src/auth/common/constants/auth-provider.constant';
 
 /**
  * 소셜 로그인 후 받은 사용자 정보에서 필요한 값(id, 제공자)을 추출하여 저장하는 DTO
@@ -14,5 +14,5 @@ export class SocialUserInfoDto {
   /**
    * 사용자가 로그인한 소셜 제공자 (AuthProvider Enum)
    */
-  provider: AuthProvider;
+  provider: AuthProviderValue;
 }
