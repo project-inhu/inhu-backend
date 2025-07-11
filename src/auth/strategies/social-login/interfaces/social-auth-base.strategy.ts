@@ -1,5 +1,5 @@
-import { SocialUserInfoDto } from 'src/auth/dto/social-common/social-user-info.dto';
 import { Request } from 'express';
+import { CreateUserEntity } from 'src/api/user/entity/create-user.entity';
 
 /**
  * 소셜 로그인 인증 전략의 기본 인터페이스
@@ -8,13 +8,18 @@ import { Request } from 'express';
  *
  * @author 이수인
  */
-export interface ISocialAuthStrategy<TToken = any, TUserInfo = any> {
+export interface ISocialAuthStrategy<
+  TProvider = string,
+  TToken = any,
+  TUserInfo = any,
+  TDto = any,
+> {
   /**
    * 요청에서 인증 코드를 추출
    *
    * @author 이수인
    */
-  extractCodeFromRequest(req: Request): string;
+  extractDtoFromRequest(req: Request): TDto;
 
   /**
    * 소셜 로그인 인증 페이지 URL을 반환
@@ -28,5 +33,5 @@ export interface ISocialAuthStrategy<TToken = any, TUserInfo = any> {
    *
    * @author 이수인
    */
-  login(code: string): Promise<SocialUserInfoDto>;
+  login(dto: TDto): Promise<CreateUserEntity>;
 }
