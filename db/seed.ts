@@ -723,6 +723,73 @@ async function main() {
   await prisma.$executeRawUnsafe(
     `UPDATE place_tb SET review_count = (SELECT COUNT(*) FROM review_tb WHERE place_idx = place_tb.idx)`,
   );
+
+  const pickedPlacesData = [
+    {
+      placeIdx: 2,
+      title: '결정장애 필독! 메뉴만 12개',
+      content: '김밥부터 파스타까지, 없는 게 없는 우리 동네 대표 맛집!',
+    },
+    {
+      placeIdx: 5,
+      title: '사진만 봐도 가고 싶어지는 곳',
+      content:
+        '사장님이 포토그래퍼? 감성 넘치는 인테리어와 플레이팅을 만나보세요.',
+    },
+    {
+      placeIdx: 9,
+      title: '일요일은 쉬지만 후회 없어요',
+      content:
+        '주 6일만으로도 동네를 평정한 찐맛집. 평일 저녁이나 토요일 방문을 추천합니다.',
+    },
+    {
+      placeIdx: 10,
+      title: '브레이크 타임 없는 착한 가게',
+      content: '애매한 시간에도 OK! 언제 방문해도 편안하게 식사할 수 있습니다.',
+    },
+    {
+      placeIdx: 11,
+      title: '365일 연중무휴! 언제나 우리 곁에',
+      content:
+        '언제 찾아가도 항상 열려있는 우리 동네 단골 가게입니다. 명절에도 영업해요!',
+    },
+    {
+      placeIdx: 12,
+      title: '점심과 저녁, 두 번의 미식 경험',
+      content:
+        '점심 특선과 저녁 메인 메뉴가 모두 훌륭한 곳. 두 번 방문해도 새로워요.',
+    },
+    {
+      placeIdx: 19,
+      title: '오늘의 시세는? 신선함이 생명',
+      content:
+        '매일매일 가장 신선한 횟감을 싯가로 제공하는 믿을 수 있는 횟집입니다.',
+    },
+    {
+      placeIdx: 21,
+      title: '식사와 커피를 한 번에!',
+      content: '맛있는 파스타와 향긋한 스페셜티 커피를 한 공간에서 즐겨보세요.',
+    },
+    {
+      placeIdx: 22,
+      title: '수많은 리뷰가 증명하는 동네 1등',
+      content:
+        '광고가 아닌 진짜 후기들로 가득한, 주민들이 인정한 찐맛집입니다.',
+    },
+    {
+      placeIdx: 7,
+      title: '단 하나의 이미지로 승부',
+      content:
+        '화려하진 않지만, 대표 메뉴 하나로 승부하는 자신감 있는 맛집입니다.',
+    },
+    {
+      placeIdx: 14,
+      title: '쉬는 시간 없이 달리는 열정 맛집',
+      content:
+        '애매한 오후 3시, 출출할 때 더 이상 헛걸음하지 마세요! 언제나 여러분을 기다립니다.',
+    },
+  ];
+  await prisma.pickedPlace.createMany({ data: pickedPlacesData });
 }
 
 main()
