@@ -1,6 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { SocialUserInfoDto } from 'src/auth/dto/social-common/social-user-info.dto';
-import { AuthProvider } from 'src/auth/enums/auth-provider.enum';
 import { ConfigService } from '@nestjs/config';
 import { verify } from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
@@ -8,6 +7,9 @@ import { JwksClient } from 'jwks-rsa';
 import { SocialTokenService } from '../services/social-token.service';
 import { ISocialAuthStrategy } from '../interfaces/social-auth-base.strategy';
 import { Request } from 'express';
+import { AUTH_PROVIDERS } from 'src/auth/common/constants/auth-provider.constant';
+import { CreateUserEntity } from 'src/api/user/entity/create-user.entity';
+import { UserService } from 'src/api/user/user.service';
 
 /**
  * 애플 OAuth 인증 전략
@@ -18,14 +20,26 @@ import { Request } from 'express';
  */
 @Injectable()
 export class AppleStrategy
-  implements ISocialAuthStrategy<AppleTokenDto, AppleDecodedDto>
+  implements
+    ISocialAuthStrategy<
+      'APPLE',
+      AppleTokenDto,
+      AppleDecodedDto,
+      AppleCallbackBody
+    >
 {
   constructor(
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly socialTokenService: SocialTokenService<AppleTokenDto>,
+    private readonly userService: UserService,
   ) {}
 
+  /**
+   * 애플 소셜 로그인 요청 시 필요한 파라미터를 반환
+   *
+   * @author 이수인
+   */
   private getSocialTokenParams(code: string): Record<string, string> {
     return {
       client_id: this.configService.get<string>('APPLE_CLIENT_ID') ?? '',
@@ -37,6 +51,11 @@ export class AppleStrategy
     };
   }
 
+  /**
+   * 애플에서 발급한 ID 토큰을 디코딩하고 검증하여 사용자 정보를 반환
+   *
+   * @author 이수인
+   */
   private async decodeIdToken(idToken: string): Promise<AppleDecodedDto> {
     const jwksClient = new JwksClient({
       jwksUri: this.configService.get<string>('APPLE_PUBLIC_KEY_URL') ?? '',
@@ -57,21 +76,38 @@ export class AppleStrategy
     return userInfo;
   }
 
+  /**
+   * 애플 소셜 로그인 제공자를 반환
+   *
+   * @author 이수인
+   */
+  private getProvider(): 'apple' {
+    return AUTH_PROVIDERS['APPLE'].name;
+  }
+
+  /**
+   * 애플 사용자 정보를 SocialUserInfoDto로 변환
+   *
+   * @author 이수인
+   */
   private mapToSocialUserInfo(userInfo: AppleDecodedDto): SocialUserInfoDto {
-    return { snsId: userInfo.sub, provider: AuthProvider.APPLE };
+    return { snsId: userInfo.sub, provider: this.getProvider() };
   }
 
-  public extractCodeFromRequest(req: Request): string {
-    const body = req.body as AppleCallbackBody;
-    const code = body.authorizationCode?.code;
-    if (!code) {
-      throw new BadRequestException(
-        'Apple authorization code not found in request body',
-      );
-    }
-    return code;
+  /**
+   * 애플 로그인 콜백 요청에서 필요한 정보를 추출
+   *
+   * @author 이수인
+   */
+  public extractDtoFromRequest(req: Request): AppleCallbackBody {
+    return req.body as AppleCallbackBody;
   }
 
+  /**
+   * 애플 로그인 URL을 반환
+   *
+   * @author 이수인
+   */
   public getAuthLoginUrl(): string {
     return (
       this.configService.get<string>('APPLE_AUTH_LOGIN_URL') +
@@ -85,12 +121,18 @@ export class AppleStrategy
     );
   }
 
-  public async login(code: string): Promise<SocialUserInfoDto> {
+  /**
+   * 애플 로그인 요청을 처리하고 사용자 정보를 반환
+   *
+   * @author 이수인
+   */
+  public async login(dto: AppleCallbackBody): Promise<CreateUserEntity> {
     const socialToken = await this.socialTokenService.requestSocialToken(
-      this.getSocialTokenParams(code),
+      this.getSocialTokenParams(dto.authorizationCode?.code ?? ''),
       this.configService.get<string>('APPLE_TOKEN_URL') ?? '',
     );
     const decodedIdToken = await this.decodeIdToken(socialToken.id_token);
-    return this.mapToSocialUserInfo(decodedIdToken);
+    const extractedUserInfo = this.mapToSocialUserInfo(decodedIdToken);
+    return this.userService.createUser(extractedUserInfo);
   }
 }

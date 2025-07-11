@@ -8,7 +8,6 @@ import {
   Req,
 } from '@nestjs/common';
 import { AuthService } from './services/auth.service';
-import { AuthProvider } from './enums/auth-provider.enum';
 import { Response, Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { Provider } from './common/decorators/provider.decorator';
@@ -16,6 +15,7 @@ import { Exception } from 'src/common/decorator/exception.decorator';
 import { ClientType } from 'src/common/decorator/client-type.decorator';
 import { Cookie } from 'src/common/decorator/cookie.decorator';
 import { getCookieOption } from 'src/config/cookie-option';
+import { AuthProviderValue } from './common/constants/auth-provider.constant';
 
 @Controller('auth')
 export class AuthController {
@@ -32,7 +32,7 @@ export class AuthController {
    */
   @Get(':provider/login')
   public socialLogin(
-    @Provider() provider: AuthProvider | null,
+    @Provider() provider: AuthProviderValue | null,
     @Res() res: Response,
   ): void {
     if (!provider) {
@@ -52,7 +52,7 @@ export class AuthController {
    */
   @Get(':provider/callback')
   public async handleGetCallBack(
-    @Provider() provider: AuthProvider | null,
+    @Provider() provider: AuthProviderValue | null,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
@@ -67,7 +67,7 @@ export class AuthController {
 
     const { accessToken, refreshToken } = await this.authService.login(
       provider,
-      socialAuthService.extractCodeFromRequest(req),
+      socialAuthService.extractDtoFromRequest(req),
     );
 
     res.cookie('refreshToken', `Bearer ${refreshToken}`, getCookieOption());
@@ -97,7 +97,7 @@ export class AuthController {
    */
   @Post(':provider/callback')
   public async handlePostCallBack(
-    @Provider() provider: AuthProvider | null,
+    @Provider() provider: AuthProviderValue | null,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
@@ -112,7 +112,7 @@ export class AuthController {
 
     const { accessToken, refreshToken } = await this.authService.login(
       provider,
-      socialAuthService.extractCodeFromRequest(req),
+      socialAuthService.extractDtoFromRequest(req),
     );
 
     res.cookie('refreshToken', `Bearer ${refreshToken}`, getCookieOption());
