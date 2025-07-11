@@ -1,6 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { PickedPlaceService } from './picked-place.service';
-import { GetAllPickedPlaceDto } from './dto/get-all-picked-place.dto';
+import { GetAllPickedPlaceOverviewDto } from './dto/get-all-picked-place-overview.dto';
 import { User } from 'src/common/decorator/user.decorator';
 import { PickedPlaceOverviewEntity } from './entity/picked-place-overview.entity';
 import { Exception } from 'src/common/decorator/exception.decorator';
