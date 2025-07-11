@@ -12,12 +12,13 @@ export class PickedPlaceRepository {
    * @author 강정연
    */
   async selectAllPickedPlaceOverview(
-    page: number,
+    skip: number,
+    take: number,
     userIdx?: number,
   ): Promise<PickedPlaceOverviewSelectField[]> {
     return await this.prisma.pickedPlace.findMany({
-      skip: (page - 1) * 10,
-      take: 10,
+      skip,
+      take,
       where: {
         deletedAt: null,
       },
