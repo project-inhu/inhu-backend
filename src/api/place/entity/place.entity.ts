@@ -82,15 +82,13 @@ export class PlaceEntity {
 
   /**
    * 특정 장소에서 가장 많이 사용된 review keyword 상위 2개
-   *
-   * @example ['맛있어요.', '가성비 좋아요.']
    */
   keywordList: PlaceKeywordEntity[];
 
   /**
    * 특정 장소 image path list
    *
-   * @example ['place/f9c2e36f-8e99-4b18-b3e8-7cd327682f94_20240706_124512.jpg']
+   * @example ['place/f9c2e36f-8e99-4b18-b3e8-7cd327682f94_20240706_124512.jpg', 'place/12345678-1234-5678-1234-123456789012_20240706_124512.jpg']
    */
   imagePathList: string[];
 
