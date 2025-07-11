@@ -1,25 +1,27 @@
 import { Injectable, PipeTransform } from '@nestjs/common';
-import { AuthProvider } from 'src/auth/enums/auth-provider.enum';
+import {
+  AUTH_PROVIDERS,
+  AuthProviderValue,
+} from 'src/auth/common/constants/auth-provider.constant';
 
 /**
- * 소셜 로그인 provider 검증 파이프
- * - 요청된 provider 값이 AuthProvider 열거형에 포함되어 있는지 검증
+ * 소셜 로그인 provider(제공자) 파라미터를 검증하는 파이프
+ * - `AuthProviderType`에 정의된 제공자 이름과 일치하는지 확인
  *
- * 유효하지 않은 provider 값인 경우 null return
- *
- * @author 강정연
+ * @author 이수인
  */
+
 @Injectable()
 export class ValidateProviderPipe implements PipeTransform {
-  transform(value: string): AuthProvider | null {
-    const provider = Object.values(AuthProvider).find(
-      (p) => p.toLowerCase() === value.toLowerCase(),
-    );
-
-    if (!provider) {
-      return null;
+  transform(value: string): AuthProviderValue | null {
+    if (
+      Object.values(AUTH_PROVIDERS).some(
+        (provider) =>
+          provider.name.toLocaleLowerCase() === value.toLocaleLowerCase(),
+      )
+    ) {
+      return value as AuthProviderValue;
     }
-
-    return provider;
+    return null;
   }
 }
