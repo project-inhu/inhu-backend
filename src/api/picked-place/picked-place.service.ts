@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PickedPlaceRepository } from './picked-place.repository';
 import { PickedPlaceOverviewEntity } from './entity/picked-place-overview.entity';
+import { GetAllPickedPlaceOverviewResponseDto } from './dto/get-all-picked-place-overview-response.dto';
 
 @Injectable()
 export class PickedPlaceService {
@@ -14,12 +15,24 @@ export class PickedPlaceService {
   async getAllPickedPlaceOverview(
     page: number,
     userIdx?: number,
-  ): Promise<PickedPlaceOverviewEntity[]> {
-    return (
+  ): Promise<GetAllPickedPlaceOverviewResponseDto> {
+    const pageSize = 10;
+    const take = pageSize + 1;
+    const skip = (page - 1) * pageSize;
+
+    let placeList =
       await this.pickedPlaceRepository.selectAllPickedPlaceOverview(
-        page,
+        skip,
+        take,
         userIdx,
-      )
-    ).map(PickedPlaceOverviewEntity.createEntityFromPrisma);
+      );
+
+    const hasNext = !!placeList[pageSize];
+    placeList = placeList.slice(0, pageSize);
+
+    return {
+      hasNext,
+      data: placeList.map(PickedPlaceOverviewEntity.createEntityFromPrisma),
+    };
   }
 }
