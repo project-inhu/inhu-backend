@@ -6,7 +6,12 @@ import { PickedPlaceOverviewSelectField } from './type/picked-place-overview-sel
 export class PickedPlaceRepository {
   constructor(private prisma: PrismaService) {}
 
-  async selectAllPickedPlace(
+  /**
+   * 선정된 장소 개요 (Picked Place) 모두 가져오기
+   *
+   * @author 강정연
+   */
+  async selectAllPickedPlaceOverview(
     page: number,
     userIdx?: number,
   ): Promise<PickedPlaceOverviewSelectField[]> {
@@ -48,6 +53,7 @@ export class PickedPlaceRepository {
                 }
               : undefined,
             placeImageList: {
+              orderBy: { idx: 'asc' },
               select: {
                 path: true,
               },

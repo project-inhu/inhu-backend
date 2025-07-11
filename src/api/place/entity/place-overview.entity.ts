@@ -2,6 +2,11 @@ import { PickType } from '@nestjs/swagger';
 import { PlaceEntity } from './place.entity';
 import { PlaceOverviewSelectField } from '../type/place-overview-select-field.type';
 
+/**
+ * place overview entity
+ *
+ * @author 강정연
+ */
 export class PlaceOverviewEntity extends PickType(PlaceEntity, [
   'idx',
   'name',

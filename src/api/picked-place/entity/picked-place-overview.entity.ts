@@ -2,6 +2,11 @@ import { PickedPlaceOverviewSelectField } from '../type/picked-place-overview-se
 import { PickedPlaceEntity } from './picked-place.entity';
 import { PickType } from '@nestjs/swagger';
 
+/**
+ * pickedPlace overview entity
+ *
+ * @author 강정연
+ */
 export class PickedPlaceOverviewEntity extends PickType(PickedPlaceEntity, [
   'title',
   'content',

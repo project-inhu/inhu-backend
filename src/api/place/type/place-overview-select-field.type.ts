@@ -5,7 +5,7 @@ import { Prisma } from '@prisma/client';
  *
  * `PlaceOverviewEntity`로 변환되기 전의 원시 데이터
  *
- * @author 이수인
+ * @author 강정연
  */
 export const PLACE_OVERVIEW_SELECT_FIELD =
   Prisma.validator<Prisma.PlaceDefaultArgs>()({
@@ -44,7 +44,7 @@ export const PLACE_OVERVIEW_SELECT_FIELD =
 /**
  * `PLACE_OVERVIEW_SELECT_FIELD`의 Prisma 반환 타입
  *
- * @author 이수인
+ * @author 강정연
  */
 export type PlaceOverviewSelectField = Prisma.PlaceGetPayload<
   typeof PLACE_OVERVIEW_SELECT_FIELD

@@ -1,6 +1,11 @@
 import { PlaceEntity } from 'src/api/place/entity/place.entity';
 import { PickedPlaceSelectField } from '../type/picked-place-select-field';
 
+/**
+ * picked place entity
+ *
+ * @author 강정연
+ */
 export class PickedPlaceEntity extends PlaceEntity {
   /**
    * title
