@@ -6,8 +6,9 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { v4 as uuid } from 'uuid';
-import { S3Folder } from './enums/s3-folder.enum';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { GetPresignedUrlInput } from './input/get-presigned-url.input';
+import { GetPresignedUrlResponseDto } from './dto/get-presigned-url-response.dto';
 
 @Injectable()
 export class S3Service {
@@ -33,10 +34,16 @@ export class S3Service {
     });
   }
 
+  /**
+   * S3 업로드 위한 Presigned URL 생성
+   *
+   * @author 조희주
+   */
   async getPresignedUrl(
-    folder: S3Folder,
-    filename: string,
-  ): Promise<{ presignedUrl: string; key: string }> {
+    getPresignedUrl: GetPresignedUrlInput,
+  ): Promise<GetPresignedUrlResponseDto> {
+    const { folder, filename } = getPresignedUrl;
+
     if (!filename) {
       throw new BadRequestException('You need file.');
     }
