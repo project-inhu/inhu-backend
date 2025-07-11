@@ -1,14 +1,14 @@
 import { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AuthProvider } from 'src/auth/enums/auth-provider.enum';
 import { LoginTokenService } from 'src/auth/services/login-token.service';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import * as request from 'supertest';
 import { extractCookieValue } from 'test/common/utils/extract-cookie-value.util';
 import { TestManager } from 'test/common/helpers/test-manager';
 import { KakaoStrategy } from 'src/auth/strategies/social-login/kakao/kakao.strategy';
-import { SocialTokenService } from 'src/auth/strategies/social-login/services/social-token.service';
 import { TokenStorageStrategy } from 'src/auth/strategies/storages/base/token-storage.strategy';
+import { AUTH_PROVIDERS } from 'src/auth/common/constants/auth-provider.constant';
+import { UserService } from 'src/api/user/user.service';
 
 /**
  * authController e2e test
@@ -70,8 +70,11 @@ describe('AuthController (e2e)', () => {
       const kakaoId = 1111111111;
       jest
         .spyOn(kakaoStrategy, 'login')
-        .mockImplementation(async (code: string) => {
-          return { snsId: kakaoId.toString(), provider: AuthProvider.KAKAO };
+        .mockImplementation(async (dto: any) => {
+          const userService = app.get(UserService);
+          const userInfo = { snsId: kakaoId.toString(), provider: 'kakao' };
+          const user = await userService.createUser(userInfo);
+          return { idx: user.idx };
         });
 
       // 최초 로그인 사용자 db에 존재하지 않은지 확인 (사용자 정보가 db에 반드시 등록되도록 보장하기 위함)
@@ -125,8 +128,11 @@ describe('AuthController (e2e)', () => {
       const kakaoId = 1111111111;
       jest
         .spyOn(kakaoStrategy, 'login')
-        .mockImplementation(async (code: string) => {
-          return { snsId: kakaoId.toString(), provider: AuthProvider.KAKAO };
+        .mockImplementation(async (dto: any) => {
+          const userService = app.get(UserService);
+          const userInfo = { snsId: kakaoId.toString(), provider: 'kakao' };
+          const user = await userService.createUser(userInfo);
+          return { idx: user.idx };
         });
 
       // 기존 사용자임을 가정하기 위해 임의 값 등록
@@ -137,7 +143,7 @@ describe('AuthController (e2e)', () => {
           userProvider: {
             create: {
               snsId: kakaoId.toString(),
-              name: AuthProvider.KAKAO,
+              name: AUTH_PROVIDERS.KAKAO.name,
             },
           },
         },
