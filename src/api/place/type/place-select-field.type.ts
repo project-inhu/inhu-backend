@@ -12,9 +12,14 @@ export const PLACE_SELECT_FIELD = Prisma.validator<Prisma.PlaceDefaultArgs>()({
     idx: true,
     name: true,
     tel: true,
-    address: true,
-    addressX: true,
-    addressY: true,
+    roadAddress: {
+      select: {
+        addressName: true,
+        detailAddress: true,
+        addressX: true,
+        addressY: true,
+      },
+    },
     createdAt: true,
     reviewCount: true,
     placeKeywordCountList: {

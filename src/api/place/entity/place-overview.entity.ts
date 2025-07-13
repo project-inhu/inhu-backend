@@ -10,7 +10,8 @@ import { PlaceOverviewSelectField } from '../type/place-overview-select-field.ty
 export class PlaceOverviewEntity extends PickType(PlaceEntity, [
   'idx',
   'name',
-  'address',
+  'addressName',
+  'detailAddress',
   'reviewCount',
   'keywordList',
   'bookmark',
@@ -24,10 +25,12 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
   static createEntityFromPrisma(
     place: PlaceOverviewSelectField,
   ): PlaceOverviewEntity {
+    const roadAddr = place.roadAddress;
     return new PlaceOverviewEntity({
       idx: place.idx,
       name: place.name,
-      address: place.address,
+      addressName: roadAddr.addressName,
+      detailAddress: roadAddr.detailAddress,
       reviewCount: place.reviewCount,
       keywordList: place.placeKeywordCountList.map(({ keyword }) => ({
         idx: keyword.idx,

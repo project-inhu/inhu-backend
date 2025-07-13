@@ -12,7 +12,12 @@ export const PLACE_OVERVIEW_SELECT_FIELD =
     select: {
       idx: true,
       name: true,
-      address: true,
+      roadAddress: {
+        select: {
+          addressName: true,
+          detailAddress: true,
+        },
+      },
       reviewCount: true,
       placeKeywordCountList: {
         take: 2,
