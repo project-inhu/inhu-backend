@@ -25,16 +25,23 @@ CREATE TABLE place_image_tb
 
 CREATE TABLE place_tb
 (
-  idx          int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
-  name         varchar                  NOT NULL,
-  tel          varchar                  UNIQUE,
-  address      varchar                  NOT NULL,
-  address_x    numeric                  NOT NULL,
-  address_y    numeric                  NOT NULL,
-  created_at   timestamp with time zone NOT NULL DEFAULT NOW(),
-  deleted_at   timestamp with time zone,
-  closed_at    timestamp with time zone,
-  review_count  int                    NOT NULL DEFAULT 0,
+  idx              int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  name             varchar                  NOT NULL,
+  tel              varchar                  UNIQUE,
+  created_at       timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at       timestamp with time zone,
+  closed_at        timestamp with time zone,
+  review_count     int                    NOT NULL DEFAULT 0,
+  road_address_idx int                    UNIQUE NOT NULL,
+  PRIMARY KEY (idx)
+);
+
+CREATE TABLE road_address_tb (
+  idx             int     NOT NULL GENERATED ALWAYS AS IDENTITY,
+  address_name    varchar NOT NULL,
+  detail_address  varchar,
+  address_x       numeric NOT NULL,
+  address_y       numeric NOT NULL,
   PRIMARY KEY (idx)
 );
 
@@ -323,3 +330,8 @@ ALTER TABLE place_keyword_count_tb
   ADD CONSTRAINT FK_keyword_tb_TO_place_keyword_count_tb
     FOREIGN KEY (keyword_idx)
     REFERENCES keyword_tb (idx);  
+
+ALTER TABLE place_tb
+  ADD CONSTRAINT fk_road_address_tb_to_place_tb
+    FOREIGN KEY (road_address_idx)
+    REFERENCES road_address_tb (idx);

@@ -104,165 +104,197 @@ async function main() {
     },
   });
 
-  const placesData = [
+  type PlaceSeed = {
+    name: string;
+    tel?: string;
+    addressName: string;
+    addressX: number;
+    addressY: number;
+    detailAddress?: string;
+  };
+  const placesData: PlaceSeed[] = [
     {
       name: '메뉴 이미지 없음',
       tel: '032-111-0001',
-      address: '인천 미추홀구 인하로 101',
+      addressName: '인천 미추홀구 인하로 101',
       addressX: 126.654,
       addressY: 37.451,
     },
     {
       name: '메뉴 많음',
       tel: '032-111-0002',
-      address: '인천 미추홀구 인하로 102',
+      addressName: '인천 미추홀구 인하로 102',
       addressX: 126.655,
       addressY: 37.452,
     },
     {
       name: '메뉴 0개',
       tel: '032-111-0003',
-      address: '인천 미추홀구 인하로 103',
+      addressName: '인천 미추홀구 인하로 103',
       addressX: 126.656,
       addressY: 37.453,
     },
     {
       name: '메뉴 잘못된 이미지',
       tel: '032-111-0004',
-      address: '인천 미추홀구 인하로 104',
+      addressName: '인천 미추홀구 인하로 104',
       addressX: 126.657,
       addressY: 37.454,
     },
     {
       name: '장소 이미지 많음',
       tel: '032-111-0005',
-      address: '인천 미추홀구 소성로 201',
+      addressName: '인천 미추홀구 소성로 201',
       addressX: 126.658,
       addressY: 37.455,
     },
     {
       name: '장소 잘못된 이미지',
       tel: '032-111-0006',
-      address: '인천 미추홀구 소성로 202',
+      addressName: '인천 미추홀구 소성로 202',
       addressX: 126.659,
       addressY: 37.456,
     },
     {
       name: '장소 이미지 1개',
       tel: '032-111-0007',
-      address: '인천 미추홀구 소성로 203',
+      addressName: '인천 미추홀구 소성로 203',
       addressX: 126.66,
       addressY: 37.457,
     },
     {
       name: '운영시간 없음',
       tel: '032-111-0008',
-      address: '인천 미추홀구 용현동 301',
+      addressName: '인천 미추홀구 용현동 301',
       addressX: 126.661,
       addressY: 37.458,
     },
     {
       name: '휴무일 있음',
       tel: '032-111-0009',
-      address: '인천 미추홀구 용현동 302',
+      addressName: '인천 미추홀구 용현동 302',
       addressX: 126.662,
       addressY: 37.459,
     },
     {
       name: '브레이크시간 없음',
       tel: '032-111-0010',
-      address: '인천 미추홀구 용현동 303',
+      addressName: '인천 미추홀구 용현동 303',
       addressX: 126.663,
       addressY: 37.46,
     },
     {
       name: '매일 운영',
       tel: '032-111-0011',
-      address: '인천 미추홀구 학익동 401',
+      addressName: '인천 미추홀구 학익동 401',
       addressX: 126.664,
       addressY: 37.461,
     },
     {
       name: '운영시간/브레이크 2번',
       tel: '032-111-0012',
-      address: '인천 미추홀구 학익동 402',
+      addressName: '인천 미추홀구 학익동 402',
       addressX: 126.665,
       addressY: 37.462,
     },
     {
       name: '리뷰 없음',
       tel: '032-111-0013',
-      address: '인천 미추홀구 독배로 501',
+      addressName: '인천 미추홀구 독배로 501',
       addressX: 126.666,
       addressY: 37.463,
     },
     {
       name: '리뷰 잘못된 이미지',
       tel: '032-111-0014',
-      address: '인천 미추홀구 독배로 502',
+      addressName: '인천 미추홀구 독배로 502',
       addressX: 126.667,
       addressY: 37.464,
     },
     {
       name: '리뷰 이미지 없음',
       tel: '032-111-0015',
-      address: '인천 미추홀구 독배로 503',
+      addressName: '인천 미추홀구 독배로 503',
       addressX: 126.668,
       addressY: 37.465,
     },
     {
       name: '리뷰 이미지 5개',
       tel: '032-111-0016',
-      address: '인천 미추홀구 비룡길 601',
+      addressName: '인천 미추홀구 비룡길 601',
       addressX: 126.669,
       addressY: 37.466,
     },
     {
       name: '리뷰 키워드 없음',
       tel: '032-111-0017',
-      address: '인천 미추홀구 비룡길 602',
+      addressName: '인천 미추홀구 비룡길 602',
       addressX: 126.67,
       addressY: 37.467,
     },
     {
       name: '리뷰 키워드 5개',
       tel: '032-111-0018',
-      address: '인천 미추홀구 비룡길 603',
+      addressName: '인천 미추홀구 비룡길 603',
       addressX: 126.671,
       addressY: 37.468,
     },
     {
       name: '싯가 메뉴 있음',
       tel: '032-111-0019',
-      address: '인천 미추홀구 싯가로 701',
+      addressName: '인천 미추홀구 싯가로 701',
       addressX: 126.672,
       addressY: 37.469,
     },
     {
       name: '전화번호 없음',
-      address: '인천 미추홀구 인하로 801',
+      addressName: '인천 미추홀구 인하로 801',
       addressX: 126.674,
       addressY: 37.45,
     },
     {
       name: '장소의 타입이 여러개',
       tel: '032-111-0021',
-      address: '인천 미추홀구 인하로 501',
+      addressName: '인천 미추홀구 인하로 501',
       addressX: 126.673,
       addressY: 37.41,
     },
     {
       name: '리뷰가 여러개',
       tel: '032-111-0022',
-      address: '인천 미추홀구 인하로 903',
+      addressName: '인천 미추홀구 인하로 903',
       addressX: 126.671,
       addressY: 37.43,
+    },
+    {
+      name: '상세 주소 존재함',
+      tel: '032-111-0023',
+      addressName: '인천 미추홀구 인하로 909',
+      detailAddress: '비룡플라자 1층',
+      addressX: 126.632,
+      addressY: 37.7,
     },
   ];
 
   for (let i = 0; i < placesData.length; i++) {
     const placeData = placesData[i];
-    const place = await prisma.place.create({ data: placeData });
+
+    const createdRoadAddress = await prisma.roadAddress.create({
+      data: {
+        addressName: placeData.addressName,
+        detailAddress: placeData.detailAddress,
+        addressX: placeData.addressX,
+        addressY: placeData.addressY,
+      },
+    });
+
+    const place = await prisma.place.create({
+      data: {
+        name: placeData.name,
+        tel: placeData.tel,
+        roadAddressIdx: createdRoadAddress.idx,
+      },
+    });
 
     switch (placeData.name) {
       case '메뉴 이미지 없음':
@@ -654,6 +686,14 @@ async function main() {
           }
         }
         break;
+
+      case '상세 주소 존재함':
+        await createDefaultOperatingHours(place.idx);
+        await createDefaultMenu(place.idx);
+        await createDefaultPlaceImage(place.idx);
+        await createDefaultReview(place.idx, user1.idx);
+        await createDefaultPlaceTypeMapping(place.idx);
+        break;
     }
   }
 
@@ -704,6 +744,8 @@ async function main() {
     { placeIdx: 22, keywordIdx: 3, count: 3 },
     { placeIdx: 22, keywordIdx: 4, count: 6 },
     { placeIdx: 22, keywordIdx: 5, count: 6 },
+    { placeIdx: 23, keywordIdx: 1, count: 1 },
+    { placeIdx: 23, keywordIdx: 2, count: 1 },
   ];
   await prisma.placeKeywordCount.createMany({
     data: keywordCounts,
