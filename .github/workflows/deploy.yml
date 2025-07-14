@@ -1,4 +1,4 @@
-name: deploy to EC2
+name: deploy to Raspberry Pi
 
 on:
   push:
@@ -38,30 +38,27 @@ jobs:
       - name: Test e2e
         run: npm run test:e2e
   deploy:
-    name: Deploy to EC2
+    name: Deploy to Raspberry Pi
     if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Deploy to EC2
+      - name: Deploy to Raspberry Pi
         env:
-          HOST: ${{ secrets.EC2_HOST }}
-          KEY: ${{ secrets.EC2_KEY }}
-          USER: ubuntu
+          HOST: ${{ secrets.RASPBERRY_PI_HOST }}
+          USER: ${{ secrets.RASPBERRY_PI_USER }}
+          PORT: ${{ secrets.RASPBERRY_PI_PORT }}
+          PASSWORD: ${{ secrets.RASPBERRY_PI_PASSWORD }}
         run: |
-          echo "$KEY" > key.pem
-          chmod 400 key.pem
-          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST << 'EOF'
+          sudo apt-get install -y sshpass
+          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
             cd ./inhu-backend
             git reset --hard
             git pull origin develop
             npm install
-            docker-compose down -v
-            docker-compose up -d
-            npm run seed
             npx prisma generate
             npm run build
-            npx pm2 reload inhu-backend
+            pm2 reload inhu-backend
           EOF
