@@ -14,14 +14,4 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
-
-  @Get('/test')
-  @ApiExcludeEndpoint()
-  test(@Req() req: Request, @Res() res: Response) {
-    const filePath = path.join(
-      '/home/ubuntu/inhu-backend/public',
-      'testKakao.html',
-    );
-    return res.sendFile(filePath);
-  }
 }

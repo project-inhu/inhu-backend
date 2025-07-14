@@ -174,4 +174,9 @@ export class AuthController {
   ): Promise<void> {
     res.clearCookie('refreshToken', getCookieOption());
   }
+
+  @Get('/test')
+  public test(): string {
+    return 'test';
+  }
 }
