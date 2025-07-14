@@ -57,7 +57,10 @@ jobs:
             cd ./inhu-backend
             git reset --hard
             git pull origin develop
-            npm install
+            npm install 
+            docker-compose down -v
+            docker-compose up -d
+            npm run seed
             npx prisma generate
             npm run build
             pm2 reload inhu-backend
