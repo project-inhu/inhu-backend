@@ -60,6 +60,7 @@ jobs:
             npm install
             docker-compose down -v
             docker-compose up -d
+            npm run seed
             npx prisma generate
             npm run build
             npx pm2 reload inhu-backend
