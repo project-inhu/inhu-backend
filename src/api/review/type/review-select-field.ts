@@ -37,8 +37,14 @@ const REVIEW_SELECT_FIELD = Prisma.validator<Prisma.ReviewDefaultArgs>()({
     },
     place: {
       select: {
+        idx: true,
         name: true,
-        address: true,
+        roadAddress: {
+          select: {
+            addressName: true,
+            detailAddress: true,
+          },
+        },
       },
     },
   },

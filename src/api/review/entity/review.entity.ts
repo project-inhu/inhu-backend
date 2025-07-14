@@ -13,7 +13,8 @@ class ReviewAuthorEntity extends PickType(UserInfoEntity, [
 class ReviewPlaceEntity extends PickType(PlaceOverviewEntity, [
   'idx',
   'name',
-  'address',
+  'addressName',
+  'detailAddress',
 ]) {}
 
 class ReviewKeywordEntity extends PickType(KeywordEntity, ['idx', 'content']) {}
@@ -95,7 +96,8 @@ export class ReviewEntity {
       place: {
         idx: review.placeIdx,
         name: review.place.name,
-        address: review.place.address,
+        addressName: review.place.roadAddress.addressName,
+        detailAddress: review.place.roadAddress.detailAddress,
       },
     });
   }

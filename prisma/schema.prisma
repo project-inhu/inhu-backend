@@ -42,28 +42,36 @@ model Place {
   idx                         Int                @id @default(autoincrement())
   name                        String             @db.VarChar
   tel                         String?            @unique @db.VarChar
-  address                     String             @db.VarChar
-  addressX                    Decimal            @map("address_x") @db.Decimal
-  addressY                    Decimal            @map("address_y") @db.Decimal
   createdAt                   DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt                   DateTime?          @map("deleted_at") @db.Timestamptz(6)
   closedAt                    DateTime?          @map("closed_at") @db.Timestamptz(6)
   reviewCount                 Int                @default(0) @map("review_count")
+  roadAddressIdx              Int                @unique @map("road_address_idx")
   bookmarkList                Bookmark[]
   operatingDayList            OperatingDay[]
   placeImageList              PlaceImage[]
   menuList                    Menu[]
   placeTypeMappingList        PlaceTypeMapping[]
   reviewList                  Review[]
-  pickedPlace                 PickedPlace?
+  pickedPlaceList             PickedPlace[]
   placeKeywordCountList       PlaceKeywordCount[]
-
+  roadAddress                 RoadAddress   @relation(fields: [roadAddressIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_road_address_tb_to_place_tb")
   @@map("place_tb")
+}
+
+model RoadAddress{
+  idx           Int       @id @default(autoincrement())  
+  addressName   String    @map("address_name")
+  detailAddress String?   @map("detail_address")
+  addressX      Decimal   @map("address_x") @db.Decimal
+  addressY      Decimal   @map("address_y") @db.Decimal
+  place         Place?
+  @@map("road_address_tb")
 }
 
 model PickedPlace {
   idx        Int        @id @default(autoincrement())
-  placeIdx   Int        @unique @map("place_idx")
+  placeIdx   Int        @map("place_idx")
   title      String
   content    String
   createdAt  DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)

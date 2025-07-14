@@ -31,7 +31,12 @@ export class PlaceRepository {
       select: {
         idx: true,
         name: true,
-        address: true,
+        roadAddress: {
+          select: {
+            addressName: true,
+            detailAddress: true,
+          },
+        },
         reviewCount: true,
         placeKeywordCountList: {
           take: 2,
@@ -77,9 +82,14 @@ export class PlaceRepository {
         idx: true,
         name: true,
         tel: true,
-        address: true,
-        addressX: true,
-        addressY: true,
+        roadAddress: {
+          select: {
+            addressName: true,
+            detailAddress: true,
+            addressX: true,
+            addressY: true,
+          },
+        },
         createdAt: true,
         reviewCount: true,
         placeKeywordCountList: {

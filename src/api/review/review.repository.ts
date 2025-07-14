@@ -62,8 +62,14 @@ export class ReviewRepository {
         },
         place: {
           select: {
+            idx: true,
             name: true,
-            address: true,
+            roadAddress: {
+              select: {
+                addressName: true,
+                detailAddress: true,
+              },
+            },
           },
         },
       },
@@ -117,8 +123,14 @@ export class ReviewRepository {
         },
         place: {
           select: {
+            idx: true,
             name: true,
-            address: true,
+            roadAddress: {
+              select: {
+                addressName: true,
+                detailAddress: true,
+              },
+            },
           },
         },
       },
@@ -210,8 +222,14 @@ export class ReviewRepository {
         },
         place: {
           select: {
+            idx: true,
             name: true,
-            address: true,
+            roadAddress: {
+              select: {
+                addressName: true,
+                detailAddress: true,
+              },
+            },
           },
         },
       },

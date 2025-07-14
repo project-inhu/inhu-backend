@@ -12,7 +12,8 @@ export class PickedPlaceOverviewEntity extends PickType(PickedPlaceEntity, [
   'content',
   'idx',
   'name',
-  'address',
+  'addressName',
+  'detailAddress',
   'reviewCount',
   'keywordList',
   'bookmark',
@@ -26,12 +27,15 @@ export class PickedPlaceOverviewEntity extends PickType(PickedPlaceEntity, [
     data: PickedPlaceOverviewSelectField,
   ): PickedPlaceOverviewEntity {
     const place = data.place;
+    const roadAddr = place.roadAddress;
+
     return new PickedPlaceOverviewEntity({
       title: data.title,
       content: data.content,
       idx: place.idx,
       name: place.name,
-      address: place.address,
+      addressName: roadAddr.addressName,
+      detailAddress: roadAddr.detailAddress,
       reviewCount: place.reviewCount,
       keywordList: place.placeKeywordCountList.map(({ keyword }) => ({
         idx: keyword.idx,

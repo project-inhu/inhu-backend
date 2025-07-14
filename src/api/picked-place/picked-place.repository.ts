@@ -32,7 +32,12 @@ export class PickedPlaceRepository {
           select: {
             idx: true,
             name: true,
-            address: true,
+            roadAddress: {
+              select: {
+                addressName: true,
+                detailAddress: true,
+              },
+            },
             reviewCount: true,
             placeKeywordCountList: {
               take: 2,

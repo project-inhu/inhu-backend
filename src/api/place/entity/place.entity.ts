@@ -38,25 +38,32 @@ export class PlaceEntity {
   tel: string | null;
 
   /**
-   * place address
+   * 도로명 주소
    *
-   * @example '인천 미추홀구'
+   * @example '인천 미추홀구 인하로 123'
    */
-  address: string;
+  addressName: string;
+
+  /**
+   * 상세 주소
+   *
+   * @example '비룡플라자 1층'
+   */
+  detailAddress: string | null;
 
   /**
    * place addressX
    *
    * @example 37.1111
    */
-  addressX: Decimal;
+  addressX: number;
 
   /**
    * place addressY
    *
    * @example 37.1111
    */
-  addressY: Decimal;
+  addressY: number;
 
   /**
    * 생성 날짜
@@ -97,13 +104,15 @@ export class PlaceEntity {
   }
 
   static createEntityFromPrisma(place: PlaceSelectField): PlaceEntity {
+    const roadAddr = place.roadAddress;
     return new PlaceEntity({
       idx: place.idx,
       name: place.name,
       tel: place.tel,
-      address: place.address,
-      addressX: place.addressX,
-      addressY: place.addressY,
+      addressName: roadAddr.addressName,
+      detailAddress: roadAddr.detailAddress,
+      addressX: parseFloat(roadAddr.addressX.toString()),
+      addressY: parseFloat(roadAddr.addressY.toString()),
       createdAt: place.createdAt,
       week: place.operatingDayList.reduce<OperatingWeekSchedule>(
         (acc, item) => {
