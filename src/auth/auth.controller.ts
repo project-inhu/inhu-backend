@@ -177,6 +177,7 @@ export class AuthController {
 
   @Get('/test')
   public test(): string {
+    console.log('test endpoint called');
     return 'test';
   }
 }
