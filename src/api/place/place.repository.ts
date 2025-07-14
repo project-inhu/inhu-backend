@@ -60,6 +60,16 @@ export class PlaceRepository {
             path: true,
           },
         },
+        placeTypeMappingList: {
+          select: {
+            placeType: {
+              select: {
+                idx: true,
+                content: true,
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -129,6 +139,16 @@ export class PlaceRepository {
           orderBy: { idx: 'asc' },
           select: {
             path: true,
+          },
+        },
+        placeTypeMappingList: {
+          select: {
+            placeType: {
+              select: {
+                idx: true,
+                content: true,
+              },
+            },
           },
         },
       },

@@ -64,6 +64,16 @@ export class PickedPlaceRepository {
                 path: true,
               },
             },
+            placeTypeMappingList: {
+              select: {
+                placeType: {
+                  select: {
+                    idx: true,
+                    content: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
