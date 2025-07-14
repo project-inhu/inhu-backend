@@ -63,6 +63,16 @@ export const PLACE_SELECT_FIELD = Prisma.validator<Prisma.PlaceDefaultArgs>()({
         path: true,
       },
     },
+    placeTypeMappingList: {
+      select: {
+        placeType: {
+          select: {
+            idx: true,
+            content: true,
+          },
+        },
+      },
+    },
   },
 });
 

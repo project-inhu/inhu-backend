@@ -43,6 +43,16 @@ export const PLACE_OVERVIEW_SELECT_FIELD =
           path: true,
         },
       },
+      placeTypeMappingList: {
+        select: {
+          placeType: {
+            select: {
+              idx: true,
+              content: true,
+            },
+          },
+        },
+      },
     },
   });
 

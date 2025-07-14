@@ -1,5 +1,4 @@
 import { OperatingWeekDay } from '../type/operating-week-day.type';
-import { Decimal } from '@prisma/client/runtime/library';
 import { WEEKS } from '../common/constants/weeks.constant';
 import { PlaceSelectField } from '../type/place-select-field.type';
 import { OperatingWeekSchedule } from '../type/operating-week-schedule.type';
@@ -7,9 +6,11 @@ import { OperatingTimeInfo } from '../type/operating-time-info.type';
 import { formatTimeFromDate } from 'src/common/utils/date.util';
 import { KeywordEntity } from 'src/api/keyword/entity/keyword.entity';
 import { PickType } from '@nestjs/swagger';
+import { TypeEntity } from 'src/api/type/entity/type.entity';
 
 class PlaceKeywordEntity extends PickType(KeywordEntity, ['idx', 'content']) {}
 
+class PlaceTypeEntity extends PickType(TypeEntity, ['idx', 'content']) {}
 /**
  * place entity
  *
@@ -99,6 +100,11 @@ export class PlaceEntity {
    */
   imagePathList: string[];
 
+  /**
+   * 특정 장소의 타입
+   */
+  typeList: PlaceTypeEntity[];
+
   constructor(data: PlaceEntity) {
     Object.assign(this, data);
   }
@@ -147,6 +153,10 @@ export class PlaceEntity {
         content: keyword.content,
       })),
       imagePathList: place.placeImageList.map((image) => image.path ?? ''),
+      typeList: place.placeTypeMappingList.map(({ placeType }) => ({
+        idx: placeType.idx,
+        content: placeType.content,
+      })),
     });
   }
 }
