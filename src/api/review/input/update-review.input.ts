@@ -6,7 +6,7 @@
 export class UpdateReviewInput {
   reviewIdx: number;
   userIdx: number;
-  content: string;
+  content?: string;
   imagePathList?: string[];
   keywordIdxList?: number[];
 }

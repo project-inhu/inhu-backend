@@ -28,7 +28,7 @@ export class UpdateReviewDto {
   @IsString()
   @IsNotEmpty()
   @Length(3, 400)
-  content: string;
+  content?: string;
 
   /**
    * 리뷰에 포함된 이미지 리스트
