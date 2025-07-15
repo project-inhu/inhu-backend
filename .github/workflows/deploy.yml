@@ -76,11 +76,13 @@ jobs:
           PORT: ${{ secrets.RASPBERRY_PI_PORT }}
         run: |
           sudo apt-get update && sudo apt-get install -y sshpass
-          sshpass -p "$PASSWORD" scp -v -P "$PORT" -o StrictHostKeyChecking=no deploy.tar.gz $USER@$HOST:~/inhu-backend/
+          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no deploy.tar.gz $USER@$HOST:~/inhu-backend/
           sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
           set -e
             cd ~/inhu-backend
             tar -xzf deploy.tar.gz
+            rm deploy.tar.gz
+            npm ci
             docker compose down -v
             docker compose up -d
             npm run seed
