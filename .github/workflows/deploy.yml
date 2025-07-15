@@ -76,8 +76,8 @@ jobs:
           sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
           set -e
             cd ~/inhu-backend
-            docker-compose down -v        
-            docker-compose up -d
+            docker compose down -v        
+            docker compose up -d
             npm run seed
             pm2 reload inhu-backend
           EOF
