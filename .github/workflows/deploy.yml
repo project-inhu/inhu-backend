@@ -64,6 +64,10 @@ jobs:
           name: inhu-backend-build
           path: ./deploy-files
 
+      - name: Compress deployment files
+        run: |
+          tar -czf deploy.tar.gz -C ./deploy-files .
+
       - name: Deploy to Raspberry Pi
         env:
           HOST: ${{ secrets.RASPBERRY_PI_HOST }}
@@ -73,13 +77,15 @@ jobs:
         run: |
           echo "== scp start =="
           sudo apt-get update && sudo apt-get install -y sshpass
-          sshpass -p "$PASSWORD" scp -v -P "$PORT" -o StrictHostKeyChecking=no -r ./deploy-files/* $USER@$HOST:~/inhu-backend/
+          sshpass -p "$PASSWORD" scp -v -P "$PORT" -o StrictHostKeyChecking=no deploy.tar.gz $USER@$HOST:~/inhu-backend/
           echo "== scp done, ssh start =="
           sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
           echo "== on server, before cd =="
           set -e
             echo "== before cd =="
             cd ~/inhu-backend
+            echo "== before tar -xzf =="
+            tar -xzf deploy.tar.gz
             echo "== before docker compose down -v =="
             docker compose down -v
             echo "== before docker compose up -d =="
