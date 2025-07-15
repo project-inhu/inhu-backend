@@ -73,7 +73,7 @@ jobs:
         run: |
           echo "== scp start =="
           sudo apt-get update && sudo apt-get install -y sshpass
-          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no -r ./deploy-files/* $USER@$HOST:~/inhu-backend/
+          sshpass -p "$PASSWORD" scp -v -P "$PORT" -o StrictHostKeyChecking=no -r ./deploy-files/* $USER@$HOST:~/inhu-backend/
           echo "== scp done, ssh start =="
           sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
           echo "== on server, before cd =="
