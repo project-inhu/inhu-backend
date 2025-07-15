@@ -75,8 +75,8 @@ jobs:
           PASSWORD: ${{ secrets.RASPBERRY_PI_PASSWORD }}
           PORT: ${{ secrets.RASPBERRY_PI_PORT }}
         run: |
-          sudo apt-get update && sudo apt-get install -y sshpass
-          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no deploy.tar.gz $USER@$HOST:~/inhu-backend/
+          sudo apt-get update && sudo apt-get install -y sshpass rsync
+          sshpass -p "$PASSWORD" rsync -avz --delete -e "ssh -p $PORT -o StrictHostKeyChecking=no" ./deploy-files/ $USER@$HOST:~/inhu-backend/
           sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
           set -e
             cd ~/inhu-backend
