@@ -71,10 +71,22 @@ jobs:
           PASSWORD: ${{ secrets.RASPBERRY_PI_PASSWORD }}
           PORT: ${{ secrets.RASPBERRY_PI_PORT }}
         run: |
+          echo "== scp start =="
           sudo apt-get update && sudo apt-get install -y sshpass
           sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no -r ./deploy-files/* $USER@$HOST:~/inhu-backend/
+          echo "== scp done, ssh start =="
           sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
+          echo "== on server, before cd =="
           set -e
+            echo "== before cd =="
             cd ~/inhu-backend
+            echo "== before docker compose down -v =="
+            docker compose down -v
+            echo "== before docker compose up -d =="
+            docker compose up -d
+            echo "== before npm run seed =="
+            npm run seed
+            echo "== before pm2 reload =="
             pm2 reload inhu-backend
+            echo "== on server, after pm2 reload =="
           EOF
