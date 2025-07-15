@@ -64,10 +64,6 @@ jobs:
           name: inhu-backend-build
           path: ./deploy-files
 
-      - name: Compress deployment files
-        run: |
-          tar -czf deploy.tar.gz -C ./deploy-files .
-
       - name: Deploy to Raspberry Pi
         env:
           HOST: ${{ secrets.RASPBERRY_PI_HOST }}
@@ -80,8 +76,6 @@ jobs:
           sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
           set -e
             cd ~/inhu-backend
-            tar -xzf deploy.tar.gz
-            rm deploy.tar.gz
             npm ci
             docker compose down -v
             docker compose up -d
