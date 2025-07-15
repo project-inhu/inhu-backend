@@ -1,4 +1,4 @@
-name: deploy to Raspberry Pi
+name: Build and Deploy to Raspberry Pi
 
 on:
   push:
@@ -11,19 +11,10 @@ on:
       - develop
 
 jobs:
-  test_pr:
-    name: Run Tests on PR
-    if: github.event_name == 'pull_request'
+  build:
+    name: Build and Test
     runs-on: ubuntu-latest
-    env:
-      ENV_TEST_FILE: ${{ secrets.ENV_TEST_FILE }}
     steps:
-      - name: Decode and create .env.test file
-        run: echo "$ENV_TEST_FILE" | base64 --decode > .env.test
-
-      - name: Load environment variables
-        run: cat .env.test >> $GITHUB_ENV
-
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -35,33 +26,58 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Test e2e
-        run: npm run test:e2e
+      - name: Run tests on pull request
+        if: github.event_name == 'pull_request'
+        env:
+          ENV_TEST_FILE: ${{ secrets.ENV_TEST_FILE }}
+        run: |
+          echo "$ENV_TEST_FILE" | base64 --decode > .env.test
+          npm run test:e2e
+
+      - name: Build for production
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
+        run: |
+          npx prisma generate
+          npm run build
+
+      - name: Upload build artifacts
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
+        uses: actions/upload-artifact@v4
+        with:
+          name: inhu-backend-build
+          path: |
+            dist
+            prisma
+            package.json
+            package-lock.json
+            docker-compose.yml
+
   deploy:
     name: Deploy to Raspberry Pi
+    needs: build
     if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: inhu-backend-build
+          path: ./deploy-files
 
       - name: Deploy to Raspberry Pi
         env:
           HOST: ${{ secrets.RASPBERRY_PI_HOST }}
           USER: ${{ secrets.RASPBERRY_PI_USER }}
-          PORT: ${{ secrets.RASPBERRY_PI_PORT }}
           PASSWORD: ${{ secrets.RASPBERRY_PI_PASSWORD }}
+          PORT: ${{ secrets.RASPBERRY_PI_PORT }}
         run: |
-          sudo apt-get install -y sshpass
+          sudo apt-get update && sudo apt-get install -y sshpass
+          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no -r ./deploy-files/* $USER@$HOST:~/inhu-backend/
           sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
-            cd ./inhu-backend
-            git reset --hard
-            git pull origin develop
-            npm install 
-            docker-compose down -v
+          set -e
+            cd ~/inhu-backend
+            docker-compose down -v        
             docker-compose up -d
             npm run seed
-            npx prisma generate
-            npm run build
             pm2 reload inhu-backend
           EOF
