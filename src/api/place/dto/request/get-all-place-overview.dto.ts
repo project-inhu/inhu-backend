@@ -3,6 +3,7 @@ import {
   IsBoolean,
   IsDecimal,
   IsEnum,
+  IsIn,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -32,19 +33,19 @@ export class GetAllPlaceOverviewDto {
   /**
    * 정렬 옵션
    *
-   * @default "time"
    * @example "time"
    */
   @IsOptional()
+  @IsIn(['time', 'review'])
   orderby: 'time' | 'review' = 'time';
 
   /**
    * 정렬 방향
    *
-   * @default "desc"
    * @example "desc"
    */
   @IsOptional()
+  @IsIn(['asc', 'desc'])
   order: 'desc' | 'asc' = 'desc';
 
   /**
