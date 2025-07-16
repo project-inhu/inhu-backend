@@ -2,26 +2,30 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-async function createDefaultOperatingHours(placeIdx: number) {
-  for (const day of ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']) {
-    const opDay = await prisma.operatingDay.create({
-      data: { placeIdx, day },
-    });
-    const operatingHour = await prisma.operatingHour.create({
-      data: {
-        operatingDayIdx: opDay.idx,
-        startAt: new Date('1970-01-01T09:00:00Z'),
-        endAt: new Date('1970-01-01T21:00:00Z'),
-      },
-    });
-    await prisma.breakTime.create({
-      data: {
-        operatingHourIdx: operatingHour.idx,
-        startAt: new Date('1970-01-01T12:00:00Z'),
-        endAt: new Date('1970-01-01T13:00:00Z'),
-      },
-    });
-  }
+async function createDefaultOperatingHour(placeIdx: number) {
+  const day = [0, 1, 2, 3, 4, 5, 6];
+
+  const operatingHoursData = day.map((day) => ({
+    placeIdx,
+    day,
+    startAt: new Date('1970-01-01T09:00:00Z'),
+    endAt: new Date('1970-01-01T21:00:00Z'),
+  }));
+
+  await prisma.operatingHour.createMany({ data: operatingHoursData });
+}
+
+async function createDefaultBreakTime(placeIdx: number) {
+  const day = [0, 1, 2, 3, 4, 5, 6];
+
+  const breakTimesData = day.map((day) => ({
+    placeIdx,
+    day,
+    startAt: new Date('1970-01-01T12:00:00Z'),
+    endAt: new Date('1970-01-01T13:00:00Z'),
+  }));
+
+  await prisma.breakTime.createMany({ data: breakTimesData });
 }
 
 async function createDefaultMenu(placeIdx: number) {
@@ -111,6 +115,7 @@ async function main() {
     addressX: number;
     addressY: number;
     detailAddress?: string;
+    isClosedOnHoliday?: boolean;
   };
   const placesData: PlaceSeed[] = [
     {
@@ -170,7 +175,7 @@ async function main() {
       addressY: 37.458,
     },
     {
-      name: '휴무일 있음',
+      name: '정기 휴무일 있음',
       tel: '032-111-0009',
       addressName: '인천 미추홀구 용현동 302',
       addressX: 126.662,
@@ -274,6 +279,28 @@ async function main() {
       addressX: 126.632,
       addressY: 37.7,
     },
+    {
+      name: '매월 둘째, 넷째 화요일 휴무',
+      tel: '032-111-0024',
+      addressName: '인천 미추홀구 휴무로 903',
+      addressX: 126.679,
+      addressY: 37.402,
+    },
+    {
+      name: '공휴일 휴무',
+      tel: '032-111-0025',
+      addressName: '인천 미추홀구 휴무로 904',
+      addressX: 126.724,
+      addressY: 37.492,
+      isClosedOnHoliday: true,
+    },
+    {
+      name: '격주 휴무',
+      tel: '032-111-0026',
+      addressName: '인천 미추홀구 휴무로 905',
+      addressX: 126.721,
+      addressY: 37.42,
+    },
   ];
 
   for (let i = 0; i < placesData.length; i++) {
@@ -293,6 +320,7 @@ async function main() {
         name: placeData.name,
         tel: placeData.tel,
         roadAddressIdx: createdRoadAddress.idx,
+        isClosedOnHoliday: placeData.isClosedOnHoliday ?? false,
       },
     });
 
@@ -301,7 +329,8 @@ async function main() {
         await createDefaultPlaceImage(place.idx);
         await createDefaultReview(place.idx, user1.idx);
         await createDefaultPlaceTypeMapping(place.idx);
-        await createDefaultOperatingHours(place.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
         await prisma.menu.create({
           data: {
             placeIdx: place.idx,
@@ -313,7 +342,8 @@ async function main() {
         break;
 
       case '메뉴 많음':
-        await createDefaultOperatingHours(place.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
         await createDefaultPlaceImage(place.idx);
         await createDefaultReview(place.idx, user1.idx);
         await createDefaultPlaceTypeMapping(place.idx);
@@ -328,14 +358,16 @@ async function main() {
         break;
 
       case '메뉴 0개':
-        await createDefaultOperatingHours(place.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
         await createDefaultPlaceImage(place.idx);
         await createDefaultReview(place.idx, user1.idx);
         await createDefaultPlaceTypeMapping(place.idx);
         break;
 
       case '메뉴 잘못된 이미지':
-        await createDefaultOperatingHours(place.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
         await createDefaultPlaceImage(place.idx);
         await createDefaultReview(place.idx, user1.idx);
         await createDefaultPlaceTypeMapping(place.idx);
@@ -351,7 +383,8 @@ async function main() {
         break;
 
       case '장소 이미지 많음':
-        await createDefaultOperatingHours(place.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
         await createDefaultMenu(place.idx);
         await createDefaultReview(place.idx, user1.idx);
         await createDefaultPlaceTypeMapping(place.idx);
@@ -364,7 +397,8 @@ async function main() {
         break;
 
       case '장소 잘못된 이미지':
-        await createDefaultOperatingHours(place.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
         await createDefaultMenu(place.idx);
         await createDefaultReview(place.idx, user1.idx);
         await createDefaultPlaceTypeMapping(place.idx);
@@ -374,7 +408,8 @@ async function main() {
         break;
 
       case '장소 이미지 1개':
-        await createDefaultOperatingHours(place.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
         await createDefaultMenu(place.idx);
         await createDefaultReview(place.idx, user1.idx);
         await createDefaultPlaceImage(place.idx);
@@ -388,33 +423,30 @@ async function main() {
         await createDefaultPlaceTypeMapping(place.idx);
         break;
 
-      case '휴무일 있음':
+      case '정기 휴무일 있음':
         await createDefaultMenu(place.idx);
         await createDefaultPlaceImage(place.idx);
         await createDefaultReview(place.idx, user1.idx);
         await createDefaultPlaceTypeMapping(place.idx);
-        for (const day of ['mon', 'tue', 'wed', 'thu', 'fri', 'sat']) {
-          const opDay = await prisma.operatingDay.create({
-            data: { placeIdx: place.idx, day },
-          });
-          const opHour = await prisma.operatingHour.create({
-            data: {
-              operatingDayIdx: opDay.idx,
-              startAt: new Date('1970-01-01T09:00:00Z'),
-              endAt: new Date('1970-01-01T21:00:00Z'),
-            },
-          });
-          await prisma.breakTime.create({
-            data: {
-              operatingHourIdx: opHour.idx,
-              startAt: new Date('1970-01-01T12:00:00Z'),
-              endAt: new Date('1970-01-01T13:00:00Z'),
-            },
-          });
-        }
-        await prisma.operatingDay.create({
-          data: { placeIdx: place.idx, day: 'sun' },
+        const operatingDays = [0, 1, 2, 3, 4, 5];
+        const operatingHours = operatingDays.map((day) => ({
+          placeIdx: place.idx,
+          day,
+          startAt: new Date('1970-01-01T10:00:00Z'),
+          endAt: new Date('1970-01-01T20:00:00Z'),
+        }));
+        const breakTimes = operatingDays.map((day) => ({
+          placeIdx: place.idx,
+          day,
+          startAt: new Date('1970-01-01T12:00:00Z'),
+          endAt: new Date('1970-01-01T13:00:00Z'),
+        }));
+        await prisma.operatingHour.createMany({ data: operatingHours });
+        await prisma.breakTime.createMany({ data: breakTimes });
+        await prisma.closedDay.create({
+          data: { placeIdx: place.idx, day: 6 },
         });
+
         break;
 
       case '브레이크시간 없음':
@@ -422,25 +454,15 @@ async function main() {
         await createDefaultPlaceImage(place.idx);
         await createDefaultReview(place.idx, user1.idx);
         await createDefaultPlaceTypeMapping(place.idx);
-        for (const day of ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']) {
-          const opDay = await prisma.operatingDay.create({
-            data: { placeIdx: place.idx, day },
-          });
-          await prisma.operatingHour.create({
-            data: {
-              operatingDayIdx: opDay.idx,
-              startAt: new Date('1970-01-01T09:00:00Z'),
-              endAt: new Date('1970-01-01T21:00:00Z'),
-            },
-          });
-        }
+        await createDefaultOperatingHour(place.idx);
         break;
 
       case '매일 운영':
         await createDefaultMenu(place.idx);
         await createDefaultPlaceImage(place.idx);
         await createDefaultReview(place.idx, user1.idx);
-        await createDefaultOperatingHours(place.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
         await createDefaultPlaceTypeMapping(place.idx);
         break;
 
@@ -449,52 +471,53 @@ async function main() {
         await createDefaultPlaceImage(place.idx);
         await createDefaultReview(place.idx, user1.idx);
         await createDefaultPlaceTypeMapping(place.idx);
-        for (const day of ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']) {
-          const opDay = await prisma.operatingDay.create({
-            data: { placeIdx: place.idx, day: day },
-          });
+        const days = [0, 1, 2, 3, 4, 5, 6];
+        const operatingHours1 = days.map((day) => ({
+          placeIdx: place.idx,
+          day,
+          startAt: new Date('1970-01-01T11:00:00Z'),
+          endAt: new Date('1970-01-01T15:00:00Z'),
+        }));
+        const breakTimes1 = days.map((day) => ({
+          placeIdx: place.idx,
+          day,
+          startAt: new Date('1970-01-01T13:00:00Z'),
+          endAt: new Date('1970-01-01T14:00:00Z'),
+        }));
 
-          const hour1 = await prisma.operatingHour.create({
-            data: {
-              operatingDayIdx: opDay.idx,
-              startAt: new Date('1970-01-01T11:00:00Z'),
-              endAt: new Date('1970-01-01T15:00:00Z'),
-            },
-          });
-          await prisma.breakTime.create({
-            data: {
-              operatingHourIdx: hour1.idx,
-              startAt: new Date('1970-01-01T13:00:00Z'),
-              endAt: new Date('1970-01-01T14:00:00Z'),
-            },
-          });
+        const operatingHours2 = days.map((day) => ({
+          placeIdx: place.idx,
+          day,
+          startAt: new Date('1970-01-01T17:00:00Z'),
+          endAt: new Date('1970-01-01T21:00:00Z'),
+        }));
+        const breakTimes2 = days.map((day) => ({
+          placeIdx: place.idx,
+          day,
+          startAt: new Date('1970-01-01T18:00:00Z'),
+          endAt: new Date('1970-01-01T19:00:00Z'),
+        }));
 
-          const hour2 = await prisma.operatingHour.create({
-            data: {
-              operatingDayIdx: opDay.idx,
-              startAt: new Date('1970-01-01T17:00:00Z'),
-              endAt: new Date('1970-01-01T21:00:00Z'),
-            },
-          });
-          await prisma.breakTime.create({
-            data: {
-              operatingHourIdx: hour2.idx,
-              startAt: new Date('1970-01-01T18:00:00Z'),
-              endAt: new Date('1970-01-01T19:00:00Z'),
-            },
-          });
-        }
+        await prisma.operatingHour.createMany({
+          data: [...operatingHours1, ...operatingHours2],
+        });
+
+        await prisma.breakTime.createMany({
+          data: [...breakTimes1, ...breakTimes2],
+        });
         break;
 
       case '리뷰 없음':
-        await createDefaultOperatingHours(place.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
         await createDefaultMenu(place.idx);
         await createDefaultPlaceImage(place.idx);
         await createDefaultPlaceTypeMapping(place.idx);
         break;
 
       case '리뷰 잘못된 이미지':
-        await createDefaultOperatingHours(place.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
         await createDefaultMenu(place.idx);
         await createDefaultPlaceImage(place.idx);
         await createDefaultPlaceTypeMapping(place.idx);
@@ -517,7 +540,8 @@ async function main() {
         break;
 
       case '리뷰 이미지 없음':
-        await createDefaultOperatingHours(place.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
         await createDefaultMenu(place.idx);
         await createDefaultPlaceImage(place.idx);
         await createDefaultPlaceTypeMapping(place.idx);
@@ -537,7 +561,8 @@ async function main() {
         break;
 
       case '리뷰 이미지 5개':
-        await createDefaultOperatingHours(place.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
         await createDefaultMenu(place.idx);
         await createDefaultPlaceImage(place.idx);
         await createDefaultPlaceTypeMapping(place.idx);
@@ -563,7 +588,8 @@ async function main() {
         break;
 
       case '리뷰 키워드 없음':
-        await createDefaultOperatingHours(place.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
         await createDefaultMenu(place.idx);
         await createDefaultPlaceImage(place.idx);
         await createDefaultPlaceTypeMapping(place.idx);
@@ -583,7 +609,8 @@ async function main() {
         break;
 
       case '리뷰 키워드 5개':
-        await createDefaultOperatingHours(place.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
         await createDefaultMenu(place.idx);
         await createDefaultPlaceImage(place.idx);
         await createDefaultPlaceTypeMapping(place.idx);
@@ -608,7 +635,8 @@ async function main() {
         break;
 
       case '싯가 메뉴 있음':
-        await createDefaultOperatingHours(place.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
         await createDefaultPlaceImage(place.idx);
         await createDefaultReview(place.idx, user1.idx);
         await createDefaultPlaceTypeMapping(place.idx);
@@ -623,7 +651,8 @@ async function main() {
         break;
 
       case '전화번호 없음':
-        await createDefaultOperatingHours(place.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
         await createDefaultMenu(place.idx);
         await createDefaultPlaceImage(place.idx);
         await createDefaultReview(place.idx, user1.idx);
@@ -631,7 +660,8 @@ async function main() {
         break;
 
       case '장소의 타입이 여러개':
-        await createDefaultOperatingHours(place.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
         await createDefaultMenu(place.idx);
         await createDefaultPlaceImage(place.idx);
         await createDefaultReview(place.idx, user1.idx);
@@ -644,7 +674,8 @@ async function main() {
         break;
 
       case '리뷰가 여러개':
-        await createDefaultOperatingHours(place.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
         await createDefaultMenu(place.idx);
         await createDefaultPlaceImage(place.idx);
         await createDefaultPlaceTypeMapping(place.idx);
@@ -688,12 +719,51 @@ async function main() {
         break;
 
       case '상세 주소 존재함':
-        await createDefaultOperatingHours(place.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
         await createDefaultMenu(place.idx);
         await createDefaultPlaceImage(place.idx);
         await createDefaultReview(place.idx, user1.idx);
         await createDefaultPlaceTypeMapping(place.idx);
         break;
+
+      case '매월 둘째, 넷째 화요일 휴무':
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
+        await createDefaultMenu(place.idx);
+        await createDefaultPlaceImage(place.idx);
+        await createDefaultReview(place.idx, user1.idx);
+        await createDefaultPlaceTypeMapping(place.idx);
+        await prisma.closedDay.createMany({
+          data: [
+            { placeIdx: place.idx, day: 2, week: 2 },
+            { placeIdx: place.idx, day: 2, week: 4 },
+          ],
+        });
+        break;
+
+      case '공휴일 휴무':
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
+        await createDefaultMenu(place.idx);
+        await createDefaultPlaceImage(place.idx);
+        await createDefaultReview(place.idx, user1.idx);
+        await createDefaultPlaceTypeMapping(place.idx);
+        break;
+
+      case '격주 휴무':
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
+        await createDefaultMenu(place.idx);
+        await createDefaultPlaceImage(place.idx);
+        await createDefaultReview(place.idx, user1.idx);
+        await createDefaultPlaceTypeMapping(place.idx);
+        await prisma.weeklyClosedDay.create({
+          data: {
+            placeIdx: place.idx,
+            closedDate: new Date('2025-07-02T00:00:00'),
+          },
+        });
     }
   }
 
@@ -746,6 +816,12 @@ async function main() {
     { placeIdx: 22, keywordIdx: 5, count: 6 },
     { placeIdx: 23, keywordIdx: 1, count: 1 },
     { placeIdx: 23, keywordIdx: 2, count: 1 },
+    { placeIdx: 24, keywordIdx: 1, count: 1 },
+    { placeIdx: 24, keywordIdx: 2, count: 1 },
+    { placeIdx: 25, keywordIdx: 1, count: 1 },
+    { placeIdx: 25, keywordIdx: 2, count: 1 },
+    { placeIdx: 26, keywordIdx: 1, count: 1 },
+    { placeIdx: 26, keywordIdx: 2, count: 1 },
   ];
   await prisma.placeKeywordCount.createMany({
     data: keywordCounts,

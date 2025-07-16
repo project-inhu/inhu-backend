@@ -25,14 +25,15 @@ CREATE TABLE place_image_tb
 
 CREATE TABLE place_tb
 (
-  idx              int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
-  name             varchar                  NOT NULL,
-  tel              varchar                  UNIQUE,
-  created_at       timestamp with time zone NOT NULL DEFAULT NOW(),
-  deleted_at       timestamp with time zone,
-  closed_at        timestamp with time zone,
-  review_count     int                    NOT NULL DEFAULT 0,
-  road_address_idx int                    UNIQUE NOT NULL,
+  idx                  int                       NOT NULL GENERATED ALWAYS AS IDENTITY,
+  name                 varchar                   NOT NULL,
+  tel                   varchar                  UNIQUE,
+  created_at            timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at            timestamp with time zone,
+  closed_at             timestamp with time zone,
+  review_count          int                      NOT NULL DEFAULT 0,
+  road_address_idx      int                      UNIQUE NOT NULL,
+  is_closed_on_holiday  boolean                  NOT NULL DEFAULT false,
   PRIMARY KEY (idx)
 );
 
@@ -56,26 +57,37 @@ CREATE TABLE picked_place_tb
   PRIMARY KEY (idx)
 );
 
-CREATE TABLE operating_day_tb (
-  idx        int     NOT NULL GENERATED ALWAYS AS IDENTITY,
-  place_idx  int     NOT NULL,
-  day        varchar NOT NULL,
-  PRIMARY KEY (idx)
-);
-
 CREATE TABLE operating_hour_tb (
   idx            int      NOT NULL GENERATED ALWAYS AS IDENTITY,
-  operating_day_idx  int      NOT NULL,
-  start_at       time,
-  end_at         time,
+  place_idx       int      NOT NULL,
+  start_at       time(6)     NOT NULL,
+  end_at         time(6)     NOT NULL,
+  day            smallint NOT NULL,
   PRIMARY KEY (idx)
 );
 
 CREATE TABLE break_time_tb (
   idx             int      NOT NULL GENERATED ALWAYS AS IDENTITY,
-  operating_hour_idx  int      NOT NULL,
-  start_at        time,
-  end_at          time,
+  place_idx       int      NOT NULL,
+  start_at        time(6)     NOT NULL,
+  end_at          time(6)     NOT NULL,
+  day             smallint    NOT NULL,
+  PRIMARY KEY (idx)
+);
+
+CREATE TABLE closed_day_tb (
+  idx             int      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  place_idx       int      NOT NULL,
+  day             smallint NOT NULL,
+  week            smallint,
+  PRIMARY KEY (idx)
+);
+
+CREATE TABLE weekly_closed_day_tb (
+  idx             int      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  place_idx       int      NOT NULL,
+  closed_date     date     NOT NULL,
+  type            smallint NOT NULL DEFAULT 0,
   PRIMARY KEY (idx)
 );
 
@@ -111,7 +123,7 @@ CREATE TABLE menu_tb
   content     varchar                 ,
   price       int                     ,
   image_path  varchar                 ,
-  is_flexible boolean                 DEFAULT false,
+  is_flexible boolean                  NOT NULL DEFAULT false,
   created_at  timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at  timestamp with time zone,
   PRIMARY KEY (idx)
@@ -301,20 +313,25 @@ ALTER TABLE user_provider_tb
     FOREIGN KEY (idx)
     REFERENCES user_tb (idx);
 
-ALTER TABLE operating_day_tb
-  ADD CONSTRAINT FK_place_tb_TO_operating_day_tb
+ALTER TABLE operating_hour_tb
+  ADD CONSTRAINT FK_place_tb_TO_operating_hour_tb
     FOREIGN KEY (place_idx)
     REFERENCES place_tb (idx);
 
-ALTER TABLE operating_hour_tb
-  ADD CONSTRAINT FK_operating_day_tb_TO_operating_hour_tb
-    FOREIGN KEY (operating_day_idx)
-    REFERENCES operating_day_tb (idx);
-
 ALTER TABLE break_time_tb
-  ADD CONSTRAINT FK_operating_hour_tb_TO_break_time_tb
-    FOREIGN KEY (operating_hour_idx)
-    REFERENCES operating_hour_tb (idx);
+  ADD CONSTRAINT FK_place_tb_TO_break_time_tb
+    FOREIGN KEY (place_idx)
+    REFERENCES place_tb (idx);
+
+ALTER TABLE closed_day_tb
+  ADD CONSTRAINT Fk_place_tb_To_closed_day_tb
+    FOREIGN KEY (place_idx)
+    REFERENCES place_tb (idx);
+
+ALTER TABLE weekly_closed_day_tb
+  ADD CONSTRAINT Fk_place_tb_To_weekly_closed_day_tb
+  FOREIGN KEY (place_idx)
+  REFERENCES place_tb (idx);
 
 ALTER TABLE picked_place_tb
   ADD CONSTRAINT FK_place_tb_TO_picked_place_tb
