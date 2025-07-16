@@ -86,6 +86,7 @@ jobs:
             npm ci
             docker compose down -v
             docker compose up -d
+            until docker exec inhu-postgres psql -U inhu_admin -d inhu -c "SELECT 1;" >/dev/null 2>&1; do sleep 1; done
             npm run seed
             pm2 reload inhu-backend
           EOF
