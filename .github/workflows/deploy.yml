@@ -46,7 +46,7 @@ jobs:
         with:
           name: inhu-backend-build
           path: |
-            DB
+            DB/**
             dist
             prisma
             package.json
