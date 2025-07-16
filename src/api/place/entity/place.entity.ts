@@ -156,20 +156,24 @@ export class PlaceEntity {
       const opHours = place.operatingHourList.filter(
         (hour) => hour.day === day,
       );
+      // 해당 요일이 정기 휴무일인지 확인
       const isClosedDay = place.closedDayList.some(
         (cd) => cd.day === day && cd.week === null,
       );
 
+      // 운영시간도 없고 휴무일인 경우 -> 정기 휴무일 -> 빈 배열을 담아줌
       if (opHours.length === 0 && isClosedDay) {
         week[day] = [];
         continue;
       }
 
+      // 운영시간 없지만 휴무일이 아닌 경우 -> 정보 없음 -> null
       if (opHours.length === 0 && !isClosedDay) {
         week[day] = null;
         continue;
       }
 
+      //운영시간이 있는 경우 브레이크 타임도 매칭시켜 등록함
       const breakList = place.breakTimeList.filter((bt) => bt.day === day);
 
       week[day] = opHours.map((hour) => {
@@ -262,7 +266,7 @@ export class PlaceEntity {
           weeklyClosedDayList.map((d) => formatDateOnly(d.closedDate)),
         ),
       ];
-      result.push(`격주 휴무 (${dateList.join(', ')})`);
+      result.push('격주 휴무');
     }
 
     if (isClosedOnHoliday) {
