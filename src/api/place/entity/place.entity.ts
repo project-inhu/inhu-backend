@@ -1,12 +1,10 @@
-import { OperatingWeekDay } from '../type/operating-week-day.type';
-import { WEEKS } from '../common/constants/weeks.constant';
 import { PlaceSelectField } from '../type/place-select-field.type';
 import { OperatingWeekSchedule } from '../type/operating-week-schedule.type';
-import { OperatingTimeInfo } from '../type/operating-time-info.type';
-import { formatTimeFromDate } from 'src/common/utils/date.util';
+import { formatDateOnly, formatTimeFromDate } from 'src/common/utils/date.util';
 import { KeywordEntity } from 'src/api/keyword/entity/keyword.entity';
-import { PickType } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 import { TypeEntity } from 'src/api/type/entity/type.entity';
+import { BreakTimeInfo } from '../type/break-time-info.type';
 
 class PlaceKeywordEntity extends PickType(KeywordEntity, ['idx', 'content']) {}
 
@@ -17,6 +15,38 @@ class PlaceTypeEntity extends PickType(TypeEntity, ['idx', 'content']) {}
  * @author 강정연
  */
 export class PlaceEntity {
+  @ApiProperty({
+    description: '요일별 운영 시간 및 브레이크타임 정보',
+    example: {
+      '0': [
+        {
+          startAt: '09:00',
+          endAt: '21:00',
+          breakTimeList: [
+            { startAt: '12:00', endAt: '13:00' },
+            { startAt: '17:00', endAt: '17:30' },
+          ],
+        },
+      ],
+      '2': [
+        {
+          startAt: '10:00',
+          endAt: '22:00',
+          breakTimeList: [],
+        },
+      ],
+      '5': [
+        {
+          startAt: '11:00',
+          endAt: '20:00',
+          breakTimeList: [{ startAt: '15:00', endAt: '15:30' }],
+        },
+      ],
+      '6': null,
+    },
+  })
+  week: OperatingWeekSchedule;
+
   /**
    * place Idx
    *
@@ -72,9 +102,10 @@ export class PlaceEntity {
   createdAt: Date;
 
   /**
-   * 요일별 운영 시간 및 브레이크타임 정보
+   * 추가적인 휴무 정보 (격주, 특정일 등)
+   * @example ["매월 1, 3주차 수요일 휴무"]
    */
-  week: OperatingWeekSchedule;
+  closingInfo: string[];
 
   /**
    * review count
@@ -82,6 +113,13 @@ export class PlaceEntity {
    * @example 1
    */
   reviewCount: number;
+
+  /**
+   * 공휴일에 쉬는지 유무
+   *
+   * @example false
+   */
+  isClosedOnHoliday: boolean;
 
   /**
    * 현재 사용자가 특정 항목을 북마크했는지 여부
@@ -111,7 +149,54 @@ export class PlaceEntity {
 
   static createEntityFromPrisma(place: PlaceSelectField): PlaceEntity {
     const roadAddr = place.roadAddress;
+
+    const week: OperatingWeekSchedule = {};
+
+    for (let day = 0; day <= 6; day++) {
+      const opHours = place.operatingHourList.filter(
+        (hour) => hour.day === day,
+      );
+      const isClosedDay = place.closedDayList.some(
+        (cd) => cd.day === day && cd.week === null,
+      );
+
+      if (opHours.length === 0 && isClosedDay) {
+        week[day] = [];
+        continue;
+      }
+
+      if (opHours.length === 0 && !isClosedDay) {
+        week[day] = null;
+        continue;
+      }
+
+      const breakList = place.breakTimeList.filter((bt) => bt.day === day);
+
+      week[day] = opHours.map((hour) => {
+        const start = formatTimeFromDate(hour.startAt);
+        const end = formatTimeFromDate(hour.endAt);
+
+        const matchedBreakList: BreakTimeInfo[] = breakList
+          .filter(
+            (bt) =>
+              formatTimeFromDate(bt.startAt) >= start &&
+              formatTimeFromDate(bt.endAt) <= end,
+          )
+          .map((bt) => ({
+            startAt: formatTimeFromDate(bt.startAt),
+            endAt: formatTimeFromDate(bt.endAt),
+          }));
+
+        return {
+          startAt: start,
+          endAt: end,
+          breakTimeList: matchedBreakList,
+        };
+      });
+    }
+
     return new PlaceEntity({
+      week,
       idx: place.idx,
       name: place.name,
       tel: place.tel,
@@ -120,43 +205,70 @@ export class PlaceEntity {
       addressX: parseFloat(roadAddr.addressX.toString()),
       addressY: parseFloat(roadAddr.addressY.toString()),
       createdAt: place.createdAt,
-      week: place.operatingDayList.reduce<OperatingWeekSchedule>(
-        (acc, item) => {
-          const key = item.day as OperatingWeekDay;
-          const timeList: OperatingTimeInfo[] = item.operatingHourList.map(
-            (hour) => ({
-              startAt: formatTimeFromDate(hour.startAt),
-              endAt: formatTimeFromDate(hour.endAt),
-              breakTimeList: hour.BreakTimeList.map((bt) => ({
-                startAt: formatTimeFromDate(bt.startAt),
-                endAt: formatTimeFromDate(bt.endAt),
-              })),
-            }),
-          );
-          acc[key] = timeList.length > 0 ? timeList : [];
-          return acc;
-        },
-        {
-          [WEEKS.MON]: null,
-          [WEEKS.TUE]: null,
-          [WEEKS.WED]: null,
-          [WEEKS.THU]: null,
-          [WEEKS.FRI]: null,
-          [WEEKS.SAT]: null,
-          [WEEKS.SUN]: null,
-        },
+      isClosedOnHoliday: place.isClosedOnHoliday,
+      closingInfo: this.buildClosingInfo(
+        place.closedDayList,
+        place.weeklyClosedDayList,
+        place.isClosedOnHoliday,
       ),
       reviewCount: place.reviewCount,
-      bookmark: place.bookmarkList?.length ? true : false,
+      bookmark: !!place.bookmarkList?.length,
       keywordList: place.placeKeywordCountList.map(({ keyword }) => ({
         idx: keyword.idx,
         content: keyword.content,
       })),
-      imagePathList: place.placeImageList.map((image) => image.path ?? ''),
+
+      imagePathList: place.placeImageList.map((img) => img.path ?? ''),
+
       typeList: place.placeTypeMappingList.map(({ placeType }) => ({
         idx: placeType.idx,
         content: placeType.content,
       })),
     });
+  }
+
+  /**
+   * 휴무일 정보를 string[] 형태로 가공
+   */
+  private static buildClosingInfo(
+    closedDayList: { day: number; week: number | null }[],
+    weeklyClosedDayList: { closedDate: Date }[],
+    isClosedOnHoliday: boolean,
+  ): string[] {
+    const result: string[] = [];
+
+    const WEEKDAY_LABEL = [
+      '일요일',
+      '월요일',
+      '화요일',
+      '수요일',
+      '목요일',
+      '금요일',
+      '토요일',
+    ];
+
+    closedDayList.forEach(({ day, week }) => {
+      const dayLabel = WEEKDAY_LABEL[day] ?? `요일(${day})`;
+      if (week !== null) {
+        result.push(`매월 ${week}주차 ${dayLabel} 휴무`);
+      } else {
+        result.push(`매주 ${dayLabel} 휴무`);
+      }
+    });
+
+    if (weeklyClosedDayList.length > 0) {
+      const dateList = [
+        ...new Set(
+          weeklyClosedDayList.map((d) => formatDateOnly(d.closedDate)),
+        ),
+      ];
+      result.push(`격주 휴무 (${dateList.join(', ')})`);
+    }
+
+    if (isClosedOnHoliday) {
+      result.push('공휴일 휴무');
+    }
+
+    return result;
   }
 }

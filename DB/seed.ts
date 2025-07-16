@@ -280,7 +280,7 @@ async function main() {
       addressY: 37.7,
     },
     {
-      name: '매월 둘쨰, 넷째 화요일 휴무',
+      name: '매월 둘째, 넷째 화요일 휴무',
       tel: '032-111-0024',
       addressName: '인천 미추홀구 휴무로 903',
       addressX: 126.679,

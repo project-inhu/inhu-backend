@@ -1,5 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { WEEKS } from '../common/constants/weeks.constant';
 import { OperatingTimeInfo } from './operating-time-info.type';
 
 /**
@@ -9,24 +7,5 @@ import { OperatingTimeInfo } from './operating-time-info.type';
  * @author 강정연
  */
 export class OperatingWeekSchedule {
-  @ApiProperty({ type: () => [OperatingTimeInfo] })
-  [WEEKS.MON]: OperatingTimeInfo[] | null = null;
-
-  @ApiProperty({ type: () => [OperatingTimeInfo] })
-  [WEEKS.TUE]: OperatingTimeInfo[] | null = null;
-
-  @ApiProperty({ type: () => [OperatingTimeInfo] })
-  [WEEKS.WED]: OperatingTimeInfo[] | null = null;
-
-  @ApiProperty({ type: () => [OperatingTimeInfo] })
-  [WEEKS.THU]: OperatingTimeInfo[] | null = null;
-
-  @ApiProperty({ type: () => [OperatingTimeInfo] })
-  [WEEKS.FRI]: OperatingTimeInfo[] | null = null;
-
-  @ApiProperty({ type: () => [OperatingTimeInfo] })
-  [WEEKS.SAT]: OperatingTimeInfo[] | null = null;
-
-  @ApiProperty({ type: () => [OperatingTimeInfo] })
-  [WEEKS.SUN]: OperatingTimeInfo[] | null = null;
+  [key: number]: OperatingTimeInfo[] | null;
 }

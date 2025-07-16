@@ -22,6 +22,7 @@ export const PLACE_SELECT_FIELD = Prisma.validator<Prisma.PlaceDefaultArgs>()({
     },
     createdAt: true,
     reviewCount: true,
+    isClosedOnHoliday: true,
     placeKeywordCountList: {
       take: 2,
       orderBy: [{ count: 'desc' }, { keyword: { idx: 'asc' } }],
@@ -35,21 +36,32 @@ export const PLACE_SELECT_FIELD = Prisma.validator<Prisma.PlaceDefaultArgs>()({
         },
       },
     },
-    operatingDayList: {
+    operatingHourList: {
+      orderBy: [{ day: 'asc' }, { startAt: 'asc' }],
       select: {
         day: true,
-        operatingHourList: {
-          select: {
-            startAt: true,
-            endAt: true,
-            BreakTimeList: {
-              select: {
-                startAt: true,
-                endAt: true,
-              },
-            },
-          },
-        },
+        startAt: true,
+        endAt: true,
+      },
+    },
+    breakTimeList: {
+      orderBy: [{ day: 'asc' }, { startAt: 'asc' }],
+      select: {
+        day: true,
+        startAt: true,
+        endAt: true,
+      },
+    },
+    closedDayList: {
+      select: {
+        day: true,
+        week: true,
+      },
+    },
+    weeklyClosedDayList: {
+      select: {
+        closedDate: true,
+        type: true,
       },
     },
     bookmarkList: {
