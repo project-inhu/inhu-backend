@@ -86,6 +86,10 @@ export class PlaceRepository {
     }
 
     const today = this.dateUtilService.getTodayDate();
+
+    return {
+      AND: [{}],
+    };
   }
 
   /**
