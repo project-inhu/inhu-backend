@@ -6,6 +6,7 @@ import { Exception } from 'src/common/decorator/exception.decorator';
 import { GetAllPlaceOverviewResponseDto } from './dto/get-all-place-overview-response.dto';
 import { GetAllPlaceOverviewByNowDto } from './dto/get-all-place-overview-by-now.dto';
 import { PlaceOverviewEntity } from './entity/place-overview.entity';
+import { GetAllPlaceOverviewDto } from 'src/api/place/dto/request/get-all-place-overview.dto';
 
 @Controller('place')
 export class PlaceController {
@@ -19,14 +20,10 @@ export class PlaceController {
   @Exception(400, 'Invalid page number or orderBy')
   @Get('/all')
   async getAllPlaceOverview(
-    @Query() getAllPlaceOverviewDto: any,
+    @Query() dto: GetAllPlaceOverviewDto,
     @User('idx') userIdx?: number,
   ): Promise<GetAllPlaceOverviewResponseDto> {
-    return await this.placeService.getAllPlaceOverview(
-      getAllPlaceOverviewDto.page,
-      getAllPlaceOverviewDto.orderBy,
-      userIdx,
-    );
+    return await this.placeService.getAllPlaceOverview(dto, userIdx);
   }
 
   /**
@@ -44,14 +41,14 @@ export class PlaceController {
     return await this.placeService.getPlaceByPlaceIdx(placeIdx, userIdx);
   }
 
-  @Get('/now')
-  async getAllPlaceOverviewByNow(
-    @Query() getAllPlaceOverviewByNowDto: GetAllPlaceOverviewByNowDto,
-    @User('idx') userIdx?: number,
-  ) {
-    return await this.placeService.getAllPlaceOverviewByNow(
-      getAllPlaceOverviewByNowDto.page,
-      userIdx,
-    );
-  }
+  // @Get('/now')
+  // async getAllPlaceOverviewByNow(
+  //   @Query() getAllPlaceOverviewByNowDto: GetAllPlaceOverviewByNowDto,
+  //   @User('idx') userIdx?: number,
+  // ) {
+  //   return await this.placeService.getAllPlaceOverviewByNow(
+  //     getAllPlaceOverviewByNowDto.page,
+  //     userIdx,
+  //   );
+  // }
 }

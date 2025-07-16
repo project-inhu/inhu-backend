@@ -6,20 +6,19 @@ export class DateUtilService {
   constructor() {}
 
   /**
-   * 오늘 날짜 가져오는 메서드
-   * ! 주의: 날짜 외의 시간 값은 모두 0으로 초기화됨
+   * 현재 날짜를 기준으로 오늘 날짜를 반환하는 메서드
    *
    * @returns {Date} 오늘 날짜
    */
-  public getTodayDate(): Date {
-    return new Date(new Date().setHours(0, 0, 0, 0));
+  public getNow(): Date {
+    return new Date();
   }
 
   /**
    * 오늘에 해당하는 요일을 가져오는 메서드
    */
   public getTodayDayOfWeek(): DayOfWeek {
-    const today = this.getTodayDate();
+    const today = this.getNow();
     return today.getDay() as DayOfWeek;
   }
 
@@ -28,7 +27,7 @@ export class DateUtilService {
    * 예: 2024-06-20이 목요일이고, 6월의 세 번째 목요일이면 3 반환
    */
   public getTodayNthDayOfWeekInMonth(): number {
-    const today = this.getTodayDate();
+    const today = this.getNow();
     const dayOfWeek = today.getDay();
     const date = today.getDate();
 

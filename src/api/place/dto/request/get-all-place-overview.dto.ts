@@ -1,5 +1,15 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsInt, IsNotEmpty, IsOptional, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsDecimal,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  Min,
+} from 'class-validator';
+import { PlaceType } from 'src/api/place/constants/place-type.constant';
 import { ToBoolean } from 'src/common/decorator/to-boolean.decorator';
 
 /**
@@ -46,5 +56,50 @@ export class GetAllPlaceOverviewDto {
    */
   @IsOptional()
   @ToBoolean()
+  @IsBoolean()
   operating?: boolean;
+
+  /**
+   * 1: 카페
+   * 2: 음식점
+   * 3: 편의점
+   */
+  @IsOptional()
+  type?: PlaceType;
+
+  /**
+   * 왼쪽 위 x좌표
+   */
+  @IsOptional()
+  @IsDecimal()
+  leftTopX?: number;
+
+  /**
+   * 왼쪽 위 y좌표
+   */
+  @IsOptional()
+  @IsDecimal()
+  leftTopY?: number;
+
+  /**
+   * 오른쪽 아래 x좌표
+   */
+  @IsOptional()
+  @IsDecimal()
+  rightBottomX?: number;
+
+  /**
+   * 오른쪽 아래 y좌표
+   */
+  @IsOptional()
+  @IsDecimal()
+  rightBottomY?: number;
+
+  /**
+   * 로그인 사용자가 북마크한 장소만 필터링
+   */
+  @IsOptional()
+  @ToBoolean()
+  @IsBoolean()
+  bookmark?: boolean;
 }

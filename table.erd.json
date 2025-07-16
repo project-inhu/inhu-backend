@@ -665,7 +665,7 @@
       "7u3O28pDHhVWe92EVCwLK": {
         "id": "7u3O28pDHhVWe92EVCwLK",
         "name": "closed_day_tb",
-        "comment": "",
+        "comment": "휴무일 테이블",
         "columnIds": [
           "JDlRakML4oPWfJpY-R82g",
           "S5p-YvnfxrqdA0Bdqs_cQ",
@@ -682,22 +682,22 @@
           "DgxTHfCwC4KylCPgOxstW"
         ],
         "ui": {
-          "x": 4047.509,
-          "y": 1091.5848,
+          "x": 3914.509,
+          "y": 1150.5848,
           "zIndex": 404,
           "widthName": 84,
-          "widthComment": 60,
+          "widthComment": 68,
           "color": "#4CAF50"
         },
         "meta": {
-          "updateAt": 1752681545573,
+          "updateAt": 1752681836922,
           "createAt": 1737442394638
         }
       },
       "LHltENbIzChL3KOk4hSnY": {
         "id": "LHltENbIzChL3KOk4hSnY",
         "name": "operating_hour_tb",
-        "comment": "",
+        "comment": "운영 시간 테이블",
         "columnIds": [
           "AFpwIKiEqX13hn6vyuSEA",
           "oL1SpqV2HPKzmTSTXmomP",
@@ -714,22 +714,22 @@
           "MO_drwE21WArXJ_xhEbwT"
         ],
         "ui": {
-          "x": 3945.4167,
-          "y": 1254.8025,
+          "x": 3910.4167,
+          "y": 1303.8025,
           "zIndex": 424,
           "widthName": 107,
-          "widthComment": 60,
+          "widthComment": 81,
           "color": "#4CAF50"
         },
         "meta": {
-          "updateAt": 1752680155474,
+          "updateAt": 1752681840988,
           "createAt": 1751709449517
         }
       },
       "_pfYYNPPZvmhYqx8zRY7y": {
         "id": "_pfYYNPPZvmhYqx8zRY7y",
         "name": "break_time_tb",
-        "comment": "",
+        "comment": "브레이크 타임 테이블",
         "columnIds": [
           "NqZeu8QYvOO0OI0Cb5kEi",
           "ynBrkJmo3F2bTu8GClHjc",
@@ -746,15 +746,15 @@
           "NJvzHFMmG1LC1nfnKIiOk"
         ],
         "ui": {
-          "x": 4030.3579,
-          "y": 1590.3319,
+          "x": 3906.3579,
+          "y": 1633.3319,
           "zIndex": 432,
           "widthName": 84,
-          "widthComment": 60,
+          "widthComment": 102,
           "color": "#4CAF50"
         },
         "meta": {
-          "updateAt": 1752679162512,
+          "updateAt": 1752681850581,
           "createAt": 1751709605357
         }
       },
@@ -844,7 +844,7 @@
       "nUJKtAaptSH8t5I5HnY51": {
         "id": "nUJKtAaptSH8t5I5HnY51",
         "name": "weekly_closed_day_tb",
-        "comment": "",
+        "comment": "격주 휴일 테이블",
         "columnIds": [
           "PxiLknoahxQ5UvsNM--vT",
           "RIfEEuaEBkE_Yr_F97PLi",
@@ -858,15 +858,15 @@
           "hRBrV2Bh3jz4kiLRNZ3Zz"
         ],
         "ui": {
-          "x": 3910.9069,
-          "y": 1433.5614,
+          "x": 3907.9069,
+          "y": 1479.5614,
           "zIndex": 516,
           "widthName": 129,
-          "widthComment": 60,
+          "widthComment": 81,
           "color": "#4CAF50"
         },
         "meta": {
-          "updateAt": 1752681543652,
+          "updateAt": 1752681847520,
           "createAt": 1752678940377
         }
       },
@@ -1596,7 +1596,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1736925767823,
+          "updateAt": 1752683314645,
           "createAt": 1736925750481
         }
       },
@@ -3224,19 +3224,19 @@
         "id": "UPGDbiHvpyqDPjhePMMoT",
         "tableId": "7u3O28pDHhVWe92EVCwLK",
         "name": "day",
-        "comment": "",
+        "comment": "요일(0: 일요일, 1: 월요일...)",
         "dataType": "smallint",
         "default": "",
         "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 60,
-          "widthComment": 60,
+          "widthComment": 139,
           "widthDataType": 60,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1752678793770,
+          "updateAt": 1752681984991,
           "createAt": 1737442451028
         }
       },
@@ -3784,19 +3784,19 @@
         "id": "DgxTHfCwC4KylCPgOxstW",
         "tableId": "7u3O28pDHhVWe92EVCwLK",
         "name": "week",
-        "comment": "",
+        "comment": "몇 번째 주에 쉬는지",
         "dataType": "smallint",
         "default": "",
         "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 60,
-          "widthComment": 60,
+          "widthComment": 95,
           "widthDataType": 60,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1752681669017,
+          "updateAt": 1752681991514,
           "createAt": 1752678798418
         }
       },
@@ -4585,8 +4585,8 @@
           "columnIds": [
             "S5p-YvnfxrqdA0Bdqs_cQ"
           ],
-          "x": 4047.509,
-          "y": 1167.5848,
+          "x": 3914.509,
+          "y": 1226.5848,
           "direction": 1
         },
         "meta": {
@@ -4641,8 +4641,8 @@
           "columnIds": [
             "oL1SpqV2HPKzmTSTXmomP"
           ],
-          "x": 3945.4167,
-          "y": 1342.8025,
+          "x": 3910.4167,
+          "y": 1391.8025,
           "direction": 1
         },
         "meta": {
@@ -4669,8 +4669,8 @@
           "columnIds": [
             "ynBrkJmo3F2bTu8GClHjc"
           ],
-          "x": 4030.3579,
-          "y": 1678.3319,
+          "x": 3906.3579,
+          "y": 1721.3319,
           "direction": 1
         },
         "meta": {
@@ -4697,8 +4697,8 @@
           "columnIds": [
             "RIfEEuaEBkE_Yr_F97PLi"
           ],
-          "x": 3910.9069,
-          "y": 1509.5614,
+          "x": 3907.9069,
+          "y": 1555.5614,
           "direction": 1
         },
         "meta": {

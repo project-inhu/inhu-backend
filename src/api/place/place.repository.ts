@@ -4,6 +4,8 @@ import { PlaceOverviewSelectField } from './type/place-overview-select-field.typ
 import { PlaceSelectField } from './type/place-select-field.type';
 import { Prisma } from '@prisma/client';
 import { DateUtilService } from 'src/common/module/date-util/date-util.service';
+import { SelectPlaceOverviewInput } from 'src/api/place/input/select-place-overview-input';
+import { PlaceType } from 'src/api/place/constants/place-type.constant';
 
 @Injectable()
 export class PlaceRepository {
@@ -17,14 +19,17 @@ export class PlaceRepository {
    *
    * @author 강정연
    */
-  async selectAllPlaceOverview(
-    skip: number,
-    take: number,
-    orderByOption?:
-      | Prisma.PlaceOrderByWithRelationInput
-      | Prisma.PlaceOrderByWithRelationInput[],
-    userIdx?: number,
-  ): Promise<PlaceOverviewSelectField[]> {
+  async selectAllPlaceOverview({
+    order = 'desc',
+    orderBy = 'time',
+    readUserIdx,
+    operating,
+    take,
+    skip,
+    bookmarkUserIdx,
+    coordinate,
+    types,
+  }: SelectPlaceOverviewInput): Promise<PlaceOverviewSelectField[]> {
     return await this.prisma.place.findMany({
       select: {
         idx: true,
@@ -49,30 +54,33 @@ export class PlaceRepository {
             },
           },
         },
-        bookmarkList: userIdx
-          ? { where: { userIdx }, select: { placeIdx: true } }
+        bookmarkList: readUserIdx
+          ? { where: { userIdx: readUserIdx }, select: { placeIdx: true } }
           : undefined,
         placeImageList: {
           orderBy: { idx: 'asc' },
-          select: {
-            path: true,
-          },
+          select: { path: true },
         },
         placeTypeMappingList: {
           select: {
             placeType: {
-              select: {
-                idx: true,
-                content: true,
-              },
+              select: { idx: true, content: true },
             },
           },
         },
       },
       where: {
-        deletedAt: null,
+        AND: [
+          { deletedAt: null },
+          this.getOperatingFilterWhereClause(operating), // 영업중 필터링
+          this.getBookmarkFilterWhereClause(bookmarkUserIdx), // 북마크 필터링
+          this.getCoordinateFilterWhereClause(coordinate), // 좌표 필터링
+          this.getTypesFilterWhereClause(types), // 타입 필터링
+        ],
       },
-      orderBy: orderByOption,
+      orderBy: {
+        [orderBy === 'time' ? 'idx' : 'reviewCount']: order,
+      },
       skip,
       take,
     });
@@ -85,10 +93,126 @@ export class PlaceRepository {
       return {};
     }
 
-    const today = this.dateUtilService.getTodayDate();
+    const now = this.dateUtilService.getNow();
+
+    // 오늘 요일이 이번 달의 몇 번째 주인지
+    const todayNthOfWeek = this.dateUtilService.getTodayNthDayOfWeekInMonth();
+
+    // 요일 (0: 일요일, 1: 월요일, ..., 6: 토요일)
+    const dayOfWeek = this.dateUtilService.getTodayDayOfWeek();
+
+    const mustBeOpenWhereClause = {
+      AND: [
+        // closed_day_tb 에 존재하지 않아야 함.
+        {
+          closedDayList: {
+            none: {
+              week: todayNthOfWeek,
+              day: dayOfWeek,
+            },
+          },
+        },
+        // 오늘 요일의 운영 시간이 존재해야하며 startAt <= now <= endAt
+        {
+          operatingHourList: {
+            some: {
+              day: dayOfWeek,
+              startAt: {
+                lte: now,
+              },
+              endAt: {
+                gte: now,
+              },
+            },
+          },
+        },
+        // 오늘 날짜의 휴무일이 존재하지 않아야 함.
+        {
+          weeklyClosedDayList: {
+            none: { closedDate: now },
+          },
+        },
+        // 오늘 요일에 해당하는 브레이크 타임에 어떤 데이터도 없어야함.
+        {
+          breakTimeList: {
+            none: {
+              day: dayOfWeek,
+              startAt: {
+                lte: now,
+              },
+              endAt: {
+                gte: now,
+              },
+            },
+          },
+        },
+      ],
+    };
+
+    if (operating) {
+      return mustBeOpenWhereClause;
+    }
 
     return {
-      AND: [{}],
+      NOT: mustBeOpenWhereClause,
+    };
+  }
+
+  private getBookmarkFilterWhereClause(
+    bookmarkUserIdx?: number,
+  ): Prisma.PlaceWhereInput {
+    if (bookmarkUserIdx === undefined) {
+      return {};
+    }
+
+    return {
+      bookmarkList: {
+        some: {
+          userIdx: bookmarkUserIdx,
+        },
+      },
+    };
+  }
+
+  private getCoordinateFilterWhereClause(coordinate?: {
+    leftTopX: number;
+    leftTopY: number;
+    rightBottomX: number;
+    rightBottomY: number;
+  }): Prisma.PlaceWhereInput {
+    if (coordinate === undefined) {
+      return {};
+    }
+
+    return {
+      roadAddress: {
+        addressX: {
+          gte: coordinate.leftTopX,
+          lte: coordinate.rightBottomX,
+        },
+        addressY: {
+          gte: coordinate.rightBottomY,
+          lte: coordinate.leftTopY,
+        },
+      },
+    };
+  }
+
+  private getTypesFilterWhereClause(
+    types?: PlaceType[],
+  ): Prisma.PlaceWhereInput {
+    if (types === undefined || types.length === 0) {
+      return {};
+    }
+
+    return {
+      placeTypeMappingList: {
+        some: {
+          placeTypeIdx: {
+            in: types,
+          },
+        },
+      },
     };
   }
 
