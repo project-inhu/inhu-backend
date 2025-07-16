@@ -86,6 +86,6 @@ jobs:
             npm ci
             docker compose down -v
             docker compose up -d
-            npm run seed:prod
+            npm run seed
             pm2 reload inhu-backend
           EOF
