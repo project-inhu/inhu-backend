@@ -86,8 +86,8 @@ model PickedPlace {
 model OperatingHour {
   idx             Int          @id @default(autoincrement())
   operatingDayIdx Int          @map("operating_day_idx")
-  startAt         DateTime?    @map("start_at") @db.Time(6)
-  endAt           DateTime?    @map("end_at") @db.Time(6)
+  startAt         DateTime     @map("start_at") @db.Time(6)
+  endAt           DateTime     @map("end_at") @db.Time(6)
   breakTime       BreakTime[]
   operatingDay    OperatingDay @relation(fields: [operatingDayIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_operating_day_tb_to_operating_hour_tb")
 
@@ -97,8 +97,8 @@ model OperatingHour {
 model BreakTime {
   idx              Int           @id @default(autoincrement())
   operatingHourIdx Int           @map("operating_hour_idx")
-  startAt          DateTime?     @map("start_at") @db.Time(6)
-  endAt            DateTime?     @map("end_at") @db.Time(6)
+  startAt          DateTime      @map("start_at") @db.Time(6)
+  endAt            DateTime      @map("end_at") @db.Time(6)
   operatingHour    OperatingHour @relation(fields: [operatingHourIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_operating_hour_tb_to_break_time_tb")
 
   @@map("break_time_tb")
