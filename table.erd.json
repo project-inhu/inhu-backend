@@ -4,9 +4,9 @@
   "settings": {
     "width": 9000,
     "height": 9000,
-    "scrollTop": -1705.6605,
-    "scrollLeft": -3319.4709,
-    "zoomLevel": 0.85,
+    "scrollTop": 0,
+    "scrollLeft": 0,
+    "zoomLevel": 1,
     "show": 511,
     "database": 16,
     "databaseName": "inhu",
@@ -27,7 +27,7 @@
       64
     ],
     "maxWidthComment": -1,
-    "ignoreSaveSettings": 0
+    "ignoreSaveSettings": 3
   },
   "doc": {
     "tableIds": [
@@ -149,7 +149,7 @@
           "color": "#FFEB3B"
         },
         "meta": {
-          "updateAt": 1737457292782,
+          "updateAt": 1752678506110,
           "createAt": 1736919004651
         }
       },
@@ -403,7 +403,7 @@
           "color": "#4CAF50"
         },
         "meta": {
-          "updateAt": 1737442232828,
+          "updateAt": 1752678545303,
           "createAt": 1736925785318
         }
       },
