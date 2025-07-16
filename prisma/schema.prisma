@@ -23,7 +23,7 @@ model Keyword {
   content                  String                 @unique @db.VarChar
   createdAt                DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt                DateTime?              @map("deleted_at") @db.Timestamptz(6)
-  PlaceKeywordCountList    PlaceKeywordCount[]
+  placeKeywordCountList    PlaceKeywordCount[]
   reviewKeywordMappingList ReviewKeywordMapping[]
 
   @@map("keyword_tb")
@@ -32,7 +32,7 @@ model Keyword {
 model PlaceImage {
   idx      Int     @id @default(autoincrement())
   placeIdx Int     @map("place_idx")
-  path     String? @map("image_path") @db.VarChar
+  path     String? @db.VarChar
   place    Place   @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_image_tb")
 
   @@map("place_image_tb")
@@ -47,19 +47,15 @@ model Place {
   closedAt              DateTime?           @map("closed_at") @db.Timestamptz(6)
   reviewCount           Int                 @default(0) @map("review_count")
   roadAddressIdx        Int                 @unique @map("road_address_idx")
-  isClosedOnHoliday     Boolean             @default(false) @map("is_closed_on_holiday")
   bookmarkList          Bookmark[]
-  breakTimeList         BreakTime[]
-  closedDayList         ClosedDay[]
   menuList              Menu[]
-  operatingHourList     OperatingHour[]
+  operatingDayTb        OperatingDayTb[]
   pickedPlaceList       PickedPlace?
   placeImageList        PlaceImage[]
   placeKeywordCountList PlaceKeywordCount[]
   roadAddress           RoadAddress         @relation(fields: [roadAddressIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_road_address_tb_to_place_tb")
   placeTypeMappingList  PlaceTypeMapping[]
   reviewList            Review[]
-  weeklyClosedDayList   WeeklyClosedDay[]
 
   @@map("place_tb")
 }
@@ -88,45 +84,24 @@ model PickedPlace {
 }
 
 model OperatingHour {
-  idx      Int      @id @default(autoincrement())
-  placeIdx Int      @map("place_idx")
-  startAt  DateTime @map("start_at") @db.Time(6)
-  endAt    DateTime @map("end_at") @db.Time(6)
-  day      Int      @map("day") @db.SmallInt
-  place    Place    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_operating_hour_tb")
+  idx             Int            @id @default(autoincrement())
+  operatingDayIdx Int            @map("operating_day_idx")
+  startAt         DateTime?      @map("start_at") @db.Time(6)
+  endAt           DateTime?      @map("end_at") @db.Time(6)
+  breakTimeTb     BreakTime[]
+  operatingDayTb  OperatingDayTb @relation(fields: [operatingDayIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_operating_day_tb_to_operating_hour_tb")
 
   @@map("operating_hour_tb")
 }
 
 model BreakTime {
-  idx      Int      @id @default(autoincrement())
-  placeIdx Int      @map("place_idx")
-  startAt  DateTime @map("start_at") @db.Time(6)
-  endAt    DateTime @map("end_at") @db.Time(6)
-  day      Int      @map("day") @db.SmallInt
-  place    Place    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_break_time_tb")
+  idx              Int           @id @default(autoincrement())
+  operatingHourIdx Int           @map("operating_hour_idx")
+  startAt          DateTime?     @map("start_at") @db.Time(6)
+  endAt            DateTime?     @map("end_at") @db.Time(6)
+  operatingHourTb  OperatingHour @relation(fields: [operatingHourIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_operating_hour_tb_to_break_time_tb")
 
   @@map("break_time_tb")
-}
-
-model WeeklyClosedDay {
-  idx        Int      @id @default(autoincrement())
-  placeIdx   Int      @map("place_idx")
-  closedDate DateTime @map("closed_date") @db.Date
-  type       Int      @default(0) @map("type") @db.SmallInt
-  place      Place    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_weekly_closed_day_tb")
-
-  @@map("weekly_closed_day_tb")
-}
-
-model ClosedDay {
-  idx      Int   @id @default(autoincrement())
-  placeIdx Int   @map("place_idx")
-  day      Int   @map("day") @db.SmallInt
-  week     Int?  @map("week") @db.SmallInt
-  place    Place @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_closed_day_tb")
-
-  @@map("closed_day_tb")
 }
 
 model PlaceKeywordCount {
@@ -167,7 +142,7 @@ model Menu {
   content    String?   @db.VarChar
   price      Int?
   imagePath  String?   @map("image_path") @db.VarChar
-  isFlexible Boolean   @default(false) @map("is_flexible")
+  isFlexible Boolean?  @default(false) @map("is_flexible")
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt  DateTime? @map("deleted_at") @db.Timestamptz(6)
   place      Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_menu_tb")
@@ -178,7 +153,7 @@ model Menu {
 model ReviewImage {
   idx       Int    @id @default(autoincrement())
   reviewIdx Int    @map("review_idx")
-  path      String @map("image_path") @db.VarChar
+  path      String @db.VarChar
   review    Review @relation(fields: [reviewIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_review_tb_to_review_image_tb")
 
   @@map("review_image_tb")
@@ -291,4 +266,14 @@ model WithdrawService {
   withdrawServiceResultList WithdrawServiceResult[]
 
   @@map("withdraw_service_tb")
+}
+
+model OperatingDayTb {
+  idx             Int             @id @default(autoincrement())
+  placeIdx        Int             @map("place_idx")
+  day             String          @db.VarChar
+  placeTb         Place           @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_operating_day_tb")
+  operatingHourTb OperatingHour[]
+
+  @@map("operating_day_tb")
 }
