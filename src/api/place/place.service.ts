@@ -105,4 +105,15 @@ export class PlaceService {
       tx,
     );
   }
+
+  async getAllPlaceOverviewByNow(page: number, userIdx?: number) {
+    const pageSize = 10;
+    const take = pageSize + 1;
+    const skip = (page - 1) * pageSize;
+
+    const now = new Date();
+    const today = now.toISOString().split('T')[0]; // YYYY-MM-DD
+    const day = now.getDay(); // 요일
+    const time = now.toISOString().split('T')[1].slice(0, 8); // HH:MM:SS
+  }
 }
