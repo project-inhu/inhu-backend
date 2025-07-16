@@ -3,10 +3,14 @@ import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { PlaceOverviewSelectField } from './type/place-overview-select-field.type';
 import { PlaceSelectField } from './type/place-select-field.type';
 import { Prisma } from '@prisma/client';
+import { DateUtilService } from 'src/common/module/date-util/date-util.service';
 
 @Injectable()
 export class PlaceRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly dateUtilService: DateUtilService,
+  ) {}
 
   /**
    * 모든 place 개요 가져오기
@@ -22,12 +26,6 @@ export class PlaceRepository {
     userIdx?: number,
   ): Promise<PlaceOverviewSelectField[]> {
     return await this.prisma.place.findMany({
-      skip,
-      take,
-      where: {
-        deletedAt: null,
-      },
-      orderBy: orderByOption,
       select: {
         idx: true,
         name: true,
@@ -71,7 +69,23 @@ export class PlaceRepository {
           },
         },
       },
+      where: {
+        deletedAt: null,
+      },
+      orderBy: orderByOption,
+      skip,
+      take,
     });
+  }
+
+  private getOperatingFilterWhereClause(
+    operating?: boolean,
+  ): Prisma.PlaceWhereInput {
+    if (operating === undefined) {
+      return {};
+    }
+
+    const today = this.dateUtilService.getTodayDate();
   }
 
   /**

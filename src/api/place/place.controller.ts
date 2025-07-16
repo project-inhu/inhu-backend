@@ -1,6 +1,5 @@
 import { Query, Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { PlaceService } from './place.service';
-import { GetAllPlaceOverviewDto } from './dto/get-all-place-overview.dto';
 import { User } from 'src/common/decorator/user.decorator';
 import { PlaceEntity } from './entity/place.entity';
 import { Exception } from 'src/common/decorator/exception.decorator';
@@ -20,7 +19,7 @@ export class PlaceController {
   @Exception(400, 'Invalid page number or orderBy')
   @Get('/all')
   async getAllPlaceOverview(
-    @Query() getAllPlaceOverviewDto: GetAllPlaceOverviewDto,
+    @Query() getAllPlaceOverviewDto: any,
     @User('idx') userIdx?: number,
   ): Promise<GetAllPlaceOverviewResponseDto> {
     return await this.placeService.getAllPlaceOverview(
