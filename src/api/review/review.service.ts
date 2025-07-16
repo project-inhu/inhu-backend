@@ -8,7 +8,6 @@ import { ReviewEntity } from './entity/review.entity';
 import { CreateReviewInput } from './input/create-review.input';
 import { UpdateReviewInput } from './input/update-review.input';
 import { PlaceService } from '../place/place.service';
-import { ReviewCountUpdateType } from '../place/common/enums/review-count-update-type.enum';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { UserService } from '../user/user.service';
 
@@ -66,11 +65,11 @@ export class ReviewService {
         tx,
       );
 
-      await this.placeService.updatePlaceReviewCountByPlaceIdx(
-        createReviewInput.placeIdx,
-        ReviewCountUpdateType.INCREASE,
-        tx,
-      );
+      // await this.placeService.updatePlaceReviewCountByPlaceIdx(
+      //   createReviewInput.placeIdx,
+      //   ReviewCountUpdateType.INCREASE,
+      //   tx,
+      // );
 
       return createdReview;
     });
@@ -120,11 +119,11 @@ export class ReviewService {
     await this.prisma.$transaction(async (tx) => {
       await this.reviewRepository.deleteReviewByReviewIdx(reviewIdx, tx);
 
-      await this.placeService.updatePlaceReviewCountByPlaceIdx(
-        review.place.idx,
-        ReviewCountUpdateType.DECREASE,
-        tx,
-      );
+      // await this.placeService.updatePlaceReviewCountByPlaceIdx(
+      //   review.place.idx,
+      //   ReviewCountUpdateType.DECREASE,
+      //   tx,
+      // );
     });
   }
 
