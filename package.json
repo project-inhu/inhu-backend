@@ -10,7 +10,6 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "seed" : "tsx --env-file=.env DB/seed.ts",
-    "seed:prod": "node dist/DB/seed.js",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -22,7 +21,7 @@
     "test:e2e": "npm run test:infra:up && dotenv -e .env.test -- jest --config ./test/jest-e2e.json && npm run test:infra:down",
     "test:infra:up": "docker compose -f docker-compose.test.yml up -d",
     "test:infra:down": "docker compose -f docker-compose.test.yml down -v",
-    "dev:infra:up": "docker compose up -d && npm run seed",
+    "dev:infra:up": "docker compose up -d",
     "dev:infra:down": "docker compose down -v",
     "dev:infra:connect": "docker exec -it inhu-postgres psql -d inhu -U inhu_admin"
   },
