@@ -49,7 +49,7 @@ model Place {
   roadAddressIdx        Int                 @unique @map("road_address_idx")
   bookmarkList          Bookmark[]
   menuList              Menu[]
-  operatingDayTb        OperatingDayTb[]
+  operatingDay          OperatingDay[]
   pickedPlaceList       PickedPlace?
   placeImageList        PlaceImage[]
   placeKeywordCountList PlaceKeywordCount[]
@@ -84,12 +84,12 @@ model PickedPlace {
 }
 
 model OperatingHour {
-  idx             Int            @id @default(autoincrement())
-  operatingDayIdx Int            @map("operating_day_idx")
-  startAt         DateTime?      @map("start_at") @db.Time(6)
-  endAt           DateTime?      @map("end_at") @db.Time(6)
-  breakTimeTb     BreakTime[]
-  operatingDayTb  OperatingDayTb @relation(fields: [operatingDayIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_operating_day_tb_to_operating_hour_tb")
+  idx             Int          @id @default(autoincrement())
+  operatingDayIdx Int          @map("operating_day_idx")
+  startAt         DateTime?    @map("start_at") @db.Time(6)
+  endAt           DateTime?    @map("end_at") @db.Time(6)
+  breakTime       BreakTime[]
+  operatingDay    OperatingDay @relation(fields: [operatingDayIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_operating_day_tb_to_operating_hour_tb")
 
   @@map("operating_hour_tb")
 }
@@ -99,7 +99,7 @@ model BreakTime {
   operatingHourIdx Int           @map("operating_hour_idx")
   startAt          DateTime?     @map("start_at") @db.Time(6)
   endAt            DateTime?     @map("end_at") @db.Time(6)
-  operatingHourTb  OperatingHour @relation(fields: [operatingHourIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_operating_hour_tb_to_break_time_tb")
+  operatingHour    OperatingHour @relation(fields: [operatingHourIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_operating_hour_tb_to_break_time_tb")
 
   @@map("break_time_tb")
 }
@@ -268,12 +268,12 @@ model WithdrawService {
   @@map("withdraw_service_tb")
 }
 
-model OperatingDayTb {
-  idx             Int             @id @default(autoincrement())
-  placeIdx        Int             @map("place_idx")
-  day             String          @db.VarChar
-  placeTb         Place           @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_operating_day_tb")
-  operatingHourTb OperatingHour[]
+model OperatingDay {
+  idx           Int             @id @default(autoincrement())
+  placeIdx      Int             @map("place_idx")
+  day           String          @db.VarChar
+  place         Place           @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_operating_day_tb")
+  operatingHour OperatingHour[]
 
   @@map("operating_day_tb")
 }
