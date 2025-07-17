@@ -1,6 +1,6 @@
-import { PrismaService } from 'src/common/module/prisma/prisma.service';
+import { PrismaService } from '@user/common/module/prisma/prisma.service';
 import { SeedHelper } from './base/seed.helper';
-import { BookmarkEntity } from 'src/api/bookmark/entity/bookmark.entity';
+import { BookmarkEntity } from '@user/api/bookmark/entity/bookmark.entity';
 import { BookmarkSeedInput } from './input/bookmark-seed.input';
 
 export class BookmarkSeedHelper extends SeedHelper<BookmarkSeedInput> {

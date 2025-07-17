@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SocialUserInfoDto } from 'src/auth/dto/social-common/social-user-info.dto';
+import { SocialUserInfoDto } from '@user/auth/dto/social-common/social-user-info.dto';
 import { ConfigService } from '@nestjs/config';
 import { verify } from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
@@ -7,9 +7,9 @@ import { JwksClient } from 'jwks-rsa';
 import { SocialTokenService } from '../services/social-token.service';
 import { ISocialAuthStrategy } from '../interfaces/social-auth-base.strategy';
 import { Request } from 'express';
-import { AUTH_PROVIDERS } from 'src/auth/common/constants/auth-provider.constant';
-import { CreateUserEntity } from 'src/api/user/entity/create-user.entity';
-import { UserService } from 'src/api/user/user.service';
+import { AUTH_PROVIDERS } from '@user/auth/common/constants/auth-provider.constant';
+import { CreateUserEntity } from '@user/api/user/entity/create-user.entity';
+import { UserService } from '@user/api/user/user.service';
 
 /**
  * 애플 OAuth 인증 전략

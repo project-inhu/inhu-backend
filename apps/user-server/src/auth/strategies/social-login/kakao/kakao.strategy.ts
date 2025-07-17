@@ -1,13 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ISocialAuthStrategy } from '../interfaces/social-auth-base.strategy';
 import axios from 'axios';
-import { SocialUserInfoDto } from 'src/auth/dto/social-common/social-user-info.dto';
+import { SocialUserInfoDto } from '@user/auth/dto/social-common/social-user-info.dto';
 import { ConfigService } from '@nestjs/config';
 import { SocialTokenService } from '../services/social-token.service';
 import { Request } from 'express';
-import { AUTH_PROVIDERS } from 'src/auth/common/constants/auth-provider.constant';
-import { UserService } from 'src/api/user/user.service';
-import { CreateUserEntity } from 'src/api/user/entity/create-user.entity';
+import { AUTH_PROVIDERS } from '@user/auth/common/constants/auth-provider.constant';
+import { UserService } from '@user/api/user/user.service';
+import { CreateUserEntity } from '@user/api/user/entity/create-user.entity';
 
 /**
  * Kakao OAuth 인증 전략

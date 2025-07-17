@@ -1,4 +1,4 @@
-import { PrismaService } from 'src/common/module/prisma/prisma.service';
+import { PrismaService } from '@user/common/module/prisma/prisma.service';
 import { SeedHelper } from './base/seed.helper';
 import { UserSeedInput } from './input/user-seed.input';
 import { AuthProvider } from 'src/auth/enums/auth-provider.enum';

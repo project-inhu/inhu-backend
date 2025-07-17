@@ -1,7 +1,7 @@
-import { PrismaService } from 'src/common/module/prisma/prisma.service';
+import { PrismaService } from '@user/common/module/prisma/prisma.service';
 import { SeedHelper } from './base/seed.helper';
 import { ReviewSeedInput } from './input/review-seed.input';
-import { ReviewEntity } from 'src/api/review/entity/review.entity';
+import { ReviewEntity } from '@user/api/review/entity/review.entity';
 
 export class ReviewSeedHelper extends SeedHelper<ReviewSeedInput> {
   constructor(private readonly prisma: PrismaService) {

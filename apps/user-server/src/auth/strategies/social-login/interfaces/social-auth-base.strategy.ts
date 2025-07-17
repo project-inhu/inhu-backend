@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { CreateUserEntity } from 'src/api/user/entity/create-user.entity';
+import { CreateUserEntity } from '@user/api/user/entity/create-user.entity';
 
 /**
  * 소셜 로그인 인증 전략의 기본 인터페이스
