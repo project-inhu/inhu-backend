@@ -1,0 +1,89 @@
+import { PlaceClosedDayModel } from './place-closed-day.model';
+import type { PlaceType } from '../constants/place-type.constant';
+import { PlaceOperatingHourModel } from './place-operating-hour.model';
+import { PlaceBreakTimeModel } from './place-break-time.model';
+import { PlaceRoadAddressModel } from './place-road-address.model';
+
+export class PlaceModel {
+  /**
+   * 장소 식별자
+   */
+  public idx: number;
+
+  /**
+   * 장소 이름
+   */
+  public name: string;
+
+  /**
+   * 장소 전화번호
+   */
+  public tel: string | null;
+
+  /**
+   * 리뷰 개수
+   */
+  public reviewCount: number;
+
+  /**
+   * 북마크 개수
+   */
+  public bookmarkCount: number;
+
+  /**
+   * 공휴일 휴무 여부
+   *
+   * - true: 공휴일 휴무
+   * - false: 공휴일 정상 운영
+   */
+  public isClosedOnHoliday: boolean;
+
+  /**
+   * 생성 시간
+   */
+  public createdAt: Date;
+
+  /**
+   * 폐업 여부
+   */
+  public closedAt: Date | null;
+
+  /**
+   * 이미지 경로 리스트
+   */
+  public imgPathList: string[];
+
+  /**
+   * 장소
+   */
+  public type: PlaceType;
+
+  /**
+   * 정기 휴무 리스트
+   */
+  public closedDayList: PlaceClosedDayModel[];
+
+  /**
+   * 장소 운영 시간 리스트
+   */
+  public operatingHourList: PlaceOperatingHourModel[];
+
+  /**
+   * 특정일 휴무 정보
+   */
+  public weeklyClosedDayList: PlaceClosedDayModel[];
+
+  /**
+   * 브레이트 타임 정보
+   */
+  public breakTimeList: PlaceBreakTimeModel[];
+
+  /**
+   * 도로명 주소
+   */
+  public roadAddress: PlaceRoadAddressModel;
+
+  constructor(data: PlaceClosedDayModel) {
+    Object.assign(this, data);
+  }
+}
