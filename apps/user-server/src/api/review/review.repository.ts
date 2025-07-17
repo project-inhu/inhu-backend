@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/common/module/prisma/prisma.service';
+import { PrismaService } from '@user/common/module/prisma/prisma.service';
 import { ReviewSelectField } from './type/review-select-field';
 import { Prisma, Review } from '@prisma/client';
 import { CreateReviewInput } from './input/create-review.input';

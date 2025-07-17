@@ -10,8 +10,8 @@ import {
   IsOptional,
   Min,
 } from 'class-validator';
-import { PlaceType } from 'src/api/place/constants/place-type.constant';
-import { ToBoolean } from 'src/common/decorator/to-boolean.decorator';
+import { PlaceType } from '@user/api/place/constants/place-type.constant';
+import { ToBoolean } from '@user/common/decorator/to-boolean.decorator';
 
 /**
  * GetAllPlaceOverview의 요청 DTO

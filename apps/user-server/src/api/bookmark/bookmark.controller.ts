@@ -1,9 +1,9 @@
 import { Controller, Delete, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { BookmarkService } from './bookmark.service';
-import { LoginAuth } from 'src/auth/common/decorators/login-auth.decorator';
-import { User } from 'src/common/decorator/user.decorator';
+import { LoginAuth } from '@user/auth/common/decorators/login-auth.decorator';
+import { User } from '@user/common/decorator/user.decorator';
 import { BookmarkEntity } from './entity/bookmark.entity';
-import { Exception } from 'src/common/decorator/exception.decorator';
+import { Exception } from '@user/common/decorator/exception.decorator';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
 
 @Controller('')

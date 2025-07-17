@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/common/module/prisma/prisma.service';
+import { PrismaService } from '@user/common/module/prisma/prisma.service';
 import { PickedPlaceOverviewSelectField } from './type/picked-place-overview-select-field';
 
 @Injectable()

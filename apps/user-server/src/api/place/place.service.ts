@@ -3,14 +3,24 @@ import { PlaceRepository } from './place.repository';
 import { KeywordRepository } from '../keyword/keyword.repository';
 import { PlaceOverviewEntity } from './entity/place-overview.entity';
 import { PlaceEntity } from './entity/place.entity';
-import { Prisma } from '@prisma/client';
 import { GetAllPlaceOverviewResponseDto } from './dto/get-all-place-overview-response.dto';
-import { SelectPlaceOverviewInput } from 'src/api/place/input/select-place-overview.input';
-import { GetAllPlaceOverviewDto } from 'src/api/place/dto/request/get-all-place-overview.dto';
+import { GetAllPlaceOverviewDto } from '@user/api/place/dto/request/get-all-place-overview.dto';
 import { Transactional } from '@nestjs-cls/transactional';
+import { PrismaClient, Prisma } from '@prisma/client';
+import { DefaultArgs } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class PlaceService {
+  updatePlaceReviewCountByPlaceIdx(
+    placeIdx: number,
+    INCREASE: any,
+    tx: Omit<
+      PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+    >,
+  ) {
+    throw new Error('Method not implemented.');
+  }
   constructor(
     private placeRepository: PlaceRepository,
     private keywordRepository: KeywordRepository,

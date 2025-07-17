@@ -8,10 +8,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { AuthGuard } from 'src/auth/common/guards/auth.guard';
-import { User } from 'src/common/decorator/user.decorator';
+import { AuthGuard } from '@user/auth/common/guards/auth.guard';
+import { User } from '@user/common/decorator/user.decorator';
 import { UserInfoEntity } from './entity/user-info.entity';
-import { GetPresignedUrlResponseDto } from 'src/common/module/s3/dto/get-presigned-url-response.dto';
+import { GetPresignedUrlResponseDto } from '@user/common/module/s3/dto/get-presigned-url-response.dto';
 
 @Controller('user')
 export class UserController {
