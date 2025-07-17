@@ -4,8 +4,8 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthService } from 'src/auth/services/auth.service';
-import { LoginTokenService } from 'src/auth/services/login-token.service';
+import { AuthService } from '@user/auth/services/auth.service';
+import { LoginTokenService } from '@user/auth/services/login-token.service';
 
 /**
  * 보호된 API 요청 시 Access Token을 검증하고, 필요하면 새로 갱신하는 인증 가드

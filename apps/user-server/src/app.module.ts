@@ -12,7 +12,7 @@ import { RedisModule } from '@nestjs-modules/ioredis';
 import { PickedPlaceModule } from './api/picked-place/picked-place.module';
 import { ClsModule } from 'nestjs-cls';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
-import { PrismaService } from 'src/common/module/prisma/prisma.service';
+import { PrismaService } from '@user/common/module/prisma/prisma.service';
 import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 
 @Module({

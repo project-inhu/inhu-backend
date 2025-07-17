@@ -8,7 +8,7 @@ import {
   AUTH_PROVIDERS,
   AuthProviderValue,
 } from '../common/constants/auth-provider.constant';
-import { CreateUserEntity } from 'src/api/user/entity/create-user.entity';
+import { CreateUserEntity } from '@user/api/user/entity/create-user.entity';
 
 @Injectable()
 export class AuthService {

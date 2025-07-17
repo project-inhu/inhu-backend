@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DayOfWeek } from 'src/common/module/date-util/constants/day-of-week.constants';
+import { DayOfWeek } from '@user/common/module/date-util/constants/day-of-week.constants';
 
 @Injectable()
 export class DateUtilService {

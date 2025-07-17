@@ -6,7 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthGuard } from './common/guards/auth.guard';
 import { KakaoStrategy } from './strategies/social-login/kakao/kakao.strategy';
 import { LoginTokenService } from './services/login-token.service';
-import { UserModule } from 'src/api/user/user.module';
+import { UserModule } from '@user/api/user/user.module';
 import { TokenStorageStrategy } from './strategies/storages/base/token-storage.strategy';
 import { InMemoryTokenStorage } from './strategies/storages/in-memory-token.storage';
 import { AppleStrategy } from './strategies/social-login/apple/apple.strategy';
