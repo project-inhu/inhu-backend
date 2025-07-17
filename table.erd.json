@@ -345,23 +345,27 @@
         "columnIds": [
           "-FdkHvUW22h6SmQXv4w87",
           "i8Dpx8ppYw0gg1ejqWF_W",
-          "4UDAoZYUJLf05QeRix1bR"
+          "4UDAoZYUJLf05QeRix1bR",
+          "UcUMi9fMQFB0j_4ZVQeon",
+          "ScYzifDQGIUhFv31h09oI"
         ],
         "seqColumnIds": [
           "-FdkHvUW22h6SmQXv4w87",
           "i8Dpx8ppYw0gg1ejqWF_W",
-          "4UDAoZYUJLf05QeRix1bR"
+          "4UDAoZYUJLf05QeRix1bR",
+          "UcUMi9fMQFB0j_4ZVQeon",
+          "ScYzifDQGIUhFv31h09oI"
         ],
         "ui": {
           "x": 2510.0717,
-          "y": 1789.3462,
+          "y": 1788.3462,
           "zIndex": 244,
           "widthName": 92,
           "widthComment": 60,
           "color": "#4CAF50"
         },
         "meta": {
-          "updateAt": 1741444540404,
+          "updateAt": 1752772242423,
           "createAt": 1736925666158
         }
       },
@@ -4080,6 +4084,46 @@
           "updateAt": 1752772070816,
           "createAt": 1752772065119
         }
+      },
+      "UcUMi9fMQFB0j_4ZVQeon": {
+        "id": "UcUMi9fMQFB0j_4ZVQeon",
+        "tableId": "QvcjfmlkcDwaEgqV_qpTF",
+        "name": "deleted_at",
+        "comment": "",
+        "dataType": "timestamp with time zone",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 62,
+          "widthComment": 60,
+          "widthDataType": 147,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1752772224195,
+          "createAt": 1752772219598
+        }
+      },
+      "ScYzifDQGIUhFv31h09oI": {
+        "id": "ScYzifDQGIUhFv31h09oI",
+        "tableId": "QvcjfmlkcDwaEgqV_qpTF",
+        "name": "created_at",
+        "comment": "",
+        "dataType": "timestamp with time zone",
+        "default": "NOW()",
+        "options": 8,
+        "ui": {
+          "keys": 0,
+          "widthName": 63,
+          "widthComment": 60,
+          "widthDataType": 147,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1752772242423,
+          "createAt": 1752772242423
+        }
       }
     },
     "relationshipEntities": {
@@ -4354,8 +4398,8 @@
           "columnIds": [
             "i8Dpx8ppYw0gg1ejqWF_W"
           ],
-          "x": 2936.0717,
-          "y": 1853.3462,
+          "x": 3023.0717,
+          "y": 1876.3462,
           "direction": 2
         },
         "meta": {

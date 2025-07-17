@@ -74,6 +74,8 @@ CREATE TABLE place_image_tb
   idx        int     NOT NULL GENERATED ALWAYS AS IDENTITY,
   place_idx  int     NOT NULL,
   image_path varchar NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at timestamp with time zone,
   PRIMARY KEY (idx)
 );
 
