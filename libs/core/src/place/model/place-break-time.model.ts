@@ -1,4 +1,5 @@
 import { DayOfWeek } from '@app/common';
+import type { SelectPlaceBreakTime } from './prisma-type/select-place-break-time';
 
 export class PlaceBreakTimeModel {
   /**
@@ -25,5 +26,16 @@ export class PlaceBreakTimeModel {
 
   constructor(data: PlaceBreakTimeModel) {
     Object.assign(this, data);
+  }
+
+  public static fromPrisma(
+    breakTime: SelectPlaceBreakTime,
+  ): PlaceBreakTimeModel {
+    return new PlaceBreakTimeModel({
+      idx: breakTime.idx,
+      startAt: breakTime.startAt,
+      endAt: breakTime.endAt,
+      day: breakTime.day as DayOfWeek,
+    });
   }
 }

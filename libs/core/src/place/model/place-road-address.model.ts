@@ -1,3 +1,5 @@
+import { SelectPlaceRoadAddress } from './prisma-type/select-place-road-address';
+
 export class PlaceRoadAddressModel {
   /**
    * 도로명 주소 식별자
@@ -26,5 +28,17 @@ export class PlaceRoadAddressModel {
 
   constructor(data: PlaceRoadAddressModel) {
     Object.assign(this, data);
+  }
+
+  public static fromPrisma(
+    roadAddress: SelectPlaceRoadAddress,
+  ): PlaceRoadAddressModel {
+    return new PlaceRoadAddressModel({
+      idx: roadAddress.idx,
+      name: roadAddress.addressName,
+      detail: roadAddress.detailAddress,
+      addressX: roadAddress.addressX.toNumber(), // TODO: Check if conversion is necessary
+      addressY: roadAddress.addressY.toNumber(),
+    });
   }
 }

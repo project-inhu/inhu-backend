@@ -3,6 +3,8 @@ import type { PlaceType } from '../constants/place-type.constant';
 import { PlaceOperatingHourModel } from './place-operating-hour.model';
 import { PlaceBreakTimeModel } from './place-break-time.model';
 import { PlaceRoadAddressModel } from './place-road-address.model';
+import { SelectPlace } from './prisma-type/select-place';
+import { PlaceWeeklyClosedDayModel } from './place-weekly-closed-day.model';
 
 export class PlaceModel {
   /**
@@ -71,7 +73,7 @@ export class PlaceModel {
   /**
    * 특정일 휴무 정보
    */
-  public weeklyClosedDayList: PlaceClosedDayModel[];
+  public weeklyClosedDayList: PlaceWeeklyClosedDayModel[];
 
   /**
    * 브레이트 타임 정보
@@ -83,7 +85,33 @@ export class PlaceModel {
    */
   public roadAddress: PlaceRoadAddressModel;
 
-  constructor(data: PlaceClosedDayModel) {
+  constructor(data: PlaceModel) {
     Object.assign(this, data);
+  }
+
+  public static fromPrisma(place: SelectPlace): PlaceModel {
+    return new PlaceModel({
+      idx: place.idx,
+      name: place.name,
+      tel: place.tel,
+      reviewCount: place.reviewCount,
+      bookmarkCount: place.bookmarkCount,
+      isClosedOnHoliday: place.isClosedOnHoliday,
+      createdAt: place.createdAt,
+      closedAt: place.closedAt,
+      imgPathList: place.placeImageList.map(({ path }) => path),
+      breakTimeList: place.breakTimeList.map(PlaceBreakTimeModel.fromPrisma),
+      type: place.placeTypeMappingList.map(
+        ({ placeTypeIdx }) => placeTypeIdx,
+      )[0] as PlaceType,
+      closedDayList: place.closedDayList.map(PlaceClosedDayModel.fromPrisma),
+      operatingHourList: place.operatingHourList.map(
+        PlaceOperatingHourModel.fromPrisma,
+      ),
+      weeklyClosedDayList: place.weeklyClosedDayList.map(
+        PlaceWeeklyClosedDayModel.fromPrisma,
+      ),
+      roadAddress: PlaceRoadAddressModel.fromPrisma(place.roadAddress),
+    });
   }
 }

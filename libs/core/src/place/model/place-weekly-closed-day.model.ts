@@ -1,3 +1,4 @@
+import { SelectPlaceWeeklyClosedDay } from './prisma-type/select-place-weekly-closed-day';
 import { WeeklyCloseType } from '../constants/weekly-close-type.constant';
 
 export class PlaceWeeklyClosedDayModel {
@@ -20,5 +21,15 @@ export class PlaceWeeklyClosedDayModel {
 
   constructor(data: PlaceWeeklyClosedDayModel) {
     Object.assign(this, data);
+  }
+
+  public static fromPrisma(
+    weeklyClosedDay: SelectPlaceWeeklyClosedDay,
+  ): PlaceWeeklyClosedDayModel {
+    return new PlaceWeeklyClosedDayModel({
+      idx: weeklyClosedDay.idx,
+      date: weeklyClosedDay.closedDate,
+      type: weeklyClosedDay.type,
+    });
   }
 }

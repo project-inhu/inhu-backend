@@ -1,4 +1,5 @@
 import { DayOfWeek } from '@app/common';
+import { SelectPlaceClosedDay } from './prisma-type/select-place-closed-day';
 
 /**
  * 정기 휴무 모델
@@ -23,5 +24,15 @@ export class PlaceClosedDayModel {
 
   constructor(data: PlaceClosedDayModel) {
     Object.assign(this, data);
+  }
+
+  public static fromPrisma(
+    closedDay: SelectPlaceClosedDay,
+  ): PlaceClosedDayModel {
+    return new PlaceClosedDayModel({
+      idx: closedDay.idx,
+      day: closedDay.day as DayOfWeek,
+      week: closedDay.week,
+    });
   }
 }
