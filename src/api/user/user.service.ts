@@ -8,11 +8,11 @@ import { UserRepository } from './user.repository';
 import { UserInfoEntity } from './entity/user-info.entity';
 import { CreateUserEntity } from './entity/create-user.entity';
 import { CreateUserInput } from './input/create-user.input';
-import { S3Service } from 'src/common/s3/s3.service';
-import { S3Folder } from 'src/common/s3/enums/s3-folder.enum';
+import { S3Service } from 'src/common/module/s3/s3.service';
+import { S3Folder } from 'src/common/module/s3/enums/s3-folder.enum';
 import { UpdateUserInput } from './input/update-user.input';
 import { UpdateProfileImageInput } from './input/update-profile-image.input';
-import { GetPresignedUrlResponseDto } from 'src/common/s3/dto/get-presigned-url-response.dto';
+import { GetPresignedUrlResponseDto } from 'src/common/module/s3/dto/get-presigned-url-response.dto';
 
 @Injectable()
 export class UserService {

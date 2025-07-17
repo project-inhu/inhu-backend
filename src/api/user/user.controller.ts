@@ -11,7 +11,7 @@ import { UserService } from './user.service';
 import { AuthGuard } from 'src/auth/common/guards/auth.guard';
 import { User } from 'src/common/decorator/user.decorator';
 import { UserInfoEntity } from './entity/user-info.entity';
-import { GetPresignedUrlResponseDto } from 'src/common/s3/dto/get-presigned-url-response.dto';
+import { GetPresignedUrlResponseDto } from 'src/common/module/s3/dto/get-presigned-url-response.dto';
 
 @Controller('user')
 export class UserController {
