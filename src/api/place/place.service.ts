@@ -3,10 +3,10 @@ import { PlaceRepository } from './place.repository';
 import { KeywordRepository } from '../keyword/keyword.repository';
 import { PlaceOverviewEntity } from './entity/place-overview.entity';
 import { PlaceEntity } from './entity/place.entity';
-import { ReviewCountUpdateType } from './common/enums/review-count-update-type.enum';
 import { Prisma } from '@prisma/client';
-import { PlaceOverviewOrderBy } from './common/enums/place-overview-order-by.enum';
 import { GetAllPlaceOverviewResponseDto } from './dto/get-all-place-overview-response.dto';
+import { SelectPlaceOverviewInput } from 'src/api/place/input/select-place-overview.input';
+import { GetAllPlaceOverviewDto } from 'src/api/place/dto/request/get-all-place-overview.dto';
 
 @Injectable()
 export class PlaceService {
@@ -16,54 +16,62 @@ export class PlaceService {
   ) {}
 
   /**
-   * 클라이언트의 정렬 기준을 Prisma 쿼리 옵션(orderby)으로 매핑
-   *
-   * @author 강정연
-   */
-  private readonly orderByMap: Record<
-    PlaceOverviewOrderBy,
-    | Prisma.PlaceOrderByWithRelationInput
-    | Prisma.PlaceOrderByWithRelationInput[]
-  > = {
-    [PlaceOverviewOrderBy.CREATED_AT_DESC]: { createdAt: 'desc' },
-    [PlaceOverviewOrderBy.REVIEW_COUNT_DESC]: [
-      { reviewCount: 'desc' },
-      { createdAt: 'desc' },
-    ],
-  };
-
-  /**
    * 모든 place 개요 가져오기
    *
    * @author 강정연
    */
   async getAllPlaceOverview(
-    page: number,
-    orderBy?: PlaceOverviewOrderBy,
-    userIdx?: number,
+    dto: GetAllPlaceOverviewDto,
+    readUserIdx?: number,
   ): Promise<GetAllPlaceOverviewResponseDto> {
-    const pageSize = 10;
-    const take = pageSize + 1;
-    const skip = (page - 1) * pageSize;
+    const PAGE_SIZE = 10;
 
-    let orderByOption;
-    if (orderBy && this.orderByMap[orderBy]) {
-      orderByOption = this.orderByMap[orderBy];
-    }
-    let placeList = await this.placeRepository.selectAllPlaceOverview(
-      skip,
-      take,
-      orderByOption,
-      userIdx,
-    );
+    const coordinate = {
+      leftTopX: dto.leftTopX,
+      leftTopY: dto.leftTopY,
+      rightBottomX: dto.rightBottomX,
+      rightBottomY: dto.rightBottomY,
+    };
 
-    const hasNext = !!placeList[pageSize];
-    placeList = placeList.slice(0, pageSize);
+    const placeList = await this.placeRepository.selectAllPlaceOverview({
+      order: dto.order,
+      orderBy: dto.orderby,
+      readUserIdx,
+      take: PAGE_SIZE + 1,
+      skip: (dto.page - 1) * PAGE_SIZE,
+      operating: dto.operating,
+      bookmarkUserIdx: dto.bookmark && readUserIdx ? readUserIdx : undefined,
+      coordinate: this.isValidCoordinate(coordinate) ? coordinate : undefined,
+      types: dto.type ? [dto.type] : undefined,
+    });
+
+    const hasNext = !!placeList[PAGE_SIZE];
 
     return {
       hasNext,
-      data: placeList.map(PlaceOverviewEntity.createEntityFromPrisma),
+      data: placeList
+        .slice(0, PAGE_SIZE)
+        .map(PlaceOverviewEntity.createEntityFromPrisma),
     };
+  }
+
+  private isValidCoordinate(coordinate: {
+    leftTopX?: number;
+    leftTopY?: number;
+    rightBottomX?: number;
+    rightBottomY?: number;
+  }): coordinate is {
+    leftTopX: number;
+    leftTopY: number;
+    rightBottomX: number;
+    rightBottomY: number;
+  } {
+    return (
+      coordinate.leftTopX !== undefined &&
+      coordinate.leftTopY !== undefined &&
+      coordinate.rightBottomX !== undefined &&
+      coordinate.rightBottomY !== undefined
+    );
   }
 
   /**
@@ -87,22 +95,33 @@ export class PlaceService {
     return PlaceEntity.createEntityFromPrisma(place);
   }
 
-  /**
-   * 특정 idx의 place review count 업데이트
-   *
-   * @author 강정연
-   */
-  async updatePlaceReviewCountByPlaceIdx(
-    placeIdx: number,
-    updateType: ReviewCountUpdateType,
-    tx?: Prisma.TransactionClient,
-  ): Promise<void> {
-    const value = updateType == ReviewCountUpdateType.INCREASE ? 1 : -1;
+  // /**
+  //  * 특정 idx의 place review count 업데이트
+  //  *
+  //  * @author 강정연
+  //  */
+  // async updatePlaceReviewCountByPlaceIdx(
+  //   placeIdx: number,
+  //   updateType: ReviewCountUpdateType,
+  //   tx?: Prisma.TransactionClient,
+  // ): Promise<void> {
+  //   const value = updateType == ReviewCountUpdateType.INCREASE ? 1 : -1;
 
-    await this.placeRepository.updatePlaceReviewCountByPlaceIdx(
-      placeIdx,
-      value,
-      tx,
-    );
-  }
+  //   await this.placeRepository.updatePlaceReviewCountByPlaceIdx(
+  //     placeIdx,
+  //     value,
+  //     tx,
+  //   );
+  // }
+
+  // async getAllPlaceOverviewByNow(page: number, userIdx?: number) {
+  //   const pageSize = 10;
+  //   const take = pageSize + 1;
+  //   const skip = (page - 1) * pageSize;
+
+  //   const now = new Date();
+  //   const today = now.toISOString().split('T')[0]; // YYYY-MM-DD
+  //   const day = now.getDay(); // 요일
+  //   const time = now.toISOString().split('T')[1].slice(0, 8); // HH:MM:SS
+  // }
 }

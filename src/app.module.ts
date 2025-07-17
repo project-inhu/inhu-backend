@@ -10,15 +10,17 @@ import { ReviewModule } from './api/review/review.module';
 import { S3Module } from './common/module/s3/s3.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { PickedPlaceModule } from './api/picked-place/picked-place.module';
+import { ClsModule } from 'nestjs-cls';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
+import { PrismaService } from 'src/common/module/prisma/prisma.service';
+import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 
 @Module({
   imports: [
     PrismaModule,
     PlaceModule,
     AuthModule,
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
+    ConfigModule.forRoot({ isGlobal: true }),
     ReviewModule,
     S3Module,
     RedisModule.forRootAsync({
@@ -30,6 +32,17 @@ import { PickedPlaceModule } from './api/picked-place/picked-place.module';
       inject: [ConfigService],
     }),
     PickedPlaceModule,
+    ClsModule.forRoot({
+      plugins: [
+        new ClsPluginTransactional({
+          imports: [PrismaModule],
+          adapter: new TransactionalAdapterPrisma({
+            prismaInjectionToken: PrismaService,
+            sqlFlavor: 'postgresql',
+          }),
+        }),
+      ],
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
