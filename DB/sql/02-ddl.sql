@@ -21,7 +21,7 @@ CREATE TABLE closed_day_tb
   idx       int      NOT NULL GENERATED ALWAYS AS IDENTITY,
   place_idx int      NOT NULL,
   day       smallint NOT NULL,
-  week      smallint,
+  week      smallint NOT NULL,
   PRIMARY KEY (idx)
 );
 
@@ -73,7 +73,7 @@ CREATE TABLE place_image_tb
 (
   idx        int     NOT NULL GENERATED ALWAYS AS IDENTITY,
   place_idx  int     NOT NULL,
-  image_path varchar,
+  image_path varchar NOT NULL,
   PRIMARY KEY (idx)
 );
 
@@ -88,11 +88,10 @@ CREATE TABLE place_keyword_count_tb
 CREATE TABLE place_tb
 (
   idx                  int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
-  road_address_idx     int                      NOT NULL,
   name                 varchar                  NOT NULL,
-  tel                  varchar                  UNIQUE,
+  tel                  varchar                  ,
   review_count         int                      NOT NULL DEFAULT 0,
-  road_address_idx     int                      NOT NULL UNIQUE,
+  road_address_idx     int                      NOT NULL,
   is_closed_on_holiday boolean                  NOT NULL DEFAULT false,
   created_at           timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at           timestamp with time zone,
