@@ -11,11 +11,11 @@ import { AuthService } from './services/auth.service';
 import { Response, Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { Provider } from './common/decorators/provider.decorator';
-import { Exception } from '@user/common/decorator/exception.decorator';
+import { Exception } from '@app/common';
 import { ClientType } from '@user/common/decorator/client-type.decorator';
 import { Cookie } from '@user/common/decorator/cookie.decorator';
-import { getCookieOption } from '@user/config/cookie-option';
 import { AuthProviderValue } from './common/constants/auth-provider.constant';
+import { getCookieOption } from '@user/config/cookie-option';
 
 @Controller('auth')
 export class AuthController {

@@ -103,6 +103,7 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
+      "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1",
       "^@app/core(|/.*)$": "<rootDir>/libs/core/src/$1"
     }
   }
