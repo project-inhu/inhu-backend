@@ -3,7 +3,7 @@ import { BookmarkController } from './bookmark.controller';
 import { BookmarkService } from './bookmark.service';
 import { BookmarkRepository } from './bookmark.repository';
 import { PlaceModule } from '../place/place.module';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from '@user/auth/auth.module';
 
 @Module({
   imports: [AuthModule, PlaceModule],

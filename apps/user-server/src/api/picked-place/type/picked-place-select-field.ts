@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { PLACE_SELECT_FIELD } from 'src/api/place/type/place-select-field.type';
+import { PLACE_SELECT_FIELD } from '@user/api/place/type/place-select-field.type';
 
 /**
  * Prisma에서 조회된 picked place 데이터

@@ -1,4 +1,4 @@
-import { PlaceEntity } from 'src/api/place/entity/place.entity';
+import { PlaceEntity } from '@user/api/place/entity/place.entity';
 import { PickedPlaceSelectField } from '../type/picked-place-select-field';
 
 /**

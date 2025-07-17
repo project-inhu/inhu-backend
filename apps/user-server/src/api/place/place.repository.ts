@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { PlaceOverviewSelectField } from './type/place-overview-select-field.type';
 import { PlaceSelectField } from './type/place-select-field.type';
 import { Prisma } from '@prisma/client';
-import { DateUtilService } from 'src/common/module/date-util/date-util.service';
-import { SelectPlaceOverviewInput } from 'src/api/place/input/select-place-overview.input';
-import { PlaceType } from 'src/api/place/constants/place-type.constant';
+import { DateUtilService } from '@user/common/module/date-util/date-util.service';
+import { SelectPlaceOverviewInput } from '@user/api/place/input/select-place-overview.input';
+import { PlaceType } from '@user/api/place/constants/place-type.constant';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 

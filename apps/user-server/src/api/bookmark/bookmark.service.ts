@@ -20,55 +20,55 @@ export class BookmarkService {
    *
    * @author 강정연
    */
-  async createBookmarkByPlaceIdxAndUserIdx(
-    placeIdx: number,
-    userIdx: number,
-  ): Promise<BookmarkEntity | null> {
-    await this.placeService.getPlaceByPlaceIdx(placeIdx);
+  // async createBookmarkByPlaceIdxAndUserIdx(
+  //   placeIdx: number,
+  //   userIdx: number,
+  // ): Promise<BookmarkEntity | null> {
+  //   await this.placeService.getPlaceByPlaceIdx(placeIdx);
 
-    const bookmark =
-      await this.bookmarkRepository.selectBookmarkByPlaceIdxAndUserIdx(
-        placeIdx,
-        userIdx,
-      );
+  //   const bookmark =
+  //     await this.bookmarkRepository.selectBookmarkByPlaceIdxAndUserIdx(
+  //       placeIdx,
+  //       userIdx,
+  //     );
 
-    if (bookmark) {
-      throw new ConflictException('bookmark already exist');
-    } else {
-      const created =
-        await this.bookmarkRepository.createBookmarkByPlaceIdxAndUserIdx(
-          placeIdx,
-          userIdx,
-        );
+  //   if (bookmark) {
+  //     throw new ConflictException('bookmark already exist');
+  //   } else {
+  //     const created =
+  //       await this.bookmarkRepository.createBookmarkByPlaceIdxAndUserIdx(
+  //         placeIdx,
+  //         userIdx,
+  //       );
 
-      return BookmarkEntity.createEntityFromPrisma(created);
-    }
-  }
+  //     return BookmarkEntity.createEntityFromPrisma(created);
+  //   }
+  // }
 
   /**
    *  특정 Idx의 북마크 삭제 (idx 제공 시)
    *
    * @author 강정연
    */
-  async deleteBookmarkByPlaceIdxAndUserIdx(
-    placeIdx: number,
-    userIdx: number,
-  ): Promise<void> {
-    await this.placeService.getPlaceByPlaceIdx(placeIdx);
+  // async deleteBookmarkByPlaceIdxAndUserIdx(
+  //   placeIdx: number,
+  //   userIdx: number,
+  // ): Promise<void> {
+  //   await this.placeService.getPlaceByPlaceIdx(placeIdx);
 
-    const bookmark =
-      await this.bookmarkRepository.selectBookmarkByPlaceIdxAndUserIdx(
-        placeIdx,
-        userIdx,
-      );
+  //   const bookmark =
+  //     await this.bookmarkRepository.selectBookmarkByPlaceIdxAndUserIdx(
+  //       placeIdx,
+  //       userIdx,
+  //     );
 
-    if (!bookmark) {
-      throw new NotFoundException('bookmark not found');
-    }
+  //   if (!bookmark) {
+  //     throw new NotFoundException('bookmark not found');
+  //   }
 
-    return await this.bookmarkRepository.deleteBookmarkByPlaceIdxAndUserIdx(
-      placeIdx,
-      userIdx,
-    );
-  }
+  //   return await this.bookmarkRepository.deleteBookmarkByPlaceIdxAndUserIdx(
+  //     placeIdx,
+  //     userIdx,
+  //   );
+  // }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Bookmark } from '@prisma/client';
-import { PrismaService } from 'src/common/module/prisma/prisma.service';
+import { PrismaService } from '@user/common/module/prisma/prisma.service';
 
 @Injectable()
 export class BookmarkRepository {

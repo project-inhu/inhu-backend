@@ -12,9 +12,9 @@ import { ReviewService } from './review.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { ReviewEntity } from './entity/review.entity';
 import { UpdateReviewDto } from './dto/update-review.dto';
-import { User } from 'src/common/decorator/user.decorator';
-import { LoginAuth } from 'src/auth/common/decorators/login-auth.decorator';
-import { Exception } from 'src/common/decorator/exception.decorator';
+import { User } from '@user/common/decorator/user.decorator';
+import { LoginAuth } from '@user/auth/common/decorators/login-auth.decorator';
+import { Exception } from '@user/common/decorator/exception.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('')

@@ -1,4 +1,4 @@
-import { PlaceType } from 'src/api/place/constants/place-type.constant';
+import { PlaceType } from '@user/api/place/constants/place-type.constant';
 
 export class SelectPlaceOverviewInput {
   /**

@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/common/module/prisma/prisma.service';
+import { PrismaService } from '@user/common/module/prisma/prisma.service';
 import { UpdateUserInput } from './input/update-user.input';
 import { CreateUserInput } from './input/create-user.input';
 import { UserSelectField } from './type/user-select-field';

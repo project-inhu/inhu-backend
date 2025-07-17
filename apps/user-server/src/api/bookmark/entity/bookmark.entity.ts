@@ -51,13 +51,12 @@ export class BookmarkEntity {
   /**
    * Prisma에서 조회한 리뷰 데이터를 `BookmarkEntity`로 변환함
    */
-  static createEntityFromPrisma(review: BookmarkSelectField): BookmarkEntity {
-    return new BookmarkEntity({
-      idx: review.idx,
-      userIdx: review.userIdx,
-      placeIdx: review.placeIdx,
-      createdAt: review.createdAt,
-      deletedAt: review.deletedAt,
-    });
-  }
+  // static createEntityFromPrisma(review: BookmarkSelectField): BookmarkEntity {
+  //   return new BookmarkEntity({
+  //     idx: review.idx,
+  //     userIdx: review.userIdx,
+  //     placeIdx: review.placeIdx,
+  //     createdAt: review.createdAt,
+  //   });
+  // }
 }

@@ -1,9 +1,12 @@
 import { PlaceSelectField } from '../type/place-select-field.type';
 import { OperatingWeekSchedule } from '../type/operating-week-schedule.type';
-import { formatDateOnly, formatTimeFromDate } from 'src/common/utils/date.util';
-import { KeywordEntity } from 'src/api/keyword/entity/keyword.entity';
+import {
+  formatDateOnly,
+  formatTimeFromDate,
+} from '@user/common/utils/date.util';
+import { KeywordEntity } from '@user/api/keyword/entity/keyword.entity';
 import { ApiProperty, PickType } from '@nestjs/swagger';
-import { TypeEntity } from 'src/api/type/entity/type.entity';
+import { TypeEntity } from '@user/api/type/entity/type.entity';
 import { BreakTimeInfo } from '../type/break-time-info.type';
 
 class PlaceKeywordEntity extends PickType(KeywordEntity, ['idx', 'content']) {}
