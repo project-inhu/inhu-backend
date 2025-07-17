@@ -91,6 +91,7 @@ CREATE TABLE place_tb
   name                 varchar                  NOT NULL,
   tel                  varchar                  ,
   review_count         int                      NOT NULL DEFAULT 0,
+  bookmark_count       int                      NOT NULL DEFAULT 0,
   road_address_idx     int                      NOT NULL,
   is_closed_on_holiday boolean                  NOT NULL DEFAULT false,
   created_at           timestamp with time zone NOT NULL DEFAULT NOW(),

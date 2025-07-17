@@ -43,6 +43,7 @@ model Place {
   name                  String              @db.VarChar
   tel                   String?             @db.VarChar
   reviewCount           Int                 @default(0) @map("review_count")
+  bookmarkCount         Int                 @default(0) @map("bookmark_count")
   roadAddressIdx        Int                 @map("road_address_idx")
   isClosedOnHoliday     Boolean             @default(false) @map("is_closed_on_holiday")
   createdAt             DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
