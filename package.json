@@ -7,19 +7,19 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "seed": "tsx --env-file=.env DB/seed.ts",
     "seed:prod": "node dist/DB/seed.js",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "node dist/apps/user-server/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "npm run test:infra:up && dotenv -e .env.test -- jest --config ./test/jest-e2e.json && npm run test:infra:down",
+    "test:e2e": "npm run apps/user-server/test:infra:up && dotenv -e .env.test -- jest --config ./test/jest-e2e.json && npm run test:infra:down",
     "test:infra:up": "docker compose -f docker-compose.test.yml up -d",
     "test:infra:down": "docker compose -f docker-compose.test.yml down -v",
     "dev:infra:up": "docker compose up -d",
@@ -83,7 +83,9 @@
       "ts"
     ],
     "roots": [
-      "<rootDir>"
+      "<rootDir>",
+      "<rootDir>/apps/",
+      "<rootDir>/libs/"
     ],
     "modulePaths": [
       "<rootDir>"
@@ -99,6 +101,9 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@app/core(|/.*)$": "<rootDir>/libs/core/src/$1"
+    }
   }
 }

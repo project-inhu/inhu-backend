@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { LoginTokenService } from '../services/login-token.service';
+import { LoginTokenService } from './login-token.service';
 import { ISocialAuthStrategy } from '../strategies/social-login/interfaces/social-auth-base.strategy';
 import { KakaoStrategy } from '../strategies/social-login/kakao/kakao.strategy';
 import { TokenStorageStrategy } from '../strategies/storages/base/token-storage.strategy';
