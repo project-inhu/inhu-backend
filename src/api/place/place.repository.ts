@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/common/module/prisma/prisma.service';
 import { PlaceOverviewSelectField } from './type/place-overview-select-field.type';
 import { PlaceSelectField } from './type/place-select-field.type';
 import { Prisma } from '@prisma/client';
 import { DateUtilService } from 'src/common/module/date-util/date-util.service';
 import { SelectPlaceOverviewInput } from 'src/api/place/input/select-place-overview.input';
 import { PlaceType } from 'src/api/place/constants/place-type.constant';
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 
 @Injectable()
 export class PlaceRepository {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     private readonly dateUtilService: DateUtilService,
   ) {}
 
@@ -30,7 +31,7 @@ export class PlaceRepository {
     coordinate,
     types,
   }: SelectPlaceOverviewInput): Promise<PlaceOverviewSelectField[]> {
-    return await this.prisma.place.findMany({
+    return await this.txHost.tx.place.findMany({
       select: {
         idx: true,
         name: true,
@@ -165,7 +166,7 @@ export class PlaceRepository {
     placeIdx: number,
     userIdx?: number,
   ): Promise<PlaceSelectField | null> {
-    return await this.prisma.place.findFirst({
+    return await this.txHost.tx.place.findFirst({
       where: { idx: placeIdx, deletedAt: null },
       select: {
         idx: true,
@@ -219,10 +220,8 @@ export class PlaceRepository {
   async updatePlaceReviewCountByPlaceIdx(
     placeIdx: number,
     value: number,
-    tx?: Prisma.TransactionClient,
   ): Promise<void> {
-    const db = tx ?? this.prisma;
-    await db.place.update({
+    await this.txHost.tx.place.update({
       where: { idx: placeIdx },
       data: { reviewCount: { increment: value } },
     });

@@ -7,6 +7,7 @@ import { Prisma } from '@prisma/client';
 import { GetAllPlaceOverviewResponseDto } from './dto/get-all-place-overview-response.dto';
 import { SelectPlaceOverviewInput } from 'src/api/place/input/select-place-overview.input';
 import { GetAllPlaceOverviewDto } from 'src/api/place/dto/request/get-all-place-overview.dto';
+import { Transactional } from '@nestjs-cls/transactional';
 
 @Injectable()
 export class PlaceService {
@@ -20,6 +21,7 @@ export class PlaceService {
    *
    * @author 강정연
    */
+  @Transactional()
   async getAllPlaceOverview(
     dto: GetAllPlaceOverviewDto,
     readUserIdx?: number,
