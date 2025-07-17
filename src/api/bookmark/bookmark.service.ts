@@ -50,29 +50,25 @@ export class BookmarkService {
    *
    * @author 강정연
    */
-  async deleteBookmarkByBookmarkIdx(
-    bookmarkIdx: number,
+  async deleteBookmarkByPlaceIdxAndUserIdx(
+    placeIdx: number,
     userIdx: number,
   ): Promise<void> {
+    await this.placeService.getPlaceByPlaceIdx(placeIdx);
+
     const bookmark =
-      await this.bookmarkRepository.selectRawBookmarkByBookmarkIdx(bookmarkIdx);
+      await this.bookmarkRepository.selectBookmarkByPlaceIdxAndUserIdx(
+        placeIdx,
+        userIdx,
+      );
 
     if (!bookmark) {
       throw new NotFoundException('bookmark not found');
     }
 
-    if (bookmark.deletedAt) {
-      throw new ConflictException('bookmark has already been deleted');
-    }
-
-    if (bookmark.userIdx !== userIdx) {
-      throw new ForbiddenException(
-        'You are not allowed to delete this bookmark',
-      );
-    }
-
-    return await this.bookmarkRepository.deleteBookmarkByBookmarkIdx(
-      bookmark.idx,
+    return await this.bookmarkRepository.deleteBookmarkByPlaceIdxAndUserIdx(
+      placeIdx,
+      userIdx,
     );
   }
 }

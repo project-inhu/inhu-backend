@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Bookmark } from '@prisma/client';
 import { PrismaService } from 'src/common/module/prisma/prisma.service';
-import { BookmarkSelectField } from './type/bookmark-select-field';
 
 @Injectable()
 export class BookmarkRepository {
@@ -25,29 +24,7 @@ export class BookmarkRepository {
   }
 
   /**
-   * 특정 idx의 모든 상태의 북마크 조회
-   *
-   * @author 강정연
-   */
-  async selectRawBookmarkByBookmarkIdx(
-    bookmarkIdx: number,
-  ): Promise<BookmarkSelectField | null> {
-    return await this.prisma.bookmark.findUnique({
-      where: {
-        idx: bookmarkIdx,
-      },
-      select: {
-        idx: true,
-        userIdx: true,
-        placeIdx: true,
-        createdAt: true,
-        deletedAt: true,
-      },
-    });
-  }
-
-  /**
-   * 특정 장소와 사용자 조합으로 활성화된 북마크 조회
+   * 특정 장소와 사용자 조합으로 북마크 조회
    *
    * 내부 로직이므로 Bookmark로만 반환
    *
@@ -61,23 +38,26 @@ export class BookmarkRepository {
       where: {
         placeIdx,
         userIdx,
-        deletedAt: null,
       },
     });
   }
 
   /**
-   * 특정 idx의 북마크 삭제
+   * 특정 장소와 사용자 조합으로 북마크 삭제
    *
    * @author 강정연
    */
-  async deleteBookmarkByBookmarkIdx(bookmarkIdx: number): Promise<void> {
-    await this.prisma.bookmark.update({
+  async deleteBookmarkByBookmarkIdx(
+    placeIdx: number,
+    userIdx: number,
+  ): Promise<void> {
+    await this.prisma.bookmark.delete({
       where: {
-        idx: bookmarkIdx,
-        deletedAt: null,
+        userIdx_placeIdx: {
+          userIdx,
+          placeIdx,
+        },
       },
-      data: { deletedAt: new Date() },
     });
   }
 }

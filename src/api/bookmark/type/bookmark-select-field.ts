@@ -10,11 +10,9 @@ import { Prisma } from '@prisma/client';
 export const BOOKMARK_SELECT_FIELD =
   Prisma.validator<Prisma.BookmarkDefaultArgs>()({
     select: {
-      idx: true,
       userIdx: true,
       placeIdx: true,
       createdAt: true,
-      deletedAt: true,
     },
   });
 
