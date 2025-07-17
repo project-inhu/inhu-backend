@@ -7,7 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { KeywordModule } from './api/keyword/keyword.module';
 import { ReviewModule } from './api/review/review.module';
-import { S3Module } from './common/s3/s3.module';
+import { S3Module } from './common/module/s3/s3.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { PickedPlaceModule } from './api/picked-place/picked-place.module';
 
