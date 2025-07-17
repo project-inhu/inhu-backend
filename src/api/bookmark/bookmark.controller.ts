@@ -4,6 +4,7 @@ import { LoginAuth } from 'src/auth/common/decorators/login-auth.decorator';
 import { User } from 'src/common/decorator/user.decorator';
 import { BookmarkEntity } from './entity/bookmark.entity';
 import { Exception } from 'src/common/decorator/exception.decorator';
+import { ApiExcludeEndpoint } from '@nestjs/swagger';
 
 @Controller('')
 export class BookmarkController {
@@ -15,10 +16,9 @@ export class BookmarkController {
    * @author 강정연
    */
   @LoginAuth
-  @Exception(400, 'PlaceIdx must be a number')
-  @Exception(404, 'Place does not exist')
+  @Exception(400, 'Invalid placeIdx')
+  @Exception(404, 'Place not found')
   @Exception(409, 'Bookmark already exists')
-  @Exception(500, 'Internal Server Error')
   @Post('place/:placeIdx/bookmark')
   async createBookmarkByPlaceIdxAndUserIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
@@ -31,21 +31,23 @@ export class BookmarkController {
   }
 
   /**
-   * 특정 idx 북마크 삭제
+   * 특정 장소에 대한 북마크 삭제
    *
    * @author 강정연
    */
   @LoginAuth
-  @Exception(400, 'BookmarkIdx must be a number')
-  @Exception(404, 'Bookmark does not exist')
-  @Exception(403, 'You are not allowed to delete this bookmark')
+  @Exception(400, 'Invalid placeIdx')
+  @Exception(404, 'Place not found')
+  @Exception(403, 'Permission denied')
   @Exception(409, 'Bookmark already deleted')
-  @Exception(500, 'Internal Server Error')
-  @Delete('bookmark/:bookmarkIdx')
-  async deleteBookmarkByBookmarkIdx(
-    @Param('bookmarkIdx', ParseIntPipe) bookmarkIdx: number,
+  @Delete('place/:placeIdx/bookmark')
+  async deleteBookmarkByPlaceIdxAndUserIdx(
+    @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @User('idx') userIdx: number,
   ): Promise<void> {
-    await this.bookmarkServie.deleteBookmarkByBookmarkIdx(bookmarkIdx, userIdx);
+    await this.bookmarkServie.deleteBookmarkByPlaceIdxAndUserIdx(
+      placeIdx,
+      userIdx,
+    );
   }
 }
