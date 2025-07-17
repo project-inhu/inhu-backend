@@ -1,14 +1,14 @@
 import { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { LoginTokenService } from 'src/auth/services/login-token.service';
-import { PrismaService } from 'src/common/module/prisma/prisma.service';
+import { LoginTokenService } from '@user/auth/services/login-token.service';
+import { PrismaService } from '@user/common/module/prisma/prisma.service';
 import * as request from 'supertest';
-import { extractCookieValue } from 'test/common/utils/extract-cookie-value.util';
-import { TestManager } from 'test/common/helpers/test-manager';
-import { KakaoStrategy } from 'src/auth/strategies/social-login/kakao/kakao.strategy';
-import { TokenStorageStrategy } from 'src/auth/strategies/storages/base/token-storage.strategy';
-import { AUTH_PROVIDERS } from 'src/auth/common/constants/auth-provider.constant';
-import { UserService } from 'src/api/user/user.service';
+import { extractCookieValue } from 'apps/user-server/test/common/utils/extract-cookie-value.util';
+import { TestManager } from 'apps/user-server/test/common/helpers/test-manager';
+import { KakaoStrategy } from '@user/auth/strategies/social-login/kakao/kakao.strategy';
+import { TokenStorageStrategy } from '@user/auth/strategies/storages/base/token-storage.strategy';
+import { AUTH_PROVIDERS } from '@user/auth/common/constants/auth-provider.constant';
+import { UserService } from '@user/api/user/user.service';
 
 /**
  * authController e2e test
