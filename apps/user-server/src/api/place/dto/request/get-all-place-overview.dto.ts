@@ -11,7 +11,7 @@ import {
   Min,
 } from 'class-validator';
 import { PlaceType } from '@user/api/place/constants/place-type.constant';
-import { ToBoolean } from '@user/common/decorator/to-boolean.decorator';
+import { ToBoolean } from '@app/common';
 
 /**
  * GetAllPlaceOverview의 요청 DTO
