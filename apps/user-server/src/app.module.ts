@@ -8,7 +8,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { KeywordModule } from './api/keyword/keyword.module';
 import { ReviewModule } from './api/review/review.module';
 import { S3Module } from './common/module/s3/s3.module';
-import { RedisModule } from '@nestjs-modules/ioredis';
 import { PickedPlaceModule } from './api/picked-place/picked-place.module';
 import { ClsModule } from 'nestjs-cls';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
@@ -23,14 +22,6 @@ import { ClsPluginTransactional } from '@nestjs-cls/transactional';
     ConfigModule.forRoot({ isGlobal: true }),
     ReviewModule,
     S3Module,
-    RedisModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'single',
-        url: `redis://${configService.get('REDIS_HOST')}:${configService.get('REDIS_PORT')}`,
-      }),
-      inject: [ConfigService],
-    }),
     PickedPlaceModule,
     ClsModule.forRoot({
       plugins: [

@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { v4 as uuid } from 'uuid';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { GetPresignedUrlInput } from './input/get-presigned-url.input';
 import { GetPresignedUrlResponseDto } from './dto/get-presigned-url-response.dto';
@@ -48,7 +47,7 @@ export class S3Service {
       throw new BadRequestException('You need file.');
     }
 
-    const key = `/${folder}/${uuid()}-${filename}`;
+    const key = `/${folder}/${new Date().toString()}-${filename}`;
 
     const command = new PutObjectCommand({
       Bucket: this.bucketName,
