@@ -8,6 +8,7 @@ import { Prisma } from '@prisma/client';
 import { PlaceType } from './constants/place-type.constant';
 import { SelectPlaceOverview } from './model/prisma-type/select-place-overview';
 import { CreatePlaceInput } from './inputs/create-place.input';
+import { UpdatePlaceInput } from '@app/core/place/inputs/update-place.input';
 
 @Injectable()
 export class PlaceCoreRepository {
@@ -388,6 +389,108 @@ export class PlaceCoreRepository {
           },
         },
       },
+    });
+  }
+
+  public async updatePlaceByIdx(
+    idx: number,
+    input: UpdatePlaceInput,
+  ): Promise<void> {
+    const place = await this.txHost.tx.place.findUniqueOrThrow({
+      select: { roadAddress: true },
+      where: { idx },
+    });
+
+    if (input.roadAddress !== undefined) {
+      await this.txHost.tx.roadAddress.update({
+        data: {
+          addressName: input.roadAddress.name,
+          detailAddress: input.roadAddress.detail,
+          addressX: input.roadAddress.addressX,
+          addressY: input.roadAddress.addressY,
+        },
+        where: {
+          idx: place.roadAddress.idx,
+        },
+      });
+    }
+
+    await this.txHost.tx.place.update({
+      data: {
+        name: input.name,
+        tel: input.tel,
+        isClosedOnHoliday: input.isClosedOnHoliday,
+        activatedAt: input.activatedAt,
+        permanentlyClosedAt: input.permanentlyClosedAt,
+        placeImageList: input.imgList
+          ? {
+              updateMany: {
+                where: { deletedAt: null },
+                data: {
+                  deletedAt: new Date(),
+                },
+              },
+              createMany: {
+                data: input.imgList.map((path) => ({ path })),
+              },
+            }
+          : undefined,
+        placeTypeMappingList: input.type
+          ? {
+              deleteMany: {},
+              create: { placeTypeIdx: input.type },
+            }
+          : undefined,
+        closedDayList: input.closedDayList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.closedDayList.map(({ day, week }) => ({
+                  day,
+                  week,
+                })),
+              },
+            }
+          : undefined,
+        operatingHourList: input.operatingHourList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.operatingHourList.map(
+                  ({ startAt, endAt, day }) => ({
+                    startAt,
+                    endAt,
+                    day,
+                  }),
+                ),
+              },
+            }
+          : undefined,
+        weeklyClosedDayList: input.weeklyClosedDayList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.weeklyClosedDayList.map(({ closedDate, type }) => ({
+                  closedDate,
+                  type,
+                })),
+              },
+            }
+          : undefined,
+        breakTimeList: input.breakTimeList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.breakTimeList.map(({ day, startAt, endAt }) => ({
+                  day,
+                  startAt,
+                  endAt,
+                })),
+              },
+            }
+          : undefined,
+      },
+      where: { idx },
     });
   }
 }
