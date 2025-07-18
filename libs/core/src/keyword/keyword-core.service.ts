@@ -1,6 +1,7 @@
 import { KeywordCoreRepository } from './keyword-core.repository';
 import { Injectable } from '@nestjs/common';
 import { KeywordModel } from './model/keyword.model';
+import { CreateKeywordInput } from './inputs/create-keyword.input';
 
 @Injectable()
 export class KeywordCoreService {
@@ -15,6 +16,12 @@ export class KeywordCoreService {
   public async getKeywordAll(): Promise<KeywordModel[]> {
     return (await this.keywordCoreRepository.selectKeywordAll()).map(
       KeywordModel.fromPrisma,
+    );
+  }
+
+  public async createKeyword(input: CreateKeywordInput): Promise<KeywordModel> {
+    return KeywordModel.fromPrisma(
+      await this.keywordCoreRepository.insertKeyword(input),
     );
   }
 }
