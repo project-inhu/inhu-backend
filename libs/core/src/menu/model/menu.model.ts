@@ -7,6 +7,11 @@ export class MenuModel {
   public idx: number;
 
   /**
+   * 장소 식별자
+   */
+  public placeIdx: number;
+
+  /**
    * 메뉴 이름
    */
   public name: string;
@@ -45,6 +50,7 @@ export class MenuModel {
   public static fromPrisma(menu: SelectMenu): MenuModel {
     return new MenuModel({
       idx: menu.idx,
+      placeIdx: menu.placeIdx,
       name: menu.name,
       content: menu.content,
       price: menu.price,

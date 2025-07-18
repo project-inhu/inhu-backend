@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { MenuCoreRepository } from './menu-core.repository';
-import { GetMenuInput } from './inputs/get-menu.input';
+import { GetMenuAllInput } from './inputs/get-menu-all.input';
 import { MenuModel } from './model/menu.model';
 import { CreateMenuInput } from './inputs/create-menu.input';
 import { UpdateMenuInput } from './inputs/update-menu.input';
@@ -15,12 +15,11 @@ export class MenuCoreService {
   }
 
   public async getMenuAllByPlaceIdx(
-    placeIdx: number,
-    input: GetMenuInput,
+    input: GetMenuAllInput,
   ): Promise<MenuModel[]> {
-    return (
-      await this.menuCoreRepository.selectMenuAllByPlaceIdx(placeIdx, input)
-    ).map(MenuModel.fromPrisma);
+    return (await this.menuCoreRepository.selectMenuAllByPlaceIdx(input)).map(
+      MenuModel.fromPrisma,
+    );
   }
 
   public async createMenu(input: CreateMenuInput): Promise<MenuModel> {

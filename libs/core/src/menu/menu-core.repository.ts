@@ -1,7 +1,7 @@
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';
-import { GetMenuInput } from './inputs/get-menu.input';
+import { GetMenuAllInput } from './inputs/get-menu-all.input';
 import { SelectMenu } from './model/prisma-type/select-menu';
 import { CreateMenuInput } from './inputs/create-menu.input';
 import { UpdateMenuInput } from './inputs/update-menu.input';
@@ -16,6 +16,7 @@ export class MenuCoreRepository {
     return await this.txHost.tx.menu.findUnique({
       select: {
         idx: true,
+        placeIdx: true,
         name: true,
         price: true,
         content: true,
@@ -30,13 +31,15 @@ export class MenuCoreRepository {
     });
   }
 
-  public async selectMenuAllByPlaceIdx(
-    placeIdx: number,
-    { take, skip }: GetMenuInput,
-  ): Promise<SelectMenu[]> {
+  public async selectMenuAllByPlaceIdx({
+    placeIdx,
+    take,
+    skip,
+  }: GetMenuAllInput): Promise<SelectMenu[]> {
     return await this.txHost.tx.menu.findMany({
       select: {
         idx: true,
+        placeIdx: true,
         name: true,
         price: true,
         content: true,
@@ -60,6 +63,7 @@ export class MenuCoreRepository {
     return await this.txHost.tx.menu.create({
       select: {
         idx: true,
+        placeIdx: true,
         name: true,
         price: true,
         content: true,
