@@ -1,11 +1,14 @@
+import { PickType } from '@nestjs/swagger';
 import { SelectReviewAuthor } from './prisma-type/select-review-author';
+import { UserModel } from '@app/core/user/model/user.model';
 
-export class ReviewAuthorModel {
-  public idx: number;
-  public nickname: string;
-  public profileImagePath: string | null;
-
+export class ReviewAuthorModel extends PickType(UserModel, [
+  'idx',
+  'nickname',
+  'profileImagePath',
+]) {
   constructor(data: ReviewAuthorModel) {
+    super();
     Object.assign(this, data);
   }
 
