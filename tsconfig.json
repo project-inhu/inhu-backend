@@ -32,6 +32,12 @@
       ],
       "@user/*": [
         "apps/user-server/src/*"
+      ],
+      "default/s3": [
+        "libs/s3/src"
+      ],
+      "default/s3/*": [
+        "libs/s3/src/*"
       ]
     }
   }
