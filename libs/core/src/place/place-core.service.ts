@@ -35,4 +35,8 @@ export class PlaceCoreService {
   ): Promise<void> {
     return await this.placeCoreRepository.updatePlaceByIdx(idx, input);
   }
+
+  public async deletePlaceByIdx(idx: number): Promise<void> {
+    return await this.placeCoreRepository.softDeletePlaceByIdx(idx);
+  }
 }
