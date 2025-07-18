@@ -398,7 +398,7 @@ export class PlaceCoreRepository {
   ): Promise<void> {
     const place = await this.txHost.tx.place.findUniqueOrThrow({
       select: { roadAddress: true },
-      where: { idx },
+      where: { idx, deletedAt: null },
     });
 
     if (input.roadAddress !== undefined) {
@@ -490,7 +490,19 @@ export class PlaceCoreRepository {
             }
           : undefined,
       },
-      where: { idx },
+      where: { idx, deletedAt: null },
+    });
+  }
+
+  public async softDeletePlaceByIdx(idx: number): Promise<void> {
+    await this.txHost.tx.place.update({
+      select: {
+        roadAddressIdx: true,
+      },
+      where: { idx, deletedAt: null },
+      data: {
+        deletedAt: new Date(),
+      },
     });
   }
 }
