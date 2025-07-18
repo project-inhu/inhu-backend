@@ -21,4 +21,19 @@ export class KeywordCoreRepository {
       },
     });
   }
+
+  public async selectKeywordAll(): Promise<SelectKeyword[]> {
+    return await this.txHost.tx.keyword.findMany({
+      select: {
+        idx: true,
+        content: true,
+      },
+      where: {
+        deletedAt: null,
+      },
+      orderBy: {
+        idx: 'asc',
+      },
+    });
+  }
 }
