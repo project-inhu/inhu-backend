@@ -473,4 +473,49 @@ export class PlaceCoreRepository {
       skip,
     });
   }
+
+  public async increaseKeywordCount(
+    placeIdx: number,
+    keywordIdx: number,
+    count: number,
+  ): Promise<void> {
+    await this.txHost.tx.placeKeywordCount.upsert({
+      where: {
+        placeIdx_keywordIdx: {
+          placeIdx,
+          keywordIdx,
+        },
+      },
+      create: {
+        placeIdx,
+        keywordIdx,
+        count,
+      },
+      update: {
+        count: {
+          increment: count,
+        },
+      },
+    });
+  }
+
+  public async decreaseKeywordCount(
+    placeIdx: number,
+    keywordIdx: number,
+    count: number,
+  ): Promise<void> {
+    await this.txHost.tx.placeKeywordCount.update({
+      data: {
+        count: {
+          decrement: count,
+        },
+      },
+      where: {
+        placeIdx_keywordIdx: {
+          placeIdx,
+          keywordIdx,
+        },
+      },
+    });
+  }
 }

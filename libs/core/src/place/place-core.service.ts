@@ -71,4 +71,26 @@ export class PlaceCoreService {
       1,
     );
   }
+
+  public async increaseKeywordCount(
+    placeIdx: number,
+    keywordIdx: number,
+  ): Promise<void> {
+    return await this.placeCoreRepository.increaseKeywordCount(
+      placeIdx,
+      keywordIdx,
+      1,
+    );
+  }
+
+  public async decreaseKeywordCount(
+    placeIdx: number,
+    keywordIdx: number,
+  ): Promise<void> {
+    return await this.placeCoreRepository.decreaseKeywordCount(
+      placeIdx,
+      keywordIdx,
+      1,
+    );
+  }
 }
