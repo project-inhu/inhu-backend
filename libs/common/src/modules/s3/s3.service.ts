@@ -1,14 +1,11 @@
-import {
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { GetPresignedUrlInput } from './input/get-presigned-url.input';
 import { GetPresignedUrlResponseDto } from './dto/get-presigned-url-response.dto';
 import s3Config from './config/s3.config';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class S3Service {
@@ -24,9 +21,7 @@ export class S3Service {
     const bucketName = this.s3TypedConfig.bucketName;
 
     if (!region || !bucketName) {
-      throw new InternalServerErrorException(
-        'S3 environment variables are not configured.',
-      );
+      throw new Error('S3 environment variables are not configured.');
     }
 
     this.region = region;
@@ -47,7 +42,7 @@ export class S3Service {
   ): Promise<GetPresignedUrlResponseDto> {
     const { folder, filename } = getPresignedUrl;
 
-    const key = `/${folder}/${new Date().toString()}-${filename}`;
+    const key = `/${folder}/${uuidv4()}-${filename}`;
 
     const command = new PutObjectCommand({
       Bucket: this.bucketName,
@@ -55,7 +50,7 @@ export class S3Service {
     });
 
     const presignedUrl = await getSignedUrl(this.s3Client, command, {
-      expiresIn: 300,
+      expiresIn: 5 * 60,
     });
 
     return {
