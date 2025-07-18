@@ -246,6 +246,7 @@ model User {
   idx                       Int                     @id @default(autoincrement())
   nickname                  String                  @db.VarChar
   profileImagePath          String?                 @map("profile_image_path") @db.VarChar
+  isAdmin                   Boolean                 @default(false) @map("is_admin")
   createdAt                 DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt                 DateTime?               @map("deleted_at") @db.Timestamptz(6)
   bookmarkList              Bookmark[]
