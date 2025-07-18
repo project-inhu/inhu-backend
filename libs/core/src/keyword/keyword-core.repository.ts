@@ -1,3 +1,4 @@
+import { CreateKeywordInput } from '@app/core/keyword/inputs/create-keyword.input';
 import { SelectKeyword } from '@app/core/keyword/model/prisma-type/select-keyword';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
@@ -33,6 +34,20 @@ export class KeywordCoreRepository {
       },
       orderBy: {
         idx: 'asc',
+      },
+    });
+  }
+
+  public async insertKeyword(
+    input: CreateKeywordInput,
+  ): Promise<SelectKeyword> {
+    return await this.txHost.tx.keyword.create({
+      select: {
+        idx: true,
+        content: true,
+      },
+      data: {
+        content: input.content,
       },
     });
   }
