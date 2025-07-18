@@ -48,3 +48,13 @@ export * from './picked-place/model/picked-place-overview.model';
 export * from './picked-place/inputs/create-picked-place.input';
 export * from './picked-place/inputs/get-picked-place-all.input';
 export * from './picked-place/inputs/update-picked-place.input';
+
+// Menu
+export * from './menu/menu-core.module';
+export * from './menu/menu-core.service';
+
+export * from './menu/model/menu.model';
+
+export * from './menu/inputs/create-menu.input';
+export * from './menu/inputs/update-menu.input';
+export * from './menu/inputs/get-menu-all.input';
