@@ -15,3 +15,12 @@ export * from './place/inputs/get-place-overview.input';
 
 export * from './place/constants/place-type.constant';
 export * from './place/constants/weekly-close-type.constant';
+
+// Bookmark
+export * from './bookmark/bookmark-core.module';
+export * from './bookmark/bookmark-core.service';
+export * from './bookmark/model/bookmark.model';
+export * from './bookmark/inputs/create-bookmark.input';
+export * from './bookmark/inputs/delete-bookmark.input';
+export * from './bookmark/inputs/get-bookmark.input';
+export * from './bookmark/inputs/get-bookmark-all.input';
