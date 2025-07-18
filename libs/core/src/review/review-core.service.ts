@@ -1,12 +1,44 @@
 import { Injectable } from '@nestjs/common';
-import { RevieCoreRepository } from './review-core.repository';
+import { ReviewModel } from './model/review.model';
+import { CreateReviewInput } from './inputs/create-review.input';
+import { UpdateReviewInput } from './inputs/update-review.input';
+import { ReviewCoreRepository } from './review-core.repository';
 
 @Injectable()
 export class ReviewCoreService {
-  constructor(private readonly reviewCoreRepository: RevieCoreRepository) {}
+  constructor(private readonly reviewCoreRepository: ReviewCoreRepository) {}
 
-  public async getReviewByReviewIdx(idx: number) {
+  public async getReviewByIdx(idx: number): Promise<ReviewModel | null> {
     const review = await this.reviewCoreRepository.selectReviewByReviewIdx(idx);
     return review && ReviewModel.fromPrisma(review);
+  }
+
+  public async getAllReviewByPlaceIdx(
+    placeIdx: number,
+  ): Promise<ReviewModel[]> {
+    return (
+      await this.reviewCoreRepository.selectAllReviewByPlaceIdx(placeIdx)
+    ).map(ReviewModel.fromPrisma);
+  }
+
+  public async createReviewByPlaceIdx(
+    input: CreateReviewInput,
+  ): Promise<ReviewModel> {
+    return ReviewModel.fromPrisma(
+      await this.reviewCoreRepository.createReviewByPlaceIdx(input),
+    );
+  }
+
+  public async updateReviewByIdx(
+    idx: number,
+    input: UpdateReviewInput,
+  ): Promise<ReviewModel> {
+    return ReviewModel.fromPrisma(
+      await this.reviewCoreRepository.updateReviewByReviewIdx(idx, input),
+    );
+  }
+
+  public async deleteReviewByIdx(idx: number): Promise<void> {
+    await this.reviewCoreRepository.deleteReviewByReviewIdx(idx);
   }
 }
