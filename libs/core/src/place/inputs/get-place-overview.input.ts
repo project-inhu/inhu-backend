@@ -33,6 +33,8 @@ export class GetPlaceOverviewInput {
 
   /**
    * 특정 사용자가 북마크한 장소만 필터링
+   *
+   * TODO: 북마크 필터링을 할 경우 북마크 한 시간 순으로 데이터를 가져올 수 없음. 따라서 북마크 메서드가 따로 필요함.
    */
   bookmarkUserIdx?: number;
 
