@@ -7,11 +7,13 @@ import { DeleteBookmarkInput } from './inputs/delete-bookmark.input';
 import { GetBookmarkInput } from './inputs/get-bookmark.input';
 import { AlreadyNotBookmarkException } from './exception/already-not-bookmark.exception';
 import { AlreadyBookmarkException } from './exception/already-bookmark.exception';
+import { PlaceCoreService } from '@app/core/place/place-core.service';
 
 @Injectable()
 export class BookmarkCoreService {
   constructor(
     private readonly bookmarkCoreRepository: BookmarkCoreRepository,
+    private readonly placeCoreService: PlaceCoreService,
   ) {}
 
   public async getBookmarkByIdx(
@@ -47,6 +49,7 @@ export class BookmarkCoreService {
       throw new AlreadyBookmarkException('이미 북마크가 있습니다.');
     }
 
+    await this.placeCoreService.increasePlaceBookmarkCount(input.placeIdx);
     return await this.bookmarkCoreRepository
       .insertBookmark(input)
       .then(BookmarkModel.fromPrisma);
@@ -65,6 +68,7 @@ export class BookmarkCoreService {
       throw new AlreadyNotBookmarkException('이미 북마크가 아닙니다.');
     }
 
+    await this.placeCoreService.decreasePlaceBookmarkCount(input.placeIdx);
     return await this.bookmarkCoreRepository.deleteBookmark(input);
   }
 }

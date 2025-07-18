@@ -39,4 +39,26 @@ export class PlaceCoreService {
   public async deletePlaceByIdx(idx: number): Promise<void> {
     return await this.placeCoreRepository.softDeletePlaceByIdx(idx);
   }
+
+  public async increasePlaceReviewCount(idx: number): Promise<void> {
+    return await this.placeCoreRepository.increasePlaceReviewCountByIdx(idx, 1);
+  }
+
+  public async decreasePlaceReviewCount(idx: number): Promise<void> {
+    return await this.placeCoreRepository.decreasePlaceReviewCountByIdx(idx, 1);
+  }
+
+  public async increasePlaceBookmarkCount(idx: number): Promise<void> {
+    return await this.placeCoreRepository.increasePlaceBookmarkCountByIdx(
+      idx,
+      1,
+    );
+  }
+
+  public async decreasePlaceBookmarkCount(idx: number): Promise<void> {
+    return await this.placeCoreRepository.decreasePlaceBookmarkCountByIdx(
+      idx,
+      1,
+    );
+  }
 }
