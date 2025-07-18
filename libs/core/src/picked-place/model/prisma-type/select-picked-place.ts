@@ -4,6 +4,7 @@ import { Prisma } from '@prisma/client';
 export const SELECT_PICKED_PLACE =
   Prisma.validator<Prisma.PickedPlaceDefaultArgs>()({
     select: {
+      idx: true,
       title: true,
       content: true,
       place: SELECT_PLACE,

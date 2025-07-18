@@ -1,3 +1,4 @@
+import { CreatePickedPlaceInput } from '@app/core/picked-place/inputs/create-picked-place.input';
 import { GetPickedPlaceAllInput } from '@app/core/picked-place/inputs/get-picked-place-all.input';
 import { PickedPlaceOverviewModel } from '@app/core/picked-place/model/picked-place-overview.model';
 import { PickedPlaceModel } from '@app/core/picked-place/model/picked-place.model';
@@ -24,5 +25,14 @@ export class PickedPlaceCoreService {
     return await this.pickedPlaceCoreRepository
       .selectPickedPlaceAll(input)
       .then((result) => result.map(PickedPlaceOverviewModel.fromModel));
+  }
+
+  public async createPickedPlace(
+    placeIdx: number,
+    input: CreatePickedPlaceInput,
+  ): Promise<PickedPlaceModel> {
+    return await this.pickedPlaceCoreRepository
+      .insertPickedPlace(placeIdx, input)
+      .then(PickedPlaceModel.fromModel);
   }
 }

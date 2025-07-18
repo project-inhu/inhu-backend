@@ -822,10 +822,10 @@
           "zIndex": 459,
           "widthName": 96,
           "widthComment": 60,
-          "color": ""
+          "color": "#4CAF50"
         },
         "meta": {
-          "updateAt": 1752680203433,
+          "updateAt": 1752827831122,
           "createAt": 1752678605251
         }
       },

@@ -3,6 +3,11 @@ import { PlaceModel } from '@app/core/place/model/place.model';
 
 export class PickedPlaceModel {
   /**
+   * picked idx 식별자
+   */
+  public idx: number;
+
+  /**
    * 제목
    */
   public title: string;
@@ -23,6 +28,7 @@ export class PickedPlaceModel {
     ...pickedPlace
   }: SelectPickedPlace): PickedPlaceModel {
     return new PickedPlaceModel({
+      idx: pickedPlace.idx,
       title: pickedPlace.title,
       content: pickedPlace.content,
       place: PlaceModel.fromPrisma(place),
