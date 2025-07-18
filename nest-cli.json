@@ -51,15 +51,6 @@
         "tsConfigPath": "libs/core/tsconfig.lib.json"
       }
     },
-    "s3": {
-      "type": "library",
-      "root": "libs/common/src/modules/s3",
-      "entryFile": "index",
-      "sourceRoot": "libs/common/src/modules/s3",
-      "compilerOptions": {
-        "tsConfigPath": "libs/s3/tsconfig.lib.json"
-      }
-    },
     "user-server": {
       "type": "application",
       "root": "apps/user-server",
