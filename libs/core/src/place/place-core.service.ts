@@ -1,10 +1,12 @@
-import { UpdatePlaceInput } from '@app/core/place/inputs/update-place.input';
+import { UpdatePlaceInput } from './inputs/update-place.input';
 import { CreatePlaceInput } from './inputs/create-place.input';
 import { GetPlaceOverviewInput } from './inputs/get-place-overview.input';
 import { PlaceOverviewModel } from './model/place-overview.model';
 import { PlaceModel } from './model/place.model';
 import { PlaceCoreRepository } from './place-core.repository';
 import { Injectable } from '@nestjs/common';
+import { BookmarkedPlaceOverviewModel } from './model/bookmarked-place-overview.model';
+import { GetBookmarkedPlaceOverviewInput } from './inputs/get-bookmarked-place-overview.input';
 
 @Injectable()
 export class PlaceCoreService {
@@ -13,6 +15,14 @@ export class PlaceCoreService {
   public async getPlaceByIdx(idx: number): Promise<PlaceModel | null> {
     const place = await this.placeCoreRepository.selectPlaceByIdx(idx);
     return place && PlaceModel.fromPrisma(place);
+  }
+
+  public async getBookmarkedPlace(
+    input: GetBookmarkedPlaceOverviewInput,
+  ): Promise<BookmarkedPlaceOverviewModel[]> {
+    return await this.placeCoreRepository
+      .selectBookmarkedPlaceAll(input)
+      .then((result) => result.map(BookmarkedPlaceOverviewModel.fromPrisma));
   }
 
   public async getPlaceAll(
