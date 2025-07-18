@@ -24,7 +24,7 @@ export class MenuModel {
   /**
    * 메뉴 이미지 경로
    */
-  public imgPath: string | null;
+  public imagePath: string | null;
 
   /**
    * 시가 여부
@@ -48,7 +48,7 @@ export class MenuModel {
       name: menu.name,
       content: menu.content,
       price: menu.price,
-      imgPath: menu.imagePath,
+      imagePath: menu.imagePath,
       isFlexible: menu.isFlexible,
       createdAt: menu.createdAt,
     });

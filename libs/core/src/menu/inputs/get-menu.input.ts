@@ -1,5 +1,10 @@
 export class GetMenuInput {
   /**
+   * 장소 식별자
+   */
+  placeIdx: number;
+
+  /**
    * 한 번에 가져올 개수
    */
   take: number;
