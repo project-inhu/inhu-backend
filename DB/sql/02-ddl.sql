@@ -99,6 +99,7 @@ CREATE TABLE place_tb
   created_at           timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at           timestamp with time zone,
   closed_at            timestamp with time zone,
+  activated_at         timestamp with time zone,
   PRIMARY KEY (idx)
 );
 
