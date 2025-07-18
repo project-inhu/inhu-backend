@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ReviewCoreService } from './review-core.service';
-import { RevieCoreRepository } from './review-core.repository';
+import { ReviewCoreRepository } from './review-core.repository';
 
 @Module({
-  providers: [ReviewCoreService, RevieCoreRepository],
+  providers: [ReviewCoreService, ReviewCoreRepository],
   exports: [ReviewCoreService],
 })
 export class ReviewCoreModule {}
