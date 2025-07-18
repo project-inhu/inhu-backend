@@ -89,17 +89,17 @@ CREATE TABLE place_keyword_count_tb
 
 CREATE TABLE place_tb
 (
-  idx                  int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
-  name                 varchar                  NOT NULL,
-  tel                  varchar                  ,
-  review_count         int                      NOT NULL DEFAULT 0,
-  bookmark_count       int                      NOT NULL DEFAULT 0,
-  road_address_idx     int                      NOT NULL,
-  is_closed_on_holiday boolean                  NOT NULL DEFAULT false,
-  created_at           timestamp with time zone NOT NULL DEFAULT NOW(),
-  deleted_at           timestamp with time zone,
-  closed_at            timestamp with time zone,
-  activated_at         timestamp with time zone,
+  idx                   int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  name                  varchar                  NOT NULL,
+  tel                   varchar                  ,
+  review_count          int                      NOT NULL DEFAULT 0,
+  bookmark_count        int                      NOT NULL DEFAULT 0,
+  road_address_idx      int                      NOT NULL,
+  is_closed_on_holiday  boolean                  NOT NULL DEFAULT false,
+  created_at            timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at            timestamp with time zone,
+  permanently_closed_at timestamp with time zone,
+  activated_at          timestamp with time zone,
   PRIMARY KEY (idx)
 );
 

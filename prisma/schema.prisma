@@ -50,7 +50,7 @@ model Place {
   isClosedOnHoliday     Boolean             @default(false) @map("is_closed_on_holiday")
   createdAt             DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt             DateTime?           @map("deleted_at") @db.Timestamptz(6)
-  closedAt              DateTime?           @map("closed_at") @db.Timestamptz(6)
+  permanentlyClosedAt   DateTime?           @map("permanently_closed_at") @db.Timestamptz(6)
   activatedAt           DateTime?           @map("activated_at") @db.Timestamptz(6)
   bookmarkList          Bookmark[]
   breakTimeList         BreakTime[]

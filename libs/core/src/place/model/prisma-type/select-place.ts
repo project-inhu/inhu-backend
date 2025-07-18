@@ -9,7 +9,7 @@ const SELECT_PLACE = Prisma.validator<Prisma.PlaceDefaultArgs>()({
     bookmarkCount: true,
     isClosedOnHoliday: true,
     createdAt: true,
-    closedAt: true,
+    permanentlyClosedAt: true,
     activatedAt: true,
     roadAddress: {
       select: {

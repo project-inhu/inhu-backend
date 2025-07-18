@@ -10,7 +10,7 @@ export class PlaceOverviewModel extends PickType(PlaceModel, [
   'bookmarkCount',
   'isClosedOnHoliday',
   'createdAt',
-  'closedAt',
+  'permanentlyClosedAt',
   'imgPathList',
   'activatedAt',
 ]) {
@@ -29,7 +29,7 @@ export class PlaceOverviewModel extends PickType(PlaceModel, [
       isClosedOnHoliday: place.isClosedOnHoliday,
       createdAt: place.createdAt,
       activatedAt: place.activatedAt,
-      closedAt: place.closedAt,
+      permanentlyClosedAt: place.permanentlyClosedAt,
       imgPathList: place.placeImageList.map((image) => image.path),
     });
   }

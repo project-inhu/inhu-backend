@@ -26,7 +26,7 @@ export class PlaceCoreRepository {
         activatedAt: true,
         isClosedOnHoliday: true,
         createdAt: true,
-        closedAt: true,
+        permanentlyClosedAt: true,
         roadAddress: {
           select: {
             idx: true,
@@ -93,7 +93,8 @@ export class PlaceCoreRepository {
     take,
     order,
     orderBy,
-    activate,
+    activated,
+    permanentlyClosed,
   }: GetPlaceOverviewInput): Promise<SelectPlaceOverview[]> {
     return await this.txHost.tx.place.findMany({
       select: {
@@ -105,7 +106,7 @@ export class PlaceCoreRepository {
         activatedAt: true,
         isClosedOnHoliday: true,
         createdAt: true,
-        closedAt: true,
+        permanentlyClosedAt: true,
         placeImageList: {
           select: { path: true },
           where: { deletedAt: null },
@@ -119,13 +120,31 @@ export class PlaceCoreRepository {
           this.getBookmarkFilterWhereClause(bookmarkUserIdx), // 북마크 필터링
           this.getCoordinateFilterWhereClause(coordinate), // 좌표 필터링
           this.getTypesFilterWhereClause(types), // 타입 필터링
-          this.getActivatedAtFilterWhereClause(activate), // 활성화 필터링
+          this.getActivatedAtFilterWhereClause(activated), // 활성화 필터링
+          this.getPermanentlyClosedFilterWhereClause(permanentlyClosed), // 폐점 여부 필터링
         ],
       },
       orderBy: this.getOrderByClause({ order, orderBy }),
       take,
       skip,
     });
+  }
+
+  /**
+   * 폐점 여부 필터링
+   */
+  private getPermanentlyClosedFilterWhereClause(
+    permanentlyClosed?: boolean,
+  ): Prisma.PlaceWhereInput {
+    if (permanentlyClosed === undefined) {
+      return {};
+    }
+
+    if (permanentlyClosed) {
+      return { permanentlyClosedAt: { not: null } };
+    }
+
+    return { permanentlyClosedAt: null };
   }
 
   private getOperatingFilterWhereClause(

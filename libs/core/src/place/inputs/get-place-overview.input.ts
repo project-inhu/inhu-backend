@@ -58,5 +58,14 @@ export class GetPlaceOverviewInput {
    * - false: 비활성화된 장소만
    * - undefined: 활성화된 장소와 비활성화된 장소 모두 가져오기
    */
-  activate?: boolean;
+  activated?: boolean;
+
+  /**
+   * 폐점 필터링
+   *
+   * - true: 폐점된 장소만
+   * - false: 폐점되지 않은 장소만
+   * - undefined: 폐점된 장소와 폐점되지 않은 장소 모두 가져오기
+   */
+  permanentlyClosed?: boolean;
 }

@@ -53,7 +53,7 @@ export class PlaceModel {
   /**
    * 폐업 여부
    */
-  public closedAt: Date | null;
+  public permanentlyClosedAt: Date | null;
 
   /**
    * 이미지 경로 리스트
@@ -104,7 +104,7 @@ export class PlaceModel {
       isClosedOnHoliday: place.isClosedOnHoliday,
       createdAt: place.createdAt,
       activatedAt: place.activatedAt,
-      closedAt: place.closedAt,
+      permanentlyClosedAt: place.permanentlyClosedAt,
       imgPathList: place.placeImageList.map(({ path }) => path),
       breakTimeList: place.breakTimeList.map(PlaceBreakTimeModel.fromPrisma),
       type: place.placeTypeMappingList.map(
