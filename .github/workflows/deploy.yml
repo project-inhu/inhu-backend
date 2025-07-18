@@ -1,0 +1,92 @@
+name: Build and Deploy to Raspberry Pi
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+    branches:
+      - master
+      - develop
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22.13.0
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests on pull request
+        if: github.event_name == 'pull_request'
+        env:
+          ENV_TEST_FILE: ${{ secrets.ENV_TEST_FILE }}
+        run: |
+          echo "$ENV_TEST_FILE" | base64 --decode > .env.test
+          npm run test:e2e
+
+      - name: Build for production
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
+        run: |
+          npx prisma generate
+          npm run build
+
+      - name: Upload build artifacts
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
+        uses: actions/upload-artifact@v4
+        with:
+          name: inhu-backend-build
+          path: |
+            DB/**
+            dist
+            prisma
+            package.json
+            package-lock.json
+            docker-compose.yml
+
+  deploy:
+    name: Deploy to Raspberry Pi
+    needs: build
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: inhu-backend-build
+          path: ./deploy-files
+
+      - name: Compress deployment files
+        run: |
+          tar -czf deploy.tar.gz -C ./deploy-files .
+
+      - name: Deploy to Raspberry Pi
+        env:
+          HOST: ${{ secrets.RASPBERRY_PI_HOST }}
+          USER: ${{ secrets.RASPBERRY_PI_USER }}
+          PASSWORD: ${{ secrets.RASPBERRY_PI_PASSWORD }}
+          PORT: ${{ secrets.RASPBERRY_PI_PORT }}
+        run: |
+          sudo apt-get update && sudo apt-get install -y sshpass
+          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no deploy.tar.gz $USER@$HOST:~/inhu-backend/
+          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
+          set -e
+            cd ~/inhu-backend
+            tar -xzf deploy.tar.gz
+            rm deploy.tar.gz
+            npm ci
+            docker compose down -v
+            docker compose up -d
+            until docker exec inhu-postgres psql -U inhu_admin -d inhu -c "SELECT 1;" >/dev/null 2>&1; do sleep 1; done
+            npm run seed
+            pm2 reload inhu-backend
+          EOF

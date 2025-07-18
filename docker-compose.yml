@@ -6,6 +6,10 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1234
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - inhu-dev-data:/var/lib/postgresql/data
+      - ./DB:/docker-entrypoint-initdb.d
+
+volumes:
+  inhu-dev-data:
