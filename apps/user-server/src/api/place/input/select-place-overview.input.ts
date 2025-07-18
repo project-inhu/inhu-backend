@@ -1,5 +1,8 @@
 import { PlaceType } from '@user/api/place/constants/place-type.constant';
 
+/**
+ * @deprecated
+ */
 export class SelectPlaceOverviewInput {
   /**
    * place 개요를 가져오는 사용자의 idx

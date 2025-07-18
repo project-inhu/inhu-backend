@@ -6,6 +6,8 @@ import { Prisma } from '@prisma/client';
  * `PlaceEntity`로 변환되기 전의 원시 데이터
  *
  * @author 강정연
+ *
+ * @deprecated
  */
 export const PLACE_SELECT_FIELD = Prisma.validator<Prisma.PlaceDefaultArgs>()({
   select: {

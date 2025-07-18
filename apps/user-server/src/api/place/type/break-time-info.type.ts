@@ -4,6 +4,8 @@ import { IsString } from 'class-validator';
  * 단일 브레이크타임 구간 정보
  *
  * @author 강정연
+ *
+ * @deprecated
  */
 export class BreakTimeInfo {
   /**
