@@ -533,4 +533,32 @@ export class PlaceCoreRepository {
       where: { idx, deletedAt: null },
     });
   }
+
+  public async increasePlaceBookmarkCountByIdx(
+    idx: number,
+    count: number,
+  ): Promise<void> {
+    await this.txHost.tx.place.update({
+      data: {
+        bookmarkCount: {
+          increment: count,
+        },
+      },
+      where: { idx, deletedAt: null },
+    });
+  }
+
+  public async decreasePlaceBookmarkCountByIdx(
+    idx: number,
+    count: number,
+  ): Promise<void> {
+    await this.txHost.tx.place.update({
+      data: {
+        bookmarkCount: {
+          decrement: count,
+        },
+      },
+      where: { idx, deletedAt: null },
+    });
+  }
 }
