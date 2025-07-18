@@ -30,7 +30,7 @@ export class ReviewModel {
   public keywordList: KeywordModel[];
 
   /**
-   * 리뷰 작성자 정보
+   * 리뷰 작성자정보
    */
   public author: ReviewAuthorModel;
 
