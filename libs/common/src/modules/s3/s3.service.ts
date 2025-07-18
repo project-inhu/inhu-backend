@@ -3,7 +3,7 @@ import { ConfigType } from '@nestjs/config';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { GetPresignedUrlInput } from './input/get-presigned-url.input';
-import { GetPresignedUrlResponseDto } from './dto/get-presigned-url-response.dto';
+import { PresignedUrlModel } from './model/presigned-url.model';
 import s3Config from './config/s3.config';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -39,7 +39,7 @@ export class S3Service {
    */
   async getPresignedUrl(
     getPresignedUrl: GetPresignedUrlInput,
-  ): Promise<GetPresignedUrlResponseDto> {
+  ): Promise<PresignedUrlModel> {
     const { folder, filename } = getPresignedUrl;
 
     const key = `/${folder}/${uuidv4()}-${filename}`;
