@@ -1,15 +1,17 @@
-import { GetPlaceOverviewInput } from '@app/core/place/inputs/get-place-overview.input';
-import { PlaceOverviewModel } from '@app/core/place/model/place-overview.model';
-import { PlaceCoreRepository } from '@app/core/place/place-core.repository';
+import { CreatePlaceInput } from './inputs/create-place.input';
+import { GetPlaceOverviewInput } from './inputs/get-place-overview.input';
+import { PlaceOverviewModel } from './model/place-overview.model';
+import { PlaceModel } from './model/place.model';
+import { PlaceCoreRepository } from './place-core.repository';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class PlaceCoreService {
   constructor(private readonly placeCoreRepository: PlaceCoreRepository) {}
 
-  public async getPlaceByIdx(idx: number): Promise<PlaceOverviewModel | null> {
+  public async getPlaceByIdx(idx: number): Promise<PlaceModel | null> {
     const place = await this.placeCoreRepository.selectPlaceByIdx(idx);
-    return place && PlaceOverviewModel.fromPrisma(place);
+    return place && PlaceModel.fromPrisma(place);
   }
 
   public async getPlaceAll(
@@ -17,6 +19,12 @@ export class PlaceCoreService {
   ): Promise<PlaceOverviewModel[]> {
     return (await this.placeCoreRepository.selectPlaceAll(input)).map(
       PlaceOverviewModel.fromPrisma,
+    );
+  }
+
+  public async createPlace(input: CreatePlaceInput): Promise<PlaceModel> {
+    return PlaceModel.fromPrisma(
+      await this.placeCoreRepository.insertPlace(input),
     );
   }
 }
