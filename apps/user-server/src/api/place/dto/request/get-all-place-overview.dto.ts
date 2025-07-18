@@ -11,11 +11,6 @@ import {
 import { ToBoolean } from '@app/common';
 import { PlaceType } from '@app/core';
 
-/**
- * GetAllPlaceOverview의 요청 DTO
- *
- * @author 강정연
- */
 export class GetAllPlaceOverviewDto {
   /**
    * page number
