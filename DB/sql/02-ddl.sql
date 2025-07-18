@@ -202,6 +202,7 @@ CREATE TABLE user_tb
   idx                int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
   nickname           varchar                  NOT NULL,
   profile_image_path varchar                 ,
+  is_admin           boolean                  NOT NULL DEFAULT false,
   created_at         timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at         timestamp with time zone,
   PRIMARY KEY (idx)
