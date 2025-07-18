@@ -37,6 +37,13 @@ export class ReviewCoreService {
     input: CreateReviewInput,
   ): Promise<ReviewModel> {
     await this.placeCoreRepository.increasePlaceReviewCountByIdx(placeIdx, 1);
+
+    await Promise.all(
+      input.keywordIdxList.map((keywordIdx) =>
+        this.placeCoreRepository.increaseKeywordCount(placeIdx, keywordIdx, 1),
+      ),
+    );
+
     return ReviewModel.fromPrisma(
       await this.reviewCoreRepository.createReviewByPlaceIdx(
         placeIdx,
@@ -112,6 +119,11 @@ export class ReviewCoreService {
     if (!review) {
       throw new ReviewNotFoundException('Cannot find review with idx: ' + idx);
     }
+
+    await this.placeCoreRepository.decreasePlaceReviewCountByIdx(
+      review.place.idx,
+      1,
+    );
 
     // TODO: place core에서 키워드 목록을 받아서 감소/증가 시키는 로직을 추가해야 함
     await Promise.all(
