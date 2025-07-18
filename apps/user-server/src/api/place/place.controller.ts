@@ -4,7 +4,7 @@ import { GetAllPlaceOverviewDto } from './dto/request/get-all-place-overview.dto
 import { User } from '@user/common/decorator/user.decorator';
 import { PlaceEntity } from './entity/place.entity';
 import { Exception } from '@app/common/decorator/exception.decorator';
-import { GetAllPlaceOverviewResponseDto } from './dto/get-all-place-overview-response.dto';
+import { GetAllPlaceOverviewResponseDto } from './dto/response/get-all-place-overview-response.dto';
 
 @Controller('place')
 export class PlaceController {

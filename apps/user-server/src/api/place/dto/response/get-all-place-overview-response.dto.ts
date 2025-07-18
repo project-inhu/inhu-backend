@@ -1,4 +1,4 @@
-import { PlaceOverviewEntity } from '../entity/place-overview.entity';
+import { PlaceOverviewEntity } from '../../entity/place-overview.entity';
 
 /**
  * GetAllPlaceOverview의 응답 DTO

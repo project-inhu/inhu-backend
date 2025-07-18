@@ -148,15 +148,15 @@
           "IpF8GuYST0GdoJZXie8K0"
         ],
         "ui": {
-          "x": 4006.9648,
-          "y": 1821.9386,
+          "x": 4072.9222,
+          "y": 1808.1088,
           "zIndex": 242,
           "widthName": 77,
           "widthComment": 60,
           "color": "#FFEB3B"
         },
         "meta": {
-          "updateAt": 1752679161360,
+          "updateAt": 1752818142896,
           "createAt": 1736919004651
         }
       },
@@ -4280,8 +4280,8 @@
           "columnIds": [
             "pgeSe0jNEn6z-mmgRZKRl"
           ],
-          "x": 4006.9648,
-          "y": 1917.9386,
+          "x": 4072.9222,
+          "y": 1904.1088,
           "direction": 1
         },
         "meta": {
@@ -4308,8 +4308,8 @@
           "columnIds": [
             "cl6N8ZfdV1_44FveuBnC0"
           ],
-          "x": 4006.9648,
-          "y": 1853.9386,
+          "x": 4072.9222,
+          "y": 1840.1088,
           "direction": 1
         },
         "meta": {

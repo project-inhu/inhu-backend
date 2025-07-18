@@ -2,16 +2,14 @@ import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsDecimal,
-  IsEnum,
   IsIn,
   IsInt,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   Min,
 } from 'class-validator';
-import { PlaceType } from '@user/api/place/constants/place-type.constant';
 import { ToBoolean } from '@app/common';
+import { PlaceType } from '@app/core';
 
 /**
  * GetAllPlaceOverview의 요청 DTO
