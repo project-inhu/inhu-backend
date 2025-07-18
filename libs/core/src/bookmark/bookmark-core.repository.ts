@@ -1,8 +1,10 @@
+import { CreateBookmarkInput } from './inputs/create-bookmark.input';
 import { GetBookmarkAllInput } from './inputs/get-bookmark-all.input';
 import { SelectBookmark } from './model/prisma-type/select-bookmark';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';
+import { DeleteBookmarkInput } from './inputs/delete-bookmark.input';
 
 @Injectable()
 export class BookmarkCoreRepository {
@@ -44,6 +46,33 @@ export class BookmarkCoreRepository {
         userIdx,
         placeIdx: {
           in: input.placeIdxList,
+        },
+      },
+    });
+  }
+
+  public async insertBookmark(
+    input: CreateBookmarkInput,
+  ): Promise<SelectBookmark> {
+    return await this.txHost.tx.bookmark.create({
+      select: {
+        userIdx: true,
+        placeIdx: true,
+        createdAt: true,
+      },
+      data: {
+        userIdx: input.userIdx,
+        placeIdx: input.placeIdx,
+      },
+    });
+  }
+
+  public async deleteBookmark(input: DeleteBookmarkInput): Promise<void> {
+    await this.txHost.tx.bookmark.delete({
+      where: {
+        userIdx_placeIdx: {
+          userIdx: input.userIdx,
+          placeIdx: input.placeIdx,
         },
       },
     });
