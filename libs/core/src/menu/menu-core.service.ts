@@ -17,15 +17,15 @@ export class MenuCoreService {
   public async getMenuAllByPlaceIdx(
     input: GetMenuAllInput,
   ): Promise<MenuModel[]> {
-    return (await this.menuCoreRepository.selectMenuAllByPlaceIdx(input)).map(
-      MenuModel.fromPrisma,
-    );
+    return await this.menuCoreRepository
+      .selectMenuAllByPlaceIdx(input)
+      .then((menus) => menus.map(MenuModel.fromPrisma));
   }
 
   public async createMenu(input: CreateMenuInput): Promise<MenuModel> {
-    return MenuModel.fromPrisma(
-      await this.menuCoreRepository.insertMenu(input),
-    );
+    return await this.menuCoreRepository
+      .insertMenu(input)
+      .then(MenuModel.fromPrisma);
   }
 
   public async updateMenuByIdx(
