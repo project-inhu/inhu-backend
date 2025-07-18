@@ -1,4 +1,5 @@
 import { CreateKeywordInput } from '@app/core/keyword/inputs/create-keyword.input';
+import { UpdateKeywordInput } from '@app/core/keyword/inputs/update-keyword.input';
 import { SelectKeyword } from '@app/core/keyword/model/prisma-type/select-keyword';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
@@ -48,6 +49,21 @@ export class KeywordCoreRepository {
       },
       data: {
         content: input.content,
+      },
+    });
+  }
+
+  public async updateKeywordByIdx(
+    idx: number,
+    input: UpdateKeywordInput,
+  ): Promise<void> {
+    await this.txHost.tx.keyword.update({
+      data: {
+        content: input.content,
+      },
+      where: {
+        idx,
+        deletedAt: null,
       },
     });
   }
