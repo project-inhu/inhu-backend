@@ -1,9 +1,9 @@
-import { CreatePickedPlaceInput } from '@app/core/picked-place/inputs/create-picked-place.input';
-import { GetPickedPlaceAllInput } from '@app/core/picked-place/inputs/get-picked-place-all.input';
-import { UpdatePickedPlaceInput } from '@app/core/picked-place/inputs/update-picked-place.input';
-import { PickedPlaceOverviewModel } from '@app/core/picked-place/model/picked-place-overview.model';
-import { PickedPlaceModel } from '@app/core/picked-place/model/picked-place.model';
-import { PickedPlaceCoreRepository } from '@app/core/picked-place/picked-place-core.repository';
+import { CreatePickedPlaceInput } from './inputs/create-picked-place.input';
+import { GetPickedPlaceAllInput } from './inputs/get-picked-place-all.input';
+import { UpdatePickedPlaceInput } from './inputs/update-picked-place.input';
+import { PickedPlaceOverviewModel } from './model/picked-place-overview.model';
+import { PickedPlaceModel } from './model/picked-place.model';
+import { PickedPlaceCoreRepository } from './picked-place-core.repository';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -48,5 +48,9 @@ export class PickedPlaceCoreService {
       idx,
       input,
     );
+  }
+
+  public async deletedPickedPlaceByIdx(idx: number): Promise<void> {
+    return await this.pickedPlaceCoreRepository.softDeletePickedPlaceByIdx(idx);
   }
 }

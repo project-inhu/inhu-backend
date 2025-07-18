@@ -31,9 +31,20 @@ export * from './bookmark/inputs/get-bookmark-all.input';
 export * from './bookmark/exception/already-bookmark.exception';
 export * from './bookmark/exception/already-not-bookmark.exception';
 
-export * from // Keyword
-'./keyword/keyword-core.module';
+// Keyword
+export * from './keyword/keyword-core.module';
 export * from './keyword/keyword-core.service';
 export * from './keyword/model/keyword.model';
 export * from './keyword/inputs/create-keyword.input';
 export * from './keyword/inputs/update-keyword.input';
+
+// Picked Place
+export * from './picked-place/picked-place-core.module';
+export * from './picked-place/picked-place-core.service';
+
+export * from './picked-place/model/picked-place.model';
+export * from './picked-place/model/picked-place-overview.model';
+
+export * from './picked-place/inputs/create-picked-place.input';
+export * from './picked-place/inputs/get-picked-place-all.input';
+export * from './picked-place/inputs/update-picked-place.input';
