@@ -10,6 +10,7 @@ export class UserCoreService {
 
   public async getUserByIdx(idx: number): Promise<UserModel | null> {
     const user = await this.userCoreRepository.selectUserByIdx(idx);
+
     return user && UserModel.fromPrisma(user);
   }
 
