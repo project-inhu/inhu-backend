@@ -10,12 +10,9 @@ export class ReviewPlaceModel {
     Object.assign(this, data);
   }
 
-  public static fromPrisma(
-    place: SelectReviewPlace,
-    placeIdx: number,
-  ): ReviewPlaceModel {
+  public static fromPrisma(place: SelectReviewPlace): ReviewPlaceModel {
     return new ReviewPlaceModel({
-      idx: placeIdx,
+      idx: place.idx,
       name: place.name,
       addressName: place.roadAddress.addressName,
       detailAddress: place.roadAddress.detailAddress,
