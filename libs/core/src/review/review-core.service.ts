@@ -23,10 +23,16 @@ export class ReviewCoreService {
   }
 
   public async createReviewByPlaceIdx(
+    placeIdx: number,
+    userIdx: number,
     input: CreateReviewInput,
   ): Promise<ReviewModel> {
     return ReviewModel.fromPrisma(
-      await this.reviewCoreRepository.createReviewByPlaceIdx(input),
+      await this.reviewCoreRepository.createReviewByPlaceIdx(
+        placeIdx,
+        userIdx,
+        input,
+      ),
     );
   }
 

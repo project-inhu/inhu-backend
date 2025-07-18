@@ -43,11 +43,17 @@ export class ReviewCoreRepository {
     });
   }
 
+  /**
+   * @param placeIdx 장소 식별자
+   * @param userIdx 작성자 식별자
+   * @param input
+   * @returns
+   */
   async createReviewByPlaceIdx(
-    createReviewInput: CreateReviewInput,
+    placeIdx: number,
+    userIdx: number,
+    { content, imagePathList, keywordIdxList }: CreateReviewInput,
   ): Promise<SelectReview> {
-    const { placeIdx, userIdx, content, imagePathList, keywordIdxList } =
-      createReviewInput;
     return await this.txHost.tx.review.create({
       ...SELECT_REVIEW,
       data: {

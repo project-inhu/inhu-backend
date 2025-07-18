@@ -1,26 +1,4 @@
-export class UpdateReviewInput {
-  /**
-   * 장소 식별자
-   */
-  placeIdx: number;
+import { CreateReviewInput } from '@app/core/review/inputs/create-review.input';
+import { PartialType } from '@nestjs/swagger';
 
-  /**
-   * 작성자 식별자
-   */
-  userIdx: number;
-
-  /**
-   * 리뷰 내용
-   */
-  content?: string;
-
-  /**
-   * 이미지 리스트 목록
-   */
-  imagePathList?: string[];
-
-  /**
-   * 키워드 리스트 목록
-   */
-  keywordIdxList?: number[];
-}
+export class UpdateReviewInput extends PartialType(CreateReviewInput) {}
