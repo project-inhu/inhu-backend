@@ -31,9 +31,7 @@ export class ReviewCoreRepository {
     });
   }
 
-  async selectReviewByReviewIdx(
-    reviewIdx: number,
-  ): Promise<SelectReview | null> {
+  async selectReviewByIdx(reviewIdx: number): Promise<SelectReview | null> {
     return await this.txHost.tx.review.findUnique({
       ...SELECT_REVIEW,
       where: {
@@ -78,7 +76,7 @@ export class ReviewCoreRepository {
     });
   }
 
-  async updateReviewByReviewIdx(
+  async updateReviewByIdx(
     reviewIdx: number,
     updateReviewInput: UpdateReviewInput,
   ): Promise<void> {
@@ -115,7 +113,7 @@ export class ReviewCoreRepository {
     });
   }
 
-  async deleteReviewByReviewIdx(reviewIdx: number): Promise<void> {
+  async deleteReviewByIdx(reviewIdx: number): Promise<void> {
     await this.txHost.tx.review.update({
       where: {
         idx: reviewIdx,
