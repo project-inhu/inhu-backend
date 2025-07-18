@@ -7,6 +7,7 @@ import { DateUtilService } from '@app/common';
 import { Prisma } from '@prisma/client';
 import { PlaceType } from './constants/place-type.constant';
 import { SelectPlaceOverview } from './model/prisma-type/select-place-overview';
+import { CreatePlaceInput } from './inputs/create-place.input';
 
 @Injectable()
 export class PlaceCoreRepository {
@@ -264,5 +265,129 @@ export class PlaceCoreRepository {
           ? 'reviewCount'
           : 'bookmarkCount']: order,
     };
+  }
+
+  public async insertPlace(input: CreatePlaceInput): Promise<SelectPlace> {
+    const createdRoadAddress = await this.txHost.tx.roadAddress.create({
+      select: { idx: true },
+      data: {
+        addressName: input.roadAddress.name,
+        detailAddress: input.roadAddress.detail,
+        addressX: input.roadAddress.addressX,
+        addressY: input.roadAddress.addressY,
+      },
+    });
+
+    return await this.txHost.tx.place.create({
+      select: {
+        idx: true,
+        name: true,
+        tel: true,
+        reviewCount: true,
+        bookmarkCount: true,
+        activatedAt: true,
+        isClosedOnHoliday: true,
+        createdAt: true,
+        permanentlyClosedAt: true,
+        roadAddress: {
+          select: {
+            idx: true,
+            addressName: true,
+            detailAddress: true,
+            addressX: true,
+            addressY: true,
+          },
+        },
+        placeImageList: {
+          select: { path: true },
+          where: { deletedAt: null },
+          orderBy: { idx: 'asc' },
+        },
+        placeTypeMappingList: {
+          select: {
+            placeTypeIdx: true,
+          },
+        },
+        closedDayList: {
+          select: {
+            idx: true,
+            day: true,
+            week: true,
+          },
+        },
+        operatingHourList: {
+          select: {
+            idx: true,
+            day: true,
+            startAt: true,
+            endAt: true,
+          },
+        },
+        weeklyClosedDayList: {
+          select: {
+            idx: true,
+            closedDate: true,
+            type: true,
+          },
+        },
+        breakTimeList: {
+          select: {
+            idx: true,
+            day: true,
+            startAt: true,
+            endAt: true,
+          },
+        },
+      },
+      data: {
+        name: input.name,
+        tel: input.tel,
+        isClosedOnHoliday: input.isClosedOnHoliday,
+        activatedAt: input.activatedAt,
+        placeImageList: {
+          createMany: {
+            data: input.imgList.map((path) => ({ path })),
+          },
+        },
+        roadAddressIdx: createdRoadAddress.idx,
+        placeTypeMappingList: {
+          create: {
+            placeTypeIdx: input.type,
+          },
+        },
+        permanentlyClosedAt: input.permanentlyClosedAt,
+        closedDayList: {
+          createMany: {
+            data: input.closedDayList.map(({ day, week }) => ({ day, week })),
+          },
+        },
+        operatingHourList: {
+          createMany: {
+            data: input.operatingHourList.map(({ startAt, endAt, day }) => ({
+              startAt,
+              endAt,
+              day,
+            })),
+          },
+        },
+        weeklyClosedDayList: {
+          createMany: {
+            data: input.weeklyClosedDayList.map(({ closedDate, type }) => ({
+              closedDate,
+              type,
+            })),
+          },
+        },
+        breakTimeList: {
+          createMany: {
+            data: input.breakTimeList.map(({ day, startAt, endAt }) => ({
+              day,
+              startAt,
+              endAt,
+            })),
+          },
+        },
+      },
+    });
   }
 }
