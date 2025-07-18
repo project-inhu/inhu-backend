@@ -13,6 +13,6 @@ import s3Config from './config/s3.config';
       inject: [s3Config.KEY],
     },
   ],
-  exports: [S3Service, s3Config.KEY],
+  exports: [S3Service],
 })
 export class S3Module {}
