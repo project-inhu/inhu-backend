@@ -26,11 +26,10 @@ export class BookmarkCoreService {
   }
 
   public async getBookmarkStateByUserIdx(
-    userIdx: number,
     input: GetBookmarkAllInput,
   ): Promise<BookmarkModel[]> {
     return await this.bookmarkCoreRepository
-      .selectBookmarkAllByUserIdx(userIdx, input)
+      .selectBookmarkAllByUserIdx(input)
       .then((bookmarks) => bookmarks.map(BookmarkModel.fromPrisma));
   }
 

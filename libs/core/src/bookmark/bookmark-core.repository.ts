@@ -33,7 +33,6 @@ export class BookmarkCoreRepository {
   }
 
   public async selectBookmarkAllByUserIdx(
-    userIdx: number,
     input: GetBookmarkAllInput,
   ): Promise<SelectBookmark[]> {
     return await this.txHost.tx.bookmark.findMany({
@@ -44,7 +43,7 @@ export class BookmarkCoreRepository {
       },
       where: {
         place: { deletedAt: null },
-        userIdx,
+        userIdx: input.userIdx,
         placeIdx: {
           in: input.placeIdxList,
         },

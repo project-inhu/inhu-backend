@@ -130,6 +130,20 @@ export class PlaceCoreRepository {
             keyword: { select: { content: true, idx: true } },
           },
         },
+        placeTypeMappingList: {
+          select: {
+            placeTypeIdx: true,
+          },
+        },
+        roadAddress: {
+          select: {
+            idx: true,
+            addressName: true,
+            detailAddress: true,
+            addressX: true,
+            addressY: true,
+          },
+        },
       },
       where: {
         AND: [
