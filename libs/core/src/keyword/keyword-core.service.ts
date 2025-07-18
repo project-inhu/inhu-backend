@@ -11,4 +11,10 @@ export class KeywordCoreService {
 
     return keyword && KeywordModel.fromPrisma(keyword);
   }
+
+  public async getKeywordAll(): Promise<KeywordModel[]> {
+    return (await this.keywordCoreRepository.selectKeywordAll()).map(
+      KeywordModel.fromPrisma,
+    );
+  }
 }
