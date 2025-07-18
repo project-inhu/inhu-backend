@@ -32,4 +32,8 @@ export class KeywordCoreService {
   ): Promise<void> {
     return await this.keywordCoreRepository.updateKeywordByIdx(idx, input);
   }
+
+  public async deletedKeywordByIdx(idx: number): Promise<void> {
+    return await this.keywordCoreRepository.softDeleteKeywordByIdx(idx);
+  }
 }
