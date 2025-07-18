@@ -1,3 +1,4 @@
+import { UpdatePlaceInput } from '@app/core/place/inputs/update-place.input';
 import { CreatePlaceInput } from './inputs/create-place.input';
 import { GetPlaceOverviewInput } from './inputs/get-place-overview.input';
 import { PlaceOverviewModel } from './model/place-overview.model';
@@ -26,5 +27,12 @@ export class PlaceCoreService {
     return PlaceModel.fromPrisma(
       await this.placeCoreRepository.insertPlace(input),
     );
+  }
+
+  public async updatePlaceByIdx(
+    idx: number,
+    input: UpdatePlaceInput,
+  ): Promise<void> {
+    return await this.placeCoreRepository.updatePlaceByIdx(idx, input);
   }
 }
