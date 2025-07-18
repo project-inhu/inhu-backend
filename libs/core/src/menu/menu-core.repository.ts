@@ -30,11 +30,10 @@ export class MenuCoreRepository {
     });
   }
 
-  public async selectMenuAllByPlaceIdx({
-    placeIdx,
-    take,
-    skip,
-  }: GetMenuInput): Promise<SelectMenu[]> {
+  public async selectMenuAllByPlaceIdx(
+    placeIdx: number,
+    { take, skip }: GetMenuInput,
+  ): Promise<SelectMenu[]> {
     return await this.txHost.tx.menu.findMany({
       select: {
         idx: true,

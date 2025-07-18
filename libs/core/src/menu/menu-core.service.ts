@@ -14,10 +14,13 @@ export class MenuCoreService {
     return menu && MenuModel.fromPrisma(menu);
   }
 
-  public async getMenuAllByPlaceIdx(input: GetMenuInput): Promise<MenuModel[]> {
-    return (await this.menuCoreRepository.selectMenuAllByPlaceIdx(input)).map(
-      MenuModel.fromPrisma,
-    );
+  public async getMenuAllByPlaceIdx(
+    placeIdx: number,
+    input: GetMenuInput,
+  ): Promise<MenuModel[]> {
+    return (
+      await this.menuCoreRepository.selectMenuAllByPlaceIdx(placeIdx, input)
+    ).map(MenuModel.fromPrisma);
   }
 
   public async createMenu(input: CreateMenuInput): Promise<MenuModel> {
