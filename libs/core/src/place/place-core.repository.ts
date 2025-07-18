@@ -505,4 +505,32 @@ export class PlaceCoreRepository {
       },
     });
   }
+
+  public async increasePlaceReviewCountByIdx(
+    idx: number,
+    count: number,
+  ): Promise<void> {
+    await this.txHost.tx.place.update({
+      data: {
+        reviewCount: {
+          increment: count,
+        },
+      },
+      where: { idx, deletedAt: null },
+    });
+  }
+
+  public async decreasePlaceReviewCountByIdx(
+    idx: number,
+    count: number,
+  ): Promise<void> {
+    await this.txHost.tx.place.update({
+      data: {
+        reviewCount: {
+          decrement: count,
+        },
+      },
+      where: { idx, deletedAt: null },
+    });
+  }
 }
