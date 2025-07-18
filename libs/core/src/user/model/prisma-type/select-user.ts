@@ -1,0 +1,18 @@
+import { Prisma } from '@prisma/client';
+
+export const SELECT_USER = Prisma.validator<Prisma.UserDefaultArgs>()({
+  select: {
+    idx: true,
+    nickname: true,
+    profileImagePath: true,
+    createdAt: true,
+    userProvider: {
+      select: {
+        snsId: true,
+        name: true,
+      },
+    },
+  },
+});
+
+export type SelectUser = Prisma.UserGetPayload<typeof SELECT_USER>;
