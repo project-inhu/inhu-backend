@@ -1,6 +1,9 @@
+import { SELECT_REVIEW_AUTHOR } from '@app/core/review/model/prisma-type/select-review-author';
+import { SELECT_REVIEW_KEYWORD } from '@app/core/review/model/prisma-type/select-review-keyword';
+import { SELECT_REVIEW_PLACE } from '@app/core/review/model/prisma-type/select-review-place';
 import { Prisma } from '@prisma/client';
 
-const SELECT_REVIEW = Prisma.validator<Prisma.ReviewDefaultArgs>()({
+export const SELECT_REVIEW = Prisma.validator<Prisma.ReviewDefaultArgs>()({
   select: {
     idx: true,
     content: true,
@@ -12,33 +15,11 @@ const SELECT_REVIEW = Prisma.validator<Prisma.ReviewDefaultArgs>()({
     },
     reviewKeywordMappingList: {
       select: {
-        keyword: {
-          select: {
-            idx: true,
-            content: true,
-          },
-        },
+        keyword: SELECT_REVIEW_KEYWORD,
       },
     },
-    user: {
-      select: {
-        idx: true,
-        nickname: true,
-        profileImagePath: true,
-      },
-    },
-    place: {
-      select: {
-        idx: true,
-        name: true,
-        roadAddress: {
-          select: {
-            addressName: true,
-            detailAddress: true,
-          },
-        },
-      },
-    },
+    user: SELECT_REVIEW_AUTHOR,
+    place: SELECT_REVIEW_PLACE,
   },
 });
 

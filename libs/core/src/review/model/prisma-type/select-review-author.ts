@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 
-const SELECT_REVIEW_AUTHOR = Prisma.validator<Prisma.UserDefaultArgs>()({
+export const SELECT_REVIEW_AUTHOR = Prisma.validator<Prisma.UserDefaultArgs>()({
   select: {
     idx: true,
     nickname: true,

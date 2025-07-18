@@ -1,12 +1,15 @@
+import { PickType } from '@nestjs/swagger';
 import { SelectReviewPlace } from './prisma-type/select-review-place';
+import { PlaceModel } from '@app/core/place/model/place.model';
+import { PlaceRoadAddressModel } from '@app/core/place/model/place-road-address.model';
 
-export class ReviewPlaceModel {
-  public idx: number;
-  public name: string;
-  public addressName: string;
-  public detailAddress: string | null;
-
+export class ReviewPlaceModel extends PickType(PlaceModel, [
+  'idx',
+  'name',
+  'roadAddress',
+]) {
   constructor(data: ReviewPlaceModel) {
+    super();
     Object.assign(this, data);
   }
 
@@ -14,8 +17,7 @@ export class ReviewPlaceModel {
     return new ReviewPlaceModel({
       idx: place.idx,
       name: place.name,
-      addressName: place.roadAddress.addressName,
-      detailAddress: place.roadAddress.detailAddress,
+      roadAddress: PlaceRoadAddressModel.fromPrisma(place.roadAddress),
     });
   }
 }

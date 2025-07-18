@@ -1,7 +1,7 @@
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';
-import { SelectReview } from './model/prisma-type/select-review';
+import { SELECT_REVIEW, SelectReview } from './model/prisma-type/select-review';
 import { CreateReviewInput } from './inputs/create-review.input';
 import { UpdateReviewInput } from './inputs/update-review.input';
 
@@ -13,59 +13,13 @@ export class ReviewCoreRepository {
 
   async selectAllReviewByPlaceIdx(placeIdx: number): Promise<SelectReview[]> {
     return await this.txHost.tx.review.findMany({
+      ...SELECT_REVIEW,
       where: {
         placeIdx,
         deletedAt: null,
       },
       orderBy: {
         createdAt: 'desc',
-      },
-      select: {
-        idx: true,
-        content: true,
-        createdAt: true,
-        reviewImageList: {
-          select: {
-            path: true,
-          },
-          orderBy: {
-            idx: 'asc',
-          },
-        },
-        reviewKeywordMappingList: {
-          select: {
-            keyword: {
-              select: {
-                idx: true,
-                content: true,
-              },
-            },
-          },
-          orderBy: {
-            keyword: {
-              idx: 'asc',
-            },
-          },
-        },
-        user: {
-          select: {
-            idx: true,
-            nickname: true,
-            profileImagePath: true,
-          },
-        },
-        place: {
-          select: {
-            idx: true,
-            name: true,
-            roadAddress: {
-              select: {
-                addressName: true,
-                detailAddress: true,
-              },
-            },
-          },
-        },
       },
     });
   }
@@ -74,53 +28,10 @@ export class ReviewCoreRepository {
     reviewIdx: number,
   ): Promise<SelectReview | null> {
     return await this.txHost.tx.review.findUnique({
+      ...SELECT_REVIEW,
       where: {
         idx: reviewIdx,
         deletedAt: null,
-      },
-      select: {
-        idx: true,
-        content: true,
-        createdAt: true,
-        reviewImageList: {
-          select: {
-            path: true,
-          },
-        },
-        reviewKeywordMappingList: {
-          select: {
-            keyword: {
-              select: {
-                idx: true,
-                content: true,
-              },
-            },
-          },
-          orderBy: {
-            keyword: {
-              idx: 'asc',
-            },
-          },
-        },
-        user: {
-          select: {
-            idx: true,
-            nickname: true,
-            profileImagePath: true,
-          },
-        },
-        place: {
-          select: {
-            idx: true,
-            name: true,
-            roadAddress: {
-              select: {
-                addressName: true,
-                detailAddress: true,
-              },
-            },
-          },
-        },
       },
     });
   }
@@ -131,53 +42,7 @@ export class ReviewCoreRepository {
     const { placeIdx, userIdx, content, imagePathList, keywordIdxList } =
       createReviewInput;
     return await this.txHost.tx.review.create({
-      select: {
-        idx: true,
-        content: true,
-        createdAt: true,
-        reviewImageList: {
-          select: {
-            path: true,
-          },
-          orderBy: {
-            idx: 'asc',
-          },
-        },
-        reviewKeywordMappingList: {
-          select: {
-            keyword: {
-              select: {
-                idx: true,
-                content: true,
-              },
-            },
-          },
-          orderBy: {
-            keyword: {
-              idx: 'asc',
-            },
-          },
-        },
-        user: {
-          select: {
-            idx: true,
-            nickname: true,
-            profileImagePath: true,
-          },
-        },
-        place: {
-          select: {
-            idx: true,
-            name: true,
-            roadAddress: {
-              select: {
-                addressName: true,
-                detailAddress: true,
-              },
-            },
-          },
-        },
-      },
+      ...SELECT_REVIEW,
       data: {
         placeIdx,
         content,
@@ -202,6 +67,7 @@ export class ReviewCoreRepository {
 
   async selectAllReviewByUserIdx(userIdx: number): Promise<SelectReview[]> {
     return await this.txHost.tx.review.findMany({
+      ...SELECT_REVIEW,
       where: {
         userIdx,
         deletedAt: null,
@@ -209,110 +75,19 @@ export class ReviewCoreRepository {
       orderBy: {
         createdAt: 'desc',
       },
-      select: {
-        idx: true,
-        content: true,
-        createdAt: true,
-        reviewImageList: {
-          select: {
-            path: true,
-          },
-        },
-        reviewKeywordMappingList: {
-          select: {
-            keyword: {
-              select: {
-                idx: true,
-                content: true,
-              },
-            },
-          },
-        },
-        user: {
-          select: {
-            idx: true,
-            nickname: true,
-            profileImagePath: true,
-          },
-        },
-        place: {
-          select: {
-            idx: true,
-            name: true,
-            roadAddress: {
-              select: {
-                addressName: true,
-                detailAddress: true,
-              },
-            },
-          },
-        },
-      },
     });
   }
 
   async updateReviewByReviewIdx(
     reviewIdx: number,
     updateReviewInput: UpdateReviewInput,
-  ): Promise<SelectReview> {
+  ): Promise<void> {
     const { content, imagePathList, keywordIdxList } = updateReviewInput;
-    const updateData: { content?: string } = {};
 
-    if (content) {
-      updateData.content = content;
-    }
-
-    return await this.txHost.tx.review.update({
-      select: {
-        idx: true,
-        content: true,
-        createdAt: true,
-        reviewImageList: {
-          select: {
-            path: true,
-          },
-          orderBy: {
-            idx: 'asc',
-          },
-        },
-        reviewKeywordMappingList: {
-          select: {
-            keyword: {
-              select: {
-                idx: true,
-                content: true,
-              },
-            },
-          },
-          orderBy: {
-            keyword: {
-              idx: 'asc',
-            },
-          },
-        },
-        user: {
-          select: {
-            idx: true,
-            nickname: true,
-            profileImagePath: true,
-          },
-        },
-        place: {
-          select: {
-            idx: true,
-            name: true,
-            roadAddress: {
-              select: {
-                addressName: true,
-                detailAddress: true,
-              },
-            },
-          },
-        },
-      },
+    await this.txHost.tx.review.update({
       where: { idx: reviewIdx, deletedAt: null },
       data: {
-        ...updateData,
+        content,
         reviewImageList:
           imagePathList !== undefined
             ? {

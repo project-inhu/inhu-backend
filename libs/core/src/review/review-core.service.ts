@@ -32,10 +32,8 @@ export class ReviewCoreService {
   public async updateReviewByIdx(
     idx: number,
     input: UpdateReviewInput,
-  ): Promise<ReviewModel> {
-    return ReviewModel.fromPrisma(
-      await this.reviewCoreRepository.updateReviewByReviewIdx(idx, input),
-    );
+  ): Promise<void> {
+    await this.reviewCoreRepository.updateReviewByReviewIdx(idx, input);
   }
 
   public async deleteReviewByIdx(idx: number): Promise<void> {
