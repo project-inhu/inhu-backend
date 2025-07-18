@@ -1,4 +1,4 @@
-import { PlaceType } from '@user/api/place/constants/place-type.constant';
+import { PlaceType } from '../constants/place-type.constant';
 
 export class GetPlaceOverviewInput {
   /**
@@ -50,4 +50,13 @@ export class GetPlaceOverviewInput {
    * type 필터링
    */
   types?: PlaceType[];
+
+  /**
+   * 활성화 필터링
+   *
+   * - true: 활성화된 장소만
+   * - false: 비활성화된 장소만
+   * - undefined: 활성화된 장소와 비활성화된 장소 모두 가져오기
+   */
+  activate?: boolean;
 }

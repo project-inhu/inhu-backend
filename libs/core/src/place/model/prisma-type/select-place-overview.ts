@@ -10,6 +10,7 @@ const SELECT_PLACE_OVERVIEW = Prisma.validator<Prisma.PlaceDefaultArgs>()({
     isClosedOnHoliday: true,
     createdAt: true,
     closedAt: true,
+    activatedAt: true,
     placeImageList: {
       select: {
         path: true,

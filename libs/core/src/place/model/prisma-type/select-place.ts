@@ -10,6 +10,7 @@ const SELECT_PLACE = Prisma.validator<Prisma.PlaceDefaultArgs>()({
     isClosedOnHoliday: true,
     createdAt: true,
     closedAt: true,
+    activatedAt: true,
     roadAddress: {
       select: {
         idx: true,

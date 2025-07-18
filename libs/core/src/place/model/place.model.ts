@@ -46,6 +46,11 @@ export class PlaceModel {
   public createdAt: Date;
 
   /**
+   * 활성화 시간
+   */
+  public activatedAt: Date | null;
+
+  /**
    * 폐업 여부
    */
   public closedAt: Date | null;
@@ -98,6 +103,7 @@ export class PlaceModel {
       bookmarkCount: place.bookmarkCount,
       isClosedOnHoliday: place.isClosedOnHoliday,
       createdAt: place.createdAt,
+      activatedAt: place.activatedAt,
       closedAt: place.closedAt,
       imgPathList: place.placeImageList.map(({ path }) => path),
       breakTimeList: place.breakTimeList.map(PlaceBreakTimeModel.fromPrisma),

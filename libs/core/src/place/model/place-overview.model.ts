@@ -12,6 +12,7 @@ export class PlaceOverviewModel extends PickType(PlaceModel, [
   'createdAt',
   'closedAt',
   'imgPathList',
+  'activatedAt',
 ]) {
   constructor(data: PlaceOverviewModel) {
     super();
@@ -27,6 +28,7 @@ export class PlaceOverviewModel extends PickType(PlaceModel, [
       bookmarkCount: place.bookmarkCount,
       isClosedOnHoliday: place.isClosedOnHoliday,
       createdAt: place.createdAt,
+      activatedAt: place.activatedAt,
       closedAt: place.closedAt,
       imgPathList: place.placeImageList.map((image) => image.path),
     });
