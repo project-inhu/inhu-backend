@@ -3,6 +3,7 @@ import { ReviewModel } from './model/review.model';
 import { CreateReviewInput } from './inputs/create-review.input';
 import { UpdateReviewInput } from './inputs/update-review.input';
 import { ReviewCoreRepository } from './review-core.repository';
+import { GetReviewOverviewInput } from './inputs/get-review-overview.input';
 
 @Injectable()
 export class ReviewCoreService {
@@ -13,12 +14,12 @@ export class ReviewCoreService {
     return review && ReviewModel.fromPrisma(review);
   }
 
-  public async getAllReviewByPlaceIdx(
-    placeIdx: number,
+  public async getAllReview(
+    input: GetReviewOverviewInput,
   ): Promise<ReviewModel[]> {
-    return (
-      await this.reviewCoreRepository.selectAllReviewByPlaceIdx(placeIdx)
-    ).map(ReviewModel.fromPrisma);
+    return (await this.reviewCoreRepository.selectAllReview(input)).map(
+      ReviewModel.fromPrisma,
+    );
   }
 
   public async createReviewByPlaceIdx(

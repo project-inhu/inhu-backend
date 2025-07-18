@@ -4,6 +4,8 @@ import { Injectable } from '@nestjs/common';
 import { SELECT_REVIEW, SelectReview } from './model/prisma-type/select-review';
 import { CreateReviewInput } from './inputs/create-review.input';
 import { UpdateReviewInput } from './inputs/update-review.input';
+import { GetReviewOverviewInput } from './inputs/get-review-overview.input';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ReviewCoreRepository {
@@ -11,12 +13,17 @@ export class ReviewCoreRepository {
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
   ) {}
 
-  async selectAllReviewByPlaceIdx(placeIdx: number): Promise<SelectReview[]> {
+  async selectAllReview(
+    input: GetReviewOverviewInput,
+  ): Promise<SelectReview[]> {
     return await this.txHost.tx.review.findMany({
       ...SELECT_REVIEW,
       where: {
-        placeIdx,
-        deletedAt: null,
+        AND: [
+          { deletedAt: null },
+          this.getPlaceFilter(input.placeIdx),
+          this.getUserFilter(input.userIdx),
+        ],
       },
       orderBy: {
         createdAt: 'desc',
@@ -123,5 +130,15 @@ export class ReviewCoreRepository {
       },
       data: { deletedAt: new Date() },
     });
+  }
+
+  private getPlaceFilter(placeIdx?: number): Prisma.ReviewWhereInput {
+    if (!placeIdx) return {};
+    return { placeIdx };
+  }
+
+  private getUserFilter(userIdx?: number): Prisma.ReviewWhereInput {
+    if (!userIdx) return {};
+    return { userIdx };
   }
 }
