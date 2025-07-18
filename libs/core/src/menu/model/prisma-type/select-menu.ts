@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 
-const SELECT_MENU = Prisma.validator<Prisma.MenuDefaultArgs>()({
+export const SELECT_MENU = Prisma.validator<Prisma.MenuDefaultArgs>()({
   select: {
     idx: true,
     placeIdx: true,

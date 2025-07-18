@@ -2,7 +2,7 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';
 import { GetMenuAllInput } from './inputs/get-menu-all.input';
-import { SelectMenu } from './model/prisma-type/select-menu';
+import { SELECT_MENU, SelectMenu } from './model/prisma-type/select-menu';
 import { CreateMenuInput } from './inputs/create-menu.input';
 import { UpdateMenuInput } from './inputs/update-menu.input';
 
@@ -14,16 +14,7 @@ export class MenuCoreRepository {
 
   public async selectMenuByIdx(idx: number): Promise<SelectMenu | null> {
     return await this.txHost.tx.menu.findUnique({
-      select: {
-        idx: true,
-        placeIdx: true,
-        name: true,
-        price: true,
-        content: true,
-        imagePath: true,
-        isFlexible: true,
-        createdAt: true,
-      },
+      ...SELECT_MENU,
       where: {
         idx,
         deletedAt: null,
@@ -37,16 +28,7 @@ export class MenuCoreRepository {
     skip,
   }: GetMenuAllInput): Promise<SelectMenu[]> {
     return await this.txHost.tx.menu.findMany({
-      select: {
-        idx: true,
-        placeIdx: true,
-        name: true,
-        price: true,
-        content: true,
-        imagePath: true,
-        isFlexible: true,
-        createdAt: true,
-      },
+      ...SELECT_MENU,
       where: {
         placeIdx,
         deletedAt: null,
@@ -61,16 +43,7 @@ export class MenuCoreRepository {
 
   public async insertMenu(input: CreateMenuInput): Promise<SelectMenu> {
     return await this.txHost.tx.menu.create({
-      select: {
-        idx: true,
-        placeIdx: true,
-        name: true,
-        price: true,
-        content: true,
-        imagePath: true,
-        isFlexible: true,
-        createdAt: true,
-      },
+      ...SELECT_MENU,
       data: {
         placeIdx: input.placeIdx,
         name: input.name,
