@@ -1,4 +1,5 @@
-import { SelectBookmark } from '@app/core/bookmark/model/prisma-type/select-bookmark';
+import { GetBookmarkAllInput } from './inputs/get-bookmark-all.input';
+import { SelectBookmark } from './model/prisma-type/select-bookmark';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';
@@ -23,6 +24,26 @@ export class BookmarkCoreRepository {
         userIdx_placeIdx: {
           userIdx,
           placeIdx,
+        },
+      },
+    });
+  }
+
+  public async selectBookmarkAllByUserIdx(
+    userIdx: number,
+    input: GetBookmarkAllInput,
+  ): Promise<SelectBookmark[]> {
+    return await this.txHost.tx.bookmark.findMany({
+      select: {
+        userIdx: true,
+        placeIdx: true,
+        createdAt: true,
+      },
+      where: {
+        place: { deletedAt: null },
+        userIdx,
+        placeIdx: {
+          in: input.placeIdxList,
         },
       },
     });
