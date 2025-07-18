@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserCoreRepository } from './user-core.repository';
 import { CreateUserInput } from './inputs/create-user.input';
 import { UserModel } from './model/user.model';
+import { AuthProvider } from '@app/core/user/constants/auth-provider.constant';
 
 @Injectable()
 export class UserCoreService {
@@ -9,6 +10,18 @@ export class UserCoreService {
 
   public async getUserByIdx(idx: number): Promise<UserModel | null> {
     const user = await this.userCoreRepository.selectUserByIdx(idx);
+    return user && UserModel.fromPrisma(user);
+  }
+
+  public async getUserBySocialId(
+    snsId: string,
+    provider: AuthProvider,
+  ): Promise<UserModel | null> {
+    const user = await this.userCoreRepository.selectUserBySnsId(
+      snsId,
+      provider,
+    );
+
     return user && UserModel.fromPrisma(user);
   }
 

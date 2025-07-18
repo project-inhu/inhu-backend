@@ -58,3 +58,15 @@ export * from './menu/model/menu.model';
 export * from './menu/inputs/create-menu.input';
 export * from './menu/inputs/update-menu.input';
 export * from './menu/inputs/get-menu-all.input';
+
+// User
+export * from './user/user-core.module';
+export * from './user/user-core.service';
+
+export * from './user/model/user.model';
+export * from './user/model/user-provider.model';
+
+export * from './user/constants/auth-provider.constant';
+
+export * from './user/inputs/create-user.input';
+export * from './user/inputs/update-user.input';

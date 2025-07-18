@@ -1,3 +1,4 @@
+import { SELECT_USER_PROVIDER } from '@app/core/user/model/prisma-type/select-user-provider';
 import { Prisma } from '@prisma/client';
 
 export const SELECT_USER = Prisma.validator<Prisma.UserDefaultArgs>()({
@@ -6,12 +7,7 @@ export const SELECT_USER = Prisma.validator<Prisma.UserDefaultArgs>()({
     nickname: true,
     profileImagePath: true,
     createdAt: true,
-    userProvider: {
-      select: {
-        snsId: true,
-        name: true,
-      },
-    },
+    userProvider: SELECT_USER_PROVIDER,
   },
 });
 

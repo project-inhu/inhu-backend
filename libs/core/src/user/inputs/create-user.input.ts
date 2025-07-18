@@ -1,6 +1,8 @@
 export class CreateUserInput {
   nickname: string;
   profileImagePath: string | null;
-  snsId?: string;
-  provider?: string;
+  social?: {
+    snsId: string;
+    provider: string;
+  };
 }

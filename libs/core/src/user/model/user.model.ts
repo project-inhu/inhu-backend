@@ -1,3 +1,4 @@
+import { UserProviderModel } from '@app/core/user/model/user-provider.model';
 import { SelectUser } from './prisma-type/select-user';
 
 export class UserModel {
@@ -18,7 +19,7 @@ export class UserModel {
   /**
    * 프로필 이미지 경로
    *
-   * @example "user123/profile.jpg"
+   * @example "/user123/profile.jpg"
    */
   profileImagePath: string | null;
 
@@ -30,34 +31,23 @@ export class UserModel {
   createdAt: Date;
 
   /**
-   * SNS ID
-   *
-   * @example "3906895819"
+   * 권한 인증처
    */
-  snsId?: string;
-
-  /**
-   * SNS provider
-   *
-   * @example "kakao"
-   */
-  provider?: string;
+  provider: UserProviderModel | null;
 
   constructor(data: UserModel) {
     Object.assign(this, data);
   }
 
-  /**
-   * Prisma 쿼리 결과를 UserEntity로 변환하는 메서드
-   */
   static fromPrisma(user: SelectUser): UserModel {
     return new UserModel({
       idx: user.idx,
       nickname: user.nickname,
       profileImagePath: user.profileImagePath,
       createdAt: user.createdAt,
-      snsId: user.userProvider?.snsId,
-      provider: user.userProvider?.name,
+      provider: user.userProvider
+        ? UserProviderModel.fromPrisma(user.userProvider)
+        : null,
     });
   }
 }

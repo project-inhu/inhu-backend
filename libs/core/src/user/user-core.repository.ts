@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { SELECT_USER, SelectUser } from './model/prisma-type/select-user';
 import { CreateUserInput } from './inputs/create-user.input';
 import { UpdateUserInput } from './inputs/update-user.input';
+import { AuthProvider } from '@app/core/user/constants/auth-provider.constant';
 
 @Injectable()
 export class UserCoreRepository {
@@ -18,19 +19,36 @@ export class UserCoreRepository {
     });
   }
 
+  public async selectUserBySnsId(
+    snsId: string,
+    provider: AuthProvider,
+  ): Promise<SelectUser | null> {
+    return await this.txHost.tx.user.findFirst({
+      ...SELECT_USER,
+      where: {
+        deletedAt: null,
+        userProvider: {
+          snsId,
+          name: provider,
+        },
+      },
+    });
+  }
+
   public async insertUser(input: CreateUserInput): Promise<SelectUser> {
     return this.txHost.tx.user.create({
       ...SELECT_USER,
       data: {
         nickname: input.nickname,
         profileImagePath: input.profileImagePath,
-        ...(input.snsId && input.provider
+        userProvider: input.social
           ? {
-              userProvider: {
-                create: { snsId: input.snsId, name: input.provider },
+              create: {
+                snsId: input.social.snsId,
+                name: input.social.provider,
               },
             }
-          : {}),
+          : undefined,
       },
     });
   }
@@ -44,14 +62,14 @@ export class UserCoreRepository {
         nickname: input.nickname,
         profileImagePath: input.profileImagePath,
       },
-      where: { idx },
+      where: { idx, deletedAt: null },
     });
   }
 
   public async softDeleteUserByIdx(idx: number): Promise<void> {
     await this.txHost.tx.user.update({
       data: { deletedAt: new Date() },
-      where: { idx },
+      where: { idx, deletedAt: null },
     });
   }
 }
