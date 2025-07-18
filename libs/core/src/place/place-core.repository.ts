@@ -29,6 +29,13 @@ export class PlaceCoreRepository {
         isClosedOnHoliday: true,
         createdAt: true,
         permanentlyClosedAt: true,
+        placeKeywordCountList: {
+          take: 2,
+          orderBy: [{ count: 'desc' }, { keyword: { idx: 'asc' } }],
+          select: {
+            keyword: { select: { content: true, idx: true } },
+          },
+        },
         roadAddress: {
           select: {
             idx: true,
@@ -113,6 +120,13 @@ export class PlaceCoreRepository {
           select: { path: true },
           where: { deletedAt: null },
           orderBy: { idx: 'asc' },
+        },
+        placeKeywordCountList: {
+          take: 2,
+          orderBy: [{ count: 'desc' }, { keyword: { idx: 'asc' } }],
+          select: {
+            keyword: { select: { content: true, idx: true } },
+          },
         },
       },
       where: {
@@ -290,6 +304,13 @@ export class PlaceCoreRepository {
         isClosedOnHoliday: true,
         createdAt: true,
         permanentlyClosedAt: true,
+        placeKeywordCountList: {
+          take: 2,
+          orderBy: [{ count: 'desc' }, { keyword: { idx: 'asc' } }],
+          select: {
+            keyword: { select: { content: true, idx: true } },
+          },
+        },
         roadAddress: {
           select: {
             idx: true,

@@ -5,6 +5,7 @@ import { PlaceBreakTimeModel } from './place-break-time.model';
 import { PlaceRoadAddressModel } from './place-road-address.model';
 import { SelectPlace } from './prisma-type/select-place';
 import { PlaceWeeklyClosedDayModel } from './place-weekly-closed-day.model';
+import { KeywordModel } from '@app/core/keyword/model/keyword.model';
 
 export class PlaceModel {
   /**
@@ -90,6 +91,8 @@ export class PlaceModel {
    */
   public roadAddress: PlaceRoadAddressModel;
 
+  public topKeywordList: KeywordModel[];
+
   constructor(data: PlaceModel) {
     Object.assign(this, data);
   }
@@ -110,6 +113,9 @@ export class PlaceModel {
       type: place.placeTypeMappingList.map(
         ({ placeTypeIdx }) => placeTypeIdx,
       )[0] as PlaceType,
+      topKeywordList: place.placeKeywordCountList.map(({ keyword }) =>
+        KeywordModel.fromPrisma(keyword),
+      ),
       closedDayList: place.closedDayList.map(PlaceClosedDayModel.fromPrisma),
       operatingHourList: place.operatingHourList.map(
         PlaceOperatingHourModel.fromPrisma,

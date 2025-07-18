@@ -1,6 +1,7 @@
 import { PickType } from '@nestjs/swagger';
 import { PlaceModel } from './place.model';
 import { SelectPlaceOverview } from './prisma-type/select-place-overview';
+import { KeywordModel } from '@app/core/keyword/model/keyword.model';
 
 export class PlaceOverviewModel extends PickType(PlaceModel, [
   'idx',
@@ -13,6 +14,7 @@ export class PlaceOverviewModel extends PickType(PlaceModel, [
   'permanentlyClosedAt',
   'imgPathList',
   'activatedAt',
+  'topKeywordList',
 ]) {
   constructor(data: PlaceOverviewModel) {
     super();
@@ -31,6 +33,9 @@ export class PlaceOverviewModel extends PickType(PlaceModel, [
       activatedAt: place.activatedAt,
       permanentlyClosedAt: place.permanentlyClosedAt,
       imgPathList: place.placeImageList.map((image) => image.path),
+      topKeywordList: place.placeKeywordCountList.map(({ keyword }) =>
+        KeywordModel.fromPrisma(keyword),
+      ),
     });
   }
 }

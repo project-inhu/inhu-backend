@@ -20,6 +20,16 @@ const SELECT_PLACE = Prisma.validator<Prisma.PlaceDefaultArgs>()({
         addressY: true,
       },
     },
+    placeKeywordCountList: {
+      select: {
+        keyword: {
+          select: {
+            idx: true,
+            content: true,
+          },
+        },
+      },
+    },
     placeImageList: {
       select: {
         path: true,

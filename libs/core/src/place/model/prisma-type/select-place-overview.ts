@@ -16,6 +16,16 @@ const SELECT_PLACE_OVERVIEW = Prisma.validator<Prisma.PlaceDefaultArgs>()({
         path: true,
       },
     },
+    placeKeywordCountList: {
+      select: {
+        keyword: {
+          select: {
+            idx: true,
+            content: true,
+          },
+        },
+      },
+    },
   },
 });
 
