@@ -8,7 +8,9 @@ import { Prisma } from '@prisma/client';
 import { PlaceType } from './constants/place-type.constant';
 import { SelectPlaceOverview } from './model/prisma-type/select-place-overview';
 import { CreatePlaceInput } from './inputs/create-place.input';
-import { UpdatePlaceInput } from '@app/core/place/inputs/update-place.input';
+import { UpdatePlaceInput } from './inputs/update-place.input';
+import { GetBookmarkedPlaceOverviewInput } from './inputs/get-bookmarked-place-overview.input';
+import { SelectBookmarkedPlaceOverview } from './model/prisma-type/select-bookmarked-place-overview';
 
 @Injectable()
 export class PlaceCoreRepository {
@@ -580,6 +582,70 @@ export class PlaceCoreRepository {
         },
       },
       where: { idx, deletedAt: null },
+    });
+  }
+
+  public async selectBookmarkedPlaceAll({
+    userIdx,
+    activated,
+    coordinate,
+    types,
+    order = 'desc',
+    operating,
+    permanentlyClosed,
+    take,
+    skip,
+  }: GetBookmarkedPlaceOverviewInput): Promise<
+    SelectBookmarkedPlaceOverview[]
+  > {
+    return await this.txHost.tx.bookmark.findMany({
+      select: {
+        createdAt: true,
+        place: {
+          select: {
+            idx: true,
+            name: true,
+            tel: true,
+            reviewCount: true,
+            bookmarkCount: true,
+            activatedAt: true,
+            isClosedOnHoliday: true,
+            createdAt: true,
+            permanentlyClosedAt: true,
+            placeImageList: {
+              select: { path: true },
+              where: { deletedAt: null },
+              orderBy: { idx: 'asc' },
+            },
+            placeKeywordCountList: {
+              take: 2,
+              orderBy: [{ count: 'desc' }, { keyword: { idx: 'asc' } }],
+              select: {
+                keyword: { select: { content: true, idx: true } },
+              },
+            },
+          },
+        },
+      },
+      where: {
+        place: {
+          AND: [
+            { deletedAt: null },
+            this.getOperatingFilterWhereClause(operating), // 영업중 필터링
+            this.getBookmarkFilterWhereClause(userIdx), // 북마크 필터링
+            this.getCoordinateFilterWhereClause(coordinate), // 좌표 필터링
+            this.getTypesFilterWhereClause(types), // 타입 필터링
+            this.getActivatedAtFilterWhereClause(activated), // 활성화 필터링
+            this.getPermanentlyClosedFilterWhereClause(permanentlyClosed), // 폐점 여부 필터링
+          ],
+        },
+      },
+      orderBy: {
+        // TODO: createdAt 에 인덱싱 필요
+        createdAt: order,
+      },
+      take,
+      skip,
     });
   }
 }
