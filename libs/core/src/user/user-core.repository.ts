@@ -24,6 +24,13 @@ export class UserCoreRepository {
       data: {
         nickname: input.nickname,
         profileImagePath: input.profileImagePath,
+        ...(input.snsId && input.provider
+          ? {
+              userProvider: {
+                create: { snsId: input.snsId, name: input.provider },
+              },
+            }
+          : {}),
       },
     });
   }
