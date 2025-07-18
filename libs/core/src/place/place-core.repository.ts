@@ -1,4 +1,4 @@
-import { SelectPlace } from './model/prisma-type/select-place';
+import { SELECT_PLACE, SelectPlace } from './model/prisma-type/select-place';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';
@@ -6,11 +6,17 @@ import { GetPlaceOverviewInput } from './inputs/get-place-overview.input';
 import { DateUtilService } from '@app/common';
 import { Prisma } from '@prisma/client';
 import { PlaceType } from './constants/place-type.constant';
-import { SelectPlaceOverview } from './model/prisma-type/select-place-overview';
+import {
+  SELECT_PLACE_OVERVIEW,
+  SelectPlaceOverview,
+} from './model/prisma-type/select-place-overview';
 import { CreatePlaceInput } from './inputs/create-place.input';
 import { UpdatePlaceInput } from './inputs/update-place.input';
 import { GetBookmarkedPlaceOverviewInput } from './inputs/get-bookmarked-place-overview.input';
-import { SelectBookmarkedPlaceOverview } from './model/prisma-type/select-bookmarked-place-overview';
+import {
+  SELECT_BOOKMARKED_PLACE_OVERVIEW,
+  SelectBookmarkedPlaceOverview,
+} from './model/prisma-type/select-bookmarked-place-overview';
 
 @Injectable()
 export class PlaceCoreRepository {
@@ -21,73 +27,7 @@ export class PlaceCoreRepository {
 
   public async selectPlaceByIdx(idx: number): Promise<SelectPlace | null> {
     return await this.txHost.tx.place.findUnique({
-      select: {
-        idx: true,
-        name: true,
-        tel: true,
-        reviewCount: true,
-        bookmarkCount: true,
-        activatedAt: true,
-        isClosedOnHoliday: true,
-        createdAt: true,
-        permanentlyClosedAt: true,
-        placeKeywordCountList: {
-          take: 2,
-          orderBy: [{ count: 'desc' }, { keyword: { idx: 'asc' } }],
-          select: {
-            keyword: { select: { content: true, idx: true } },
-          },
-        },
-        roadAddress: {
-          select: {
-            idx: true,
-            addressName: true,
-            detailAddress: true,
-            addressX: true,
-            addressY: true,
-          },
-        },
-        placeImageList: {
-          select: { path: true },
-          where: { deletedAt: null },
-          orderBy: { idx: 'asc' },
-        },
-        placeTypeMappingList: {
-          select: {
-            placeTypeIdx: true,
-          },
-        },
-        closedDayList: {
-          select: {
-            idx: true,
-            day: true,
-            week: true,
-          },
-        },
-        operatingHourList: {
-          select: {
-            idx: true,
-            day: true,
-            startAt: true,
-            endAt: true,
-          },
-        },
-        weeklyClosedDayList: {
-          select: {
-            idx: true,
-            closedDate: true,
-            type: true,
-          },
-        },
-        breakTimeList: {
-          select: {
-            idx: true,
-            day: true,
-            startAt: true,
-            endAt: true,
-          },
-        },
-      },
+      ...SELECT_PLACE,
       where: {
         idx,
         deletedAt: null,
@@ -108,43 +48,7 @@ export class PlaceCoreRepository {
     permanentlyClosed,
   }: GetPlaceOverviewInput): Promise<SelectPlaceOverview[]> {
     return await this.txHost.tx.place.findMany({
-      select: {
-        idx: true,
-        name: true,
-        tel: true,
-        reviewCount: true,
-        bookmarkCount: true,
-        activatedAt: true,
-        isClosedOnHoliday: true,
-        createdAt: true,
-        permanentlyClosedAt: true,
-        placeImageList: {
-          select: { path: true },
-          where: { deletedAt: null },
-          orderBy: { idx: 'asc' },
-        },
-        placeKeywordCountList: {
-          take: 2,
-          orderBy: [{ count: 'desc' }, { keyword: { idx: 'asc' } }],
-          select: {
-            keyword: { select: { content: true, idx: true } },
-          },
-        },
-        placeTypeMappingList: {
-          select: {
-            placeTypeIdx: true,
-          },
-        },
-        roadAddress: {
-          select: {
-            idx: true,
-            addressName: true,
-            detailAddress: true,
-            addressX: true,
-            addressY: true,
-          },
-        },
-      },
+      ...SELECT_PLACE_OVERVIEW,
       where: {
         AND: [
           { deletedAt: null },
@@ -310,73 +214,7 @@ export class PlaceCoreRepository {
     });
 
     return await this.txHost.tx.place.create({
-      select: {
-        idx: true,
-        name: true,
-        tel: true,
-        reviewCount: true,
-        bookmarkCount: true,
-        activatedAt: true,
-        isClosedOnHoliday: true,
-        createdAt: true,
-        permanentlyClosedAt: true,
-        placeKeywordCountList: {
-          take: 2,
-          orderBy: [{ count: 'desc' }, { keyword: { idx: 'asc' } }],
-          select: {
-            keyword: { select: { content: true, idx: true } },
-          },
-        },
-        roadAddress: {
-          select: {
-            idx: true,
-            addressName: true,
-            detailAddress: true,
-            addressX: true,
-            addressY: true,
-          },
-        },
-        placeImageList: {
-          select: { path: true },
-          where: { deletedAt: null },
-          orderBy: { idx: 'asc' },
-        },
-        placeTypeMappingList: {
-          select: {
-            placeTypeIdx: true,
-          },
-        },
-        closedDayList: {
-          select: {
-            idx: true,
-            day: true,
-            week: true,
-          },
-        },
-        operatingHourList: {
-          select: {
-            idx: true,
-            day: true,
-            startAt: true,
-            endAt: true,
-          },
-        },
-        weeklyClosedDayList: {
-          select: {
-            idx: true,
-            closedDate: true,
-            type: true,
-          },
-        },
-        breakTimeList: {
-          select: {
-            idx: true,
-            day: true,
-            startAt: true,
-            endAt: true,
-          },
-        },
-      },
+      ...SELECT_PLACE,
       data: {
         name: input.name,
         tel: input.tel,
@@ -613,48 +451,7 @@ export class PlaceCoreRepository {
     SelectBookmarkedPlaceOverview[]
   > {
     return await this.txHost.tx.bookmark.findMany({
-      select: {
-        createdAt: true,
-        place: {
-          select: {
-            idx: true,
-            name: true,
-            tel: true,
-            reviewCount: true,
-            bookmarkCount: true,
-            activatedAt: true,
-            isClosedOnHoliday: true,
-            createdAt: true,
-            permanentlyClosedAt: true,
-            placeImageList: {
-              select: { path: true },
-              where: { deletedAt: null },
-              orderBy: { idx: 'asc' },
-            },
-            placeKeywordCountList: {
-              take: 2,
-              orderBy: [{ count: 'desc' }, { keyword: { idx: 'asc' } }],
-              select: {
-                keyword: { select: { content: true, idx: true } },
-              },
-            },
-            placeTypeMappingList: {
-              select: {
-                placeTypeIdx: true,
-              },
-            },
-            roadAddress: {
-              select: {
-                idx: true,
-                addressName: true,
-                detailAddress: true,
-                addressX: true,
-                addressY: true,
-              },
-            },
-          },
-        },
-      },
+      ...SELECT_BOOKMARKED_PLACE_OVERVIEW,
       where: {
         place: {
           AND: [

@@ -1,16 +1,23 @@
 import { Prisma } from '@prisma/client';
 
-const SELECT_PLACE = Prisma.validator<Prisma.PlaceDefaultArgs>()({
+export const SELECT_PLACE = Prisma.validator<Prisma.PlaceDefaultArgs>()({
   select: {
     idx: true,
     name: true,
     tel: true,
     reviewCount: true,
     bookmarkCount: true,
+    activatedAt: true,
     isClosedOnHoliday: true,
     createdAt: true,
     permanentlyClosedAt: true,
-    activatedAt: true,
+    placeKeywordCountList: {
+      take: 2,
+      orderBy: [{ count: 'desc' }, { keyword: { idx: 'asc' } }],
+      select: {
+        keyword: { select: { content: true, idx: true } },
+      },
+    },
     roadAddress: {
       select: {
         idx: true,
@@ -20,20 +27,10 @@ const SELECT_PLACE = Prisma.validator<Prisma.PlaceDefaultArgs>()({
         addressY: true,
       },
     },
-    placeKeywordCountList: {
-      select: {
-        keyword: {
-          select: {
-            idx: true,
-            content: true,
-          },
-        },
-      },
-    },
     placeImageList: {
-      select: {
-        path: true,
-      },
+      select: { path: true },
+      where: { deletedAt: null },
+      orderBy: { idx: 'asc' },
     },
     placeTypeMappingList: {
       select: {

@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 
-const SELECT_BOOKMARKED_PLACE_OVERVIEW =
+export const SELECT_BOOKMARKED_PLACE_OVERVIEW =
   Prisma.validator<Prisma.BookmarkDefaultArgs>()({
     select: {
       createdAt: true,
@@ -11,17 +11,20 @@ const SELECT_BOOKMARKED_PLACE_OVERVIEW =
           tel: true,
           reviewCount: true,
           bookmarkCount: true,
+          activatedAt: true,
           isClosedOnHoliday: true,
           createdAt: true,
           permanentlyClosedAt: true,
-          activatedAt: true,
-          roadAddress: {
+          placeImageList: {
+            select: { path: true },
+            where: { deletedAt: null },
+            orderBy: { idx: 'asc' },
+          },
+          placeKeywordCountList: {
+            take: 2,
+            orderBy: [{ count: 'desc' }, { keyword: { idx: 'asc' } }],
             select: {
-              idx: true,
-              addressName: true,
-              detailAddress: true,
-              addressX: true,
-              addressY: true,
+              keyword: { select: { content: true, idx: true } },
             },
           },
           placeTypeMappingList: {
@@ -29,19 +32,13 @@ const SELECT_BOOKMARKED_PLACE_OVERVIEW =
               placeTypeIdx: true,
             },
           },
-          placeImageList: {
+          roadAddress: {
             select: {
-              path: true,
-            },
-          },
-          placeKeywordCountList: {
-            select: {
-              keyword: {
-                select: {
-                  idx: true,
-                  content: true,
-                },
-              },
+              idx: true,
+              addressName: true,
+              detailAddress: true,
+              addressX: true,
+              addressY: true,
             },
           },
         },
