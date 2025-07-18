@@ -1,6 +1,6 @@
 import { PlaceOverviewEntity } from '../../entity/place-overview.entity';
 
-export class GetAllPlaceOverviewResponseDto {
+export class GetAllBookmarkedOverviewResponseDto {
   /**
    * 다음 페이지 존재 여부
    *

@@ -5,6 +5,9 @@ import { User } from '@user/common/decorator/user.decorator';
 import { PlaceEntity } from './entity/place.entity';
 import { Exception } from '@app/common/decorator/exception.decorator';
 import { GetAllPlaceOverviewResponseDto } from './dto/response/get-all-place-overview-response.dto';
+import { LoginAuth } from '@user/auth/common/decorators/login-auth.decorator';
+import { GetAllBookmarkedOverviewResponseDto } from '@user/api/place/dto/response/get-all-bookmarked-overview-response.dto';
+import { GetAllBookmarkedPlaceOverviewPlaceDto } from '@user/api/place/dto/request/get-all-bookmarked-place-overview.dto';
 
 @Controller('place')
 export class PlaceController {
@@ -20,6 +23,18 @@ export class PlaceController {
     @User('idx') userIdx?: number,
   ): Promise<GetAllPlaceOverviewResponseDto> {
     return await this.placeService.getPlaceOverviewAll(dto, userIdx);
+  }
+
+  /**
+   * 북마크한 place 가져오기
+   */
+  @Get('/bookmarked/all')
+  @LoginAuth
+  async getBookmarkedPlaceOverview(
+    @Query() dto: GetAllBookmarkedPlaceOverviewPlaceDto,
+    @User('idx') userIdx: number,
+  ): Promise<GetAllBookmarkedOverviewResponseDto> {
+    return await this.placeService.getBookmarkedPlaceOverview(dto, userIdx);
   }
 
   // /**

@@ -15,6 +15,20 @@ const SELECT_BOOKMARKED_PLACE_OVERVIEW =
           createdAt: true,
           permanentlyClosedAt: true,
           activatedAt: true,
+          roadAddress: {
+            select: {
+              idx: true,
+              addressName: true,
+              detailAddress: true,
+              addressX: true,
+              addressY: true,
+            },
+          },
+          placeTypeMappingList: {
+            select: {
+              placeTypeIdx: true,
+            },
+          },
           placeImageList: {
             select: {
               path: true,

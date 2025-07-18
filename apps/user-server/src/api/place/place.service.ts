@@ -4,6 +4,7 @@ import { PlaceOverviewEntity } from './entity/place-overview.entity';
 import { GetAllPlaceOverviewDto } from './dto/request/get-all-place-overview.dto';
 import { PlaceEntity } from '@user/api/place/entity/place.entity';
 import { PlaceNotFoundException } from '@user/api/place/exception/place-not-found.exception';
+import { GetAllBookmarkedPlaceOverviewPlaceDto } from '@user/api/place/dto/request/get-all-bookmarked-place-overview.dto';
 
 @Injectable()
 export class PlaceService {
@@ -105,5 +106,39 @@ export class PlaceService {
     });
 
     return PlaceEntity.fromModel(place, bookmark !== null);
+  }
+
+  public async getBookmarkedPlaceOverview(
+    dto: GetAllBookmarkedPlaceOverviewPlaceDto,
+    userIdx: number,
+  ): Promise<{
+    hasNext: boolean;
+    placeOverviewList: PlaceOverviewEntity[];
+  }> {
+    const coordinate = {
+      leftTopX: dto.leftTopX,
+      rightBottomX: dto.rightBottomX,
+      leftTopY: dto.leftTopY,
+      rightBottomY: dto.rightBottomY,
+    };
+
+    const placeList = await this.placeCoreService.getBookmarkedPlace({
+      take: 11,
+      skip: (dto.page - 1) * 10,
+      userIdx,
+      activated: true,
+      permanentlyClosed: false,
+      coordinate: this.isValidCoordinate(coordinate) ? coordinate : undefined,
+      operating: dto.operating,
+      order: dto.order,
+      types: dto.type ? [dto.type] : undefined,
+    });
+
+    return {
+      hasNext: placeList.length > 10,
+      placeOverviewList: placeList
+        .slice(0, 10)
+        .map((place) => PlaceOverviewEntity.fromModel(place, true)),
+    };
   }
 }
