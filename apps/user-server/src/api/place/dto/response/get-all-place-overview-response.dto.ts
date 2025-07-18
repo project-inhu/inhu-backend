@@ -16,5 +16,5 @@ export class GetAllPlaceOverviewResponseDto {
   /**
    * 장소 목록 data
    */
-  data: PlaceOverviewEntity[];
+  placeOverviewList: PlaceOverviewEntity[];
 }

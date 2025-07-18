@@ -2,12 +2,14 @@ import { BookmarkCoreService, PlaceCoreService } from '@app/core';
 import { Injectable } from '@nestjs/common';
 import { PlaceOverviewEntity } from './entity/place-overview.entity';
 import { GetAllPlaceOverviewDto } from './dto/request/get-all-place-overview.dto';
+import { PlaceEntity } from '@user/api/place/entity/place.entity';
+import { PlaceNotFoundException } from '@user/api/place/exception/place-not-found.exception';
 
 @Injectable()
 export class PlaceService {
   constructor(
     private readonly placeCoreService: PlaceCoreService,
-    private readonly bookmarkService: BookmarkCoreService,
+    private readonly bookmarkCoreService: BookmarkCoreService,
   ) {}
 
   public async getPlaceOverviewAll(
@@ -34,6 +36,7 @@ export class PlaceService {
       order: dto.order,
       types: dto.type ? [dto.type] : undefined,
       orderBy: dto.orderby,
+      bookmarkUserIdx: undefined,
     });
 
     if (!readUserIdx) {
@@ -45,7 +48,7 @@ export class PlaceService {
       };
     }
 
-    const bookmarkedPlaceList = await this.bookmarkService
+    const bookmarkedPlaceList = await this.bookmarkCoreService
       .getBookmarkStateByUserIdx({
         userIdx: readUserIdx,
         placeIdxList: placeOverviewModelList.map(({ idx }) => idx),
@@ -80,5 +83,27 @@ export class PlaceService {
       coordinate.leftTopY !== undefined &&
       coordinate.rightBottomY !== undefined
     );
+  }
+
+  public async getPlaceByIdx(
+    idx: number,
+    readUserIdx?: number,
+  ): Promise<PlaceEntity> {
+    const place = await this.placeCoreService.getPlaceByIdx(idx);
+
+    if (!place || !place.activatedAt) {
+      throw new PlaceNotFoundException('Cannot find place with idx: ' + idx);
+    }
+
+    if (!readUserIdx) {
+      return PlaceEntity.fromModel(place, false);
+    }
+
+    const bookmark = await this.bookmarkCoreService.getBookmarkByIdx({
+      placeIdx: idx,
+      userIdx: readUserIdx,
+    });
+
+    return PlaceEntity.fromModel(place, bookmark !== null);
   }
 }

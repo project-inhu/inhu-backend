@@ -88,12 +88,4 @@ export class GetAllPlaceOverviewDto {
   @IsOptional()
   @IsDecimal()
   rightBottomY?: number;
-
-  /**
-   * 로그인 사용자가 북마크한 장소만 필터링
-   */
-  @IsOptional()
-  @ToBoolean()
-  @IsBoolean()
-  bookmark?: boolean;
 }
