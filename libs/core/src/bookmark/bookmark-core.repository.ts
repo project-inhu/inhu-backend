@@ -5,6 +5,7 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';
 import { DeleteBookmarkInput } from './inputs/delete-bookmark.input';
+import { GetBookmarkInput } from './inputs/get-bookmark.input';
 
 @Injectable()
 export class BookmarkCoreRepository {
@@ -12,10 +13,10 @@ export class BookmarkCoreRepository {
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
   ) {}
 
-  public async selectBookmarkByIdx(
-    userIdx: number,
-    placeIdx: number,
-  ): Promise<SelectBookmark | null> {
+  public async selectBookmarkByIdx({
+    userIdx,
+    placeIdx,
+  }: GetBookmarkInput): Promise<SelectBookmark | null> {
     return await this.txHost.tx.bookmark.findUnique({
       select: {
         placeIdx: true,
