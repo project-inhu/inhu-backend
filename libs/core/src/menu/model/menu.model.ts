@@ -1,0 +1,56 @@
+import { SelectMenu } from './prisma-type/select-menu';
+
+export class MenuModel {
+  /**
+   * 메뉴 식별자
+   */
+  public idx: number;
+
+  /**
+   * 메뉴 이름
+   */
+  public name: string;
+
+  /**
+   * 메뉴 설명
+   */
+  public content: string | null;
+
+  /**
+   * 메뉴 가격
+   */
+  public price: number | null;
+
+  /**
+   * 메뉴 이미지 경로
+   */
+  public imgPath: string | null;
+
+  /**
+   * 시가 여부
+   * - true: 시가
+   * - false: 비시가
+   */
+  public isFlexible: boolean;
+
+  /**
+   * 생성 시간
+   */
+  public createdAt: Date;
+
+  constructor(data: MenuModel) {
+    Object.assign(this, data);
+  }
+
+  public static fromPrisma(menu: SelectMenu): MenuModel {
+    return new MenuModel({
+      idx: menu.idx,
+      name: menu.name,
+      content: menu.content,
+      price: menu.price,
+      imgPath: menu.imagePath,
+      isFlexible: menu.isFlexible,
+      createdAt: menu.createdAt,
+    });
+  }
+}
