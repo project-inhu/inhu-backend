@@ -8,6 +8,7 @@ export * from './place/model/place-weekly-closed-day.model';
 export * from './place/model/place-break-time.model';
 export * from './place/model/place-closed-day.model';
 export * from './place/model/place-operating-hour.model';
+export * from './place/model/place-road-address.model';
 
 export * from './place/inputs/create-place.input';
 export * from './place/inputs/update-place.input';
