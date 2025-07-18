@@ -67,4 +67,16 @@ export class KeywordCoreRepository {
       },
     });
   }
+
+  public async softDeleteKeywordByIdx(idx: number): Promise<void> {
+    await this.txHost.tx.keyword.update({
+      data: {
+        deletedAt: new Date(),
+      },
+      where: {
+        idx,
+        deletedAt: null,
+      },
+    });
+  }
 }
