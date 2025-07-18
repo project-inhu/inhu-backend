@@ -1,6 +1,6 @@
+import { KeywordModel } from '@app/core/keyword/model/keyword.model';
 import { SelectReview } from './prisma-type/select-review';
 import { ReviewAuthorModel } from './review-author.model';
-import { ReviewKeywordModel } from './review-keyword.model';
 import { ReviewPlaceModel } from './review-place.model';
 
 export class ReviewModel {
@@ -27,7 +27,7 @@ export class ReviewModel {
   /**
    * 키워드 리스트
    */
-  public keywordList: ReviewKeywordModel[];
+  public keywordList: KeywordModel[];
 
   /**
    * 리뷰 작성자 정보
@@ -50,7 +50,7 @@ export class ReviewModel {
       createdAt: review.createdAt,
       imagePathList: review.reviewImageList.map(({ path }) => path),
       keywordList: review.reviewKeywordMappingList.map(({ keyword }) =>
-        ReviewKeywordModel.fromPrisma(keyword),
+        KeywordModel.fromPrisma(keyword),
       ),
       author: ReviewAuthorModel.fromPrisma(review.user),
       place: ReviewPlaceModel.fromPrisma(review.place),
