@@ -3,8 +3,6 @@ import { Prisma } from '@prisma/client';
 const SELECT_REVIEW = Prisma.validator<Prisma.ReviewDefaultArgs>()({
   select: {
     idx: true,
-    userIdx: true,
-    placeIdx: true,
     content: true,
     createdAt: true,
     reviewImageList: {
@@ -24,6 +22,7 @@ const SELECT_REVIEW = Prisma.validator<Prisma.ReviewDefaultArgs>()({
     },
     user: {
       select: {
+        idx: true,
         nickname: true,
         profileImagePath: true,
       },
