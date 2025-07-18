@@ -26,8 +26,10 @@ export class ReviewCoreRepository {
         ],
       },
       orderBy: {
-        createdAt: 'desc',
+        idx: 'desc',
       },
+      take: input.take,
+      skip: input.skip,
     });
   }
 
