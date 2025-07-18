@@ -1,13 +1,14 @@
 import {
-  BadRequestException,
+  Inject,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '@nestjs/config';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { GetPresignedUrlInput } from './input/get-presigned-url.input';
 import { GetPresignedUrlResponseDto } from './dto/get-presigned-url-response.dto';
+import s3Config from './config/s3.config';
 
 @Injectable()
 export class S3Service {
@@ -15,9 +16,12 @@ export class S3Service {
   private readonly bucketName: string;
   private readonly region: string;
 
-  constructor(private readonly configService: ConfigService) {
-    const region = this.configService.get('AWS_REGION');
-    const bucketName = this.configService.get('AWS_S3_BUCKET_NAME');
+  constructor(
+    @Inject(s3Config.KEY)
+    private readonly s3TypedConfig: ConfigType<typeof s3Config>,
+  ) {
+    const region = this.s3TypedConfig.region;
+    const bucketName = this.s3TypedConfig.bucketName;
 
     if (!region || !bucketName) {
       throw new InternalServerErrorException(
@@ -42,10 +46,6 @@ export class S3Service {
     getPresignedUrl: GetPresignedUrlInput,
   ): Promise<GetPresignedUrlResponseDto> {
     const { folder, filename } = getPresignedUrl;
-
-    if (!filename) {
-      throw new BadRequestException('You need file.');
-    }
 
     const key = `/${folder}/${new Date().toString()}-${filename}`;
 
