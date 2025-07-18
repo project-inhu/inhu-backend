@@ -72,19 +72,6 @@ export class ReviewCoreRepository {
     });
   }
 
-  async selectAllReviewByUserIdx(userIdx: number): Promise<SelectReview[]> {
-    return await this.txHost.tx.review.findMany({
-      ...SELECT_REVIEW,
-      where: {
-        userIdx,
-        deletedAt: null,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-  }
-
   async updateReviewByReviewIdx(
     reviewIdx: number,
     updateReviewInput: UpdateReviewInput,
