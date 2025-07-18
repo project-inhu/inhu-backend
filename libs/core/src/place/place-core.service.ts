@@ -1,7 +1,13 @@
+import { PlaceOverviewModel } from '@app/core/place/model/place-overview.model';
+import { PlaceCoreRepository } from '@app/core/place/place-core.repository';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class PlaceCoreService {
-  // This service can be used to implement core functionalities related to places.
-  // Currently, it is empty but can be extended in the future.
+  constructor(private readonly placeCoreRepository: PlaceCoreRepository) {}
+
+  public async getPlaceByIdx(idx: number): Promise<PlaceOverviewModel | null> {
+    const place = await this.placeCoreRepository.selectPlaceByIdx(idx);
+    return place && PlaceOverviewModel.fromPrisma(place);
+  }
 }
