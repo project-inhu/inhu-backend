@@ -22,7 +22,7 @@ export class ReviewCoreService {
     return review && ReviewModel.fromPrisma(review);
   }
 
-  public async getAllReview(input: GetReviewInput): Promise<ReviewModel[]> {
+  public async getAllReview(input: GetAllReviewInput): Promise<ReviewModel[]> {
     return (await this.reviewCoreRepository.selectAllReview(input)).map(
       ReviewModel.fromPrisma,
     );

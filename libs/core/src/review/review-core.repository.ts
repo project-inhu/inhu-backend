@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { SELECT_REVIEW, SelectReview } from './model/prisma-type/select-review';
 import { CreateReviewInput } from './inputs/create-review.input';
 import { UpdateReviewInput } from './inputs/update-review.input';
-import { GetReviewInput } from './inputs/get-review.input';
+import { GetAllReviewInput } from './inputs/get-all-review.input';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class ReviewCoreRepository {
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
   ) {}
 
-  async selectAllReview(input: GetReviewInput): Promise<SelectReview[]> {
+  async selectAllReview(input: GetAllReviewInput): Promise<SelectReview[]> {
     return await this.txHost.tx.review.findMany({
       ...SELECT_REVIEW,
       where: {

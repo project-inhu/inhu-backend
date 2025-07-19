@@ -1,4 +1,4 @@
-export class GetReviewInput {
+export class GetAllReviewInput {
   /**
    * 한 번에 가져올 개수
    */
