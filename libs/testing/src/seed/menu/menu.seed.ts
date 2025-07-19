@@ -3,7 +3,7 @@ import { MenuSeedInput } from './type/menu-seed.input';
 import { MenuSeedOutput } from './type/menu-seed.output';
 import { FilledSeedInput } from '@libs/testing/types/SeedFilledValue';
 import { defaultValue } from '@libs/common';
-import { faker } from '@faker-js/faker/.';
+import { faker } from '@faker-js/faker';
 
 export class MenuSeedHelper extends ISeedHelper<MenuSeedInput, MenuSeedOutput> {
   public generateFilledInputValue(

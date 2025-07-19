@@ -7,15 +7,12 @@ import {
 import { UserInfoEntity } from './entity/user-info.entity';
 import { CreateUserEntity } from './entity/create-user.entity';
 import { CreateUserInput } from './input/create-user.input';
-import { S3Service } from '@user/common/module/s3/s3.service';
-import { S3Folder } from '@user/common/module/s3/enums/s3-folder.enum';
 import { UpdateUserInput } from './input/update-user.input';
 import { UpdateProfileImageInput } from './input/update-profile-image.input';
-import { GetPresignedUrlResponseDto } from '@user/common/module/s3/dto/get-presigned-url-response.dto';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly s3Service: S3Service) {}
+  constructor() {}
 
   // /**
   //  * 새로운 사용자를 위한 임시 닉네임 생성

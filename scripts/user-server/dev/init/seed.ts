@@ -423,31 +423,31 @@ async function main() {
         await createDefaultPlaceTypeMapping(place.idx);
         break;
 
-      case '정기 휴무일 있음':
-        await createDefaultMenu(place.idx);
-        await createDefaultPlaceImage(place.idx);
-        await createDefaultReview(place.idx, user1.idx);
-        await createDefaultPlaceTypeMapping(place.idx);
-        const operatingDays = [0, 1, 2, 3, 4, 5];
-        const operatingHours = operatingDays.map((day) => ({
-          placeIdx: place.idx,
-          day,
-          startAt: new Date('1970-01-01T10:00:00Z'),
-          endAt: new Date('1970-01-01T20:00:00Z'),
-        }));
-        const breakTimes = operatingDays.map((day) => ({
-          placeIdx: place.idx,
-          day,
-          startAt: new Date('1970-01-01T12:00:00Z'),
-          endAt: new Date('1970-01-01T13:00:00Z'),
-        }));
-        await prisma.operatingHour.createMany({ data: operatingHours });
-        await prisma.breakTime.createMany({ data: breakTimes });
-        await prisma.closedDay.create({
-          data: { placeIdx: place.idx, day: 6 },
-        });
+      // case '정기 휴무일 있음':
+      //   await createDefaultMenu(place.idx);
+      //   await createDefaultPlaceImage(place.idx);
+      //   await createDefaultReview(place.idx, user1.idx);
+      //   await createDefaultPlaceTypeMapping(place.idx);
+      //   const operatingDays = [0, 1, 2, 3, 4, 5];
+      //   const operatingHours = operatingDays.map((day) => ({
+      //     placeIdx: place.idx,
+      //     day,
+      //     startAt: new Date('1970-01-01T10:00:00Z'),
+      //     endAt: new Date('1970-01-01T20:00:00Z'),
+      //   }));
+      //   const breakTimes = operatingDays.map((day) => ({
+      //     placeIdx: place.idx,
+      //     day,
+      //     startAt: new Date('1970-01-01T12:00:00Z'),
+      //     endAt: new Date('1970-01-01T13:00:00Z'),
+      //   }));
+      //   await prisma.operatingHour.createMany({ data: operatingHours });
+      //   await prisma.breakTime.createMany({ data: breakTimes });
+      //   await prisma.closedDay.create({
+      //     data: { placeIdx: place.idx, day: 6 },
+      //   });
 
-        break;
+      //   break;
 
       case '브레이크시간 없음':
         await createDefaultMenu(place.idx);

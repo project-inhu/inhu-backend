@@ -4,6 +4,7 @@ import { ISeedHelper } from '@libs/testing/interface/seed-helper.interface';
 import { PrismaTestSetup } from '@libs/testing/setup/prisma-test.setup';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import * as request from 'supertest';
 
 interface OverrideBy {
   useValue: (value: any) => ITestHelper;
@@ -39,6 +40,8 @@ export abstract class ITestHelper {
 
     this.appModule = await testingModuleBuilder.compile();
     this.app = this.appModule.createNestApplication();
+
+    await this.appSetup();
 
     await this.app.init();
   }
@@ -85,5 +88,9 @@ export abstract class ITestHelper {
 
   public getServer() {
     return this.app.getHttpServer();
+  }
+
+  public test() {
+    return request(this.getServer());
   }
 }

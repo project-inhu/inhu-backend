@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker/.';
+import { faker } from '@faker-js/faker';
 import { defaultValue } from '@libs/common';
 import { ISeedHelper } from '@libs/testing/interface/seed-helper.interface';
 import { PickedPlaceSeedInput } from '@libs/testing/seed/picked-place/type/picked-place-seed.input';
