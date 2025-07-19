@@ -8,12 +8,12 @@ type Primitive = undefined | boolean | string | number | Function | Date;
  *
  * @author jochongs
  */
-export type FilledSeed<T> = T extends Primitive
+export type FilledSeedInput<T> = T extends Primitive
   ? NotNill<T>
   : {
       [P in keyof T]-?: T[P] extends Array<infer U>
-        ? Array<FilledSeed<U>>
+        ? Array<FilledSeedInput<U>>
         : T[P] extends ReadonlyArray<infer U2>
-          ? FilledSeed<U2>
-          : FilledSeed<T[P]>;
+          ? FilledSeedInput<U2>
+          : FilledSeedInput<T[P]>;
     };
