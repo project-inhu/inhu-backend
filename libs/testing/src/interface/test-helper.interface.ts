@@ -1,4 +1,6 @@
 import { Type } from '@libs/common';
+import { PrismaService } from '@libs/common/modules/prisma/prisma.service';
+import { ISeedHelper } from '@libs/testing/interface/seed-helper.interface';
 import { PrismaTestSetup } from '@libs/testing/setup/prisma-test.setup';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -47,6 +49,14 @@ export abstract class ITestHelper {
    * !주의: 외부에서 사용하지 마십시오
    */
   abstract appSetup(): Promise<void>;
+
+  public getPrisma(): PrismaService {
+    return this.prismaSetup.getPrisma();
+  }
+
+  public seedHelper<T extends ISeedHelper>(SeedHelper: Type<T>): T {
+    return new SeedHelper(this.getPrisma());
+  }
 
   public async destroy() {
     this.prismaSetup.ROLLBACK();

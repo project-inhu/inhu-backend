@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker/.';
 import { DeepPartial, defaultValue, pickRandomValue } from '@libs/common';
 import { AUTH_PROVIDER, CreateUserInput } from '@libs/core';
-import { SeedHelper } from '@libs/testing/interface/seed-helper.interface';
+import { ISeedHelper } from '@libs/testing/interface/seed-helper.interface';
 
-export class UserSeedHelper extends SeedHelper<
+export class UserSeedHelper extends ISeedHelper<
   CreateUserInput,
   { idx: number }
 > {

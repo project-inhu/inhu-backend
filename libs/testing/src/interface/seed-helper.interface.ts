@@ -1,6 +1,6 @@
 import { PrismaService } from '@libs/common/modules/prisma/prisma.service';
 
-export abstract class SeedHelper<TInput, TOutput> {
+export abstract class ISeedHelper<TInput = any, TOutput = any> {
   protected readonly prisma: PrismaService;
 
   constructor(prisma: PrismaService) {
