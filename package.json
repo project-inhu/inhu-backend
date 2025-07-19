@@ -11,7 +11,7 @@
     "start:dev": "nest start --watch",
 
     "user-server-dev:seed": "tsx scripts/user-server/dev/init/seed.ts",
-    "user-server:test:e2e": "npm run user-server:test:infra:up && dotenv -e ./scripts/user-server/e2e-test/.env.test -- jest --config ./apps/user-server/test/jest-e2e.json && npm run user-server:test:infra:down",
+    "user-server:test:e2e": "dotenv -e ./scripts/user-server/e2e-test/.env.e2e-test -- jest --config ./apps/user-server/test/jest-e2e.json",
     "user-server:test:infra:up": "docker compose -f ./scripts/user-server/e2e-test/docker-compose.yml up -d",
     "user-server:test:infra:down": "docker compose -f ./scripts/user-server/e2e-test/docker-compose.yml down -v",
     "user-server:dev:infra:up": "docker compose -f ./scripts/user-server/dev/docker-compose.yml up -d",

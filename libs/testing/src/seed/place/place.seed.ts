@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker/.';
+import { faker } from '@faker-js/faker';
 import { defaultValue, getRandomValues, pickRandomValue } from '@libs/common';
 import { PLACE_TYPE } from '@libs/core';
 import { ISeedHelper } from '@libs/testing/interface/seed-helper.interface';

@@ -5,7 +5,6 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { KeywordModule } from './api/keyword/keyword.module';
 import { ReviewModule } from './api/review/review.module';
-import { S3Module } from './common/module/s3/s3.module';
 import { PickedPlaceModule } from './api/picked-place/picked-place.module';
 import { ClsModule } from 'nestjs-cls';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
@@ -19,7 +18,6 @@ import { ClsPluginTransactional } from '@nestjs-cls/transactional';
     AuthModule,
     ConfigModule.forRoot({ isGlobal: true }),
     ReviewModule,
-    S3Module,
     PickedPlaceModule,
     ClsModule.forRoot({
       plugins: [

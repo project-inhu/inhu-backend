@@ -2,7 +2,7 @@ import { ISeedHelper } from '@libs/testing/interface/seed-helper.interface';
 import { ReviewSeedInput } from './type/review-seed.input';
 import { ReviewSeedOutput } from './type/review-seed.output';
 import { defaultValue } from '@libs/common';
-import { faker } from '@faker-js/faker/.';
+import { faker } from '@faker-js/faker';
 import { FilledSeedInput } from '@libs/testing/types/SeedFilledValue';
 
 export class ReviewSeedHelper extends ISeedHelper<
