@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ISocialAuthStrategy } from '../interfaces/social-auth-base.strategy';
 import axios from 'axios';
 import { SocialUserInfoDto } from '@user/auth/dto/social-common/social-user-info.dto';
@@ -29,7 +29,7 @@ export class KakaoStrategy
   constructor(
     private readonly configService: ConfigService,
     private readonly socialTokenService: SocialTokenService<KakaoTokenDto>,
-    private readonly userService: any, // TODO: userService 타입을 정확히 지정해야 함
+    @Inject(UserService) private readonly userService: any, // TODO: userService 타입을 정확히 지정해야 함
   ) {}
 
   /**

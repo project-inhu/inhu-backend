@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { SocialUserInfoDto } from '@user/auth/dto/social-common/social-user-info.dto';
 import { ConfigService } from '@nestjs/config';
 import { verify } from 'jsonwebtoken';
@@ -32,7 +32,7 @@ export class AppleStrategy
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly socialTokenService: SocialTokenService<AppleTokenDto>,
-    private readonly userService: any, // TODO: userService 타입을 정확히 지정해야 함
+    @Inject(UserService) private readonly userService: any, // TODO: userService 타입을 정확히 지정해야 함
   ) {}
 
   /**
