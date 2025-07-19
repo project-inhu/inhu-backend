@@ -87,7 +87,7 @@
         ...
      }
 
-     public generateFilledInputValue(input: UserInput): SeedOutput<UserInput> {
+     public generateFilledInputValue(input: UserInput): FilledSeed<UserInput> {
         ...
      }
    }

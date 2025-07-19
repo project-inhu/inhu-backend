@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker/.';
-import { defaultValue, pickRandomValue, SeedOutput } from '@libs/common';
+import { defaultValue, pickRandomValue, FilledSeed } from '@libs/common';
 import { AUTH_PROVIDER } from '@libs/core';
 import { ISeedHelper } from '@libs/testing/interface/seed-helper.interface';
 import { UserSeedInput } from '@libs/testing/seed/user/type/user-seed.input';
@@ -31,7 +31,7 @@ export class UserSeedHelper extends ISeedHelper<UserSeedInput, UserSeedOutput> {
 
   public generateFilledInputValue(
     input: UserSeedInput,
-  ): SeedOutput<UserSeedInput> {
+  ): FilledSeed<UserSeedInput> {
     return {
       nickname: defaultValue(
         input.nickname,
