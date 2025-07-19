@@ -1,4 +1,6 @@
-import { FilledSeed } from '@libs/common';
 import { PickedPlaceSeedInput } from '@libs/testing/seed/picked-place/type/picked-place-seed.input';
+import { FilledSeedInput } from '@libs/testing/types/SeedFilledValue';
 
-export type PickedPlaceSeedOutput = FilledSeed<PickedPlaceSeedInput>;
+export type PickedPlaceSeedOutput = FilledSeedInput<PickedPlaceSeedInput> & {
+  idx: number;
+};

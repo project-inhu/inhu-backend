@@ -16,22 +16,26 @@ export class PickedPlaceSeedHelper extends ISeedHelper<
       placeIdx: input.placeIdx,
       title: defaultValue(input.title, faker.lorem.sentence(3)),
       content: defaultValue(input.content, faker.lorem.paragraph(1)),
+      deletedAt: defaultValue(input.deletedAt, null),
     };
   }
 
   public async seed(
     input: PickedPlaceSeedInput,
-  ): Promise<FilledSeedInput<PickedPlaceSeedInput>> {
-    const { placeIdx, title, content } = this.generateFilledInputValue(input);
+  ): Promise<PickedPlaceSeedOutput> {
+    const { placeIdx, title, content, deletedAt } =
+      this.generateFilledInputValue(input);
 
-    await this.prisma.pickedPlace.create({
+    const pickedPlace = await this.prisma.pickedPlace.create({
+      select: { idx: true },
       data: {
         title,
         content,
         placeIdx,
+        deletedAt,
       },
     });
 
-    return { placeIdx, title, content };
+    return { idx: pickedPlace.idx, placeIdx, title, content, deletedAt };
   }
 }
