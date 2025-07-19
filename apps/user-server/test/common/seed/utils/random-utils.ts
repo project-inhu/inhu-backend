@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker/.';
-import { PrismaService } from '@user/common/module/prisma/prisma.service';
+import { PrismaService } from '@libs/common/modules/prisma/prisma.service';
 
 export function getRandomInt(min: number, max: number): number {
   return faker.number.int({ min, max });

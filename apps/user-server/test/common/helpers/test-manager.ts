@@ -7,7 +7,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '@user/app.module';
 import { AuthGuard } from '@user/auth/common/guards/auth.guard';
-import { PrismaService } from '@user/common/module/prisma/prisma.service';
+import { PrismaService } from '@libs/common/modules/prisma/prisma.service';
 
 /**
  * E2E 테스트를 위한 NestJS 애플리케이션을 생성 및 관리하는 클래스.

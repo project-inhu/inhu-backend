@@ -1,4 +1,4 @@
-import { PrismaService } from '@user/common/module/prisma/prisma.service';
+import { PrismaService } from '@libs/common/modules/prisma/prisma.service';
 import { SeedHelper } from './base/seed.helper';
 import { UserSeedInput } from './input/user-seed.input';
 import { faker } from '@faker-js/faker';

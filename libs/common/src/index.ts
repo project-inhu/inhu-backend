@@ -12,3 +12,6 @@ export * from './modules/s3/s3.service';
 export * from './modules/s3/input/get-presigned-url.input';
 export * from './modules/s3/model/presigned-url.model';
 export * from './modules/s3/constants/s3-folder.constants';
+
+// type
+export * from './types';

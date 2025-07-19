@@ -1,5 +1,5 @@
 import { BookmarkCoreService, PlaceCoreService } from '@libs/core';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PlaceOverviewEntity } from './entity/place-overview.entity';
 import { GetAllPlaceOverviewDto } from './dto/request/get-all-place-overview.dto';
 import { PlaceEntity } from '@user/api/place/entity/place.entity';

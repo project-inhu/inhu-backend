@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@user/common/module/prisma/prisma.service';
+import { PrismaService } from '@libs/common/modules/prisma/prisma.service';
 
 @Injectable()
 export class KeywordRepository {

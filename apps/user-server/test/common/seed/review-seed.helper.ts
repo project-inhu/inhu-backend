@@ -1,4 +1,4 @@
-import { PrismaService } from '@user/common/module/prisma/prisma.service';
+import { PrismaService } from '@libs/common/modules/prisma/prisma.service';
 import { SeedHelper } from './base/seed.helper';
 import { ReviewSeedInput } from './input/review-seed.input';
 import { ReviewEntity } from '@user/api/review/entity/review.entity';
