@@ -1,4 +1,4 @@
-import { KeywordModel } from '@app/core/keyword/model/keyword.model';
+import { KeywordModel } from '@libs/core/keyword/model/keyword.model';
 import { SelectReview } from './prisma-type/select-review';
 import { ReviewAuthorModel } from './review-author.model';
 import { ReviewPlaceModel } from './review-place.model';
