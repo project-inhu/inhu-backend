@@ -15,3 +15,8 @@ export * from './seed/place/type/place-seed.output';
 export * from './seed/picked-place/picked-place.seed';
 export * from './seed/picked-place/type/picked-place-seed.input';
 export * from './seed/picked-place/type/picked-place-seed.output';
+
+// Review seed
+export * from './seed/review/review.seed';
+export * from './seed/review/type/review-seed.input';
+export * from './seed/review/type/review-seed.output';
