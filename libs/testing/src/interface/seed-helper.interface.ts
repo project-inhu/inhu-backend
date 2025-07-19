@@ -1,5 +1,5 @@
+import { SeedOutput } from '@libs/common';
 import { PrismaService } from '@libs/common/modules/prisma/prisma.service';
-import { DeepRequired } from '@libs/common/types/DeepRequired';
 
 export abstract class ISeedHelper<TInput = any, TOutput = any> {
   protected readonly prisma: PrismaService;
@@ -8,9 +8,15 @@ export abstract class ISeedHelper<TInput = any, TOutput = any> {
     this.prisma = prisma;
   }
 
+  /**
+   * 시딩하는 메서드입니다.
+   */
   public abstract seed(input: TInput): Promise<TOutput>;
 
-  public abstract getRequiredInput(input: TInput): DeepRequired<TInput>;
+  /**
+   * input에 필요한 값을 채워주는 메서드입니다.
+   */
+  public abstract generateFilledInputValue(input: TInput): SeedOutput<TInput>;
 
   public async seedAll(inputs: TInput[]): Promise<TOutput[]> {
     return await Promise.all(inputs.map((input) => this.seed(input)));

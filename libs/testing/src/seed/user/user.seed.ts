@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker/.';
-import { defaultValue, pickRandomValue } from '@libs/common';
-import { DeepRequired } from '@libs/common/types/DeepRequired';
+import { defaultValue, pickRandomValue, SeedOutput } from '@libs/common';
 import { AUTH_PROVIDER } from '@libs/core';
 import { ISeedHelper } from '@libs/testing/interface/seed-helper.interface';
 import { UserSeedInput } from '@libs/testing/seed/user/type/user-seed.input';
@@ -8,7 +7,7 @@ import { UserSeedOutput } from '@libs/testing/seed/user/type/user-seed.output';
 
 export class UserSeedHelper extends ISeedHelper<UserSeedInput, UserSeedOutput> {
   public async seed(input: UserSeedInput): Promise<UserSeedOutput> {
-    const requiredInput = this.getRequiredInput(input);
+    const requiredInput = this.generateFilledInputValue(input);
 
     const createdUser = await this.prisma.user.create({
       select: { idx: true },
@@ -30,7 +29,9 @@ export class UserSeedHelper extends ISeedHelper<UserSeedInput, UserSeedOutput> {
     return { idx: createdUser.idx, ...requiredInput };
   }
 
-  public getRequiredInput(input: UserSeedInput): DeepRequired<UserSeedInput> {
+  public generateFilledInputValue(
+    input: UserSeedInput,
+  ): SeedOutput<UserSeedInput> {
     return {
       nickname: defaultValue(
         input.nickname,
