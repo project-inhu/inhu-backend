@@ -1,7 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { PickedPlaceService } from './picked-place.service';
 import { User } from '@user/common/decorator/user.decorator';
-import { Exception } from '@app/common/decorator/exception.decorator';
 
 @Controller('picked-place')
 export class PickedPlaceController {

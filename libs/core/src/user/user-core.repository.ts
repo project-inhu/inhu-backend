@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { SELECT_USER, SelectUser } from './model/prisma-type/select-user';
 import { CreateUserInput } from './inputs/create-user.input';
 import { UpdateUserInput } from './inputs/update-user.input';
-import { AuthProvider } from '@app/core/user/constants/auth-provider.constant';
+import { AuthProvider } from './constants/auth-provider.constant';
 
 @Injectable()
 export class UserCoreRepository {

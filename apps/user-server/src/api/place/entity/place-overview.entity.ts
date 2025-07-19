@@ -1,6 +1,6 @@
 import { PickType } from '@nestjs/swagger';
 import { PlaceEntity } from './place.entity';
-import { PlaceOverviewModel } from '@app/core';
+import { PlaceOverviewModel } from '@libs/core';
 import { PlaceRoadAddressEntity } from '@user/api/place/entity/place-road-address.entity';
 import { KeywordEntity } from '@user/api/keyword/entity/keyword.entity';
 

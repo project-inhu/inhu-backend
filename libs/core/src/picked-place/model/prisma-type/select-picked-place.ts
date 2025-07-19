@@ -1,4 +1,4 @@
-import { SELECT_PLACE } from '@app/core/place/model/prisma-type/select-place';
+import { SELECT_PLACE } from '@libs/core/place/model/prisma-type/select-place';
 import { Prisma } from '@prisma/client';
 
 export const SELECT_PICKED_PLACE =

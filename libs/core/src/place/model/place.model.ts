@@ -5,7 +5,7 @@ import { PlaceBreakTimeModel } from './place-break-time.model';
 import { PlaceRoadAddressModel } from './place-road-address.model';
 import { SelectPlace } from './prisma-type/select-place';
 import { PlaceWeeklyClosedDayModel } from './place-weekly-closed-day.model';
-import { KeywordModel } from '@app/core/keyword/model/keyword.model';
+import { KeywordModel } from '@libs/core/keyword/model/keyword.model';
 
 export class PlaceModel {
   /**

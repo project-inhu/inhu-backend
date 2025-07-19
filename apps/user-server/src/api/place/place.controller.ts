@@ -3,7 +3,7 @@ import { PlaceService } from './place.service';
 import { GetAllPlaceOverviewDto } from './dto/request/get-all-place-overview.dto';
 import { User } from '@user/common/decorator/user.decorator';
 import { PlaceEntity } from './entity/place.entity';
-import { Exception } from '@app/common/decorator/exception.decorator';
+import { Exception } from '@libs/common/decorator/exception.decorator';
 import { GetAllPlaceOverviewResponseDto } from './dto/response/get-all-place-overview-response.dto';
 import { LoginAuth } from '@user/auth/common/decorators/login-auth.decorator';
 import { GetAllBookmarkedOverviewResponseDto } from '@user/api/place/dto/response/get-all-bookmarked-overview-response.dto';

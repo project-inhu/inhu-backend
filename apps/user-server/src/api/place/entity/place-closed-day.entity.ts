@@ -1,5 +1,5 @@
-import { DayOfWeek } from '@app/common';
-import { PlaceClosedDayModel } from '@app/core';
+import { DayOfWeek } from '@libs/common';
+import { PlaceClosedDayModel } from '@libs/core';
 
 /**
  * 정기 휴무일 정보

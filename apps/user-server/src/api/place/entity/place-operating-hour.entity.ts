@@ -1,4 +1,4 @@
-import { PlaceOperatingHourModel } from '@app/core';
+import { PlaceOperatingHourModel } from '@libs/core';
 
 export class PlaceOperatingHourEntity {
   /**

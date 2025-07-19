@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserCoreRepository } from './user-core.repository';
 import { CreateUserInput } from './inputs/create-user.input';
 import { UserModel } from './model/user.model';
-import { AuthProvider } from '@app/core/user/constants/auth-provider.constant';
+import { AuthProvider } from './constants/auth-provider.constant';
 
 @Injectable()
 export class UserCoreService {

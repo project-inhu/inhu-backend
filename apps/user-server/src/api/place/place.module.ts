@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { PlaceController } from './place.controller';
 import { PlaceService } from './place.service';
 import { AuthModule } from '@user/auth/auth.module';
-import { BookmarkCoreModule, PlaceCoreModule } from '@app/core';
+import { BookmarkCoreModule, PlaceCoreModule } from '@libs/core';
 
 @Module({
   imports: [AuthModule, PlaceCoreModule, BookmarkCoreModule],

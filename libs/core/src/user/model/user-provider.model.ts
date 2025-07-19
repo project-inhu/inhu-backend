@@ -1,5 +1,5 @@
-import { AuthProvider } from '@app/core/user/constants/auth-provider.constant';
-import { SelectUserProvider } from '@app/core/user/model/prisma-type/select-user-provider';
+import { AuthProvider } from '../constants/auth-provider.constant';
+import { SelectUserProvider } from '../model/prisma-type/select-user-provider';
 
 export class UserProviderModel {
   /**

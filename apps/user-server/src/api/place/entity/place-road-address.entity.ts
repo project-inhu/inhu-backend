@@ -1,4 +1,4 @@
-import { PlaceRoadAddressModel } from '@app/core';
+import { PlaceRoadAddressModel } from '@libs/core';
 
 export class PlaceRoadAddressEntity {
   /**

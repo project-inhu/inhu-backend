@@ -11,7 +11,7 @@ import { AuthService } from './services/auth.service';
 import { Response, Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { Provider } from './common/decorators/provider.decorator';
-import { Exception } from '@app/common';
+import { Exception } from '@libs/common';
 import { ClientType } from '@user/common/decorator/client-type.decorator';
 import { Cookie } from '@user/common/decorator/cookie.decorator';
 import { AuthProviderValue } from './common/constants/auth-provider.constant';

@@ -7,7 +7,7 @@ import { DeleteBookmarkInput } from './inputs/delete-bookmark.input';
 import { GetBookmarkInput } from './inputs/get-bookmark.input';
 import { AlreadyNotBookmarkException } from './exception/already-not-bookmark.exception';
 import { AlreadyBookmarkException } from './exception/already-bookmark.exception';
-import { PlaceCoreService } from '@app/core/place/place-core.service';
+import { PlaceCoreService } from '@libs/core/place/place-core.service';
 
 @Injectable()
 export class BookmarkCoreService {

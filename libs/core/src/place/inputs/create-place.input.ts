@@ -1,4 +1,4 @@
-import { DayOfWeek } from '@app/common';
+import { DayOfWeek } from '@libs/common';
 import { PlaceType } from '../constants/place-type.constant';
 import { WeeklyCloseType } from '../constants/weekly-close-type.constant';
 

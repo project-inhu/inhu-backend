@@ -1,4 +1,4 @@
-import { UserProviderModel } from '@app/core/user/model/user-provider.model';
+import { UserProviderModel } from './user-provider.model';
 import { SelectUser } from './prisma-type/select-user';
 
 export class UserModel {

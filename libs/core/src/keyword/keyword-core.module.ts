@@ -1,5 +1,5 @@
-import { KeywordCoreRepository } from '@app/core/keyword/keyword-core.repository';
-import { KeywordCoreService } from '@app/core/keyword/keyword-core.service';
+import { KeywordCoreRepository } from './keyword-core.repository';
+import { KeywordCoreService } from './keyword-core.service';
 import { Module } from '@nestjs/common';
 
 @Module({

@@ -8,8 +8,8 @@ import {
   IsOptional,
   Min,
 } from 'class-validator';
-import { ToBoolean } from '@app/common';
-import { PlaceType } from '@app/core';
+import { ToBoolean } from '@libs/common';
+import { PlaceType } from '@libs/core';
 
 export class GetAllPlaceOverviewDto {
   /**

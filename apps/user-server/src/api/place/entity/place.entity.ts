@@ -2,7 +2,7 @@ import { KeywordEntity } from '@user/api/keyword/entity/keyword.entity';
 import { PlaceRoadAddressEntity } from './place-road-address.entity';
 import { PlaceWeeklyClosedDayEntity } from './place-weekly-closed-day';
 import { PlaceOperatingHourEntity } from './place-operating-hour.entity';
-import { PlaceModel, PlaceType } from '@app/core';
+import { PlaceModel, PlaceType } from '@libs/core';
 import { PlaceClosedDayEntity } from '@user/api/place/entity/place-closed-day.entity';
 import { PlaceBreakTimeEntity } from '@user/api/place/entity/place-break-time.entity';
 

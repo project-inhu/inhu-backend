@@ -1,4 +1,4 @@
-import { DayOfWeek } from '@app/common';
+import { DayOfWeek } from '@libs/common';
 import { SelectPlaceOperatingHour } from './prisma-type/select-place-operating-hour';
 
 /**

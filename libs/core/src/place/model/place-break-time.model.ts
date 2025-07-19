@@ -1,4 +1,4 @@
-import { DayOfWeek } from '@app/common';
+import { DayOfWeek } from '@libs/common';
 import type { SelectPlaceBreakTime } from './prisma-type/select-place-break-time';
 
 export class PlaceBreakTimeModel {

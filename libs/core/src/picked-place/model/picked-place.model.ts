@@ -1,5 +1,5 @@
-import { SelectPickedPlace } from '@app/core/picked-place/model/prisma-type/select-picked-place';
-import { PlaceModel } from '@app/core/place/model/place.model';
+import { SelectPickedPlace } from '@libs/core/picked-place/model/prisma-type/select-picked-place';
+import { PlaceModel } from '@libs/core/place/model/place.model';
 
 export class PickedPlaceModel {
   /**

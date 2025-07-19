@@ -1,4 +1,4 @@
-import { KeywordModel } from '@app/core';
+import { KeywordModel } from '@libs/core';
 
 export class KeywordEntity {
   /**

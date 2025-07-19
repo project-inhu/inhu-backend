@@ -1,4 +1,4 @@
-import { PlaceWeeklyClosedDayModel, WeeklyCloseType } from '@app/core';
+import { PlaceWeeklyClosedDayModel, WeeklyCloseType } from '@libs/core';
 
 export class PlaceWeeklyClosedDayEntity {
   /**

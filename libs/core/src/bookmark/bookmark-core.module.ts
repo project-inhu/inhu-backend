@@ -1,7 +1,7 @@
 import { BookmarkCoreService } from './bookmark-core.service';
 import { BookmarkCoreRepository } from './bookmark-core.repository';
 import { Module } from '@nestjs/common';
-import { PlaceCoreModule } from '@app/core/place/place-core.module';
+import { PlaceCoreModule } from '@libs/core/place/place-core.module';
 
 @Module({
   imports: [PlaceCoreModule],

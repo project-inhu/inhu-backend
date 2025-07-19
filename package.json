@@ -105,7 +105,8 @@
     "testEnvironment": "node",
     "moduleNameMapper": {
       "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1",
-      "^@app/core(|/.*)$": "<rootDir>/libs/core/src/$1"
+      "^@app/core(|/.*)$": "<rootDir>/libs/core/src/$1",
+      "^libs/testing(|/.*)$": "<rootDir>/libs/testing/src/$1"
     }
   }
 }
