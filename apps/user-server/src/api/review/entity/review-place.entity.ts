@@ -1,7 +1,7 @@
 import { PickType } from '@nestjs/swagger';
-import { PlaceModel } from '@libs/core/place/model/place.model';
 import { PlaceRoadAddressEntity } from '@user/api/place/entity/place-road-address.entity';
 import { PlaceEntity } from '@user/api/place/entity/place.entity';
+import { ReviewPlaceModel } from '@libs/core/review/model/review-place.model';
 
 export class ReviewPlaceEntity extends PickType(PlaceEntity, [
   'idx',
@@ -13,7 +13,7 @@ export class ReviewPlaceEntity extends PickType(PlaceEntity, [
     Object.assign(this, data);
   }
 
-  public static fromModel(place: PlaceModel): ReviewPlaceEntity {
+  public static fromModel(place: ReviewPlaceModel): ReviewPlaceEntity {
     return new ReviewPlaceEntity({
       idx: place.idx,
       name: place.name,
