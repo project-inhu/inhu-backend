@@ -9,8 +9,7 @@
     "build": "nest build",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
-    "seed": "tsx --env-file=.env DB/seed.ts",
-    "seed:prod": "node dist/DB/seed.js",
+    "user-server-dev:seed": "tsx scripts/user-server/dev/init/seed.ts",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/apps/user-server/main",
@@ -19,12 +18,12 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "npm run apps/user-server/test:infra:up && dotenv -e .env.test -- jest --config ./test/jest-e2e.json && npm run test:infra:down",
-    "test:infra:up": "docker compose -f docker-compose.test.yml up -d",
-    "test:infra:down": "docker compose -f docker-compose.test.yml down -v",
-    "dev:infra:up": "docker compose up -d",
-    "dev:infra:down": "docker compose down -v",
-    "dev:infra:connect": "docker exec -it inhu-postgres psql -d inhu -U inhu_admin"
+    "user-server:test:e2e": "npm run user-server:test:infra:up && dotenv -e ./scripts/user-server/e2e-test/.env.test -- jest --config ./apps/user-server/test/jest-e2e.json && npm run user-server:test:infra:down",
+    "user-server:test:infra:up": "docker compose -f ./scripts/user-server/e2e-test/docker-compose.yml up -d",
+    "user-server:test:infra:down": "docker compose -f ./scripts/user-server/e2e-test/docker-compose.yml down -v",
+    "user-server:dev:infra:up": "docker compose -f ./scripts/user-server/dev/docker-compose.yml up -d",
+    "user-server:dev:infra:down": "docker compose -f ./scripts/user-server/dev/docker-compose.yml down -v",
+    "user-server:dev:infra:connect": "docker exec -it inhu-postgres psql -d inhu -U inhu_admin"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.848.0",
