@@ -29,7 +29,7 @@ export class PlaceWeeklyClosedDayModel {
     return new PlaceWeeklyClosedDayModel({
       idx: weeklyClosedDay.idx,
       date: weeklyClosedDay.closedDate,
-      type: weeklyClosedDay.type,
+      type: weeklyClosedDay.type as WeeklyCloseType,
     });
   }
 }

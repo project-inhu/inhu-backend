@@ -32,7 +32,7 @@ export class AppleStrategy
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly socialTokenService: SocialTokenService<AppleTokenDto>,
-    private readonly userService: UserService,
+    private readonly userService: any, // TODO: userService 타입을 정확히 지정해야 함
   ) {}
 
   /**

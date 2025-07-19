@@ -4,19 +4,6 @@ import { UserInfoEntity } from '@user/api/user/entity/user-info.entity';
 import { PlaceOverviewEntity } from '@user/api/place/entity/place-overview.entity';
 import { KeywordEntity } from '@user/api/keyword/entity/keyword.entity';
 
-class ReviewAuthorEntity extends PickType(UserInfoEntity, [
-  'idx',
-  'nickname',
-  'profileImagePath',
-]) {}
-
-class ReviewPlaceEntity extends PickType(PlaceOverviewEntity, [
-  'idx',
-  'name',
-  'addressName',
-  'detailAddress',
-]) {}
-
 class ReviewKeywordEntity extends PickType(KeywordEntity, ['idx', 'content']) {}
 
 /**
@@ -59,16 +46,6 @@ export class ReviewEntity {
   keywordList: ReviewKeywordEntity[];
 
   /**
-   * review 작성자 정보
-   */
-  author: ReviewAuthorEntity;
-
-  /**
-   * review 등록한 place 정보
-   */
-  place: ReviewPlaceEntity;
-
-  /**
    * ReviewEntity 객체를 생성하는 생성자
    */
   constructor(data: ReviewEntity) {
@@ -99,6 +76,6 @@ export class ReviewEntity {
         addressName: review.place.roadAddress.addressName,
         detailAddress: review.place.roadAddress.detailAddress,
       },
-    });
+    } as any);
   }
 }

@@ -29,7 +29,7 @@ export class KakaoStrategy
   constructor(
     private readonly configService: ConfigService,
     private readonly socialTokenService: SocialTokenService<KakaoTokenDto>,
-    private readonly userService: UserService,
+    private readonly userService: any, // TODO: userService 타입을 정확히 지정해야 함
   ) {}
 
   /**
