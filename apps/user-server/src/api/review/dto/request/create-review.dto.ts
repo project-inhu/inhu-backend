@@ -8,8 +8,8 @@ import {
   IsString,
   Length,
 } from 'class-validator';
-import { Trim } from '../common/decorators/trim.decorator';
-import { UniqueArray } from '../common/decorators/unique-array.decorator';
+import { Trim } from '@user/common/decorator/trim.decorator';
+import { UniqueArray } from '@user/common/decorator/unique-array.decorator';
 
 /**
  * 특정 장소에 리뷰를 생성할 때 사용하는 DTO
