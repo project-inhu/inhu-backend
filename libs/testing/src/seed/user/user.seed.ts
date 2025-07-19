@@ -1,41 +1,62 @@
 import { faker } from '@faker-js/faker/.';
-import { DeepPartial, defaultValue, pickRandomValue } from '@libs/common';
-import { AUTH_PROVIDER, CreateUserInput } from '@libs/core';
+import { defaultValue, pickRandomValue } from '@libs/common';
+import { DeepRequired } from '@libs/common/types/DeepRequired';
+import { AUTH_PROVIDER } from '@libs/core';
 import { ISeedHelper } from '@libs/testing/interface/seed-helper.interface';
+import { UserSeedInput } from '@libs/testing/seed/user/type/user-seed.input';
+import { UserSeedOutput } from '@libs/testing/seed/user/type/user-seed.output';
 
-export class UserSeedHelper extends ISeedHelper<
-  CreateUserInput,
-  { idx: number }
-> {
-  public async seed(
-    input: DeepPartial<CreateUserInput>,
-  ): Promise<{ idx: number }> {
-    return await this.prisma.user.create({
+export class UserSeedHelper extends ISeedHelper<UserSeedInput, UserSeedOutput> {
+  public async seed(input: UserSeedInput): Promise<UserSeedOutput> {
+    const requiredInput = this.getRequiredInput(input);
+
+    const createdUser = await this.prisma.user.create({
       select: { idx: true },
       data: {
-        nickname: defaultValue(
-          input.nickname,
-          faker.word.noun({
-            length: {
-              min: 2,
-              max: 8,
-            },
-          }),
-        ),
-        profileImagePath: defaultValue(
-          input.profileImagePath,
-          `/user-profile/${faker.string.uuid()}.png`,
-        ),
-        userProvider: {
-          create: {
-            name: defaultValue(
-              input.social?.provider,
-              pickRandomValue(AUTH_PROVIDER),
-            ),
-            snsId: defaultValue(input.social?.snsId, faker.string.uuid()),
-          },
-        },
+        nickname: requiredInput.nickname,
+        profileImagePath: requiredInput.profileImagePath,
+        isAdmin: requiredInput.isAdmin,
+        userProvider: requiredInput.social
+          ? {
+              create: {
+                name: requiredInput.social.provider,
+                snsId: requiredInput.social.snsId,
+              },
+            }
+          : undefined,
       },
     });
+
+    return { idx: createdUser.idx, ...requiredInput };
+  }
+
+  public getRequiredInput(input: UserSeedInput): DeepRequired<UserSeedInput> {
+    return {
+      nickname: defaultValue(
+        input.nickname,
+        faker.word.noun({
+          length: {
+            min: 2,
+            max: 8,
+          },
+        }),
+      ),
+      profileImagePath: defaultValue(
+        input.profileImagePath,
+        `/user-profile/${faker.string.uuid()}.png`,
+      ),
+      isAdmin: defaultValue(input.isAdmin, false),
+      social: defaultValue(
+        {
+          provider: defaultValue(
+            input.social?.provider,
+            pickRandomValue(AUTH_PROVIDER),
+          ),
+          snsId: defaultValue(input.social?.snsId, faker.string.uuid()),
+        },
+        null,
+      ),
+      deletedAt: defaultValue(input.deletedAt, null),
+    };
   }
 }
