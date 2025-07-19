@@ -1,4 +1,4 @@
-export type ReviewInput = {
+export type ReviewSeedInput = {
   userIdx: number;
   placeIdx: number;
   deletedAt: Date | null;
