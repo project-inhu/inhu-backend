@@ -20,3 +20,8 @@ export * from './seed/picked-place/type/picked-place-seed.output';
 export * from './seed/review/review.seed';
 export * from './seed/review/type/review-seed.input';
 export * from './seed/review/type/review-seed.output';
+
+// Menu seed
+export * from './seed/menu/menu.seed';
+export * from './seed/menu/type/menu-seed.input';
+export * from './seed/menu/type/menu-seed.output';
