@@ -70,7 +70,6 @@ export class ReviewCoreService {
       input.keywordIdxList !== undefined &&
       this.isChangedReviewKeyword(input, review)
     ) {
-      // TODO: place core에서 키워드 목록을 받아서 감소/증가 시키는 로직을 추가해야 함
       await Promise.all(
         review.reviewKeywordMappingList.map(({ keyword }) =>
           this.placeCoreService.decreaseKeywordCount(keyword.idx, keyword.idx),
@@ -106,7 +105,7 @@ export class ReviewCoreService {
   }
 
   /**
-   * @throws {ReviewNotFoundException} 404 - 수정하려는 리뷰가 존재하지 않을 때
+   * @throws {ReviewNotFoundException} 404 - 삭제하려는 리뷰가 존재하지 않을 때
    */
   public async deleteReviewByIdx(idx: number): Promise<void> {
     const review = await this.reviewCoreRepository.selectReviewByIdx(idx);
@@ -117,7 +116,6 @@ export class ReviewCoreService {
 
     await this.placeCoreService.decreasePlaceReviewCount(review.place.idx);
 
-    // TODO: place core에서 키워드 목록을 받아서 감소/증가 시키는 로직을 추가해야 함
     await Promise.all(
       review.reviewKeywordMappingList.map(({ keyword }) =>
         this.placeCoreService.decreaseKeywordCount(keyword.idx, keyword.idx),

@@ -1,7 +1,7 @@
 import { PickType } from '@nestjs/swagger';
 import { SelectReviewPlace } from './prisma-type/select-review-place';
-import { PlaceRoadAddressModel } from '@libs/core/place/model/place-road-address.model';
 import { PlaceModel } from '@libs/core/place/model/place.model';
+import { PlaceRoadAddressModel } from '@libs/core/place/model/place-road-address.model';
 
 export class ReviewPlaceModel extends PickType(PlaceModel, [
   'idx',
