@@ -15,3 +15,6 @@ export * from './modules/s3/constants/s3-folder.constants';
 
 // type
 export * from './types';
+
+// utils
+export * from './utils';
