@@ -27,6 +27,6 @@ import { IRefreshTokenStorage } from '@user/common/module/login-token/storage/re
       useClass: RedisStorageProvider,
     },
   ],
-  exports: [],
+  exports: [LoginTokenService],
 })
 export class LoginTokenModule {}

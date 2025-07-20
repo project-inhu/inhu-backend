@@ -16,12 +16,12 @@ export class AppleLoginStrategy implements ISocialLoginStrategy {
   private readonly APPLE_CLIENT_ID: string;
   private readonly APPLE_CLIENT_SECRET: string;
   private readonly APPLE_REDIRECT_URI: string;
+  private readonly jwksClient: JwksClient;
 
   constructor(
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
     private readonly jwtService: JwtService,
-    private readonly jwksClient: JwksClient,
   ) {
     this.APPLE_CLIENT_ID =
       this.configService.get<string>('APPLE_CLIENT_ID') ?? '';

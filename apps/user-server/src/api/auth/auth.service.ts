@@ -4,9 +4,13 @@ import {
   UserCoreService,
   UserModel,
 } from '@libs/core';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ISocialLoginStrategy } from '@user/api/auth/social-login/ISocialLogin-strategy.interface';
+import { AppleLoginStrategy } from '@user/api/auth/social-login/strategy/apple/apple-login.strategy';
+import { KakaoLoginStrategy } from '@user/api/auth/social-login/strategy/kakao/kakao-login.strategy';
 import { OAuthInfo } from '@user/api/auth/types/OAuthInfo';
+import { TokenIssuedBy } from '@user/common/module/login-token/constants/token-issued-by.constants';
+import { LoginTokenService } from '@user/common/module/login-token/login-token.service';
 import { Request } from 'express';
 
 @Injectable()
@@ -17,17 +21,36 @@ export class AuthService {
   >;
 
   constructor(
-    private readonly kakaoLoginStrategy: ISocialLoginStrategy,
+    private readonly kakaoLoginStrategy: KakaoLoginStrategy,
+    private readonly appleLoginStrategy: AppleLoginStrategy,
     private readonly userCoreService: UserCoreService,
+    private readonly loginTokenService: LoginTokenService,
   ) {
     this.socialAuthProviderMap = {
       [AUTH_PROVIDER.KAKAO]: this.kakaoLoginStrategy,
-      [AUTH_PROVIDER.APPLE]: this.kakaoLoginStrategy, // TODO: apple 로그인 전략 추가 필요
+      [AUTH_PROVIDER.APPLE]: this.appleLoginStrategy,
     };
   }
 
-  public async login(req: Request, provider: AuthProvider) {
+  public async getSocialLoginRedirect(provider: AuthProvider) {
     const strategy = this.socialAuthProviderMap[provider];
+
+    if (!strategy) {
+      throw new InternalServerErrorException();
+    }
+
+    return strategy.getSocialLoginRedirect();
+  }
+
+  public async login(
+    req: Request,
+    provider: AuthProvider,
+    issuedBy: TokenIssuedBy,
+  ) {
+    const strategy = this.socialAuthProviderMap[provider];
+    if (!strategy) {
+      throw new InternalServerErrorException();
+    }
 
     const oauthInfo = await strategy.socialLogin(provider, req);
 
@@ -36,6 +59,10 @@ export class AuthService {
     // 해당 사용자가 정지되었는지 판단하거나 등등
 
     // refresh token 만드는 로직
+    return await this.loginTokenService.issueTokenSet(
+      { idx: userModel.idx },
+      issuedBy,
+    );
   }
 
   private async upsertUserByOauthInfo(
@@ -51,7 +78,7 @@ export class AuthService {
     }
 
     return await this.userCoreService.createUser({
-      nickname: 'TODO',
+      nickname: '새로운 인후러',
       profileImagePath: null,
       social: {
         provider: oauthInfo.provider,
