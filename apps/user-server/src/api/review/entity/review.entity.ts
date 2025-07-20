@@ -1,7 +1,5 @@
 import { PickType } from '@nestjs/swagger';
 import { ReviewSelectField } from '../type/review-select-field';
-import { UserInfoEntity } from '@user/api/user/entity/user-info.entity';
-import { PlaceOverviewEntity } from '@user/api/place/entity/place-overview.entity';
 import { KeywordEntity } from '@user/api/keyword/entity/keyword.entity';
 
 class ReviewKeywordEntity extends PickType(KeywordEntity, ['idx', 'content']) {}
