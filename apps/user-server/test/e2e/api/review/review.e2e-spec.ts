@@ -133,51 +133,66 @@ describe('Review E2E test', () => {
       expect(response2.body.hasNext).toBe(true);
     });
 
-    it('400 - invalid place idx', async () => {
-      await testHelper
-        .test()
-        .get('/review/all')
-        .query({
-          placeIdx: 'invalid', // ! invalid place idx
-          page: 1,
-        })
-        .expect(400);
-    });
-
-    it('400 - invalid user idx', async () => {
-      await testHelper
-        .test()
-        .get('/review/all')
-        .query({
-          userIdx: 'invalid', // ! invalid place idx
-          page: 1,
-        })
-        .expect(400);
-    });
-
-    it('403 - no placeIdx and no userIdx', async () => {
-      await testHelper
-        .test()
-        .get('/review/all')
-        .query({
-          page: 1,
-        })
-        .expect(403);
-    });
-
-    it('403 - userIdx is not login user', async () => {
+    it('200 - sort order check', async () => {
       const loginUser = testHelper.loginUsers.user1;
-      const otherUser = testHelper.loginUsers.user2;
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
 
-      await testHelper
+      const firstReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 20));
+
+      const secondReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
+      });
+
+      const response = await testHelper
         .test()
         .get('/review/all')
-        .query({
-          userIdx: otherUser.idx, // ! userIdx is not login user
-          page: 1,
-        })
+        .query({ placeIdx: place.idx, page: 1 })
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .expect(403);
+        .expect(200);
+
+      const { reviewList }: GetAllReviewResponseDto = response.body;
+
+      expect(reviewList[0].idx).toBe(secondReview.idx);
+      expect(reviewList[1].idx).toBe(firstReview.idx);
+    });
+
+    it('200 - soft delete check', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const reviewToDelete = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
+        deletedAt: new Date(),
+      });
+
+      const reviewToKeep = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
+      });
+
+      const response = await testHelper
+        .test()
+        .get('/review/all')
+        .query({ placeIdx: place.idx, page: 1 })
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(200);
+
+      const { reviewList }: GetAllReviewResponseDto = response.body;
+
+      expect(reviewList[0].idx).toBe(reviewToKeep.idx);
     });
 
     it('200 - place idx filtering check', async () => {
@@ -235,6 +250,111 @@ describe('Review E2E test', () => {
       expect(reviewsOfSecondPlace.map(({ idx }) => idx).sort()).toStrictEqual(
         [review3OfSecondPlace.idx, review4OfSecondPlace.idx].sort(),
       );
+    });
+
+    it('200 - user idx filtering check', async () => {
+      const firstUser = testHelper.loginUsers.user1;
+      const secondUser = testHelper.loginUsers.user2;
+
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const [
+        review1OfFirstUser,
+        review2OfFirstUser,
+        review3OfSecondUser,
+        review4OfSecondUser,
+      ] = await reviewSeedHelper.seedAll([
+        { placeIdx: place.idx, userIdx: firstUser.idx },
+        { placeIdx: place.idx, userIdx: firstUser.idx },
+        { placeIdx: place.idx, userIdx: secondUser.idx },
+        { placeIdx: place.idx, userIdx: secondUser.idx },
+      ]);
+
+      const firstUserResponse = await testHelper
+        .test()
+        .get('/review/all')
+        .query({
+          userIdx: firstUser.idx,
+          page: 1,
+        })
+        .set('Authorization', `Bearer ${firstUser.app.accessToken}`)
+        .expect(200);
+
+      const reviewsOfFirstUser = (
+        firstUserResponse.body as GetAllReviewResponseDto
+      ).reviewList;
+
+      expect(reviewsOfFirstUser.map(({ idx }) => idx).sort()).toStrictEqual(
+        [review1OfFirstUser.idx, review2OfFirstUser.idx].sort(),
+      );
+
+      const secondUserResponse = await testHelper
+        .test()
+        .get('/review/all')
+        .query({
+          userIdx: secondUser.idx,
+          page: 1,
+        })
+        .set('Authorization', `Bearer ${secondUser.app.accessToken}`)
+        .expect(200);
+
+      const reviewsOfSecondUser = (
+        secondUserResponse.body as GetAllReviewResponseDto
+      ).reviewList;
+
+      expect(reviewsOfSecondUser.map(({ idx }) => idx).sort()).toStrictEqual(
+        [review3OfSecondUser.idx, review4OfSecondUser.idx].sort(),
+      );
+    });
+
+    it('400 - invalid place idx', async () => {
+      await testHelper
+        .test()
+        .get('/review/all')
+        .query({
+          placeIdx: 'invalid', // ! invalid place idx
+          page: 1,
+        })
+        .expect(400);
+    });
+
+    it('400 - invalid user idx', async () => {
+      await testHelper
+        .test()
+        .get('/review/all')
+        .query({
+          userIdx: 'invalid', // ! invalid place idx
+          page: 1,
+        })
+        .expect(400);
+    });
+
+    it('403 - no placeIdx and no userIdx', async () => {
+      await testHelper
+        .test()
+        .get('/review/all')
+        .query({
+          page: 1,
+        })
+        .expect(403);
+    });
+
+    it('403 - userIdx is not login user', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const otherUser = testHelper.loginUsers.user2;
+
+      await testHelper
+        .test()
+        .get('/review/all')
+        .query({
+          userIdx: otherUser.idx, // ! userIdx is not login user
+          page: 1,
+        })
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(403);
     });
   });
 });
