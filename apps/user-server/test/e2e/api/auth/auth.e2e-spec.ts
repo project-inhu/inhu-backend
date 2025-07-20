@@ -1,4 +1,6 @@
 import { AppModule } from '@user/app.module';
+import { TokenIssuedBy } from '@user/common/module/login-token/constants/token-issued-by.constants';
+import { LoginTokenService } from '@user/common/module/login-token/login-token.service';
 import { TestHelper } from 'apps/user-server/test/e2e/setup/test.helper';
 
 describe('Auth E2E test', () => {
@@ -30,6 +32,27 @@ describe('Auth E2E test', () => {
       await testHelper
         .test()
         .post('/auth/refresh-token/regenerate/web')
+        .expect(401);
+    });
+
+    it('401 - using invalidated refresh token', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const refreshToken = loginUser.app.refreshToken;
+
+      // invalidate the refresh token
+      const loginTokenService = testHelper.get(LoginTokenService);
+      const refreshTokenPayload =
+        await loginTokenService.verifyRefreshToken(refreshToken);
+      await loginTokenService.invalidateRefreshTokenById(
+        refreshTokenPayload.idx,
+        refreshTokenPayload.jti,
+        TokenIssuedBy.APP,
+      );
+
+      await testHelper
+        .test()
+        .post('/auth/refresh-token/regenerate/web')
+        .set('Cookie', [`refreshToken=Bearer ${refreshToken}`])
         .expect(401);
     });
   });
