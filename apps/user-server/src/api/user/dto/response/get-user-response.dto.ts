@@ -22,7 +22,7 @@ export class GetUserResponseDto {
   /**
    * 프로필 이미지 경로
    *
-   * @example "/user123/profile.jpg"
+   * @example "/profile/myprofile.jpg"
    */
   profileImagePath: string | null;
 
