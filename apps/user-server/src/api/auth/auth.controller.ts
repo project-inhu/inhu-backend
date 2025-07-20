@@ -8,6 +8,9 @@ import { Request, Response } from 'express';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  /**
+   * Social Login Redirect를 처리하는 엔드포인트
+   */
   @Get('/:provider/login')
   public async getSocialLoginRedirect(
     @Res() res: Response,
@@ -18,6 +21,9 @@ export class AuthController {
     res.redirect(url);
   }
 
+  /**
+   * App 전용 Social Login Callback을 처리하는 엔드포인트
+   */
   @Get('/:provider/callback/app')
   public async socialLogin(
     @Req() req: Request,
