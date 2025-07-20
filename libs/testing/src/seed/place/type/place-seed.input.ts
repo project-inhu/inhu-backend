@@ -48,14 +48,14 @@ export type PlaceSeedInput = {
         type: WeeklyCloseType;
       }[]
     | null;
-  breakTime:
+  breakTime?:
     | {
         startAt: Date;
         endAt: Date;
         day: DayOfWeek;
       }[]
     | null;
-  keywordCountList:
+  keywordCountList?:
     | {
         keywordIdx: number;
         count: number;
