@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ReviewCoreService } from './review-core.service';
 import { ReviewCoreRepository } from './review-core.repository';
-import { PlaceCoreRepository } from '@app/core/place/place-core.repository';
+import { PlaceCoreModule } from '../place/place-core.module';
 
 @Module({
-  providers: [ReviewCoreService, ReviewCoreRepository, PlaceCoreRepository],
+  imports: [PlaceCoreModule],
+  providers: [ReviewCoreService, ReviewCoreRepository],
   exports: [ReviewCoreService],
 })
 export class ReviewCoreModule {}
