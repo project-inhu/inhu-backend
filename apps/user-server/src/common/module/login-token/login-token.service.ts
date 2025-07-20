@@ -30,6 +30,7 @@ export class LoginTokenService {
 
   /**
    * 로그인 토큰 세트 발급하기
+   * access token과 refresh token을 발급합니다.
    */
   public async issueTokenSet(
     user: Pick<UserModel, 'idx'>,
@@ -184,6 +185,38 @@ export class LoginTokenService {
       idx: userIdx,
       issuedBy: issuedBy,
     };
+
+    const result =
+      await this.refreshTokenStorage.findRefreshTokenIdListByUserIdx(userIdx);
+
+    if (issuedBy === TokenIssuedBy.APP) {
+      const alreadyExistAppToken = result.find(
+        (token) => token.issuedBy === TokenIssuedBy.APP,
+      );
+
+      if (alreadyExistAppToken) {
+        await this.refreshTokenStorage.removeRefreshTokenById(
+          userIdx,
+          alreadyExistAppToken.id,
+          TokenIssuedBy.APP,
+        );
+      }
+    }
+
+    if (issuedBy === TokenIssuedBy.WEB) {
+      const alreadyExistWebTokenList = result.filter(
+        (token) => token.issuedBy === TokenIssuedBy.WEB,
+      );
+
+      if (alreadyExistWebTokenList.length >= 3) {
+        const oldestWebToken = alreadyExistWebTokenList[0];
+        await this.refreshTokenStorage.removeRefreshTokenById(
+          userIdx,
+          oldestWebToken.id,
+          TokenIssuedBy.WEB,
+        );
+      }
+    }
 
     const jwtId = userIdx + '-' + uuidv4();
 
