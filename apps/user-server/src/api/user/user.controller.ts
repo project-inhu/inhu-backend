@@ -1,16 +1,5 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Patch,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { UserService } from './user.service';
-import { AuthGuard } from '@user/auth/common/guards/auth.guard';
-import { User } from '@user/common/decorator/user.decorator';
-import { UserInfoEntity } from './entity/user-info.entity';
 
 @Controller('user')
 export class UserController {
