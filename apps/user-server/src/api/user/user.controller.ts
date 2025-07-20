@@ -1,75 +1,60 @@
-import { Controller } from '@nestjs/common';
+import { Body, Controller, Get, Put, Query, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
+import { AuthGuard } from '@user/auth/common/guards/auth.guard';
+import { User } from '@user/common/decorator/user.decorator';
+import { GetUserResponseDto } from './dto/response/get-user-response.dto';
+import { UpdateUserDto } from './dto/request/update-user.dto';
+import { S3_FOLDER, S3Service } from '@libs/common';
+import { GetPresignedUrlResponseDto } from './dto/response/get-presigned-url-response.dto';
 
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private s3Service: S3Service,
+  ) {}
 
-  // /**
-  //  * 내 정보 조회
-  //  *
-  //  * @author 조희주
-  //  */
-  // @UseGuards(AuthGuard)
-  // @Get()
-  // async getUserByUserIdx(
-  //   @User('idx') userIdx: number,
-  // ): Promise<UserInfoEntity> {
-  //   return await this.userService.getUserByUserIdx(userIdx);
-  // }
+  /**
+   * 내 정보 조회
+   *
+   * @author 조희주
+   */
+  @UseGuards(AuthGuard)
+  @Get()
+  async getUserByIdx(
+    @User('idx') userIdx: number,
+  ): Promise<GetUserResponseDto> {
+    return await this.userService.getUserByIdx(userIdx);
+  }
 
-  // /**
-  //  * 닉네임 수정
-  //  *
-  //  * @author 조희주
-  //  */
-  // @UseGuards(AuthGuard)
-  // @Patch('/nickname')
-  // async updateNicknameByUserIdx(
-  //   @User('idx') userIdx: number,
-  //   @Body('nickname') nickname: string,
-  // ): Promise<UserInfoEntity> {
-  //   return this.userService.updateNicknameByUserIdx({ userIdx, nickname });
-  // }
+  /**
+   * 프로필 이미지 업로드를 위한 Presigned URL 발급
+   * 프론트엔드에서 이 URL을 받아 S3에 파일을 직접 업로드
+   *
+   * @author 조희주
+   */
+  @UseGuards(AuthGuard)
+  @Get('/profile-image/presigned-url')
+  async getProfileImagePresignedUrl(
+    @Query('fileName') filename: string,
+  ): Promise<GetPresignedUrlResponseDto> {
+    return await this.s3Service.getPresignedUrl({
+      folder: S3_FOLDER.PROFILE,
+      filename,
+    });
+  }
 
-  // /**
-  //  * 프로필 이미지 업로드를 위한 Presigned URL 발급
-  //  *
-  //  * @author 조희주
-  //  */
-  // @UseGuards(AuthGuard)
-  // @Get('/profile-image/presigned-url')
-  // async getPresignedUrl(
-  //   @Query('filename') filename: string,
-  // ): Promise<GetPresignedUrlResponseDto> {
-  //   return this.userService.getPresignedUrl(filename);
-  // }
-
-  // /**
-  //  * S3 업로드 완료 후, 이미지 키를 DB에 저장
-  //  *
-  //  * @author 조희주
-  //  */
-  // @UseGuards(AuthGuard)
-  // @Patch('/profile-image')
-  // async updateProfileImagePathByUserIdx(
-  //   @User('idx') userIdx: number,
-  //   @Body('imageKey') imageKey: string,
-  // ): Promise<UserInfoEntity> {
-  //   return this.userService.updateProfileImagePathByUserIdx({
-  //     userIdx,
-  //     imageKey,
-  //   });
-  // }
-
-  // /**
-  //  * 회원 탈퇴
-  //  *
-  //  * @author 조희주
-  //  */
-  // @UseGuards(AuthGuard)
-  // @Delete()
-  // async deleteUserByUserIdx(@User('idx') userIdx: number): Promise<void> {
-  //   await this.userService.deleteUserByUserIdx(userIdx);
-  // }
+  /**
+   * 내 정보 수정
+   *
+   * @author 조희주
+   */
+  @UseGuards(AuthGuard)
+  @Put()
+  async updateUserByIdx(
+    @User('idx') userIdx: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<void> {
+    await this.userService.updateUserByIdx(userIdx, updateUserDto);
+  }
 }
