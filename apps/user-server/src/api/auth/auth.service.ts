@@ -101,4 +101,23 @@ export class AuthService {
 
     return { accessToken };
   }
+
+  public async logout(refreshToken?: string) {
+    if (!refreshToken) {
+      return;
+    }
+
+    try {
+      const { id, issuedBy, idx } =
+        await this.loginTokenService.verifyAccessToken(refreshToken);
+
+      await this.loginTokenService.invalidateRefreshTokenById(
+        idx,
+        id,
+        issuedBy,
+      );
+    } catch (err) {
+      return;
+    }
+  }
 }

@@ -1,6 +1,7 @@
 import { Cookie, Exception } from '@libs/common';
 import { AuthProvider } from '@libs/core';
 import {
+  Body,
   Controller,
   Get,
   Param,
@@ -12,6 +13,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from '@user/api/auth/auth.service';
 import cookieConfig from '@user/api/auth/config/cookie.config';
+import { LogoutAppDto } from '@user/api/auth/dto/request/logout-app.dto';
 import { SocialLoginAppResponseDto } from '@user/api/auth/dto/response/social-login-app-response.dto';
 import { SocialLoginWebResponseDto } from '@user/api/auth/dto/response/social-login-web-response.dto';
 import { TokenIssuedBy } from '@user/common/module/login-token/constants/token-issued-by.constants';
@@ -34,8 +36,9 @@ export class AuthController {
   @Post('/refresh-token/regenerate')
   @Exception(401, 'Invalid refresh token')
   public async reissueAccessToken(
-    @Cookie('refreshToken') refreshToken?: string,
+    @Cookie('refreshToken') refreshTokenWithType?: string,
   ) {
+    const refreshToken = refreshTokenWithType?.replace('Bearer ', '');
     return await this.authService.reissueAccessToken(refreshToken);
   }
 
@@ -87,5 +90,30 @@ export class AuthController {
     res.cookie('refreshToken', `Bearer ${refreshToken}`, cookieConfig());
 
     return { accessToken };
+  }
+
+  /**
+   * 앱용 로그아웃 API
+   */
+  @Post('/logout/app')
+  public async logout(@Body() dto: LogoutAppDto): Promise<void> {
+    const refreshToken = dto.refreshTokenWithType?.replace('Bearer ', '');
+
+    await this.authService.logout(refreshToken);
+  }
+
+  /**
+   * 웹용 로그아웃 API
+   */
+  @Post('/logout/web')
+  public async logoutWeb(
+    @Res({ passthrough: true }) res: Response,
+    @Cookie('refreshToken') refreshTokenWithType?: string,
+  ): Promise<void> {
+    const refreshToken = refreshTokenWithType?.replace('Bearer ', '');
+
+    await this.authService.logout(refreshToken);
+
+    res.clearCookie('refreshToken', cookieConfig());
   }
 }

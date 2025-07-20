@@ -53,7 +53,7 @@ export class LoginTokenService {
    *
    * @param id - refresh token의 id
    */
-  public async invalidateRefreshToken(
+  public async invalidateRefreshTokenById(
     userIdx: number,
     refreshTokenId: string,
     issuedBy: TokenIssuedBy,
