@@ -35,11 +35,10 @@ export class CreateReviewDto {
    *
    * @example ['images/review/1/20240312/171923.jpg','images/review/1/20240312/17234.jpg']
    */
-  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   @ArrayMaxSize(5)
-  imagePathList?: string[];
+  imagePathList: string[];
 
   /**
    * 리뷰에 포함된 키워드 Idx 리스트
@@ -49,9 +48,8 @@ export class CreateReviewDto {
    */
   @UniqueArray()
   @Type(() => Number)
-  @IsOptional()
   @IsArray()
   @ArrayMaxSize(5)
   @IsInt({ each: true })
-  keywordIdxList?: number[];
+  keywordIdxList: number[];
 }
