@@ -7,9 +7,5 @@ import { Transform } from 'class-transformer';
  * @author 강정연
  */
 export function Trim() {
-  return applyDecorators(
-    Transform(({ value }) =>
-      typeof value === 'string' ? value.trim() : value,
-    ),
-  );
+  return applyDecorators(Transform(({ value }) => value.trim()));
 }

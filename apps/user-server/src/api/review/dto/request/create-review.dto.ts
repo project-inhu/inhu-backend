@@ -8,8 +8,8 @@ import {
   IsString,
   Length,
 } from 'class-validator';
-import { Trim } from '../common/decorators/trim.decorator';
-import { UniqueArray } from '../common/decorators/unique-array.decorator';
+import { Trim } from '@user/common/decorator/trim.decorator';
+import { UniqueArray } from '@user/common/decorator/unique-array.decorator';
 
 /**
  * 특정 장소에 리뷰를 생성할 때 사용하는 DTO
@@ -35,11 +35,10 @@ export class CreateReviewDto {
    *
    * @example ['images/review/1/20240312/171923.jpg','images/review/1/20240312/17234.jpg']
    */
-  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   @ArrayMaxSize(5)
-  imagePathList?: string[];
+  imagePathList: string[];
 
   /**
    * 리뷰에 포함된 키워드 Idx 리스트
@@ -49,9 +48,8 @@ export class CreateReviewDto {
    */
   @UniqueArray()
   @Type(() => Number)
-  @IsOptional()
   @IsArray()
   @ArrayMaxSize(5)
   @IsInt({ each: true })
-  keywordIdxList?: number[];
+  keywordIdxList: number[];
 }
