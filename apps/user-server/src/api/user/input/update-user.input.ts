@@ -4,7 +4,6 @@
  * @author 조희주
  */
 export class UpdateUserInput {
-  userIdx: number;
   nickname?: string;
   profileImagePath?: string | null;
 }

@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserCoreService } from '@libs/core';
 import { UserEntity } from './entity/user.entity';
+import { UpdateUserInput } from './input/update-user.input';
 
 @Injectable()
 export class UserService {
@@ -18,5 +19,17 @@ export class UserService {
     }
 
     return UserEntity.fromModel(user);
+  }
+
+  /**
+   * 내 정보 수정
+   *
+   * @author 조희주
+   */
+  async updateUserByIdx(
+    userIdx: number,
+    updateUserInput: UpdateUserInput,
+  ): Promise<void> {
+    await this.userCoreService.updateUserByIdx(userIdx, updateUserInput);
   }
 }
