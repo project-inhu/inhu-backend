@@ -3,7 +3,7 @@
  *
  * @author 이수인
  */
-interface RefreshTokenPayload {
+export interface RefreshTokenPayload {
   /**
    * 사용자 idx
    */

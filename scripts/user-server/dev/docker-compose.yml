@@ -11,6 +11,22 @@ services:
       - inhu-user-server-dev-data:/var/lib/postgresql/data
       - ./init:/docker-entrypoint-initdb.d
       - ../../rdb:/rdb
+    networks:
+      - inhu-user-server-dev-network
+
+  redis:
+    image: redis:7.4.0
+    container_name: inhu-user-server-dev-redis
+    ports:
+      - '6379:6379'
+    networks:
+      - inhu-user-server-dev-network
+    volumes:
+      - inhu-user-server-dev-redis-data:/data
 
 volumes:
   inhu-user-server-dev-data:
+  inhu-user-server-dev-redis-data:
+
+networks:
+  inhu-user-server-dev-network:

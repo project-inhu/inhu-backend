@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginTokenService } from '../../services/login-token.service';
 import { TokenStorageStrategy } from './base/token-storage.strategy';
+import { RefreshTokenPayload } from '@user/auth/interfaces/server-token/refresh-token-payload.interface';
 
 @Injectable()
 export class InMemoryTokenStorage extends TokenStorageStrategy {

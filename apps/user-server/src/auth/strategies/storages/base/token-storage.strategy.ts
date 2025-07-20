@@ -1,3 +1,5 @@
+import { RefreshTokenPayload } from '@user/auth/interfaces/server-token/refresh-token-payload.interface';
+
 /**
  * token 저장을 위한 기본 전략(추상 클래스)으로, 공통 로직을 정의하며 각 제공자가 이를 상속하여 구현해야 함.
  *

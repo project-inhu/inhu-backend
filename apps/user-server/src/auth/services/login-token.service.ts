@@ -1,6 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { AccessTokenPayload } from '@user/auth/interfaces/server-token/access-token-payload.interface';
+import { RefreshTokenPayload } from '@user/auth/interfaces/server-token/refresh-token-payload.interface';
 
 @Injectable()
 export class LoginTokenService {

@@ -1,8 +1,9 @@
+import { UserCoreRepository } from '@libs/core/user/user-core.repository';
+import { UserCoreService } from '@libs/core/user/user-core.service';
 import { Module } from '@nestjs/common';
-import { UserService } from '@user/api/user/user.service';
 
 @Module({
-  providers: [UserService],
-  exports: [UserService],
+  providers: [UserCoreService, UserCoreRepository],
+  exports: [UserCoreService],
 })
 export class UserCoreModule {}

@@ -1,4 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { AccessTokenPayload } from '@user/auth/interfaces/server-token/access-token-payload.interface';
 
 /**
  * access token 에서 decode 한 사용자 정보를 가져오는 데코레이터
