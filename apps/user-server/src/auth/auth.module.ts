@@ -23,7 +23,6 @@ import { SocialTokenService } from './strategies/social-login/services/social-to
     }),
     forwardRef(() => UserModule),
   ],
-  controllers: [AuthController],
   providers: [
     AuthService,
     AuthGuard,
