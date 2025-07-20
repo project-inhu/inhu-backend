@@ -11,6 +11,7 @@ describe('Review E2E test', () => {
 
   let userIdx: number;
   let placeIdx: number;
+  let reviewIdx: number;
 
   beforeEach(async () => {
     await testHelper.init();
@@ -28,6 +29,7 @@ describe('Review E2E test', () => {
     const review = await testHelper
       .seedHelper(ReviewSeedHelper)
       .seed({ userIdx: user.idx, placeIdx: place.idx, deletedAt: null });
+    reviewIdx = review.idx;
   });
 
   afterEach(async () => {
@@ -36,6 +38,12 @@ describe('Review E2E test', () => {
 
   describe('GET /review/all', () => {
     it('should return empty array if no reviews exist for the place', async () => {
+      console.log('placeIdx', placeIdx);
+      const review = await testHelper.getPrisma().review.update({
+        where: { idx: reviewIdx },
+        data: { deletedAt: new Date() },
+      });
+      console.log('reviewIdx', review);
       const res = await testHelper
         .test()
         .get(`/review/all?placeIdx=${placeIdx}`)
