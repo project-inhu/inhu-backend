@@ -6,6 +6,7 @@ import { GetUserResponseDto } from './dto/response/get-user-response.dto';
 import { S3_FOLDER, S3Service } from '@libs/common';
 import { GetPresignedUrlResponseDto } from './dto/response/get-presigned-url-response.dto';
 import { LoginUser } from '@user/common/types/LoginUser';
+import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
 
 @Controller('user')
 export class UserController {
@@ -14,16 +15,16 @@ export class UserController {
     private s3Service: S3Service,
   ) {}
 
-  // /**
-  //  * 내 정보 조회
-  //  *
-  //  * @author 조희주
-  //  */
-  // @UseGuards(AuthGuard)
-  // @Get()
-  // async getUserByIdx(@User() user: LoginUser): Promise<GetUserResponseDto> {
-  //   return await this.userService.getUserByIdx(user.idx);
-  // }
+  /**
+   * 내 정보 조회
+   *
+   * @author 조희주
+   */
+  @Get()
+  @LoginAuth()
+  async getUserByIdx(@User() user: LoginUser): Promise<GetUserResponseDto> {
+    return await this.userService.getUserByIdx(user.idx);
+  }
 
   // /**
   //  * 프로필 이미지 업로드를 위한 Presigned URL 발급

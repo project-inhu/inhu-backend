@@ -5,7 +5,7 @@ import { UserCoreModule } from '@libs/core';
 import { S3Module } from '@libs/common';
 
 @Module({
-  imports: [UserCoreModule, S3Module],
+  imports: [UserCoreModule],
   controllers: [UserController],
   providers: [UserService],
 })

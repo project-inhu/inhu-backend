@@ -5,10 +5,10 @@ import { UpdateReviewInput } from './inputs/update-review.input';
 import { ReviewCoreRepository } from './review-core.repository';
 import { GetReviewOverviewInput } from './inputs/get-review-overview.input';
 import { Transactional } from '@nestjs-cls/transactional';
-import { ReviewNotFoundException } from '@app/core/review/exception/review-not-found.exception';
-import { isEqualArray } from '@app/core/review/util/is-equal-array.util';
-import { SelectReview } from '@app/core/review/model/prisma-type/select-review';
 import { PlaceCoreService } from '../place/place-core.service';
+import { ReviewNotFoundException } from '@libs/core/review/exception/review-not-found.exception';
+import { SelectReview } from '@libs/core/review/model/prisma-type/select-review';
+import { isEqualArray } from '@libs/core/review/util/is-equal-array.util';
 
 @Injectable()
 export class ReviewCoreService {

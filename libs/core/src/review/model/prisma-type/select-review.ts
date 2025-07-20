@@ -1,5 +1,5 @@
-import { SELECT_REVIEW_AUTHOR } from '@app/core/review/model/prisma-type/select-review-author';
-import { SELECT_REVIEW_PLACE } from '@app/core/review/model/prisma-type/select-review-place';
+import { SELECT_REVIEW_AUTHOR } from '@libs/core/review/model/prisma-type/select-review-author';
+import { SELECT_REVIEW_PLACE } from '@libs/core/review/model/prisma-type/select-review-place';
 import { Prisma } from '@prisma/client';
 
 export const SELECT_REVIEW = Prisma.validator<Prisma.ReviewDefaultArgs>()({
