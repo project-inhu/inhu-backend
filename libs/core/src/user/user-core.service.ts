@@ -3,6 +3,7 @@ import { UserCoreRepository } from './user-core.repository';
 import { CreateUserInput } from './inputs/create-user.input';
 import { UserModel } from './model/user.model';
 import { AuthProvider } from './constants/auth-provider.constant';
+import { UpdateUserInput } from '@libs/core/user/inputs/update-user.input';
 
 @Injectable()
 export class UserCoreService {
@@ -34,7 +35,7 @@ export class UserCoreService {
 
   public async updateUserByIdx(
     idx: number,
-    input: CreateUserInput,
+    input: UpdateUserInput,
   ): Promise<void> {
     return this.userCoreRepository.updateUserByIdx(idx, input);
   }
