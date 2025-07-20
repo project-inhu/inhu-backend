@@ -35,7 +35,7 @@ export abstract class ITestHelper {
     }
 
     testingModuleBuilder
-      .overrideProvider(PrismaTestSetup)
+      .overrideProvider(PrismaService)
       .useValue(this.prismaSetup.getPrisma());
 
     this.appModule = await testingModuleBuilder.compile();
