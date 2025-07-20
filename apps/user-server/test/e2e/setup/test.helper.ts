@@ -8,6 +8,9 @@ import {
 import * as cookieParser from 'cookie-parser';
 
 export class TestHelper extends ITestHelper {
+  /**
+   * init 메서드를 사용한 이후부터 사용할 수 있습니다.
+   */
   public loginUsers: {
     user1: LoginUserForTest;
     user2: LoginUserForTest;
