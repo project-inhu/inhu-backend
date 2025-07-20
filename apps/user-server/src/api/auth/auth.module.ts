@@ -10,12 +10,14 @@ import { AuthService } from '@user/api/auth/auth.service';
 import { KakaoLoginStrategy } from '@user/api/auth/social-login/strategy/kakao/kakao-login.strategy';
 import { AppleLoginStrategy } from '@user/api/auth/social-login/strategy/apple/apple-login.strategy';
 import { JwtModule } from '@nestjs/jwt';
+import authConfig from '@user/api/auth/config/auth.config';
 
 @Module({
   imports: [
     HttpModule,
     ConfigModule.forFeature(kakaoLoginConfig),
     ConfigModule.forFeature(appleLoginConfig),
+    ConfigModule.forFeature(authConfig),
     UserCoreModule,
     LoginTokenModule,
     JwtModule,
