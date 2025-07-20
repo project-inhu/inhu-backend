@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { TokenCategory } from '@user/common/module/login-token/constants/token-category.constant';
 import { TokenIssuedBy } from '@user/common/module/login-token/constants/token-issued-by.constants';
+import { InvalidAccessTokenException } from '@user/common/module/login-token/exception/invalid-access-token.exception';
 import { InvalidRefreshTokenException } from '@user/common/module/login-token/exception/invalid-refresh-token.exception';
 import { IRefreshTokenStorage } from '@user/common/module/login-token/storage/refresh-token-storage.interface';
 import { AccessTokenPayload } from '@user/common/module/login-token/types/AccessTokenPayload';
@@ -109,7 +110,9 @@ export class LoginTokenService {
   /**
    * access token verify 하기
    */
-  public async verifyAccessToken(accessToken: string) {
+  public async verifyAccessToken(
+    accessToken: string,
+  ): Promise<AccessTokenPayload> {
     const payload = await this.onlyVerifyAccessToken(accessToken);
 
     const result = await this.refreshTokenStorage.findRefreshTokenPayloadById(
@@ -131,7 +134,7 @@ export class LoginTokenService {
     try {
       return await this.jwtService.verifyAsync<AccessTokenPayload>(accessToken);
     } catch (err) {
-      throw new InvalidRefreshTokenException('invalid access token');
+      throw new InvalidAccessTokenException('invalid access token');
     }
   }
 

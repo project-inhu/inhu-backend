@@ -1,15 +1,6 @@
 import { Cookie, Exception } from '@libs/common';
 import { AuthProvider } from '@libs/core';
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Req,
-  Res,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from '@user/api/auth/auth.service';
 import cookieConfig from '@user/api/auth/config/cookie.config';

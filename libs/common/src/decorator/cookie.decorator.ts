@@ -1,7 +1,9 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
+type CookieKeys = 'refreshToken';
+
 export const Cookie = createParamDecorator(
-  (data: keyof CookieData, ctx: ExecutionContext) => {
+  (data: CookieKeys, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
     return request.cookies?.[data] ?? null;
   },

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { PrismaModule } from '../../../libs/common/src/modules/prisma/prisma.module';
 import { PlaceModule } from './api/place/place.module';
 import { ConfigModule } from '@nestjs/config';
@@ -9,6 +9,8 @@ import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-pr
 import { PrismaService } from '@libs/common/modules/prisma/prisma.service';
 import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { AuthModule } from '@user/api/auth/auth.module';
+import { LoginTokenModule } from '@user/common/module/login-token/login-token.module';
+import { AccessTokenMiddleware } from '@user/common/middleware/access-token.middleware';
 
 @Module({
   imports: [
@@ -18,6 +20,7 @@ import { AuthModule } from '@user/api/auth/auth.module';
     ReviewModule,
     PickedPlaceModule,
     AuthModule,
+    LoginTokenModule,
     ClsModule.forRoot({
       plugins: [
         new ClsPluginTransactional({
@@ -33,4 +36,8 @@ import { AuthModule } from '@user/api/auth/auth.module';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    return consumer.apply(AccessTokenMiddleware).forRoutes('/');
+  }
+}
