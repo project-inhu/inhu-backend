@@ -1,5 +1,14 @@
+import { Cookie, Exception } from '@libs/common';
 import { AuthProvider } from '@libs/core';
-import { Controller, Get, Param, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from '@user/api/auth/auth.service';
 import cookieConfig from '@user/api/auth/config/cookie.config';
@@ -17,6 +26,17 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) {
     this.MAIN_PAGE_URL = this.configService.get<string>('MAIN_PAGE_URL') || '/';
+  }
+
+  /**
+   * access token을 재발급하는 엔드포인트
+   */
+  @Post('/refresh-token/regenerate')
+  @Exception(401, 'Invalid refresh token')
+  public async reissueAccessToken(
+    @Cookie('refreshToken') refreshToken?: string,
+  ) {
+    return await this.authService.reissueAccessToken(refreshToken);
   }
 
   /**

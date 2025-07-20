@@ -18,3 +18,6 @@ export * from './types';
 
 // utils
 export * from './utils';
+
+// decorator
+export * from './decorator';

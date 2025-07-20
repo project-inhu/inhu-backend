@@ -4,7 +4,11 @@ import {
   UserCoreService,
   UserModel,
 } from '@libs/core';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ISocialLoginStrategy } from '@user/api/auth/social-login/ISocialLogin-strategy.interface';
 import { AppleLoginStrategy } from '@user/api/auth/social-login/strategy/apple/apple-login.strategy';
 import { KakaoLoginStrategy } from '@user/api/auth/social-login/strategy/kakao/kakao-login.strategy';
@@ -85,5 +89,16 @@ export class AuthService {
         snsId: oauthInfo.snsId,
       },
     });
+  }
+
+  public async reissueAccessToken(refreshToken?: string) {
+    if (!refreshToken) {
+      throw new UnauthorizedException('There is no refresh token');
+    }
+
+    const { accessToken } =
+      await this.loginTokenService.reissueAccessToken(refreshToken);
+
+    return { accessToken };
   }
 }
