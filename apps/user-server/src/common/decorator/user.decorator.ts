@@ -9,7 +9,7 @@ export const User = createParamDecorator(
     const request = ctx.switchToHttp().getRequest();
 
     return {
-      idx: request.user.idx,
+      idx: request.user?.idx,
     };
   },
 );

@@ -11,4 +11,19 @@ describe('Auth E2E test', () => {
   afterEach(async () => {
     await testHelper.destroy();
   });
+
+  describe('POST /auth/refresh-token/regenerate/web', () => {
+    it('200 - successfully reissues access token', async () => {
+      const { user1 } = testHelper.loginUsers;
+
+      const response = await testHelper
+        .test()
+        .post('/auth/refresh-token/regenerate/web')
+        .set('Cookie', [`refreshToken=Bearer ${user1.app.refreshToken}`])
+        .expect(200);
+
+      expect(response.body).toHaveProperty('accessToken');
+      expect(response.body.accessToken).toBeDefined();
+    });
+  });
 });
