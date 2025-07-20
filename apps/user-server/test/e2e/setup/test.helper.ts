@@ -1,4 +1,5 @@
 import { Type } from '@libs/common';
+import { RedisService } from '@libs/common/modules/redis/redis.service';
 import { ITestHelper } from '@libs/testing';
 import { ValidationPipe } from '@nestjs/common';
 import {
@@ -27,6 +28,16 @@ export class TestHelper extends ITestHelper {
         transform: true,
       }),
     );
+
     this.loginUsers = await LoginUserHelper.create(this);
+  }
+
+  public async appDestroy(): Promise<void> {
+    await this.app
+      .get(RedisService)
+      .del(`user:${this.loginUsers.user1.idx}:rt`);
+    await this.app
+      .get(RedisService)
+      .del(`user:${this.loginUsers.user2.idx}:rt`);
   }
 }

@@ -53,6 +53,13 @@ export abstract class ITestHelper {
    */
   abstract appSetup(): Promise<void>;
 
+  /**
+   * app 마다 필요한 종료 설정 구현체
+   *
+   * !주의: 외부에서 사용하지 마십시오
+   */
+  abstract appDestroy(): Promise<void>;
+
   public getPrisma(): PrismaService {
     return this.prismaSetup.getPrisma();
   }
@@ -62,6 +69,7 @@ export abstract class ITestHelper {
   }
 
   public async destroy() {
+    await this.appDestroy();
     this.prismaSetup.ROLLBACK();
     await this.appModule.close();
     await this.app.close();
