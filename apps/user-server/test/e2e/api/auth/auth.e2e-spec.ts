@@ -8,6 +8,7 @@ import { TokenCategory } from '@user/common/module/login-token/constants/token-c
 import { TokenIssuedBy } from '@user/common/module/login-token/constants/token-issued-by.constants';
 import { LoginTokenService } from '@user/common/module/login-token/login-token.service';
 import { TestHelper } from 'apps/user-server/test/e2e/setup/test.helper';
+import { extractCookieValue } from 'apps/user-server/test/util/extract-cookie-value.util';
 
 describe('Auth E2E test', () => {
   const testHelper = TestHelper.create(AppModule);
@@ -222,11 +223,14 @@ describe('Auth E2E test', () => {
         .query({ code: 'mocking-code' })
         .expect(200);
 
-      const [prefix, refreshToken] = response.headers['set-cookie'][0]
-        .split('; ')[0]
-        .split('%20');
+      const refreshToken = extractCookieValue(
+        response.headers['set-cookie'][0],
+        'refreshToken',
+      );
+
       expect(response.body).toHaveProperty('accessToken');
       expect(refreshToken).toBeDefined();
+      expect(refreshToken).toContain('Bearer ');
 
       user = await prisma.user.findFirstOrThrow({
         select: {
