@@ -30,6 +30,11 @@ export class UserService {
     userIdx: number,
     updateUserInput: UpdateUserInput,
   ): Promise<void> {
+    const user = await this.userCoreService.getUserByIdx(userIdx);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
     await this.userCoreService.updateUserByIdx(userIdx, updateUserInput);
   }
 
