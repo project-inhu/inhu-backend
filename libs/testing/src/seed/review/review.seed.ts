@@ -50,6 +50,36 @@ export class ReviewSeedHelper extends ISeedHelper<
       },
     });
 
+    await this.prisma.place.update({
+      where: { idx: filledInput.placeIdx },
+      data: {
+        reviewCount: { increment: 1 },
+      },
+    });
+
+    if (filledInput.keywordIdxList) {
+      await Promise.all(
+        filledInput.keywordIdxList.map((keywordIdx) =>
+          this.prisma.placeKeywordCount.upsert({
+            where: {
+              placeIdx_keywordIdx: {
+                placeIdx: filledInput.placeIdx,
+                keywordIdx,
+              },
+            },
+            update: {
+              count: { increment: 1 },
+            },
+            create: {
+              placeIdx: filledInput.placeIdx,
+              keywordIdx,
+              count: 1,
+            },
+          }),
+        ),
+      );
+    }
+
     return { idx: review.idx, ...filledInput };
   }
 }
