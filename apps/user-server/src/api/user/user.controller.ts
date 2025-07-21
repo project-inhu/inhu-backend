@@ -1,18 +1,14 @@
-import { Body, Controller, Get, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '@user/common/decorator/user.decorator';
 import { GetUserResponseDto } from './dto/response/get-user-response.dto';
-import { S3Service } from '@libs/common';
 import { LoginUser } from '@user/common/types/LoginUser';
 import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 
 @Controller('user')
 export class UserController {
-  constructor(
-    private userService: UserService,
-    private s3Service: S3Service,
-  ) {}
+  constructor(private userService: UserService) {}
 
   /**
    * 내 정보 조회
@@ -37,5 +33,16 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<void> {
     await this.userService.updateUserByIdx(user.idx, updateUserDto);
+  }
+
+  /**
+   * 회원 탈퇴
+   *
+   * @author 조희주
+   */
+  @Delete()
+  @LoginAuth()
+  async deleteUserByIdx(@User() user: LoginUser): Promise<void> {
+    await this.userService.deleteUserByIdx(user.idx);
   }
 }
