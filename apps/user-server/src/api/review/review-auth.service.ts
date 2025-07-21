@@ -29,13 +29,10 @@ export class ReviewAuthService {
   }
 
   /**
-   * 특정 리뷰 조회 권한을 검사
-   * - 리뷰 작성자 본인만 조회 가능
+   * 특정 리뷰에 대한 권한을 검사
+   * - 리뷰 작성자 본인인지 검사
    */
-  public checkGetReviewByIdxPermission(
-    reviewModel: ReviewModel,
-    loginUser: LoginUser,
-  ) {
+  public checkReviewPermission(reviewModel: ReviewModel, loginUser: LoginUser) {
     if (reviewModel.author.idx !== loginUser.idx) {
       throw new ForbiddenException('You can only access your own reviews');
     }
