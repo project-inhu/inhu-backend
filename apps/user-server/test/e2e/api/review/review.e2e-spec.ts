@@ -1,4 +1,7 @@
+import { PlaceCoreService } from '@libs/core';
 import { PlaceSeedHelper, ReviewSeedHelper } from '@libs/testing';
+import { Test } from '@nestjs/testing';
+import { Prisma } from '@prisma/client';
 import { GetAllReviewResponseDto } from '@user/api/review/dto/response/get-all-review.response.dto';
 import { ReviewEntity } from '@user/api/review/entity/review.entity';
 import { AppModule } from '@user/app.module';
@@ -146,6 +149,7 @@ describe('Review E2E test', () => {
         userIdx: loginUser.idx,
       });
 
+      // 시간 간격을 두어 생성 순서를 명확히 함
       await new Promise((resolve) => setTimeout(resolve, 20));
 
       const secondReview = await reviewSeedHelper.seed({
@@ -173,7 +177,8 @@ describe('Review E2E test', () => {
         activatedAt: new Date(),
       });
 
-      const reviewToDelete = await reviewSeedHelper.seed({
+      // 삭제된 리뷰 생성
+      await reviewSeedHelper.seed({
         placeIdx: place.idx,
         userIdx: loginUser.idx,
         deletedAt: new Date(),
@@ -338,7 +343,7 @@ describe('Review E2E test', () => {
         .test()
         .get('/review/all')
         .query({
-          page: 1,
+          page: 1, // ! no placeIdx and no userIdx
         })
         .expect(403);
     });
@@ -433,6 +438,7 @@ describe('Review E2E test', () => {
         keywordIdxList: [1, 2],
       };
 
+      // API 호출 전 초기 상태
       const placeBefore = await testHelper.getPrisma().place.findUniqueOrThrow({
         where: { idx: place.idx },
       });
@@ -453,6 +459,7 @@ describe('Review E2E test', () => {
         .send(createReviewDto)
         .expect(201);
 
+      // API 호출 후 상태
       const placeAfter = await testHelper.getPrisma().place.findUniqueOrThrow({
         where: { idx: place.idx },
       });
@@ -474,7 +481,10 @@ describe('Review E2E test', () => {
         keywordCountAfter.map((kc) => [kc.keywordIdx, kc.count]),
       );
 
+      // 장소의 reviewCount가 1 증가했는지 확인
       expect(placeAfter.reviewCount).toBe(placeBefore.reviewCount + 1);
+
+      // 각 keywordCount가 1씩 증가했는지 확인
       for (const keywordIdx of createReviewDto.keywordIdxList) {
         const beforeCount = beforeMap.get(keywordIdx) || 0;
         const afterCount = afterMap.get(keywordIdx);
@@ -538,6 +548,7 @@ describe('Review E2E test', () => {
         .map(({ idx }) => idx)
         .sort();
 
+      // 중복이 제거된 값인지 확인
       expect(resultKeywordIdxList).toStrictEqual([1]);
     });
 
@@ -552,7 +563,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .post(`/place/invalid/review`)
+        .post(`/place/invalid/review`) // ! invalid placeIdx
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(createReviewDto)
         .expect(400);
@@ -760,7 +771,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .post(`/place/9999999/review`)
+        .post(`/place/9999999/review`) // ! 존재하지 않는 placeIdx
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(createReviewDto)
         .expect(404);
@@ -773,10 +784,11 @@ describe('Review E2E test', () => {
         activatedAt: new Date(),
       });
 
+      // 존재하지 않는 keywordIdx를 포함시켜 의도적으로 에러 유발
       const createReviewDto = {
         content: '기본 리뷰입니다.',
         imagePathList: [],
-        keywordIdxList: [999999],
+        keywordIdxList: [999999], // ! 존재하지 않는 keywordIdx
       };
 
       const placeBefore = await testHelper.getPrisma().place.findUniqueOrThrow({
@@ -794,6 +806,7 @@ describe('Review E2E test', () => {
         where: { idx: place.idx },
       });
 
+      // 모두 롤백되어 reviewCount가 이전 상태와 동일해야 함
       expect(placeAfter.reviewCount).toBe(placeBefore.reviewCount);
     });
   });
@@ -807,22 +820,15 @@ describe('Review E2E test', () => {
         activatedAt: new Date(),
       });
 
-      const createReviewDto = {
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
         content: '기본 리뷰입니다.',
-        imagePathList: [
-          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250721.jpg',
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
         ],
         keywordIdxList: [1],
-      };
-
-      const createResponse = await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .send(createReviewDto)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .expect(201);
-
-      const reviewIdx = createResponse.body.idx;
+      });
 
       const updateReviewDto = {
         content: '수정된 리뷰입니다.',
@@ -833,15 +839,15 @@ describe('Review E2E test', () => {
         keywordIdxList: [2, 3],
       };
 
-      const updateResponse = await testHelper
+      await testHelper
         .test()
-        .patch(`/review/${reviewIdx}`)
+        .patch(`/review/${originalReview.idx}`)
         .send(updateReviewDto)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(200);
 
       const updated = await testHelper.getPrisma().review.findUniqueOrThrow({
-        where: { idx: reviewIdx },
+        where: { idx: originalReview.idx },
         include: {
           reviewImageList: true,
           reviewKeywordMappingList: { include: { keyword: true } },
@@ -865,38 +871,31 @@ describe('Review E2E test', () => {
         activatedAt: new Date(),
       });
 
-      const createReviewDto = {
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
         content: '기본 리뷰입니다.',
-        imagePathList: [
-          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250721.jpg',
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
         ],
         keywordIdxList: [1],
-      };
-
-      const createResponse = await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .send(createReviewDto)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .expect(201);
-
-      const reviewIdx = createResponse.body.idx;
+      });
 
       const updateReviewDto = {
-        content: '수정된 리뷰입니다.',
+        content: '수정된 리뷰입니다.', // ! content는 삭제 불가
         imagePathList: [],
         keywordIdxList: [],
       };
 
       await testHelper
         .test()
-        .patch(`/review/${reviewIdx}`)
+        .patch(`/review/${originalReview.idx}`)
         .send(updateReviewDto)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(200);
 
       const updated = await testHelper.getPrisma().review.findUniqueOrThrow({
-        where: { idx: reviewIdx },
+        where: { idx: originalReview.idx },
         include: {
           reviewImageList: true,
           reviewKeywordMappingList: true,
@@ -915,46 +914,40 @@ describe('Review E2E test', () => {
         activatedAt: new Date(),
       });
 
-      const createReviewDto = {
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
         content: '기본 리뷰입니다.',
-        imagePathList: [
-          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250721.jpg',
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
         ],
         keywordIdxList: [1],
-      };
-
-      const createResponse = await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .send(createReviewDto)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .expect(201);
-
-      const reviewIdx = createResponse.body.idx;
+      });
 
       const updateReviewDto = {};
 
       await testHelper
         .test()
-        .patch(`/review/${reviewIdx}`)
+        .patch(`/review/${originalReview.idx}`)
         .send(updateReviewDto)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(200);
 
       const updated = await testHelper.getPrisma().review.findUniqueOrThrow({
-        where: { idx: reviewIdx },
+        where: { idx: originalReview.idx },
         include: {
           reviewImageList: true,
           reviewKeywordMappingList: { include: { keyword: true } },
         },
       });
-      expect(updated.content).toBe(createReviewDto.content);
+
+      expect(updated.content).toBe(originalReview.content);
       expect(updated.reviewImageList.map((i) => i.path).sort()).toStrictEqual(
-        [...createReviewDto.imagePathList].sort(),
+        [...(originalReview.reviewImgList || [])].sort(), // null일 경우 빈 배열로 안전하게 처리
       );
       expect(
         updated.reviewKeywordMappingList.map((k) => k.keyword.idx).sort(),
-      ).toStrictEqual([...createReviewDto.keywordIdxList].sort());
+      ).toStrictEqual([...(originalReview.keywordIdxList || [])].sort());
     });
 
     it('200 - content only modified', async () => {
@@ -965,22 +958,15 @@ describe('Review E2E test', () => {
         activatedAt: new Date(),
       });
 
-      const createReviewDto = {
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
         content: '기본 리뷰입니다.',
-        imagePathList: [
-          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250721.jpg',
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
         ],
         keywordIdxList: [1],
-      };
-
-      const createResponse = await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .send(createReviewDto)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .expect(201);
-
-      const reviewIdx = createResponse.body.idx;
+      });
 
       const updateReviewDto = {
         content: '수정된 리뷰입니다.',
@@ -988,13 +974,13 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${reviewIdx}`)
+        .patch(`/review/${originalReview.idx}`)
         .send(updateReviewDto)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(200);
 
       const updated = await testHelper.getPrisma().review.findUniqueOrThrow({
-        where: { idx: reviewIdx },
+        where: { idx: originalReview.idx },
         include: {
           reviewImageList: true,
           reviewKeywordMappingList: { include: { keyword: true } },
@@ -1002,11 +988,11 @@ describe('Review E2E test', () => {
       });
       expect(updated.content).toBe(updateReviewDto.content);
       expect(updated.reviewImageList.map((i) => i.path).sort()).toStrictEqual(
-        [...createReviewDto.imagePathList].sort(),
+        [...(originalReview.reviewImgList || [])].sort(),
       );
       expect(
         updated.reviewKeywordMappingList.map((k) => k.keyword.idx).sort(),
-      ).toStrictEqual([...createReviewDto.keywordIdxList].sort());
+      ).toStrictEqual([...(originalReview.keywordIdxList || [])].sort());
     });
 
     it('200 - imagePathList only modified', async () => {
@@ -1017,22 +1003,15 @@ describe('Review E2E test', () => {
         activatedAt: new Date(),
       });
 
-      const createReviewDto = {
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
         content: '기본 리뷰입니다.',
-        imagePathList: [
-          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250721.jpg',
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
         ],
         keywordIdxList: [1],
-      };
-
-      const createResponse = await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .send(createReviewDto)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .expect(201);
-
-      const reviewIdx = createResponse.body.idx;
+      });
 
       const updateReviewDto = {
         imagePathList: [
@@ -1043,25 +1022,25 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${reviewIdx}`)
+        .patch(`/review/${originalReview.idx}`)
         .send(updateReviewDto)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(200);
 
       const updated = await testHelper.getPrisma().review.findUniqueOrThrow({
-        where: { idx: reviewIdx },
+        where: { idx: originalReview.idx },
         include: {
           reviewImageList: true,
           reviewKeywordMappingList: { include: { keyword: true } },
         },
       });
-      expect(updated.content).toBe(createReviewDto.content);
+      expect(updated.content).toBe(originalReview.content);
       expect(updated.reviewImageList.map((i) => i.path).sort()).toStrictEqual(
         [...updateReviewDto.imagePathList].sort(),
       );
       expect(
         updated.reviewKeywordMappingList.map((k) => k.keyword.idx).sort(),
-      ).toStrictEqual([...createReviewDto.keywordIdxList].sort());
+      ).toStrictEqual([...(originalReview.keywordIdxList || [])].sort());
     });
 
     it('200 - keywordIdxList only modified', async () => {
@@ -1072,22 +1051,15 @@ describe('Review E2E test', () => {
         activatedAt: new Date(),
       });
 
-      const createReviewDto = {
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
         content: '기본 리뷰입니다.',
-        imagePathList: [
-          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250721.jpg',
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
         ],
         keywordIdxList: [1],
-      };
-
-      const createResponse = await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .send(createReviewDto)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .expect(201);
-
-      const reviewIdx = createResponse.body.idx;
+      });
 
       const updateReviewDto = {
         keywordIdxList: [2, 3],
@@ -1095,21 +1067,21 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${reviewIdx}`)
+        .patch(`/review/${originalReview.idx}`)
         .send(updateReviewDto)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(200);
 
       const updated = await testHelper.getPrisma().review.findUniqueOrThrow({
-        where: { idx: reviewIdx },
+        where: { idx: originalReview.idx },
         include: {
           reviewImageList: true,
           reviewKeywordMappingList: { include: { keyword: true } },
         },
       });
-      expect(updated.content).toBe(createReviewDto.content);
+      expect(updated.content).toBe(originalReview.content);
       expect(updated.reviewImageList.map((i) => i.path).sort()).toStrictEqual(
-        [...createReviewDto.imagePathList].sort(),
+        [...(originalReview.reviewImgList || [])].sort(),
       );
       expect(
         updated.reviewKeywordMappingList.map((k) => k.keyword.idx).sort(),
@@ -1124,22 +1096,11 @@ describe('Review E2E test', () => {
         activatedAt: new Date(),
       });
 
-      const createReviewDto = {
-        content: '기본 리뷰입니다.',
-        imagePathList: [
-          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250721.jpg',
-        ],
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
         keywordIdxList: [1],
-      };
-
-      const createResponse = await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .send(createReviewDto)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .expect(201);
-
-      const reviewIdx = createResponse.body.idx;
+      });
 
       const updateReviewDto = {
         keywordIdxList: [2, 3, 4],
@@ -1147,7 +1108,7 @@ describe('Review E2E test', () => {
 
       const allKeywordIdxList = [
         ...new Set([
-          ...createReviewDto.keywordIdxList,
+          ...(originalReview.keywordIdxList || []),
           ...updateReviewDto.keywordIdxList,
         ]),
       ];
@@ -1161,9 +1122,13 @@ describe('Review E2E test', () => {
           },
         });
 
+      const beforeMap = new Map(
+        keywordCountBefore.map((kc) => [kc.keywordIdx, kc.count]),
+      );
+
       await testHelper
         .test()
-        .patch(`/review/${reviewIdx}`)
+        .patch(`/review/${originalReview.idx}`)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(updateReviewDto)
         .expect(200);
@@ -1179,15 +1144,11 @@ describe('Review E2E test', () => {
           },
         });
 
-      const beforeMap = new Map(
-        keywordCountBefore.map((kc) => [kc.keywordIdx, kc.count]),
-      );
-
       const afterMap = new Map(
         keywordCountAfter.map((kc) => [kc.keywordIdx, kc.count]),
       );
 
-      for (const removedKeyword of createReviewDto.keywordIdxList.filter(
+      for (const removedKeyword of (originalReview.keywordIdxList || []).filter(
         (k) => !updateReviewDto.keywordIdxList.includes(k),
       )) {
         expect(afterMap.get(removedKeyword) ?? 0).toBe(
@@ -1196,7 +1157,7 @@ describe('Review E2E test', () => {
       }
 
       for (const addedKeyword of updateReviewDto.keywordIdxList.filter(
-        (k) => !createReviewDto.keywordIdxList.includes(k),
+        (k) => ![...(originalReview.keywordIdxList || [])].includes(k),
       )) {
         expect(afterMap.get(addedKeyword) ?? 0).toBe(
           (beforeMap.get(addedKeyword) ?? 0) + 1,
@@ -1215,7 +1176,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/invalid`)
+        .patch(`/review/invalid`) // ! invalid reviewIdx
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(updateReviewDto)
         .expect(400);
@@ -1229,20 +1190,15 @@ describe('Review E2E test', () => {
         activatedAt: new Date(),
       });
 
-      const createReviewDto = {
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
         content: '기본 리뷰입니다.',
-        imagePathList: [],
-        keywordIdxList: [],
-      };
-
-      const createResponse = await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .send(createReviewDto)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .expect(201);
-
-      const reviewIdx = createResponse.body.idx;
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
+        ],
+        keywordIdxList: [1],
+      });
 
       const updateReviewDto = {
         content: '',
@@ -1252,7 +1208,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${reviewIdx}`)
+        .patch(`/review/${originalReview.idx}`)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(updateReviewDto)
         .expect(400);
@@ -1266,20 +1222,15 @@ describe('Review E2E test', () => {
         activatedAt: new Date(),
       });
 
-      const createReviewDto = {
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
         content: '기본 리뷰입니다.',
-        imagePathList: [],
-        keywordIdxList: [],
-      };
-
-      const createResponse = await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .send(createReviewDto)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .expect(201);
-
-      const reviewIdx = createResponse.body.idx;
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
+        ],
+        keywordIdxList: [1],
+      });
 
       const updateReviewDto = {
         content: '짧음',
@@ -1289,7 +1240,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${reviewIdx}`)
+        .patch(`/review/${originalReview.idx}`)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(updateReviewDto)
         .expect(400);
@@ -1303,20 +1254,15 @@ describe('Review E2E test', () => {
         activatedAt: new Date(),
       });
 
-      const createReviewDto = {
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
         content: '기본 리뷰입니다.',
-        imagePathList: [],
-        keywordIdxList: [],
-      };
-
-      const createResponse = await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .send(createReviewDto)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .expect(201);
-
-      const reviewIdx = createResponse.body.idx;
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
+        ],
+        keywordIdxList: [1],
+      });
 
       const updateReviewDto = {
         content: 'a'.repeat(401),
@@ -1326,7 +1272,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${reviewIdx}`)
+        .patch(`/review/${originalReview.idx}`)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(updateReviewDto)
         .expect(400);
@@ -1340,20 +1286,15 @@ describe('Review E2E test', () => {
         activatedAt: new Date(),
       });
 
-      const createReviewDto = {
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
         content: '기본 리뷰입니다.',
-        imagePathList: [],
-        keywordIdxList: [],
-      };
-
-      const createResponse = await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .send(createReviewDto)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .expect(201);
-
-      const reviewIdx = createResponse.body.idx;
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
+        ],
+        keywordIdxList: [1],
+      });
 
       const updateReviewDto = {
         content: '수정된 리뷰입니다.',
@@ -1363,7 +1304,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${reviewIdx}`)
+        .patch(`/review/${originalReview.idx}`)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(updateReviewDto)
         .expect(400);
@@ -1377,20 +1318,15 @@ describe('Review E2E test', () => {
         activatedAt: new Date(),
       });
 
-      const createReviewDto = {
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
         content: '기본 리뷰입니다.',
-        imagePathList: [],
-        keywordIdxList: [],
-      };
-
-      const createResponse = await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .send(createReviewDto)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .expect(201);
-
-      const reviewIdx = createResponse.body.idx;
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
+        ],
+        keywordIdxList: [1],
+      });
 
       const updateReviewDto = {
         content: '수정된 리뷰입니다.',
@@ -1407,31 +1343,29 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${reviewIdx}`)
+        .patch(`/review/${originalReview}`)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(updateReviewDto)
         .expect(400);
     });
 
     it('401 - token is missing', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
       const place = await placeSeedHelper.seed({
         deletedAt: null,
         activatedAt: new Date(),
       });
 
-      const createReviewDto = {
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
         content: '기본 리뷰입니다.',
-        imagePathList: [],
-        keywordIdxList: [],
-      };
-
-      const createResponse = await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .send(createReviewDto)
-        .expect(401);
-
-      const reviewIdx = createResponse.body.idx;
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
+        ],
+        keywordIdxList: [1],
+      });
 
       const updateReviewDto = {
         content: '수정된 리뷰입니다.',
@@ -1441,7 +1375,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${reviewIdx}`)
+        .patch(`/review/${originalReview.idx}`)
         .send(updateReviewDto)
         .expect(401);
     });
@@ -1455,20 +1389,15 @@ describe('Review E2E test', () => {
         activatedAt: new Date(),
       });
 
-      const createReviewDto = {
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser1.idx,
         content: '기본 리뷰입니다.',
-        imagePathList: [],
-        keywordIdxList: [],
-      };
-
-      const createResponse = await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .send(createReviewDto)
-        .set('Authorization', `Bearer ${loginUser1.app.accessToken}`)
-        .expect(201);
-
-      const reviewIdx = createResponse.body.idx;
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
+        ],
+        keywordIdxList: [1],
+      });
 
       const updateReviewDto = {
         content: '수정된 리뷰입니다.',
@@ -1478,7 +1407,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${reviewIdx}`)
+        .patch(`/review/${originalReview.idx}`)
         .set('Authorization', `Bearer ${loginUser2.app.accessToken}`)
         .send(updateReviewDto)
         .expect(403);
@@ -1495,7 +1424,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/999999`)
+        .patch(`/review/999999`) // ! 존재하지 않는 reviewIdx
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(updateReviewDto)
         .expect(404);
@@ -1509,45 +1438,67 @@ describe('Review E2E test', () => {
         activatedAt: new Date(),
       });
 
-      const createReviewDto = {
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
         content: '기본 리뷰입니다.',
-        imagePathList: [],
-        keywordIdxList: [],
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
+        ],
+        keywordIdxList: [1],
+      });
+
+      // 존재하지 않는 keywordIdx를 포함시켜 의도적으로 에러 유발
+      const updateReviewDto = {
+        keywordIdxList: [999999], // ! 존재하지 않는 keywordIdx
       };
 
-      const createResponse = await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .send(createReviewDto)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .expect(201);
+      const allKeywordIdxList = [
+        ...new Set([
+          ...(originalReview.keywordIdxList || []),
+          ...(updateReviewDto.keywordIdxList || []),
+        ]),
+      ];
 
-      const reviewIdx = createResponse.body.idx;
-
-      const beforeKeywordCounts = await testHelper
+      const keywordCountBefore = await testHelper
         .getPrisma()
         .placeKeywordCount.findMany({
-          where: { placeIdx: place.idx },
+          where: {
+            placeIdx: place.idx,
+            keywordIdx: { in: allKeywordIdxList },
+          },
         });
 
-      const updateReviewDto = {
-        keywordIdxList: [999999],
-      };
+      const beforeMap = new Map(
+        keywordCountBefore.map((kc) => [kc.keywordIdx, kc.count]),
+      );
 
       await testHelper
         .test()
-        .patch(`/review/${reviewIdx}`)
+        .patch(`/review/${originalReview.idx}`)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(updateReviewDto)
         .expect(500);
 
-      const afterKeywordCounts = await testHelper
+      const keywordCountAfter = await testHelper
         .getPrisma()
         .placeKeywordCount.findMany({
-          where: { placeIdx: place.idx },
+          where: {
+            placeIdx: place.idx,
+            keywordIdx: { in: allKeywordIdxList },
+          },
         });
 
-      expect(afterKeywordCounts).toEqual(beforeKeywordCounts);
+      const afterMap = new Map(
+        keywordCountAfter.map((kc) => [kc.keywordIdx, kc.count]),
+      );
+
+      // 모두 롤백되어 reviewCount가 이전 상태와 동일해야 함
+      for (const keywordIdx of allKeywordIdxList) {
+        const before = beforeMap.get(keywordIdx) ?? 0;
+        const after = afterMap.get(keywordIdx) ?? 0;
+        expect(after).toBe(before);
+      }
     });
   });
 
@@ -1560,32 +1511,27 @@ describe('Review E2E test', () => {
         activatedAt: new Date(),
       });
 
-      const createReviewDto = {
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
         content: '기본 리뷰입니다.',
-        imagePathList: [],
-        keywordIdxList: [],
-      };
-
-      const createResponse = await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .send(createReviewDto)
-        .expect(201);
-
-      const reviewIdx = createResponse.body.idx;
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
+        ],
+        keywordIdxList: [1],
+      });
 
       await testHelper
         .test()
-        .delete(`/review/${reviewIdx}`)
+        .delete(`/review/${originalReview.idx}`)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(200);
 
-      const review = await testHelper.getPrisma().review.findUniqueOrThrow({
-        where: { idx: reviewIdx },
+      const review = await testHelper.getPrisma().review.findUnique({
+        where: { idx: originalReview.idx },
       });
 
-      expect(review.deletedAt).not.toBeNull();
+      expect(review?.deletedAt).not.toBeNull();
     });
 
     it('200 - check DB side effects', async () => {
@@ -1596,84 +1542,89 @@ describe('Review E2E test', () => {
         activatedAt: new Date(),
       });
 
-      const createReviewDto = {
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
         content: '기본 리뷰입니다.',
-        imagePathList: [],
-        keywordIdxList: [],
-      };
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
+        ],
+        keywordIdxList: [1],
+      });
 
       const placeBefore = await testHelper.getPrisma().place.findUniqueOrThrow({
         where: { idx: place.idx },
       });
+
+      const keywordIdxList = originalReview.keywordIdxList || [];
 
       const keywordCountBefore = await testHelper
         .getPrisma()
         .placeKeywordCount.findMany({
           where: {
             placeIdx: place.idx,
-            keywordIdx: { in: createReviewDto.keywordIdxList },
+            keywordIdx: { in: keywordIdxList },
           },
         });
 
-      const createResponse = await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .send(createReviewDto)
-        .expect(201);
-
-      const reviewIdx = createResponse.body.idx;
+      const beforeMap = new Map(
+        keywordCountBefore.map((kc) => [kc.keywordIdx, kc.count]),
+      );
 
       await testHelper
         .test()
-        .delete(`/review/${reviewIdx}`)
+        .delete(`/review/${originalReview.idx}`)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(200);
 
       const placeAfter = await testHelper.getPrisma().place.findUniqueOrThrow({
         where: { idx: place.idx },
       });
-      expect(placeAfter.reviewCount).toBe(placeBefore.reviewCount); // 트랜잭션 롤백 여부 포함
+
+      expect(placeAfter.reviewCount).toBe(placeBefore.reviewCount - 1);
 
       const keywordCountAfter = await testHelper
         .getPrisma()
         .placeKeywordCount.findMany({
           where: {
             placeIdx: place.idx,
-            keywordIdx: { in: createReviewDto.keywordIdxList },
+            keywordIdx: { in: keywordIdxList },
           },
         });
 
-      for (const k of createReviewDto.keywordIdxList) {
-        const before =
-          keywordCountBefore.find((x) => x.keywordIdx === k)?.count ?? 0;
-        const after =
-          keywordCountAfter.find((x) => x.keywordIdx === k)?.count ?? 0;
+      const afterMap = new Map(
+        keywordCountAfter.map((kc) => [kc.keywordIdx, kc.count]),
+      );
+
+      for (const keywordIdx of keywordIdxList) {
+        const before = beforeMap.get(keywordIdx) ?? 0;
+        const after = afterMap.get(keywordIdx) ?? 0;
         expect(after).toBe(before - 1);
       }
     });
 
     it('401 - token is missing', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
       const place = await placeSeedHelper.seed({
         deletedAt: null,
         activatedAt: new Date(),
       });
 
-      const createReviewDto = {
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
         content: '기본 리뷰입니다.',
-        imagePathList: [],
-        keywordIdxList: [],
-      };
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
+        ],
+        keywordIdxList: [1],
+      });
 
-      const createResponse = await testHelper
+      await testHelper
         .test()
-        .post(`/place/${place.idx}/review`)
-        .send(createReviewDto)
+        .delete(`/review/${originalReview.idx}`)
         .expect(401);
-
-      const reviewIdx = createResponse.body.idx;
-
-      await testHelper.test().delete(`/review/${reviewIdx}`).expect(401);
     });
 
     it('403 - not the author of the review', async () => {
@@ -1685,24 +1636,19 @@ describe('Review E2E test', () => {
         activatedAt: new Date(),
       });
 
-      const createReviewDto = {
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser1.idx,
         content: '기본 리뷰입니다.',
-        imagePathList: [],
-        keywordIdxList: [],
-      };
-
-      const createResponse = await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .send(createReviewDto)
-        .set('Authorization', `Bearer ${loginUser1.app.accessToken}`)
-        .expect(201);
-
-      const reviewIdx = createResponse.body.idx;
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
+        ],
+        keywordIdxList: [1],
+      });
 
       await testHelper
         .test()
-        .delete(`/review/${reviewIdx}`)
+        .delete(`/review/${originalReview.idx}`)
         .set('Authorization', `Bearer ${loginUser2.app.accessToken}`)
         .expect(403);
     });
@@ -1712,7 +1658,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .delete('/review/9999999')
+        .delete('/review/9999999') // ! 존재하지 않는 reviewIdx
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(404);
     });
@@ -1725,57 +1671,90 @@ describe('Review E2E test', () => {
     //     activatedAt: new Date(),
     //   });
 
-    //   const createReviewDto = {
+    //   const originalReview = await reviewSeedHelper.seed({
+    //     placeIdx: place.idx,
+    //     userIdx: loginUser.idx,
     //     content: '기본 리뷰입니다.',
-    //     imagePathList: [],
-    //     keywordIdxList: [1, 2],
-    //   };
+    //     reviewImgList: [
+    //       '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
+    //     ],
+    //     keywordIdxList: [1],
+    //   });
 
-    //   const createResponse = await testHelper
-    //     .test()
-    //     .post(`/place/${place.idx}/review`)
-    //     .send(createReviewDto)
-    //     .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-    //     .expect(201);
+    //   const keywordIdxList = originalReview.keywordIdxList || [];
 
-    //   const reviewIdx = createResponse.body.idx;
-
-    //   const beforePlace = await testHelper.getPrisma().place.findUniqueOrThrow({
+    //   const placeBefore = await testHelper.getPrisma().place.findUniqueOrThrow({
     //     where: { idx: place.idx },
     //   });
 
-    //   const beforeKeywordCount = await testHelper
+    //   const keywordCountBefore = await testHelper
     //     .getPrisma()
     //     .placeKeywordCount.findMany({
     //       where: {
     //         placeIdx: place.idx,
-    //         keywordIdx: { in: createReviewDto.keywordIdxList },
+    //         keywordIdx: { in: keywordIdxList },
     //       },
     //     });
 
-    //   await testHelper.getPrisma().placeKeywordCount.deleteMany({
-    //     where: {
-    //       placeIdx: place.idx,
-    //       keywordIdx: { in: createReviewDto.keywordIdxList },
-    //     },
-    //   });
+    //   const beforeMap = new Map(
+    //     keywordCountBefore.map((kc) => [kc.keywordIdx, kc.count]),
+    //   );
+
+    //   // Prisma review.delete 내부 호출 시 강제로 실패 시키기
+    //   const spy = jest
+    //     .spyOn(testHelper.getPrisma().review, 'update')
+    //     .mockImplementationOnce(() => {
+    //       throw {
+    //         code: 'P2003',
+    //         message: '강제 실패입니다.',
+    //         clientVersion: '5.11.0',
+    //         name: 'PrismaClientKnownRequestError',
+    //       } as Prisma.PrismaClientKnownRequestError;
+    //     });
 
     //   await testHelper
     //     .test()
-    //     .delete(`/review/${reviewIdx}`)
+    //     .delete(`/review/${originalReview.idx}`)
     //     .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
     //     .expect(500);
 
-    //   const afterPlace = await testHelper.getPrisma().place.findUniqueOrThrow({
+    //   spy.mockRestore(); // 테스트 끝난 후 원래대로 복원
+
+    //   // 상태 유지 확인 (롤백 검증)
+    //   const reviewAfter = await testHelper
+    //     .getPrisma()
+    //     .review.findUniqueOrThrow({
+    //       where: { idx: originalReview.idx },
+    //     });
+    //   expect(reviewAfter.deletedAt).toBeNull();
+
+    //   const placeAfter = await testHelper.getPrisma().place.findUniqueOrThrow({
     //     where: { idx: place.idx },
     //   });
+    //   expect(placeAfter.reviewCount).toBe(placeBefore.reviewCount);
 
-    //   const afterReview = await testHelper.getPrisma().review.findUnique({
-    //     where: { idx: reviewIdx },
-    //   });
+    //   const keywordCountAfter = await testHelper
+    //     .getPrisma()
+    //     .placeKeywordCount.findMany({
+    //       where: {
+    //         placeIdx: place.idx,
+    //         keywordIdx: { in: keywordIdxList },
+    //       },
+    //     });
 
-    //   expect(afterPlace.reviewCount).toBe(beforePlace.reviewCount);
-    //   expect(afterReview).not.toBeNull();
+    //   const afterMap = new Map(
+    //     keywordCountAfter.map((kc) => [kc.keywordIdx, kc.count]),
+    //   );
+
+    //   for (const keywordIdx of keywordIdxList) {
+    //     const before = beforeMap.get(keywordIdx) ?? 0;
+    //     const after = afterMap.get(keywordIdx) ?? 0;
+    //     console.log(
+    //       `🔍 keywordIdx=${keywordIdx} | before=${before} | after=${after}`,
+    //     );
+
+    //     expect(after).toBe(before);
+    //   }
     // });
   });
 });
