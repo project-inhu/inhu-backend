@@ -1,4 +1,3 @@
-import { PrismaService } from '@libs/common/modules/prisma/prisma.service';
 import { RedisService } from '@libs/common/modules/redis/redis.service';
 import { AUTH_PROVIDER } from '@libs/core';
 import {
@@ -204,15 +203,16 @@ describe('Auth E2E test', () => {
         where: {
           userProvider: {
             snsId: mockingOAuthInfo.snsId,
+            name: AUTH_PROVIDER.KAKAO,
           },
         },
       });
       expect(noUser).toBeNull();
 
       // mocking kakao social login
-      const kakaoService = testHelper.get(KakaoLoginStrategy);
+      const kakaoLoginStrategy = testHelper.get(KakaoLoginStrategy);
       jest
-        .spyOn(kakaoService, 'socialLogin')
+        .spyOn(kakaoLoginStrategy, 'socialLogin')
         .mockResolvedValue(mockingOAuthInfo);
 
       // testing
@@ -230,6 +230,154 @@ describe('Auth E2E test', () => {
       expect(response.body).toHaveProperty('accessToken');
       expect(refreshToken).not.toBeNull();
       expect(type).toBe('Bearer');
+
+      // 유저 정보가 생성되어야 함
+      const user = await prisma.user.findFirstOrThrow({
+        include: {
+          userProvider: true,
+        },
+        where: {
+          userProvider: {
+            snsId: mockingOAuthInfo.snsId,
+            name: AUTH_PROVIDER.KAKAO,
+          },
+        },
+      });
+      expect(user.userProvider?.name).toBe(AUTH_PROVIDER.KAKAO);
+      expect(user.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
+
+      // redis에 refresh token이 저장되어야 함
+      const redisService = testHelper.get(RedisService);
+      const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
+      expect(refreshTokenKeys.length).toBe(1);
+    });
+
+    it('200 - successfully issue access token and refresh token (second login)', async () => {
+      // mocking
+      const mockingOAuthInfo = {
+        snsId: 'test-sns-id',
+        provider: AUTH_PROVIDER.KAKAO,
+      };
+
+      // 두 번째 로그인 시, 해당 snsId로 유저가 존재해야 함
+      await userSeedHelper.seed({
+        nickname: 'test-nickname',
+        social: {
+          provider: AUTH_PROVIDER.KAKAO,
+          snsId: mockingOAuthInfo.snsId,
+        },
+      });
+      const prisma = testHelper.getPrisma();
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          userProvider: {
+            snsId: mockingOAuthInfo.snsId,
+            name: AUTH_PROVIDER.KAKAO,
+          },
+        },
+      });
+      expect(existingUser).not.toBeNull();
+
+      // mocking kakao social login
+      const kakaoLoginStrategy = testHelper.get(KakaoLoginStrategy);
+      jest
+        .spyOn(kakaoLoginStrategy, 'socialLogin')
+        .mockResolvedValue(mockingOAuthInfo);
+
+      // testing
+      const response = await testHelper
+        .test()
+        .get('/auth/kakao/callback/web')
+        .query({ code: 'mocking-code' })
+        .expect(200);
+
+      // access token과 refresh token이 발급되어야 함
+      const [type, refreshToken] = extractCookieValueFromSetCookieHeader(
+        response.headers['set-cookie'][0],
+        'refreshToken',
+      )?.split(' ') || [null, null];
+      expect(response.body).toHaveProperty('accessToken');
+      expect(refreshToken).not.toBeNull();
+      expect(type).toBe('Bearer');
+
+      // 유저 정보가 생성되어야 함
+      const user = await prisma.user.findFirstOrThrow({
+        include: {
+          userProvider: true,
+        },
+        where: {
+          userProvider: {
+            snsId: mockingOAuthInfo.snsId,
+            name: AUTH_PROVIDER.KAKAO,
+          },
+        },
+      });
+      expect(user.userProvider?.name).toBe(AUTH_PROVIDER.KAKAO);
+      expect(user.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
+
+      // redis에 refresh token이 저장되어야 함
+      const redisService = testHelper.get(RedisService);
+      const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
+      expect(refreshTokenKeys.length).toBe(1);
+    });
+
+    // it('500 - no code provided', async () => {
+    //   await testHelper.test().get('/auth/kakao/callback/web').expect(500);
+    // });
+
+    // it('500 - invalid code provided', async () => {
+    //   const invalidCode = 'invalid-code';
+    //   await testHelper
+    //     .test()
+    //     .get('/auth/kakao/callback/web')
+    //     .query({ code: invalidCode })
+    //     .expect(500);
+    // });
+
+    it('500 - invalid provider', async () => {
+      const invalidProvider = 'invalid provider';
+      await testHelper
+        .test()
+        .get(`/auth/${invalidProvider}/callback/web`)
+        .expect(500);
+    });
+  });
+
+  describe('GET /auth/kakao/callback/app', () => {
+    it('200 - successfully issue access token and refresh token (first login)', async () => {
+      // mocking
+      const mockingOAuthInfo = {
+        snsId: 'test-sns-id',
+        provider: AUTH_PROVIDER.KAKAO,
+      };
+
+      // 첫 로그인 시, 해당 snsId로 유저가 존재하지 않아야 함
+      const prisma = testHelper.getPrisma();
+      const noUser = await prisma.user.findFirst({
+        where: {
+          userProvider: {
+            snsId: mockingOAuthInfo.snsId,
+          },
+        },
+      });
+      expect(noUser).toBeNull();
+
+      // mocking kakao social login
+      const kakaoLoginStrategy = testHelper.get(KakaoLoginStrategy);
+      jest
+        .spyOn(kakaoLoginStrategy, 'socialLogin')
+        .mockResolvedValue(mockingOAuthInfo);
+
+      // testing
+      const response = await testHelper
+        .test()
+        .get('/auth/kakao/callback/app')
+        .query({ code: 'mocking-code' })
+        .expect(200);
+
+      // access token과 refresh token이 발급되어야 함
+      expect(response.body).toHaveProperty('accessToken');
+      expect(response.body).toHaveProperty('refreshToken');
 
       // 유저 정보가 생성되어야 함
       const user = await prisma.user.findFirstOrThrow({
@@ -278,26 +426,21 @@ describe('Auth E2E test', () => {
       expect(existingUser).not.toBeNull();
 
       // mocking kakao social login
-      const kakaoService = testHelper.get(KakaoLoginStrategy);
+      const kakaoLoginStrategy = testHelper.get(KakaoLoginStrategy);
       jest
-        .spyOn(kakaoService, 'socialLogin')
+        .spyOn(kakaoLoginStrategy, 'socialLogin')
         .mockResolvedValue(mockingOAuthInfo);
 
       // testing
       const response = await testHelper
         .test()
-        .get('/auth/kakao/callback/web')
+        .get('/auth/kakao/callback/app')
         .query({ code: 'mocking-code' })
         .expect(200);
 
       // access token과 refresh token이 발급되어야 함
-      const [type, refreshToken] = extractCookieValueFromSetCookieHeader(
-        response.headers['set-cookie'][0],
-        'refreshToken',
-      )?.split(' ') || [null, null];
       expect(response.body).toHaveProperty('accessToken');
-      expect(refreshToken).not.toBeNull();
-      expect(type).toBe('Bearer');
+      expect(response.body).toHaveProperty('refreshToken');
 
       // 유저 정보가 생성되어야 함
       const user = await prisma.user.findFirstOrThrow({
@@ -318,6 +461,325 @@ describe('Auth E2E test', () => {
       const redisService = testHelper.get(RedisService);
       const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
       expect(refreshTokenKeys.length).toBe(1);
+    });
+
+    // it('500 - no code provided', async () => {
+    //   await testHelper.test().get('/auth/kakao/callback/app').expect(500);
+    // });
+
+    // it('500 - invalid code provided', async () => {
+    //   const invalidCode = 'invalid-code';
+    //   await testHelper
+    //     .test()
+    //     .get('/auth/kakao/callback/app')
+    //     .query({ code: invalidCode })
+    //     .expect(500);
+    // });
+
+    it('500 - invalid provider', async () => {
+      const invalidProvider = 'invalid provider';
+      await testHelper
+        .test()
+        .get(`/auth/${invalidProvider}/callback/app`)
+        .expect(500);
+    });
+  });
+
+  describe('GET /auth/apple/callback/web', () => {
+    it('200 - successfully issue access token and refresh token (first login)', async () => {
+      // mocking
+      const mockingOAuthInfo = {
+        snsId: 'test-sns-id',
+        provider: AUTH_PROVIDER.APPLE,
+      };
+
+      // 첫 로그인 시, 해당 snsId로 유저가 존재하지 않아야 함
+      const prisma = testHelper.getPrisma();
+      const noUser = await prisma.user.findFirst({
+        where: {
+          userProvider: {
+            snsId: mockingOAuthInfo.snsId,
+            name: AUTH_PROVIDER.APPLE,
+          },
+        },
+      });
+      expect(noUser).toBeNull();
+
+      // mocking apple social login
+      const appleLoginStrategy = testHelper.get(AppleLoginStrategy);
+      jest
+        .spyOn(appleLoginStrategy, 'socialLogin')
+        .mockResolvedValue(mockingOAuthInfo);
+
+      // testing
+      const response = await testHelper
+        .test()
+        .post('/auth/apple/callback/web')
+        .send({ code: 'mocking-code' })
+        .expect(200);
+
+      // access token과 refresh token이 발급되어야 함
+      const [type, refreshToken] = extractCookieValueFromSetCookieHeader(
+        response.headers['set-cookie'][0],
+        'refreshToken',
+      )?.split(' ') || [null, null];
+      expect(response.body).toHaveProperty('accessToken');
+      expect(refreshToken).not.toBeNull();
+      expect(type).toBe('Bearer');
+
+      // 유저 정보가 생성되어야 함
+      const user = await prisma.user.findFirstOrThrow({
+        include: {
+          userProvider: true,
+        },
+        where: {
+          userProvider: {
+            snsId: mockingOAuthInfo.snsId,
+            name: AUTH_PROVIDER.APPLE,
+          },
+        },
+      });
+      expect(user.userProvider?.name).toBe(AUTH_PROVIDER.APPLE);
+      expect(user.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
+
+      // redis에 refresh token이 저장되어야 함
+      const redisService = testHelper.get(RedisService);
+      const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
+      expect(refreshTokenKeys.length).toBe(1);
+    });
+
+    it('200 - successfully issue access token and refresh token (second login)', async () => {
+      // mocking
+      const mockingOAuthInfo = {
+        snsId: 'test-sns-id',
+        provider: AUTH_PROVIDER.APPLE,
+      };
+
+      // 두 번째 로그인 시, 해당 snsId로 유저가 존재해야 함
+      await userSeedHelper.seed({
+        nickname: 'test-nickname',
+        social: {
+          provider: AUTH_PROVIDER.APPLE,
+          snsId: mockingOAuthInfo.snsId,
+        },
+      });
+      const prisma = testHelper.getPrisma();
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          userProvider: {
+            snsId: mockingOAuthInfo.snsId,
+            name: AUTH_PROVIDER.APPLE,
+          },
+        },
+      });
+      expect(existingUser).not.toBeNull();
+
+      // mocking apple social login
+      const appleLoginStrategy = testHelper.get(AppleLoginStrategy);
+      jest
+        .spyOn(appleLoginStrategy, 'socialLogin')
+        .mockResolvedValue(mockingOAuthInfo);
+
+      // testing
+      const response = await testHelper
+        .test()
+        .post('/auth/apple/callback/web')
+        .send({ code: 'mocking-code' })
+        .expect(200);
+
+      // access token과 refresh token이 발급되어야 함
+      const [type, refreshToken] = extractCookieValueFromSetCookieHeader(
+        response.headers['set-cookie'][0],
+        'refreshToken',
+      )?.split(' ') || [null, null];
+      expect(response.body).toHaveProperty('accessToken');
+      expect(refreshToken).not.toBeNull();
+      expect(type).toBe('Bearer');
+
+      // 유저 정보가 생성되어야 함
+      const user = await prisma.user.findFirstOrThrow({
+        include: {
+          userProvider: true,
+        },
+        where: {
+          userProvider: {
+            snsId: mockingOAuthInfo.snsId,
+            name: AUTH_PROVIDER.APPLE,
+          },
+        },
+      });
+      expect(user.userProvider?.name).toBe(AUTH_PROVIDER.APPLE);
+      expect(user.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
+
+      // redis에 refresh token이 저장되어야 함
+      const redisService = testHelper.get(RedisService);
+      const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
+      expect(refreshTokenKeys.length).toBe(1);
+    });
+
+    // it('500 - no code provided', async () => {
+    //   await testHelper.test().post('/auth/apple/callback/web').expect(500);
+    // });
+
+    // it('500 - invalid code provided', async () => {
+    //   const invalidCode = 'invalid-code';
+    //   await testHelper
+    //     .test()
+    //     .post('/auth/apple/callback/web')
+    //     .send({ code: invalidCode })
+    //     .expect(500);
+    // });
+
+    it('500 - invalid provider', async () => {
+      const invalidProvider = 'invalid provider';
+      await testHelper
+        .test()
+        .post(`/auth/${invalidProvider}/callback/web`)
+        .expect(500);
+    });
+  });
+
+  describe('GET /auth/apple/callback/app', () => {
+    it('200 - successfully issue access token and refresh token (first login)', async () => {
+      // mocking
+      const mockingOAuthInfo = {
+        snsId: 'test-sns-id',
+        provider: AUTH_PROVIDER.APPLE,
+      };
+
+      // 첫 로그인 시, 해당 snsId로 유저가 존재하지 않아야 함
+      const prisma = testHelper.getPrisma();
+      const noUser = await prisma.user.findFirst({
+        where: {
+          userProvider: {
+            snsId: mockingOAuthInfo.snsId,
+            name: AUTH_PROVIDER.APPLE,
+          },
+        },
+      });
+      expect(noUser).toBeNull();
+
+      // mocking apple social login
+      const appleLoginStrategy = testHelper.get(AppleLoginStrategy);
+      jest
+        .spyOn(appleLoginStrategy, 'socialLogin')
+        .mockResolvedValue(mockingOAuthInfo);
+
+      // testing
+      const response = await testHelper
+        .test()
+        .post('/auth/apple/callback/app')
+        .send({ code: 'mocking-code' })
+        .expect(200);
+
+      // access token과 refresh token이 발급되어야 함
+      expect(response.body).toHaveProperty('accessToken');
+      expect(response.body).toHaveProperty('refreshToken');
+
+      // 유저 정보가 생성되어야 함
+      const user = await prisma.user.findFirstOrThrow({
+        include: {
+          userProvider: true,
+        },
+        where: {
+          userProvider: {
+            snsId: mockingOAuthInfo.snsId,
+            name: AUTH_PROVIDER.APPLE,
+          },
+        },
+      });
+      expect(user.userProvider?.name).toBe(AUTH_PROVIDER.APPLE);
+      expect(user.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
+
+      // redis에 refresh token이 저장되어야 함
+      const redisService = testHelper.get(RedisService);
+      const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
+      expect(refreshTokenKeys.length).toBe(1);
+    });
+
+    it('200 - successfully issue access token and refresh token (second login)', async () => {
+      // mocking
+      const mockingOAuthInfo = {
+        snsId: 'test-sns-id',
+        provider: AUTH_PROVIDER.APPLE,
+      };
+
+      // 두 번째 로그인 시, 해당 snsId로 유저가 존재해야 함
+      await userSeedHelper.seed({
+        nickname: 'test-nickname',
+        social: {
+          provider: AUTH_PROVIDER.APPLE,
+          snsId: mockingOAuthInfo.snsId,
+        },
+      });
+      const prisma = testHelper.getPrisma();
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          userProvider: {
+            snsId: mockingOAuthInfo.snsId,
+            name: AUTH_PROVIDER.APPLE,
+          },
+        },
+      });
+      expect(existingUser).not.toBeNull();
+
+      // mocking apple social login
+      const appleLoginStrategy = testHelper.get(AppleLoginStrategy);
+      jest
+        .spyOn(appleLoginStrategy, 'socialLogin')
+        .mockResolvedValue(mockingOAuthInfo);
+
+      // testing
+      const response = await testHelper
+        .test()
+        .post('/auth/apple/callback/app')
+        .send({ code: 'mocking-code' })
+        .expect(200);
+
+      // access token과 refresh token이 발급되어야 함
+      expect(response.body).toHaveProperty('accessToken');
+      expect(response.body).toHaveProperty('refreshToken');
+
+      // 유저 정보가 생성되어야 함
+      const user = await prisma.user.findFirstOrThrow({
+        include: {
+          userProvider: true,
+        },
+        where: {
+          userProvider: {
+            snsId: mockingOAuthInfo.snsId,
+            name: AUTH_PROVIDER.APPLE,
+          },
+        },
+      });
+      expect(user.userProvider?.name).toBe(AUTH_PROVIDER.APPLE);
+      expect(user.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
+
+      // redis에 refresh token이 저장되어야 함
+      const redisService = testHelper.get(RedisService);
+      const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
+      expect(refreshTokenKeys.length).toBe(1);
+    });
+
+    // it('500 - no code provided', async () => {
+    //   await testHelper.test().post('/auth/apple/callback/app').expect(500);
+    // });
+
+    // it('500 - invalid code provided', async () => {
+    //   const invalidCode = 'invalid-code';
+    //   await testHelper
+    //     .test()
+    //     .post('/auth/apple/callback/app')
+    //     .send({ code: invalidCode })
+    //     .expect(500);
+    // });
+
+    it('500 - invalid provider', async () => {
+      const invalidProvider = 'invalid provider';
+      await testHelper
+        .test()
+        .post(`/auth/${invalidProvider}/callback/app`)
+        .expect(500);
     });
   });
 });
