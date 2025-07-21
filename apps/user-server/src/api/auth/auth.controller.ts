@@ -148,6 +148,7 @@ export class AuthController {
    * 앱용 로그아웃 API
    */
   @Post('/logout/app')
+  @HttpCode(200)
   public async logout(@Body() dto: LogoutAppDto): Promise<void> {
     const refreshToken = dto.refreshTokenWithType?.replace('Bearer ', '');
 
@@ -158,6 +159,7 @@ export class AuthController {
    * 웹용 로그아웃 API
    */
   @Post('/logout/web')
+  @HttpCode(200)
   public async logoutWeb(
     @Res({ passthrough: true }) res: Response,
     @Cookie('refreshToken') refreshTokenWithType?: string,
