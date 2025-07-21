@@ -1,4 +1,4 @@
-export const extractCookieValue = (
+export const extractCookieValueFromSetCookieHeader = (
   setCookieHeader: string,
   cookieName: string,
 ): string | null => {
