@@ -826,11 +826,32 @@ describe('Auth E2E test', () => {
       });
       expect(noUser).toBeNull();
 
-      // mocking apple social login
+      // mocking https://appleid.apple.com/auth/token in socialLogin method
+      const httpService = testHelper.get(HttpService);
+      jest.spyOn(httpService.axiosRef, 'post').mockResolvedValue({
+        data: {
+          access_token: 'mocking-access-token',
+          token_type: 'Bearer',
+          expires_in: 3600,
+          refresh_token: 'mocking-refresh-token',
+          id_token: 'mocking-id-token',
+        },
+      });
+
+      // mocking decodeIdToken method in socialLogin
       const appleLoginStrategy = testHelper.get(AppleLoginStrategy);
-      jest
-        .spyOn(appleLoginStrategy, 'socialLogin')
-        .mockResolvedValue(mockingOAuthInfo);
+      jest.spyOn(appleLoginStrategy as any, 'decodeIdToken').mockResolvedValue({
+        iss: 'https://appleid.apple.com',
+        aud: 'your.app.bundle.id',
+        exp: Math.floor(Date.now() / 1000) + 3600,
+        iat: Math.floor(Date.now() / 1000),
+        sub: mockingOAuthInfo.snsId,
+        nonce: 'mocking-nonce',
+        at_hash: 'mocking-at-hash',
+        auth_time: Math.floor(Date.now() / 1000),
+        nonce_supported: true,
+        // 기타 애플 유저 정보
+      });
 
       // testing
       const response = await testHelper
@@ -895,11 +916,32 @@ describe('Auth E2E test', () => {
       });
       expect(existingUser).not.toBeNull();
 
-      // mocking apple social login
+      // mocking https://appleid.apple.com/auth/token in socialLogin method
+      const httpService = testHelper.get(HttpService);
+      jest.spyOn(httpService.axiosRef, 'post').mockResolvedValue({
+        data: {
+          access_token: 'mocking-access-token',
+          token_type: 'Bearer',
+          expires_in: 3600,
+          refresh_token: 'mocking-refresh-token',
+          id_token: 'mocking-id-token',
+        },
+      });
+
+      // mocking decodeIdToken method in socialLogin
       const appleLoginStrategy = testHelper.get(AppleLoginStrategy);
-      jest
-        .spyOn(appleLoginStrategy, 'socialLogin')
-        .mockResolvedValue(mockingOAuthInfo);
+      jest.spyOn(appleLoginStrategy as any, 'decodeIdToken').mockResolvedValue({
+        iss: 'https://appleid.apple.com',
+        aud: 'your.app.bundle.id',
+        exp: Math.floor(Date.now() / 1000) + 3600,
+        iat: Math.floor(Date.now() / 1000),
+        sub: mockingOAuthInfo.snsId,
+        nonce: 'mocking-nonce',
+        at_hash: 'mocking-at-hash',
+        auth_time: Math.floor(Date.now() / 1000),
+        nonce_supported: true,
+        // 기타 애플 유저 정보
+      });
 
       // testing
       const response = await testHelper
@@ -980,11 +1022,32 @@ describe('Auth E2E test', () => {
       });
       expect(noUser).toBeNull();
 
-      // mocking apple social login
+      // mocking https://appleid.apple.com/auth/token in socialLogin method
+      const httpService = testHelper.get(HttpService);
+      jest.spyOn(httpService.axiosRef, 'post').mockResolvedValue({
+        data: {
+          access_token: 'mocking-access-token',
+          token_type: 'Bearer',
+          expires_in: 3600,
+          refresh_token: 'mocking-refresh-token',
+          id_token: 'mocking-id-token',
+        },
+      });
+
+      // mocking decodeIdToken method in socialLogin
       const appleLoginStrategy = testHelper.get(AppleLoginStrategy);
-      jest
-        .spyOn(appleLoginStrategy, 'socialLogin')
-        .mockResolvedValue(mockingOAuthInfo);
+      jest.spyOn(appleLoginStrategy as any, 'decodeIdToken').mockResolvedValue({
+        iss: 'https://appleid.apple.com',
+        aud: 'your.app.bundle.id',
+        exp: Math.floor(Date.now() / 1000) + 3600,
+        iat: Math.floor(Date.now() / 1000),
+        sub: mockingOAuthInfo.snsId,
+        nonce: 'mocking-nonce',
+        at_hash: 'mocking-at-hash',
+        auth_time: Math.floor(Date.now() / 1000),
+        nonce_supported: true,
+        // 기타 애플 유저 정보
+      });
 
       // testing
       const response = await testHelper
@@ -1044,11 +1107,32 @@ describe('Auth E2E test', () => {
       });
       expect(existingUser).not.toBeNull();
 
-      // mocking apple social login
+      // mocking https://appleid.apple.com/auth/token in socialLogin method
+      const httpService = testHelper.get(HttpService);
+      jest.spyOn(httpService.axiosRef, 'post').mockResolvedValue({
+        data: {
+          access_token: 'mocking-access-token',
+          token_type: 'Bearer',
+          expires_in: 3600,
+          refresh_token: 'mocking-refresh-token',
+          id_token: 'mocking-id-token',
+        },
+      });
+
+      // mocking decodeIdToken method in socialLogin
       const appleLoginStrategy = testHelper.get(AppleLoginStrategy);
-      jest
-        .spyOn(appleLoginStrategy, 'socialLogin')
-        .mockResolvedValue(mockingOAuthInfo);
+      jest.spyOn(appleLoginStrategy as any, 'decodeIdToken').mockResolvedValue({
+        iss: 'https://appleid.apple.com',
+        aud: 'your.app.bundle.id',
+        exp: Math.floor(Date.now() / 1000) + 3600,
+        iat: Math.floor(Date.now() / 1000),
+        sub: mockingOAuthInfo.snsId,
+        nonce: 'mocking-nonce',
+        at_hash: 'mocking-at-hash',
+        auth_time: Math.floor(Date.now() / 1000),
+        nonce_supported: true,
+        // 기타 애플 유저 정보
+      });
 
       // testing
       const response = await testHelper
