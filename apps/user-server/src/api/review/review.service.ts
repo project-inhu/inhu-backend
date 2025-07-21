@@ -94,4 +94,13 @@ export class ReviewService {
 
     await this.reviewCoreService.updateReviewByIdx(idx, dto);
   }
+
+  public async deleteReviewByIdx(
+    idx: number,
+    loginUser: LoginUser,
+  ): Promise<void> {
+    await this.getReviewByIdx(idx, loginUser);
+
+    await this.reviewCoreService.deleteReviewByIdx(idx);
+  }
 }

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -77,5 +78,22 @@ export class ReviewController {
     @User() loginUser: LoginUser,
   ): Promise<void> {
     await this.reviewService.updateReviewByIdx(reviewIdx, dto, loginUser);
+  }
+
+  /**
+   * 리뷰 삭제하기 API
+   *
+   * @author 강정연
+   */
+  @Delete('/review/:reviewIdx')
+  @LoginAuth()
+  @Exception(400, 'Invalid reviewIdx or request body')
+  @Exception(401, 'Token is missing or invalid')
+  @Exception(403, 'Permission denied')
+  async deleteReview(
+    @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
+    @User() loginUser: LoginUser,
+  ): Promise<void> {
+    await this.reviewService.deleteReviewByIdx(reviewIdx, loginUser);
   }
 }
