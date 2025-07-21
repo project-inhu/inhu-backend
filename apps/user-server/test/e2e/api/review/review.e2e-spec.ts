@@ -1663,98 +1663,99 @@ describe('Review E2E test', () => {
         .expect(404);
     });
 
-    // it('500 - transaction failure', async () => {
-    //   const loginUser = testHelper.loginUsers.user1;
+    it('500 - transaction failure', async () => {
+      const loginUser = testHelper.loginUsers.user1;
 
-    //   const place = await placeSeedHelper.seed({
-    //     deletedAt: null,
-    //     activatedAt: new Date(),
-    //   });
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
 
-    //   const originalReview = await reviewSeedHelper.seed({
-    //     placeIdx: place.idx,
-    //     userIdx: loginUser.idx,
-    //     content: '기본 리뷰입니다.',
-    //     reviewImgList: [
-    //       '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
-    //     ],
-    //     keywordIdxList: [1],
-    //   });
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
+        content: '기본 리뷰입니다.',
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
+        ],
+        keywordIdxList: [1],
+      });
 
-    //   const keywordIdxList = originalReview.keywordIdxList || [];
+      const keywordIdxList = originalReview.keywordIdxList || [];
 
-    //   const placeBefore = await testHelper.getPrisma().place.findUniqueOrThrow({
-    //     where: { idx: place.idx },
-    //   });
+      const placeBefore = await testHelper.getPrisma().place.findUniqueOrThrow({
+        where: { idx: place.idx },
+      });
 
-    //   const keywordCountBefore = await testHelper
-    //     .getPrisma()
-    //     .placeKeywordCount.findMany({
-    //       where: {
-    //         placeIdx: place.idx,
-    //         keywordIdx: { in: keywordIdxList },
-    //       },
-    //     });
+      const keywordCountBefore = await testHelper
+        .getPrisma()
+        .placeKeywordCount.findMany({
+          where: {
+            placeIdx: place.idx,
+            keywordIdx: { in: keywordIdxList },
+          },
+        });
 
-    //   const beforeMap = new Map(
-    //     keywordCountBefore.map((kc) => [kc.keywordIdx, kc.count]),
-    //   );
+      const beforeMap = new Map(
+        keywordCountBefore.map((kc) => [kc.keywordIdx, kc.count]),
+      );
 
-    //   // Prisma review.delete 내부 호출 시 강제로 실패 시키기
-    //   const spy = jest
-    //     .spyOn(testHelper.getPrisma().review, 'update')
-    //     .mockImplementationOnce(() => {
-    //       throw {
-    //         code: 'P2003',
-    //         message: '강제 실패입니다.',
-    //         clientVersion: '5.11.0',
-    //         name: 'PrismaClientKnownRequestError',
-    //       } as Prisma.PrismaClientKnownRequestError;
-    //     });
+      // 원본 함수 백업
+      // 테스트 후를 위해 prisma의 실제 update 함수를 백업
+      const originalUpdateFn = testHelper.getPrisma().review.update;
 
-    //   await testHelper
-    //     .test()
-    //     .delete(`/review/${originalReview.idx}`)
-    //     .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-    //     .expect(500);
+      try {
+        // 직접 만든 가짜 모의 함수를 실제 update 함수에 덮어씀
+        testHelper.getPrisma().review.update = jest
+          .fn()
+          .mockImplementation(() => Promise.reject());
 
-    //   spy.mockRestore(); // 테스트 끝난 후 원래대로 복원
+        // 가짜 함수가 실행되어 에러 발생
+        await testHelper
+          .test()
+          .delete(`/review/${originalReview.idx}`)
+          .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+          .expect(500);
+      } finally {
+        // 원래 함수로 복원
+        testHelper.getPrisma().review.update = originalUpdateFn;
+      }
 
-    //   // 상태 유지 확인 (롤백 검증)
-    //   const reviewAfter = await testHelper
-    //     .getPrisma()
-    //     .review.findUniqueOrThrow({
-    //       where: { idx: originalReview.idx },
-    //     });
-    //   expect(reviewAfter.deletedAt).toBeNull();
+      // 상태 유지 확인 (롤백 검증)
+      const reviewAfter = await testHelper
+        .getPrisma()
+        .review.findUniqueOrThrow({
+          where: { idx: originalReview.idx },
+        });
+      expect(reviewAfter.deletedAt).toBeNull();
 
-    //   const placeAfter = await testHelper.getPrisma().place.findUniqueOrThrow({
-    //     where: { idx: place.idx },
-    //   });
-    //   expect(placeAfter.reviewCount).toBe(placeBefore.reviewCount);
+      const placeAfter = await testHelper.getPrisma().place.findUniqueOrThrow({
+        where: { idx: place.idx },
+      });
+      expect(placeAfter.reviewCount).toBe(placeBefore.reviewCount);
 
-    //   const keywordCountAfter = await testHelper
-    //     .getPrisma()
-    //     .placeKeywordCount.findMany({
-    //       where: {
-    //         placeIdx: place.idx,
-    //         keywordIdx: { in: keywordIdxList },
-    //       },
-    //     });
+      const keywordCountAfter = await testHelper
+        .getPrisma()
+        .placeKeywordCount.findMany({
+          where: {
+            placeIdx: place.idx,
+            keywordIdx: { in: keywordIdxList },
+          },
+        });
 
-    //   const afterMap = new Map(
-    //     keywordCountAfter.map((kc) => [kc.keywordIdx, kc.count]),
-    //   );
+      const afterMap = new Map(
+        keywordCountAfter.map((kc) => [kc.keywordIdx, kc.count]),
+      );
 
-    //   for (const keywordIdx of keywordIdxList) {
-    //     const before = beforeMap.get(keywordIdx) ?? 0;
-    //     const after = afterMap.get(keywordIdx) ?? 0;
-    //     console.log(
-    //       `🔍 keywordIdx=${keywordIdx} | before=${before} | after=${after}`,
-    //     );
+      for (const keywordIdx of keywordIdxList) {
+        const before = beforeMap.get(keywordIdx) ?? 0;
+        const after = afterMap.get(keywordIdx) ?? 0;
+        console.log(
+          `🔍 keywordIdx=${keywordIdx} | before=${before} | after=${after}`,
+        );
 
-    //     expect(after).toBe(before);
-    //   }
-    // });
+        expect(after).toBe(before);
+      }
+    });
   });
 });
