@@ -107,17 +107,9 @@ export class AuthService {
       return;
     }
 
-    try {
-      const { idx, issuedBy, jti } =
-        await this.loginTokenService.verifyRefreshToken(refreshToken);
+    const { idx, issuedBy, jti } =
+      await this.loginTokenService.verifyRefreshToken(refreshToken);
 
-      await this.loginTokenService.invalidateRefreshTokenById(
-        idx,
-        jti,
-        issuedBy,
-      );
-    } catch (err) {
-      return;
-    }
+    await this.loginTokenService.invalidateRefreshTokenById(idx, jti, issuedBy);
   }
 }
