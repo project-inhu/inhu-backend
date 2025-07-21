@@ -256,5 +256,93 @@ describe('Auth E2E test', () => {
       const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
       expect(refreshTokenKeys.length).toBe(1);
     });
+
+    it('200 - successfully issue access token and refresh token (second login)', async () => {
+      const mockingUserInfo = {
+        nickname: 'test-nickname',
+        userProvider: {
+          snsId: 'test-sns-id',
+          provider: AUTH_PROVIDER.KAKAO,
+        },
+      };
+
+      const prisma = testHelper.get(PrismaService);
+      await prisma.user.create({
+        data: {
+          nickname: mockingUserInfo.nickname,
+          userProvider: {
+            create: {
+              snsId: mockingUserInfo.userProvider.snsId,
+              name: mockingUserInfo.userProvider.provider,
+            },
+          },
+        },
+      });
+
+      let user = await prisma.user.findFirst({
+        select: {
+          idx: true,
+          nickname: true,
+          userProvider: {
+            select: {
+              snsId: true,
+              name: true,
+            },
+          },
+        },
+        where: {
+          userProvider: {
+            snsId: mockingUserInfo.userProvider.snsId,
+          },
+        },
+      });
+      expect(user).not.toBeNull();
+
+      const kakaoService = testHelper.get(KakaoLoginStrategy);
+      jest
+        .spyOn(kakaoService, 'socialLogin')
+        .mockResolvedValue(mockingUserInfo.userProvider);
+
+      const response = await testHelper
+        .test()
+        .get('/auth/kakao/callback/web')
+        .query({ code: 'mocking-code' })
+        .expect(200);
+
+      const [type, refreshToken] = extractCookieValue(
+        response.headers['set-cookie'][0],
+        'refreshToken',
+      )?.split(' ') || [null, null];
+
+      expect(response.body).toHaveProperty('accessToken');
+      expect(refreshToken).not.toBeNull();
+      expect(type).toBe('Bearer');
+
+      user = await prisma.user.findFirstOrThrow({
+        select: {
+          idx: true,
+          nickname: true,
+          userProvider: {
+            select: {
+              snsId: true,
+              name: true,
+            },
+          },
+        },
+        where: {
+          userProvider: {
+            snsId: mockingUserInfo.userProvider.snsId,
+          },
+        },
+      });
+      expect(user?.userProvider?.name).toBe(AUTH_PROVIDER.KAKAO);
+      expect(user?.userProvider?.snsId).toBe(
+        mockingUserInfo.userProvider.snsId,
+      );
+
+      const redisService = testHelper.get(RedisService);
+      const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
+      expect(refreshTokenKeys.length).toBe(1);
+    });
   });
 });
