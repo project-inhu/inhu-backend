@@ -766,7 +766,7 @@ describe('Review E2E test', () => {
         .expect(404);
     });
 
-    it('500 - transaction rollback', async () => {
+    it('500 - transaction failure', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const place = await placeSeedHelper.seed({
         deletedAt: null,
@@ -1446,7 +1446,7 @@ describe('Review E2E test', () => {
         .expect(401);
     });
 
-    it('403 - token is missing', async () => {
+    it('403 - not the author of the review', async () => {
       const loginUser1 = testHelper.loginUsers.user1;
       const loginUser2 = testHelper.loginUsers.user2;
 
@@ -1501,7 +1501,7 @@ describe('Review E2E test', () => {
         .expect(404);
     });
 
-    it('500 - review does not exist', async () => {
+    it('500 - transaction failure', async () => {
       const loginUser = testHelper.loginUsers.user1;
 
       const place = await placeSeedHelper.seed({
@@ -1549,5 +1549,233 @@ describe('Review E2E test', () => {
 
       expect(afterKeywordCounts).toEqual(beforeKeywordCounts);
     });
+  });
+
+  describe('DELETE /review/:reviewIdx', () => {
+    it('200 - delete check', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const createReviewDto = {
+        content: '기본 리뷰입니다.',
+        imagePathList: [],
+        keywordIdxList: [],
+      };
+
+      const createResponse = await testHelper
+        .test()
+        .post(`/place/${place.idx}/review`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .send(createReviewDto)
+        .expect(201);
+
+      const reviewIdx = createResponse.body.idx;
+
+      await testHelper
+        .test()
+        .delete(`/review/${reviewIdx}`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(200);
+
+      const review = await testHelper.getPrisma().review.findUniqueOrThrow({
+        where: { idx: reviewIdx },
+      });
+
+      expect(review.deletedAt).not.toBeNull();
+    });
+
+    it('200 - check DB side effects', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const createReviewDto = {
+        content: '기본 리뷰입니다.',
+        imagePathList: [],
+        keywordIdxList: [],
+      };
+
+      const placeBefore = await testHelper.getPrisma().place.findUniqueOrThrow({
+        where: { idx: place.idx },
+      });
+
+      const keywordCountBefore = await testHelper
+        .getPrisma()
+        .placeKeywordCount.findMany({
+          where: {
+            placeIdx: place.idx,
+            keywordIdx: { in: createReviewDto.keywordIdxList },
+          },
+        });
+
+      const createResponse = await testHelper
+        .test()
+        .post(`/place/${place.idx}/review`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .send(createReviewDto)
+        .expect(201);
+
+      const reviewIdx = createResponse.body.idx;
+
+      await testHelper
+        .test()
+        .delete(`/review/${reviewIdx}`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(200);
+
+      const placeAfter = await testHelper.getPrisma().place.findUniqueOrThrow({
+        where: { idx: place.idx },
+      });
+      expect(placeAfter.reviewCount).toBe(placeBefore.reviewCount); // 트랜잭션 롤백 여부 포함
+
+      const keywordCountAfter = await testHelper
+        .getPrisma()
+        .placeKeywordCount.findMany({
+          where: {
+            placeIdx: place.idx,
+            keywordIdx: { in: createReviewDto.keywordIdxList },
+          },
+        });
+
+      for (const k of createReviewDto.keywordIdxList) {
+        const before =
+          keywordCountBefore.find((x) => x.keywordIdx === k)?.count ?? 0;
+        const after =
+          keywordCountAfter.find((x) => x.keywordIdx === k)?.count ?? 0;
+        expect(after).toBe(before - 1);
+      }
+    });
+
+    it('401 - token is missing', async () => {
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const createReviewDto = {
+        content: '기본 리뷰입니다.',
+        imagePathList: [],
+        keywordIdxList: [],
+      };
+
+      const createResponse = await testHelper
+        .test()
+        .post(`/place/${place.idx}/review`)
+        .send(createReviewDto)
+        .expect(401);
+
+      const reviewIdx = createResponse.body.idx;
+
+      await testHelper.test().delete(`/review/${reviewIdx}`).expect(401);
+    });
+
+    it('403 - not the author of the review', async () => {
+      const loginUser1 = testHelper.loginUsers.user1;
+      const loginUser2 = testHelper.loginUsers.user2;
+
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const createReviewDto = {
+        content: '기본 리뷰입니다.',
+        imagePathList: [],
+        keywordIdxList: [],
+      };
+
+      const createResponse = await testHelper
+        .test()
+        .post(`/place/${place.idx}/review`)
+        .send(createReviewDto)
+        .set('Authorization', `Bearer ${loginUser1.app.accessToken}`)
+        .expect(201);
+
+      const reviewIdx = createResponse.body.idx;
+
+      await testHelper
+        .test()
+        .delete(`/review/${reviewIdx}`)
+        .set('Authorization', `Bearer ${loginUser2.app.accessToken}`)
+        .expect(403);
+    });
+
+    it('404 - review does not exist', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .delete('/review/9999999')
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(404);
+    });
+
+    // it('500 - transaction failure', async () => {
+    //   const loginUser = testHelper.loginUsers.user1;
+
+    //   const place = await placeSeedHelper.seed({
+    //     deletedAt: null,
+    //     activatedAt: new Date(),
+    //   });
+
+    //   const createReviewDto = {
+    //     content: '기본 리뷰입니다.',
+    //     imagePathList: [],
+    //     keywordIdxList: [1, 2],
+    //   };
+
+    //   const createResponse = await testHelper
+    //     .test()
+    //     .post(`/place/${place.idx}/review`)
+    //     .send(createReviewDto)
+    //     .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+    //     .expect(201);
+
+    //   const reviewIdx = createResponse.body.idx;
+
+    //   const beforePlace = await testHelper.getPrisma().place.findUniqueOrThrow({
+    //     where: { idx: place.idx },
+    //   });
+
+    //   const beforeKeywordCount = await testHelper
+    //     .getPrisma()
+    //     .placeKeywordCount.findMany({
+    //       where: {
+    //         placeIdx: place.idx,
+    //         keywordIdx: { in: createReviewDto.keywordIdxList },
+    //       },
+    //     });
+
+    //   await testHelper.getPrisma().placeKeywordCount.deleteMany({
+    //     where: {
+    //       placeIdx: place.idx,
+    //       keywordIdx: { in: createReviewDto.keywordIdxList },
+    //     },
+    //   });
+
+    //   await testHelper
+    //     .test()
+    //     .delete(`/review/${reviewIdx}`)
+    //     .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+    //     .expect(500);
+
+    //   const afterPlace = await testHelper.getPrisma().place.findUniqueOrThrow({
+    //     where: { idx: place.idx },
+    //   });
+
+    //   const afterReview = await testHelper.getPrisma().review.findUnique({
+    //     where: { idx: reviewIdx },
+    //   });
+
+    //   expect(afterPlace.reviewCount).toBe(beforePlace.reviewCount);
+    //   expect(afterReview).not.toBeNull();
+    // });
   });
 });
