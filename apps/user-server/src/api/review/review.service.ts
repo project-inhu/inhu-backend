@@ -77,7 +77,7 @@ export class ReviewService {
   ): Promise<ReviewEntity> {
     const reviewModel = await this.reviewCoreService.getReviewByIdx(idx);
     if (!reviewModel) {
-      throw new BadRequestException('Review not found');
+      throw new NotFoundException('Review not found');
     }
 
     this.reviewAuthService.checkReviewPermission(reviewModel, loginUser);
