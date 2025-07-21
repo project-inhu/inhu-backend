@@ -738,39 +738,141 @@ describe('Auth E2E test', () => {
       const refreshToken = user.web.refreshToken;
       const redis = testHelper.get(RedisService);
 
-      const beforeKeys = await redis.hkeys(`user:${user.idx}:rt`);
-      console.log('Before logout:', beforeKeys);
-
-      // WEB 토큰인지 확인 (키 형태: "1-4492-4d4d518f-569a-42ef-81f1-659197cd0be0")
-      // TokenIssuedBy.WEB = 1, userIdx를 조합하여 찾기
-      const webTokenKey = beforeKeys.find((key) => {
-        const keyParts = key.split('-');
-        const tokenIssuedBy = keyParts[0]; // 첫 번째 부분: '1'
-        const userIdx = keyParts[1]; // 두 번째 부분: '4492'
-        return tokenIssuedBy === '1' && userIdx === user.idx.toString(); // 1 = TokenIssuedBy.WEB
+      // logout 전 refresh token이 존재해야 함
+      const beforeRefreshTokenList = await redis.hkeys(`user:${user.idx}:rt`);
+      const beforeWebRefreshTokenKey = beforeRefreshTokenList.find((key) => {
+        const [issuedBy, userIdx, ...rest] = key.split('-');
+        return (
+          issuedBy === TokenIssuedBy.WEB.toString() &&
+          userIdx === user.idx.toString()
+        );
       });
-      console.log('Web token key:', webTokenKey);
-      expect(webTokenKey).toBeDefined();
+      expect(beforeWebRefreshTokenKey).toBeDefined();
 
+      // testing
       await testHelper
         .test()
         .post('/auth/logout/web')
         .set('Cookie', [`refreshToken=Bearer ${refreshToken}`])
         .expect(200);
 
-      // 로그아웃 후 redis에서 해당 refresh token이 삭제되었는지 확인
-      const afterKeys = await redis.hkeys(`user:${user.idx}:rt`);
-      console.log('After logout:', afterKeys);
-
-      // WEB 토큰이 삭제되었는지 확인
-      const remainingWebTokenKey = afterKeys.find((key) => {
-        const keyParts = key.split('-');
-        const tokenIssuedBy = keyParts[0]; // 첫 번째 부분: '1'
-        const userIdx = keyParts[1]; // 두 번째 부분: '4492'
-        return tokenIssuedBy === '1' && userIdx === user.idx.toString(); // 1 = TokenIssuedBy.WEB
+      // logout 후 refresh token이 삭제되어야 함
+      const afterRefreshTokenList = await redis.hkeys(`user:${user.idx}:rt`);
+      const afterRefreshTokenKey = afterRefreshTokenList.find((key) => {
+        const [issuedBy, userIdx, ...rest] = key.split('-');
+        return (
+          issuedBy === TokenIssuedBy.WEB.toString() &&
+          userIdx === user.idx.toString()
+        );
       });
-      console.log('Remaining web token key:', remainingWebTokenKey);
-      expect(remainingWebTokenKey).toBeUndefined();
+      expect(afterRefreshTokenKey).toBeUndefined();
+    });
+
+    it('200 - no refresh token provided', async () => {
+      await testHelper.test().post('/auth/logout/web').expect(200);
+    });
+
+    it('401 - invalid refresh token', async () => {
+      const invalidRefreshToken = 'invalid-refresh-token';
+
+      await testHelper
+        .test()
+        .post('/auth/logout/web')
+        .set('Cookie', [`refreshToken=Bearer ${invalidRefreshToken}`])
+        .expect(401);
+    });
+
+    it('401 - using invalidated refresh token', async () => {
+      const user = testHelper.loginUsers.user1;
+      const refreshToken = user.web.refreshToken;
+
+      // invalidate the refresh token
+      const loginTokenService = testHelper.get(LoginTokenService);
+      const refreshTokenPayload =
+        await loginTokenService.verifyRefreshToken(refreshToken);
+      await loginTokenService.invalidateRefreshTokenById(
+        refreshTokenPayload.idx,
+        refreshTokenPayload.jti,
+        TokenIssuedBy.WEB,
+      );
+
+      await testHelper
+        .test()
+        .post('/auth/logout/web')
+        .set('Cookie', [`refreshToken=Bearer ${refreshToken}`])
+        .expect(401);
+    });
+  });
+
+  describe('POST /auth/logout/app', () => {
+    it('200 - successfully logout', async () => {
+      const user = testHelper.loginUsers.user1;
+      const refreshToken = user.app.refreshToken;
+      const redis = testHelper.get(RedisService);
+
+      // logout 전 refresh token이 존재해야 함
+      const beforeRefreshTokenList = await redis.hkeys(`user:${user.idx}:rt`);
+      const beforeAppRefreshTokenKey = beforeRefreshTokenList.find((key) => {
+        const [issuedBy, userIdx, ...rest] = key.split('-');
+        return (
+          issuedBy === TokenIssuedBy.APP.toString() &&
+          userIdx === user.idx.toString()
+        );
+      });
+      expect(beforeAppRefreshTokenKey).toBeDefined();
+
+      // testing
+      await testHelper
+        .test()
+        .post('/auth/logout/app')
+        .send({ refreshTokenWithType: `Bearer ${refreshToken}` })
+        .expect(200);
+
+      // logout 후 refresh token이 삭제되어야 함
+      const afterRefreshTokenList = await redis.hkeys(`user:${user.idx}:rt`);
+      const afterRefreshTokenKey = afterRefreshTokenList.find((key) => {
+        const [issuedBy, userIdx, ...rest] = key.split('-');
+        return (
+          issuedBy === TokenIssuedBy.APP.toString() &&
+          userIdx === user.idx.toString()
+        );
+      });
+      expect(afterRefreshTokenKey).toBeUndefined();
+    });
+
+    it('400 - no refresh token provided', async () => {
+      await testHelper.test().post('/auth/logout/app').expect(400);
+    });
+
+    it('401 - invalid refresh token', async () => {
+      const invalidRefreshToken = 'invalid-refresh-token';
+
+      await testHelper
+        .test()
+        .post('/auth/logout/app')
+        .send({ refreshTokenWithType: `Bearer ${invalidRefreshToken}` })
+        .expect(401);
+    });
+
+    it('401 - using invalidated refresh token', async () => {
+      const user = testHelper.loginUsers.user1;
+      const refreshToken = user.app.refreshToken;
+
+      // invalidate the refresh token
+      const loginTokenService = testHelper.get(LoginTokenService);
+      const refreshTokenPayload =
+        await loginTokenService.verifyRefreshToken(refreshToken);
+      await loginTokenService.invalidateRefreshTokenById(
+        refreshTokenPayload.idx,
+        refreshTokenPayload.jti,
+        TokenIssuedBy.APP,
+      );
+
+      await testHelper
+        .test()
+        .post('/auth/logout/app')
+        .send({ refreshTokenWithType: `Bearer ${refreshToken}` })
+        .expect(401);
     });
   });
 });
