@@ -187,11 +187,13 @@ describe('Auth E2E test', () => {
 
   describe('GET /auth/kakao/callback/web', () => {
     it('200 - successfully issue access token and refresh token (first login)', async () => {
+      // mocking
       const mockingOAuthInfo = {
         snsId: 'test-sns-id',
         provider: AUTH_PROVIDER.KAKAO,
       };
 
+      // 첫 로그인 시, 해당 snsId로 유저가 존재하지 않아야 함
       const prisma = testHelper.get(PrismaService);
       let user = await prisma.user.findFirst({
         select: {
@@ -212,6 +214,7 @@ describe('Auth E2E test', () => {
       });
       expect(user).toBeNull();
 
+      // mocking kakao social login
       const kakaoService = testHelper.get(KakaoLoginStrategy);
       jest
         .spyOn(kakaoService, 'socialLogin')
@@ -223,15 +226,16 @@ describe('Auth E2E test', () => {
         .query({ code: 'mocking-code' })
         .expect(200);
 
+      // access token과 refresh token이 발급되어야 함
       const [type, refreshToken] = extractCookieValue(
         response.headers['set-cookie'][0],
         'refreshToken',
       )?.split(' ') || [null, null];
-
       expect(response.body).toHaveProperty('accessToken');
       expect(refreshToken).not.toBeNull();
       expect(type).toBe('Bearer');
 
+      // 유저 정보가 생성되어야 함
       user = await prisma.user.findFirstOrThrow({
         select: {
           idx: true,
@@ -252,12 +256,14 @@ describe('Auth E2E test', () => {
       expect(user?.userProvider?.name).toBe(AUTH_PROVIDER.KAKAO);
       expect(user?.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
 
+      // redis에 refresh token이 저장되어야 함
       const redisService = testHelper.get(RedisService);
       const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
       expect(refreshTokenKeys.length).toBe(1);
     });
 
     it('200 - successfully issue access token and refresh token (second login)', async () => {
+      // mocking
       const mockingUserInfo = {
         nickname: 'test-nickname',
         userProvider: {
@@ -266,6 +272,7 @@ describe('Auth E2E test', () => {
         },
       };
 
+      // 두 번째 로그인 시, 해당 snsId로 유저가 존재해야 함
       const prisma = testHelper.get(PrismaService);
       await prisma.user.create({
         data: {
@@ -278,7 +285,6 @@ describe('Auth E2E test', () => {
           },
         },
       });
-
       let user = await prisma.user.findFirst({
         select: {
           idx: true,
@@ -298,6 +304,7 @@ describe('Auth E2E test', () => {
       });
       expect(user).not.toBeNull();
 
+      // mocking kakao social login
       const kakaoService = testHelper.get(KakaoLoginStrategy);
       jest
         .spyOn(kakaoService, 'socialLogin')
@@ -309,15 +316,16 @@ describe('Auth E2E test', () => {
         .query({ code: 'mocking-code' })
         .expect(200);
 
+      // access token과 refresh token이 발급되어야 함
       const [type, refreshToken] = extractCookieValue(
         response.headers['set-cookie'][0],
         'refreshToken',
       )?.split(' ') || [null, null];
-
       expect(response.body).toHaveProperty('accessToken');
       expect(refreshToken).not.toBeNull();
       expect(type).toBe('Bearer');
 
+      // 유저 정보가 생성되어야 함
       user = await prisma.user.findFirstOrThrow({
         select: {
           idx: true,
@@ -340,6 +348,7 @@ describe('Auth E2E test', () => {
         mockingUserInfo.userProvider.snsId,
       );
 
+      // redis에 refresh token이 저장되어야 함
       const redisService = testHelper.get(RedisService);
       const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
       expect(refreshTokenKeys.length).toBe(1);
