@@ -15,6 +15,7 @@ import { LoginUser } from '@user/common/types/LoginUser';
 import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
 import { CreateReviewDto } from '@user/api/review/dto/request/create-review.dto';
 import { ReviewEntity } from '@user/api/review/entity/review.entity';
+import { Exception } from '@libs/common';
 
 @Controller('')
 export class ReviewController {
@@ -22,9 +23,15 @@ export class ReviewController {
 
   /**
    * 리뷰 작성 API
+   *
+   * @author 강정연
    */
   @Post('/place/:placeIdx/review')
   @LoginAuth()
+  @Exception(400, 'Invalid placeIdx or request body')
+  @Exception(401, 'Token is missing or invalid')
+  @Exception(404, 'Place does not exist')
+  @Exception(500, 'Transaction failed')
   async createReview(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @Body() dto: CreateReviewDto,
@@ -38,6 +45,8 @@ export class ReviewController {
   }
 
   @Get('/review/all')
+  @Exception(400, 'Query parameter type is invalid')
+  @Exception(403, 'Permission denied')
   async getAllReview(
     @Query() dto: GetAllReviewDto,
     @User() loginUser?: LoginUser,
