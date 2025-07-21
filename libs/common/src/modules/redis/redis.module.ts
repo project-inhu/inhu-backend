@@ -5,7 +5,13 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [ConfigModule.forFeature(redisConfig)],
-  providers: [RedisService],
+  providers: [
+    RedisService,
+    {
+      useValue: '',
+      provide: 'REDIS_PREFIX',
+    },
+  ],
   exports: [RedisService],
 })
 export class RedisModule {}

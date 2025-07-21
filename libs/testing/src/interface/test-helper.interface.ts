@@ -1,10 +1,12 @@
 import { Type } from '@libs/common';
 import { PrismaService } from '@libs/common/modules/prisma/prisma.service';
+import { RedisService } from '@libs/common/modules/redis/redis.service';
 import { ISeedHelper } from '@libs/testing/interface/seed-helper.interface';
 import { PrismaTestSetup } from '@libs/testing/setup/prisma-test.setup';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
+import * as uuid from 'uuid';
 
 interface OverrideBy {
   useValue: (value: any) => ITestHelper;
@@ -13,9 +15,15 @@ interface OverrideBy {
 export abstract class ITestHelper {
   protected app: INestApplication;
   protected appModule: TestingModule;
-  protected readonly overrideProviderMap: Map<any, any> = new Map();
-  protected readonly prismaSetup = PrismaTestSetup.setup();
+  private readonly overrideProviderMap: Map<any, any> = new Map();
+  private readonly prismaSetup = PrismaTestSetup.setup();
   private readonly RootModule: Type;
+
+  /**
+   * init 메서드가 호출된 이후, 각 it에서 활용할 수 있는 고유한 test id입니다.
+   * 반드시, init 메서드가 호출된 이후에 사용해야 합니다.
+   */
+  protected test_id: string | null;
 
   constructor(AppModule: Type) {
     this.RootModule = AppModule;
@@ -23,6 +31,7 @@ export abstract class ITestHelper {
 
   public async init() {
     await this.prismaSetup.BEGIN();
+    this.test_id = uuid.v4();
 
     const testingModuleBuilder = Test.createTestingModule({
       imports: [this.RootModule],
@@ -37,6 +46,10 @@ export abstract class ITestHelper {
     testingModuleBuilder
       .overrideProvider(PrismaService)
       .useValue(this.prismaSetup.getPrisma());
+
+    testingModuleBuilder
+      .overrideProvider('REDIS_PREFIX')
+      .useValue(this.test_id);
 
     this.appModule = await testingModuleBuilder.compile();
     this.app = this.appModule.createNestApplication();
@@ -53,13 +66,6 @@ export abstract class ITestHelper {
    */
   abstract appSetup(): Promise<void>;
 
-  /**
-   * app 마다 필요한 종료 설정 구현체
-   *
-   * !주의: 외부에서 사용하지 마십시오
-   */
-  abstract appDestroy(): Promise<void>;
-
   public getPrisma(): PrismaService {
     return this.prismaSetup.getPrisma();
   }
@@ -69,10 +75,26 @@ export abstract class ITestHelper {
   }
 
   public async destroy() {
-    await this.appDestroy();
+    await this.delRedisKeys();
     this.prismaSetup.ROLLBACK();
     await this.appModule.close();
     await this.app.close();
+    this.test_id = null;
+  }
+
+  private async delRedisKeys() {
+    const redisService = this.app.get(RedisService);
+
+    if (!redisService) {
+      return;
+    }
+
+    // keys 메서드는 prefix를 고려하지 않습니다.
+    // 그러나, del 메서드는 prefix를 고려하기 때문에 조회된 key에서 prefix를 제거해야합니다.
+    const keys = await redisService.keys(`${this.test_id}:*`);
+    await redisService.del(
+      keys.map((key) => key.replace(`${this.test_id}:`, '')),
+    );
   }
 
   public get<T = any>(type: Type<T>): T {
