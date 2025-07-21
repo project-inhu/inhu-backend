@@ -210,25 +210,11 @@ describe('Auth E2E test', () => {
       });
       expect(noUser).toBeNull();
 
-      // mocking https://kauth.kakao.com/oauth/token in socialLogin method
-      const httpService = testHelper.get(HttpService);
-      jest.spyOn(httpService.axiosRef, 'post').mockResolvedValue({
-        data: {
-          access_token: 'mocking-access-token',
-          token_type: 'Bearer',
-          refresh_token: 'mocking-refresh-token',
-          expires_in: 3600,
-          refresh_token_expires_in: 3600,
-        },
-      });
-
-      // mocking https://kapi.kakao.com/v2/user/me in socialLogin method
-      jest.spyOn(httpService.axiosRef, 'get').mockResolvedValue({
-        data: {
-          id: mockingOAuthInfo.snsId,
-          // 기타 카카오 유저 정보
-        },
-      });
+      // mocking kakao social login
+      const kakaoLoginStrategy = testHelper.get(KakaoLoginStrategy);
+      jest
+        .spyOn(kakaoLoginStrategy, 'socialLogin')
+        .mockResolvedValue(mockingOAuthInfo);
 
       // testing
       const response = await testHelper
@@ -293,25 +279,11 @@ describe('Auth E2E test', () => {
       });
       expect(existingUser).not.toBeNull();
 
-      // mocking https://kauth.kakao.com/oauth/token in socialLogin method
-      const httpService = testHelper.get(HttpService);
-      jest.spyOn(httpService.axiosRef, 'post').mockResolvedValue({
-        data: {
-          access_token: 'mocking-access-token',
-          token_type: 'Bearer',
-          refresh_token: 'mocking-refresh-token',
-          expires_in: 3600,
-          refresh_token_expires_in: 3600,
-        },
-      });
-
-      // mocking https://kapi.kakao.com/v2/user/me in socialLogin method
-      jest.spyOn(httpService.axiosRef, 'get').mockResolvedValue({
-        data: {
-          id: mockingOAuthInfo.snsId,
-          // 기타 카카오 유저 정보
-        },
-      });
+      // mocking kakao social login
+      const kakaoLoginStrategy = testHelper.get(KakaoLoginStrategy);
+      jest
+        .spyOn(kakaoLoginStrategy, 'socialLogin')
+        .mockResolvedValue(mockingOAuthInfo);
 
       // testing
       const response = await testHelper
@@ -349,156 +321,6 @@ describe('Auth E2E test', () => {
       const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
       expect(refreshTokenKeys.length).toBe(1);
     });
-
-    it('200 - successfully issue access token and refresh token for SDK login (first login)', async () => {
-      // mocking
-      const mockingOAuthInfo = {
-        snsId: 'test-sns-id',
-        provider: AUTH_PROVIDER.KAKAO,
-      };
-
-      // 첫 로그인 시, 해당 snsId로 유저가 존재하지 않아야 함
-      const prisma = testHelper.getPrisma();
-      const noUser = await prisma.user.findFirst({
-        where: {
-          userProvider: {
-            snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.KAKAO,
-          },
-        },
-      });
-      expect(noUser).toBeNull();
-
-      // mocking https://kapi.kakao.com/v2/user/me in socialLogin method
-      const httpService = testHelper.get(HttpService);
-      jest.spyOn(httpService.axiosRef, 'get').mockResolvedValue({
-        data: {
-          id: mockingOAuthInfo.snsId,
-          // 기타 카카오 유저 정보
-        },
-      });
-
-      // testing
-      const response = await testHelper
-        .test()
-        .get('/auth/kakao/callback/web')
-        .query({ token: 'mocking-token' })
-        .expect(200);
-
-      // access token과 refresh token이 발급되어야 함
-      const [type, refreshToken] = extractCookieValueFromSetCookieHeader(
-        response.headers['set-cookie'][0],
-        'refreshToken',
-      )?.split(' ') || [null, null];
-      expect(response.body).toHaveProperty('accessToken');
-      expect(refreshToken).not.toBeNull();
-      expect(type).toBe('Bearer');
-
-      // 유저 정보가 생성되어야 함
-      const user = await prisma.user.findFirstOrThrow({
-        include: {
-          userProvider: true,
-        },
-        where: {
-          userProvider: {
-            snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.KAKAO,
-          },
-        },
-      });
-      expect(user.userProvider?.name).toBe(AUTH_PROVIDER.KAKAO);
-      expect(user.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
-
-      // redis에 refresh token이 저장되어야 함
-      const redisService = testHelper.get(RedisService);
-      const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
-      expect(refreshTokenKeys.length).toBe(1);
-    });
-
-    it('200 - successfully issue access token and refresh token for SDK login (second login)', async () => {
-      // mocking
-      const mockingOAuthInfo = {
-        snsId: 'test-sns-id',
-        provider: AUTH_PROVIDER.KAKAO,
-      };
-
-      // 두 번째 로그인 시, 해당 snsId로 유저가 존재해야 함
-      await userSeedHelper.seed({
-        nickname: 'test-nickname',
-        social: {
-          provider: AUTH_PROVIDER.KAKAO,
-          snsId: mockingOAuthInfo.snsId,
-        },
-      });
-      const prisma = testHelper.getPrisma();
-      const existingUser = await prisma.user.findFirst({
-        where: {
-          userProvider: {
-            snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.KAKAO,
-          },
-        },
-      });
-      expect(existingUser).not.toBeNull();
-
-      // mocking https://kapi.kakao.com/v2/user/me in socialLogin method
-      const httpService = testHelper.get(HttpService);
-      jest.spyOn(httpService.axiosRef, 'get').mockResolvedValue({
-        data: {
-          id: mockingOAuthInfo.snsId,
-          // 기타 카카오 유저 정보
-        },
-      });
-
-      // testing
-      const response = await testHelper
-        .test()
-        .get('/auth/kakao/callback/web')
-        .query({ token: 'mocking-token' })
-        .expect(200);
-
-      // access token과 refresh token이 발급되어야 함
-      const [type, refreshToken] = extractCookieValueFromSetCookieHeader(
-        response.headers['set-cookie'][0],
-        'refreshToken',
-      )?.split(' ') || [null, null];
-      expect(response.body).toHaveProperty('accessToken');
-      expect(refreshToken).not.toBeNull();
-      expect(type).toBe('Bearer');
-
-      // 유저 정보가 생성되어야 함
-      const user = await prisma.user.findFirstOrThrow({
-        include: {
-          userProvider: true,
-        },
-        where: {
-          userProvider: {
-            snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.KAKAO,
-          },
-        },
-      });
-      expect(user.userProvider?.name).toBe(AUTH_PROVIDER.KAKAO);
-      expect(user.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
-
-      // redis에 refresh token이 저장되어야 함
-      const redisService = testHelper.get(RedisService);
-      const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
-      expect(refreshTokenKeys.length).toBe(1);
-    });
-
-    // it('500 - no code provided', async () => {
-    //   await testHelper.test().get('/auth/kakao/callback/web').expect(500);
-    // });
-
-    // it('500 - invalid code provided', async () => {
-    //   const invalidCode = 'invalid-code';
-    //   await testHelper
-    //     .test()
-    //     .get('/auth/kakao/callback/web')
-    //     .query({ code: invalidCode })
-    //     .expect(500);
-    // });
 
     it('500 - invalid provider', async () => {
       const invalidProvider = 'invalid provider';
@@ -528,25 +350,11 @@ describe('Auth E2E test', () => {
       });
       expect(noUser).toBeNull();
 
-      // mocking https://kauth.kakao.com/oauth/token in socialLogin method
-      const httpService = testHelper.get(HttpService);
-      jest.spyOn(httpService.axiosRef, 'post').mockResolvedValue({
-        data: {
-          access_token: 'mocking-access-token',
-          token_type: 'Bearer',
-          refresh_token: 'mocking-refresh-token',
-          expires_in: 3600,
-          refresh_token_expires_in: 3600,
-        },
-      });
-
-      // mocking https://kapi.kakao.com/v2/user/me in socialLogin method
-      jest.spyOn(httpService.axiosRef, 'get').mockResolvedValue({
-        data: {
-          id: mockingOAuthInfo.snsId,
-          // 기타 카카오 유저 정보
-        },
-      });
+      // mocking kakao social login
+      const kakaoLoginStrategy = testHelper.get(KakaoLoginStrategy);
+      jest
+        .spyOn(kakaoLoginStrategy, 'socialLogin')
+        .mockResolvedValue(mockingOAuthInfo);
 
       // testing
       const response = await testHelper
@@ -605,25 +413,11 @@ describe('Auth E2E test', () => {
       });
       expect(existingUser).not.toBeNull();
 
-      // mocking https://kauth.kakao.com/oauth/token in socialLogin method
-      const httpService = testHelper.get(HttpService);
-      jest.spyOn(httpService.axiosRef, 'post').mockResolvedValue({
-        data: {
-          access_token: 'mocking-access-token',
-          token_type: 'Bearer',
-          refresh_token: 'mocking-refresh-token',
-          expires_in: 3600,
-          refresh_token_expires_in: 3600,
-        },
-      });
-
-      // mocking https://kapi.kakao.com/v2/user/me in socialLogin method
-      jest.spyOn(httpService.axiosRef, 'get').mockResolvedValue({
-        data: {
-          id: mockingOAuthInfo.snsId,
-          // 기타 카카오 유저 정보
-        },
-      });
+      // mocking kakao social login
+      const kakaoLoginStrategy = testHelper.get(KakaoLoginStrategy);
+      jest
+        .spyOn(kakaoLoginStrategy, 'socialLogin')
+        .mockResolvedValue(mockingOAuthInfo);
 
       // testing
       const response = await testHelper
@@ -656,146 +450,6 @@ describe('Auth E2E test', () => {
       const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
       expect(refreshTokenKeys.length).toBe(1);
     });
-
-    it('200 - successfully issue access token and refresh token for SDK login (first login)', async () => {
-      // mocking
-      const mockingOAuthInfo = {
-        snsId: 'test-sns-id',
-        provider: AUTH_PROVIDER.KAKAO,
-      };
-
-      // 첫 로그인 시, 해당 snsId로 유저가 존재하지 않아야 함
-      const prisma = testHelper.getPrisma();
-      const noUser = await prisma.user.findFirst({
-        where: {
-          userProvider: {
-            snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.KAKAO,
-          },
-        },
-      });
-      expect(noUser).toBeNull();
-
-      // mocking https://kapi.kakao.com/v2/user/me in socialLogin method
-      const httpService = testHelper.get(HttpService);
-      jest.spyOn(httpService.axiosRef, 'get').mockResolvedValue({
-        data: {
-          id: mockingOAuthInfo.snsId,
-          // 기타 카카오 유저 정보
-        },
-      });
-
-      // testing
-      const response = await testHelper
-        .test()
-        .get('/auth/kakao/callback/app')
-        .query({ token: 'mocking-token' })
-        .expect(200);
-
-      // access token과 refresh token이 발급되어야 함
-      expect(response.body).toHaveProperty('accessToken');
-      expect(response.body).toHaveProperty('refreshToken');
-
-      // 유저 정보가 생성되어야 함
-      const user = await prisma.user.findFirstOrThrow({
-        include: {
-          userProvider: true,
-        },
-        where: {
-          userProvider: {
-            snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.KAKAO,
-          },
-        },
-      });
-      expect(user.userProvider?.name).toBe(AUTH_PROVIDER.KAKAO);
-      expect(user.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
-
-      // redis에 refresh token이 저장되어야 함
-      const redisService = testHelper.get(RedisService);
-      const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
-      expect(refreshTokenKeys.length).toBe(1);
-    });
-
-    it('200 - successfully issue access token and refresh token for SDK login (second login)', async () => {
-      // mocking
-      const mockingOAuthInfo = {
-        snsId: 'test-sns-id',
-        provider: AUTH_PROVIDER.KAKAO,
-      };
-
-      // 두 번째 로그인 시, 해당 snsId로 유저가 존재해야 함
-      await userSeedHelper.seed({
-        nickname: 'test-nickname',
-        social: {
-          provider: AUTH_PROVIDER.KAKAO,
-          snsId: mockingOAuthInfo.snsId,
-        },
-      });
-      const prisma = testHelper.getPrisma();
-      const existingUser = await prisma.user.findFirst({
-        where: {
-          userProvider: {
-            snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.KAKAO,
-          },
-        },
-      });
-      expect(existingUser).not.toBeNull();
-
-      // mocking https://kapi.kakao.com/v2/user/me in socialLogin method
-      const httpService = testHelper.get(HttpService);
-      jest.spyOn(httpService.axiosRef, 'get').mockResolvedValue({
-        data: {
-          id: mockingOAuthInfo.snsId,
-          // 기타 카카오 유저 정보
-        },
-      });
-
-      // testing
-      const response = await testHelper
-        .test()
-        .get('/auth/kakao/callback/app')
-        .query({ token: 'mocking-token' })
-        .expect(200);
-
-      // access token과 refresh token이 발급되어야 함
-      expect(response.body).toHaveProperty('accessToken');
-      expect(response.body).toHaveProperty('refreshToken');
-
-      // 유저 정보가 생성되어야 함
-      const user = await prisma.user.findFirstOrThrow({
-        include: {
-          userProvider: true,
-        },
-        where: {
-          userProvider: {
-            snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.KAKAO,
-          },
-        },
-      });
-      expect(user.userProvider?.name).toBe(AUTH_PROVIDER.KAKAO);
-      expect(user.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
-
-      // redis에 refresh token이 저장되어야 함
-      const redisService = testHelper.get(RedisService);
-      const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
-      expect(refreshTokenKeys.length).toBe(1);
-    });
-
-    // it('500 - no code provided', async () => {
-    //   await testHelper.test().get('/auth/kakao/callback/app').expect(500);
-    // });
-
-    // it('500 - invalid code provided', async () => {
-    //   const invalidCode = 'invalid-code';
-    //   await testHelper
-    //     .test()
-    //     .get('/auth/kakao/callback/app')
-    //     .query({ code: invalidCode })
-    //     .expect(500);
-    // });
 
     it('500 - invalid provider', async () => {
       const invalidProvider = 'invalid provider';
@@ -826,32 +480,11 @@ describe('Auth E2E test', () => {
       });
       expect(noUser).toBeNull();
 
-      // mocking https://appleid.apple.com/auth/token in socialLogin method
-      const httpService = testHelper.get(HttpService);
-      jest.spyOn(httpService.axiosRef, 'post').mockResolvedValue({
-        data: {
-          access_token: 'mocking-access-token',
-          token_type: 'Bearer',
-          expires_in: 3600,
-          refresh_token: 'mocking-refresh-token',
-          id_token: 'mocking-id-token',
-        },
-      });
-
-      // mocking decodeIdToken method in socialLogin
+      // mocking apple social login
       const appleLoginStrategy = testHelper.get(AppleLoginStrategy);
-      jest.spyOn(appleLoginStrategy as any, 'decodeIdToken').mockResolvedValue({
-        iss: 'https://appleid.apple.com',
-        aud: 'your.app.bundle.id',
-        exp: Math.floor(Date.now() / 1000) + 3600,
-        iat: Math.floor(Date.now() / 1000),
-        sub: mockingOAuthInfo.snsId,
-        nonce: 'mocking-nonce',
-        at_hash: 'mocking-at-hash',
-        auth_time: Math.floor(Date.now() / 1000),
-        nonce_supported: true,
-        // 기타 애플 유저 정보
-      });
+      jest
+        .spyOn(appleLoginStrategy, 'socialLogin')
+        .mockResolvedValue(mockingOAuthInfo);
 
       // testing
       const response = await testHelper
@@ -916,32 +549,11 @@ describe('Auth E2E test', () => {
       });
       expect(existingUser).not.toBeNull();
 
-      // mocking https://appleid.apple.com/auth/token in socialLogin method
-      const httpService = testHelper.get(HttpService);
-      jest.spyOn(httpService.axiosRef, 'post').mockResolvedValue({
-        data: {
-          access_token: 'mocking-access-token',
-          token_type: 'Bearer',
-          expires_in: 3600,
-          refresh_token: 'mocking-refresh-token',
-          id_token: 'mocking-id-token',
-        },
-      });
-
-      // mocking decodeIdToken method in socialLogin
+      // mocking apple social login
       const appleLoginStrategy = testHelper.get(AppleLoginStrategy);
-      jest.spyOn(appleLoginStrategy as any, 'decodeIdToken').mockResolvedValue({
-        iss: 'https://appleid.apple.com',
-        aud: 'your.app.bundle.id',
-        exp: Math.floor(Date.now() / 1000) + 3600,
-        iat: Math.floor(Date.now() / 1000),
-        sub: mockingOAuthInfo.snsId,
-        nonce: 'mocking-nonce',
-        at_hash: 'mocking-at-hash',
-        auth_time: Math.floor(Date.now() / 1000),
-        nonce_supported: true,
-        // 기타 애플 유저 정보
-      });
+      jest
+        .spyOn(appleLoginStrategy, 'socialLogin')
+        .mockResolvedValue(mockingOAuthInfo);
 
       // testing
       const response = await testHelper
@@ -979,19 +591,6 @@ describe('Auth E2E test', () => {
       const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
       expect(refreshTokenKeys.length).toBe(1);
     });
-
-    // it('500 - no code provided', async () => {
-    //   await testHelper.test().post('/auth/apple/callback/web').expect(500);
-    // });
-
-    // it('500 - invalid code provided', async () => {
-    //   const invalidCode = 'invalid-code';
-    //   await testHelper
-    //     .test()
-    //     .post('/auth/apple/callback/web')
-    //     .send({ code: invalidCode })
-    //     .expect(500);
-    // });
 
     it('500 - invalid provider', async () => {
       const invalidProvider = 'invalid provider';
@@ -1022,32 +621,11 @@ describe('Auth E2E test', () => {
       });
       expect(noUser).toBeNull();
 
-      // mocking https://appleid.apple.com/auth/token in socialLogin method
-      const httpService = testHelper.get(HttpService);
-      jest.spyOn(httpService.axiosRef, 'post').mockResolvedValue({
-        data: {
-          access_token: 'mocking-access-token',
-          token_type: 'Bearer',
-          expires_in: 3600,
-          refresh_token: 'mocking-refresh-token',
-          id_token: 'mocking-id-token',
-        },
-      });
-
-      // mocking decodeIdToken method in socialLogin
+      // mocking apple social login
       const appleLoginStrategy = testHelper.get(AppleLoginStrategy);
-      jest.spyOn(appleLoginStrategy as any, 'decodeIdToken').mockResolvedValue({
-        iss: 'https://appleid.apple.com',
-        aud: 'your.app.bundle.id',
-        exp: Math.floor(Date.now() / 1000) + 3600,
-        iat: Math.floor(Date.now() / 1000),
-        sub: mockingOAuthInfo.snsId,
-        nonce: 'mocking-nonce',
-        at_hash: 'mocking-at-hash',
-        auth_time: Math.floor(Date.now() / 1000),
-        nonce_supported: true,
-        // 기타 애플 유저 정보
-      });
+      jest
+        .spyOn(appleLoginStrategy, 'socialLogin')
+        .mockResolvedValue(mockingOAuthInfo);
 
       // testing
       const response = await testHelper
@@ -1107,32 +685,11 @@ describe('Auth E2E test', () => {
       });
       expect(existingUser).not.toBeNull();
 
-      // mocking https://appleid.apple.com/auth/token in socialLogin method
-      const httpService = testHelper.get(HttpService);
-      jest.spyOn(httpService.axiosRef, 'post').mockResolvedValue({
-        data: {
-          access_token: 'mocking-access-token',
-          token_type: 'Bearer',
-          expires_in: 3600,
-          refresh_token: 'mocking-refresh-token',
-          id_token: 'mocking-id-token',
-        },
-      });
-
-      // mocking decodeIdToken method in socialLogin
+      // mocking apple social login
       const appleLoginStrategy = testHelper.get(AppleLoginStrategy);
-      jest.spyOn(appleLoginStrategy as any, 'decodeIdToken').mockResolvedValue({
-        iss: 'https://appleid.apple.com',
-        aud: 'your.app.bundle.id',
-        exp: Math.floor(Date.now() / 1000) + 3600,
-        iat: Math.floor(Date.now() / 1000),
-        sub: mockingOAuthInfo.snsId,
-        nonce: 'mocking-nonce',
-        at_hash: 'mocking-at-hash',
-        auth_time: Math.floor(Date.now() / 1000),
-        nonce_supported: true,
-        // 기타 애플 유저 정보
-      });
+      jest
+        .spyOn(appleLoginStrategy, 'socialLogin')
+        .mockResolvedValue(mockingOAuthInfo);
 
       // testing
       const response = await testHelper
@@ -1166,25 +723,54 @@ describe('Auth E2E test', () => {
       expect(refreshTokenKeys.length).toBe(1);
     });
 
-    // it('500 - no code provided', async () => {
-    //   await testHelper.test().post('/auth/apple/callback/app').expect(500);
-    // });
-
-    // it('500 - invalid code provided', async () => {
-    //   const invalidCode = 'invalid-code';
-    //   await testHelper
-    //     .test()
-    //     .post('/auth/apple/callback/app')
-    //     .send({ code: invalidCode })
-    //     .expect(500);
-    // });
-
     it('500 - invalid provider', async () => {
       const invalidProvider = 'invalid provider';
       await testHelper
         .test()
         .post(`/auth/${invalidProvider}/callback/app`)
         .expect(500);
+    });
+  });
+
+  describe('POST /auth/logout/web', () => {
+    it('200 - successfully logout', async () => {
+      const user = testHelper.loginUsers.user1;
+      const refreshToken = user.web.refreshToken;
+      const redis = testHelper.get(RedisService);
+
+      const beforeKeys = await redis.hkeys(`user:${user.idx}:rt`);
+      console.log('Before logout:', beforeKeys);
+
+      // WEB 토큰인지 확인 (키 형태: "1-4492-4d4d518f-569a-42ef-81f1-659197cd0be0")
+      // TokenIssuedBy.WEB = 1, userIdx를 조합하여 찾기
+      const webTokenKey = beforeKeys.find((key) => {
+        const keyParts = key.split('-');
+        const tokenIssuedBy = keyParts[0]; // 첫 번째 부분: '1'
+        const userIdx = keyParts[1]; // 두 번째 부분: '4492'
+        return tokenIssuedBy === '1' && userIdx === user.idx.toString(); // 1 = TokenIssuedBy.WEB
+      });
+      console.log('Web token key:', webTokenKey);
+      expect(webTokenKey).toBeDefined();
+
+      await testHelper
+        .test()
+        .post('/auth/logout/web')
+        .set('Cookie', [`refreshToken=Bearer ${refreshToken}`])
+        .expect(200);
+
+      // 로그아웃 후 redis에서 해당 refresh token이 삭제되었는지 확인
+      const afterKeys = await redis.hkeys(`user:${user.idx}:rt`);
+      console.log('After logout:', afterKeys);
+
+      // WEB 토큰이 삭제되었는지 확인
+      const remainingWebTokenKey = afterKeys.find((key) => {
+        const keyParts = key.split('-');
+        const tokenIssuedBy = keyParts[0]; // 첫 번째 부분: '1'
+        const userIdx = keyParts[1]; // 두 번째 부분: '4492'
+        return tokenIssuedBy === '1' && userIdx === user.idx.toString(); // 1 = TokenIssuedBy.WEB
+      });
+      console.log('Remaining web token key:', remainingWebTokenKey);
+      expect(remainingWebTokenKey).toBeUndefined();
     });
   });
 });
