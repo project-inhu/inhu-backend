@@ -1,3 +1,8 @@
+import { PrismaService } from '@libs/common/modules/prisma/prisma.service';
+import { RedisService } from '@libs/common/modules/redis/redis.service';
+import { AUTH_PROVIDER } from '@libs/core';
+import { AuthService } from '@user/api/auth/auth.service';
+import { KakaoLoginStrategy } from '@user/api/auth/social-login/strategy/kakao/kakao-login.strategy';
 import { AppModule } from '@user/app.module';
 import { TokenCategory } from '@user/common/module/login-token/constants/token-category.constant';
 import { TokenIssuedBy } from '@user/common/module/login-token/constants/token-issued-by.constants';
@@ -132,6 +137,120 @@ describe('Auth E2E test', () => {
         .post('/auth/refresh-token/regenerate/app')
         .send({ refreshTokenWithType: `Bearer ${refreshToken}` })
         .expect(401);
+    });
+  });
+
+  describe('GET /auth/kakao/login', () => {
+    it('302 - successfully redirects to kakao', async () => {
+      const mockingUrl = 'mocking-kakao-url';
+      const authService = testHelper.get(AuthService);
+      jest
+        .spyOn(authService, 'getSocialLoginRedirect')
+        .mockResolvedValue(mockingUrl);
+
+      const response = await testHelper
+        .test()
+        .get('/auth/kakao/login')
+        .expect(302);
+
+      expect(response.headers.location).toContain(mockingUrl);
+    });
+
+    it('500 - invalid provider', async () => {
+      const invalidProvider = 'invalid provider';
+      await testHelper.test().get(`/auth/${invalidProvider}/login`).expect(500);
+    });
+  });
+
+  describe('GET /auth/apple/login', () => {
+    it('302 - successfully redirects to apple', async () => {
+      const mockingUrl = 'mocking-apple-url';
+      const authService = testHelper.get(AuthService);
+      jest
+        .spyOn(authService, 'getSocialLoginRedirect')
+        .mockResolvedValue(mockingUrl);
+
+      const response = await testHelper
+        .test()
+        .get('/auth/apple/login')
+        .expect(302);
+
+      expect(response.headers.location).toContain(mockingUrl);
+    });
+
+    it('500 - invalid provider', async () => {
+      const invalidProvider = 'invalid provider';
+      await testHelper.test().get(`/auth/${invalidProvider}/login`).expect(500);
+    });
+  });
+
+  describe('GET /auth/kakao/callback/web', () => {
+    it('200 - successfully issue access token and refresh token (first login)', async () => {
+      const mockingOAuthInfo = {
+        snsId: 'test-sns-id',
+        provider: AUTH_PROVIDER.KAKAO,
+      };
+
+      const prisma = testHelper.get(PrismaService);
+      let user = await prisma.user.findFirst({
+        select: {
+          idx: true,
+          nickname: true,
+          userProvider: {
+            select: {
+              snsId: true,
+              name: true,
+            },
+          },
+        },
+        where: {
+          userProvider: {
+            snsId: mockingOAuthInfo.snsId,
+          },
+        },
+      });
+      expect(user).toBeNull();
+
+      const kakaoService = testHelper.get(KakaoLoginStrategy);
+      jest
+        .spyOn(kakaoService, 'socialLogin')
+        .mockResolvedValue(mockingOAuthInfo);
+
+      const response = await testHelper
+        .test()
+        .get('/auth/kakao/callback/web')
+        .query({ code: 'mocking-code' })
+        .expect(200);
+
+      const [prefix, refreshToken] = response.headers['set-cookie'][0]
+        .split('; ')[0]
+        .split('%20');
+      expect(response.body).toHaveProperty('accessToken');
+      expect(refreshToken).toBeDefined();
+
+      user = await prisma.user.findFirstOrThrow({
+        select: {
+          idx: true,
+          nickname: true,
+          userProvider: {
+            select: {
+              snsId: true,
+              name: true,
+            },
+          },
+        },
+        where: {
+          userProvider: {
+            snsId: mockingOAuthInfo.snsId,
+          },
+        },
+      });
+      expect(user?.userProvider?.name).toBe(AUTH_PROVIDER.KAKAO);
+      expect(user?.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
+
+      const redisService = testHelper.get(RedisService);
+      const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
+      expect(refreshTokenKeys.length).toBe(1);
     });
   });
 });
