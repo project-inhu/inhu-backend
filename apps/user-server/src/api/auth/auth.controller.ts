@@ -90,7 +90,7 @@ export class AuthController {
    */
   @Get('/:provider/callback/web')
   public async socialLoginWeb(
-    @Res() res: Response,
+    @Res({ passthrough: true }) res: Response,
     @Req() req: Request,
     @Param('provider') provider: AuthProvider,
   ): Promise<SocialLoginWebResponseDto> {
