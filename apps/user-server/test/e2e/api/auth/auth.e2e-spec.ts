@@ -806,7 +806,7 @@ describe('Auth E2E test', () => {
     });
   });
 
-  describe('GET /auth/apple/callback/web', () => {
+  describe('POST /auth/apple/callback/web', () => {
     it('200 - successfully issue access token and refresh token (first login)', async () => {
       // mocking
       const mockingOAuthInfo = {
@@ -1002,7 +1002,7 @@ describe('Auth E2E test', () => {
     });
   });
 
-  describe('GET /auth/apple/callback/app', () => {
+  describe('POST /auth/apple/callback/app', () => {
     it('200 - successfully issue access token and refresh token (first login)', async () => {
       // mocking
       const mockingOAuthInfo = {
