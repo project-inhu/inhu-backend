@@ -66,11 +66,14 @@ export class ReviewCoreService {
 
     if (
       input.keywordIdxList !== undefined &&
-      this.isChangedReviewKeyword(input, review)
+      !this.isChangedReviewKeyword(input, review)
     ) {
       await Promise.all(
         review.reviewKeywordMappingList.map(({ keyword }) =>
-          this.placeCoreService.decreaseKeywordCount(keyword.idx, keyword.idx),
+          this.placeCoreService.decreaseKeywordCount(
+            review.place.idx,
+            keyword.idx,
+          ),
         ),
       );
 
