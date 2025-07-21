@@ -67,7 +67,9 @@ export class ReviewController {
    * @author 강정연
    */
   @Patch('/review/:reviewIdx')
+  @LoginAuth()
   @Exception(400, 'Invalid reviewIdx or request body')
+  @Exception(401, 'Token is missing or invalid')
   @Exception(403, 'Permission denied')
   async updateReview(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
