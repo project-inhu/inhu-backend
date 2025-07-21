@@ -223,14 +223,14 @@ describe('Auth E2E test', () => {
         .query({ code: 'mocking-code' })
         .expect(200);
 
-      const refreshToken = extractCookieValue(
+      const [type, refreshToken] = extractCookieValue(
         response.headers['set-cookie'][0],
         'refreshToken',
-      );
+      )?.split(' ') || [null, null];
 
       expect(response.body).toHaveProperty('accessToken');
-      expect(refreshToken).toBeDefined();
-      expect(refreshToken).toContain('Bearer ');
+      expect(refreshToken).not.toBeNull();
+      expect(type).toBe('Bearer');
 
       user = await prisma.user.findFirstOrThrow({
         select: {
