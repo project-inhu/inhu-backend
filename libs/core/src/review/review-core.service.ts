@@ -54,6 +54,7 @@ export class ReviewCoreService {
   /**
    * @throws {ReviewNotFoundException} 404 - 수정하려는 리뷰가 존재하지 않을 때
    */
+  @Transactional()
   public async updateReviewByIdx(
     idx: number,
     input: UpdateReviewInput,
@@ -66,7 +67,7 @@ export class ReviewCoreService {
 
     if (
       input.keywordIdxList !== undefined &&
-      !this.isChangedReviewKeyword(input, review)
+      this.isChangedReviewKeyword(input, review)
     ) {
       await Promise.all(
         review.reviewKeywordMappingList.map(({ keyword }) =>
@@ -96,7 +97,7 @@ export class ReviewCoreService {
   ) {
     return (
       input.keywordIdxList &&
-      isEqualArray(
+      !isEqualArray(
         input.keywordIdxList.sort(),
         review.reviewKeywordMappingList
           .map(({ keyword: { idx } }) => idx)
@@ -108,6 +109,7 @@ export class ReviewCoreService {
   /**
    * @throws {ReviewNotFoundException} 404 - 삭제하려는 리뷰가 존재하지 않을 때
    */
+  @Transactional()
   public async deleteReviewByIdx(idx: number): Promise<void> {
     const review = await this.reviewCoreRepository.selectReviewByIdx(idx);
 
@@ -119,7 +121,10 @@ export class ReviewCoreService {
 
     await Promise.all(
       review.reviewKeywordMappingList.map(({ keyword }) =>
-        this.placeCoreService.decreaseKeywordCount(keyword.idx, keyword.idx),
+        this.placeCoreService.decreaseKeywordCount(
+          review.place.idx,
+          keyword.idx,
+        ),
       ),
     );
 
