@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
@@ -16,6 +17,7 @@ import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
 import { CreateReviewDto } from '@user/api/review/dto/request/create-review.dto';
 import { ReviewEntity } from '@user/api/review/entity/review.entity';
 import { Exception } from '@libs/common';
+import { UpdateReviewDto } from './dto/request/update-review-dto';
 
 @Controller('')
 export class ReviewController {
@@ -44,6 +46,11 @@ export class ReviewController {
     );
   }
 
+  /**
+   * 리뷰 목록 가져오기 API
+   *
+   * @author 강정연
+   */
   @Get('/review/all')
   @Exception(400, 'Query parameter type is invalid')
   @Exception(403, 'Permission denied')
@@ -52,5 +59,21 @@ export class ReviewController {
     @User() loginUser?: LoginUser,
   ): Promise<GetAllReviewResponseDto> {
     return await this.reviewService.getAllReview(dto, loginUser);
+  }
+
+  /**
+   * 리뷰 수정하기 API
+   *
+   * @author 강정연
+   */
+  @Patch('/review/:reviewIdx')
+  @Exception(400, 'Invalid reviewIdx or request body')
+  @Exception(403, 'Permission denied')
+  async updateReview(
+    @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
+    @Body() dto: UpdateReviewDto,
+    @User() loginUser: LoginUser,
+  ): Promise<void> {
+    await this.reviewService.updateReviewByIdx(reviewIdx, dto, loginUser);
   }
 }
