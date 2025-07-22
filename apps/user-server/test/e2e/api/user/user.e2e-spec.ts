@@ -47,5 +47,9 @@ describe('User E2E test', () => {
       expect(responseBody.provider).toEqual(user.userProvider?.name);
       expect(new Date(responseBody.createdAt)).toEqual(user.createdAt);
     });
+
+    it('401 - no accessToken', async () => {
+      await testHelper.test().get('/user').expect(401);
+    });
   });
 });
