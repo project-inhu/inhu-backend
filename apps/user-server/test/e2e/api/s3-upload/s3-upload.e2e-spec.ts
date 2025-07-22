@@ -48,5 +48,51 @@ describe('s3-upload E2E test', () => {
 
       spy.mockRestore();
     });
+
+    it('401 - no accessToken', async () => {
+      await testHelper.test().get('/user').expect(401);
+    });
+
+    it('400 - folder and filename are not provided', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .post('/s3-upload/profile-image/presigned-url')
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(400);
+    });
+
+    it('400 - filename is not provided', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .post('/s3-upload/profile-image/presigned-url')
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .send({ folder: S3_FOLDER.PROFILE })
+        .expect(400);
+    });
+
+    it('400 - folder is not provided', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .post('/s3-upload/profile-image/presigned-url')
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .send({ filename: 'test-image.jpg' })
+        .expect(400);
+    });
+
+    it('400 - folder is not a valid S3Folder type', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      await testHelper
+        .test()
+        .post('/s3-upload/profile-image/presigned-url')
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .send({ folder: 'invalid-folder', filename: 'test-image.jpg' })
+        .expect(400);
+    });
   });
 });
