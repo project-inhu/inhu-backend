@@ -24,15 +24,29 @@ describe('Bookmark E2E test', () => {
         activatedAt: new Date(),
       });
 
+      // 북마크 생성 전 해당 장소의 북마크 수가 0인지 확인
+      const prisma = testHelper.getPrisma();
+      const beforePlaceInfo = await prisma.place.findFirstOrThrow({
+        where: { idx: placeSeed.idx },
+      });
+      expect(beforePlaceInfo.bookmarkCount).toBe(0);
+
       const response = await testHelper
         .test()
         .post(`/place/${placeSeed.idx}/bookmark`)
         .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
         .expect(201);
 
+      // 북마크 생성 후 응답 확인
       const resultBookmark = response.body;
       expect(resultBookmark.idx).not.toBeNull();
       expect(resultBookmark.placeIdx).toBe(placeSeed.idx);
+
+      // 북마크 생성 후 해당 장소의 북마크 수가 1 증가했는지 확인
+      const afterPlaceInfo = await prisma.place.findFirstOrThrow({
+        where: { idx: placeSeed.idx },
+      });
+      expect(afterPlaceInfo.bookmarkCount).toBe(1);
     });
 
     it('400 - invalid placeIdx', async () => {
@@ -78,16 +92,13 @@ describe('Bookmark E2E test', () => {
 
   describe('DELETE /place/:placeIdx/bookmark', () => {
     it('200 - successfully delete bookmark', async () => {
-      // user1 생성
       const loginUser = testHelper.loginUsers.user1;
 
-      // place seeding
       const placeSeed = await placeSeedHelper.seed({
         deletedAt: null,
         activatedAt: new Date(),
       });
 
-      // bookmark seeding
       await bookmarkSeedHelper.seed({
         userIdx: loginUser.idx,
         placeIdx: placeSeed.idx,
@@ -101,7 +112,13 @@ describe('Bookmark E2E test', () => {
       });
       expect(beforeDeleteBookmark).not.toBeNull();
 
-      // testing
+      // 북마크 삭제 전 해당 장소의 북마크 수가 1인지 확인
+      const prisma = testHelper.getPrisma();
+      const beforePlaceInfo = await prisma.place.findFirstOrThrow({
+        where: { idx: placeSeed.idx },
+      });
+      expect(beforePlaceInfo.bookmarkCount).toBe(1);
+
       await testHelper
         .test()
         .delete(`/place/${placeSeed.idx}/bookmark`)
@@ -114,6 +131,12 @@ describe('Bookmark E2E test', () => {
         placeIdx: placeSeed.idx,
       });
       expect(afterDeleteBookmark).toBeNull();
+
+      // 북마크 삭제 후 해당 장소의 북마크 수가 0인지 확인
+      const afterPlaceInfo = await prisma.place.findFirstOrThrow({
+        where: { idx: placeSeed.idx },
+      });
+      expect(afterPlaceInfo.bookmarkCount).toBe(0);
     });
 
     it('400 - invalid placeIdx', async () => {
@@ -136,6 +159,20 @@ describe('Bookmark E2E test', () => {
         .delete(`/place/${nonExistentPlaceIdx}/bookmark`)
         .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
         .expect(404);
+    });
+
+    it('409 - bookmark not found', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .delete(`/place/${placeSeed.idx}/bookmark`)
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .expect(409);
     });
   });
 });
