@@ -103,6 +103,62 @@ describe('User E2E test', () => {
       );
     });
 
+    it('200 - successfully update user nickname', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      const updateUserDto = {
+        nickname: 'newName',
+      };
+
+      await testHelper
+        .test()
+        .patch('/user')
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .send(updateUserDto)
+        .expect(200);
+
+      const updatedUser = await testHelper.getPrisma().user.findUniqueOrThrow({
+        where: { idx: loginUser.idx },
+        select: {
+          nickname: true,
+          profileImagePath: true,
+          userProvider: { select: { name: true } },
+          createdAt: true,
+        },
+      });
+
+      expect(updatedUser.nickname).toEqual(updateUserDto.nickname);
+    });
+
+    it('200 - successfully update user profileImagePath', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      const updateUserDto = {
+        profileImagePath: '/profile/aabc-newProfileImagePath.jpg',
+      };
+
+      await testHelper
+        .test()
+        .patch('/user')
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .send(updateUserDto)
+        .expect(200);
+
+      const updatedUser = await testHelper.getPrisma().user.findUniqueOrThrow({
+        where: { idx: loginUser.idx },
+        select: {
+          nickname: true,
+          profileImagePath: true,
+          userProvider: { select: { name: true } },
+          createdAt: true,
+        },
+      });
+
+      expect(updatedUser.profileImagePath).toEqual(
+        updateUserDto.profileImagePath,
+      );
+    });
+
     it('401 - no accessToken', async () => {
       await testHelper.test().patch('/user').expect(401);
     });
