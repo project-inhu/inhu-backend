@@ -1,7 +1,4 @@
-import { PlaceCoreService } from '@libs/core';
 import { PlaceSeedHelper, ReviewSeedHelper } from '@libs/testing';
-import { Test } from '@nestjs/testing';
-import { Prisma } from '@prisma/client';
 import { GetAllReviewResponseDto } from '@user/api/review/dto/response/get-all-review.response.dto';
 import { ReviewEntity } from '@user/api/review/entity/review.entity';
 import { AppModule } from '@user/app.module';
@@ -543,7 +540,6 @@ describe('Review E2E test', () => {
 
       const resultReview: ReviewEntity = response.body;
 
-      console.log(resultReview);
       const resultKeywordIdxList = resultReview.keywordList
         .map(({ idx }) => idx)
         .sort();
