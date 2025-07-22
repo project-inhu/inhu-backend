@@ -1,74 +1,78 @@
+import { BookmarkCoreService, PlaceCoreService } from '@libs/core';
 import {
   ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PlaceService } from '../place/place.service';
-import { BookmarkRepository } from './bookmark.repository';
 import { BookmarkEntity } from './entity/bookmark.entity';
+import { LoginUser } from '@user/common/types/LoginUser';
 
 @Injectable()
 export class BookmarkService {
   constructor(
-    private readonly bookmarkRepository: BookmarkRepository,
-    private readonly placeService: PlaceService,
+    private readonly placeCoreService: PlaceCoreService,
+    private readonly bookmarkCoreService: BookmarkCoreService,
   ) {}
 
   /**
-   * 특정 장소와 사용자 조합에 대한 북마크 등록
+   * 특정 장소에 대한 북마크 등록
    *
-   * @author 강정연
+   * @author 이수인
    */
-  // async createBookmarkByPlaceIdxAndUserIdx(
-  //   placeIdx: number,
-  //   userIdx: number,
-  // ): Promise<BookmarkEntity | null> {
-  //   await this.placeService.getPlaceByPlaceIdx(placeIdx);
+  public async createBookmarkByPlaceIdxAndUserIdx(
+    loginUser: LoginUser,
+    placeIdx: number,
+  ): Promise<BookmarkEntity> {
+    const place = await this.placeCoreService.getPlaceByIdx(placeIdx);
+    if (!place) {
+      throw new NotFoundException('Place not found');
+    }
 
-  //   const bookmark =
-  //     await this.bookmarkRepository.selectBookmarkByPlaceIdxAndUserIdx(
-  //       placeIdx,
-  //       userIdx,
-  //     );
+    const bookmark = await this.bookmarkCoreService.getBookmarkByIdx({
+      userIdx: loginUser.idx,
+      placeIdx: placeIdx,
+    });
+    if (bookmark) {
+      throw new ConflictException('Bookmark already exists');
+    }
 
-  //   if (bookmark) {
-  //     throw new ConflictException('bookmark already exist');
-  //   } else {
-  //     const created =
-  //       await this.bookmarkRepository.createBookmarkByPlaceIdxAndUserIdx(
-  //         placeIdx,
-  //         userIdx,
-  //       );
-
-  //     return BookmarkEntity.createEntityFromPrisma(created);
-  //   }
-  // }
+    const bookmarkModel = await this.bookmarkCoreService.createBookmark({
+      userIdx: loginUser.idx,
+      placeIdx: placeIdx,
+    });
+    return BookmarkEntity.fromModel(bookmarkModel);
+  }
 
   /**
-   *  특정 Idx의 북마크 삭제 (idx 제공 시)
+   * 특정 장소에 대한 북마크 삭제
    *
-   * @author 강정연
+   * @author 이수인
    */
-  // async deleteBookmarkByPlaceIdxAndUserIdx(
-  //   placeIdx: number,
-  //   userIdx: number,
-  // ): Promise<void> {
-  //   await this.placeService.getPlaceByPlaceIdx(placeIdx);
+  public async deleteBookmarkByPlaceIdxAndUserIdx(
+    loginUser: LoginUser,
+    placeIdx: number,
+  ): Promise<void> {
+    const place = await this.placeCoreService.getPlaceByIdx(placeIdx);
+    if (!place) {
+      throw new NotFoundException('Place not found');
+    }
 
-  //   const bookmark =
-  //     await this.bookmarkRepository.selectBookmarkByPlaceIdxAndUserIdx(
-  //       placeIdx,
-  //       userIdx,
-  //     );
+    const bookmark = await this.bookmarkCoreService.getBookmarkByIdx({
+      userIdx: loginUser.idx,
+      placeIdx: placeIdx,
+    });
 
-  //   if (!bookmark) {
-  //     throw new NotFoundException('bookmark not found');
-  //   }
+    if (!bookmark) {
+      return;
+    }
+    if (bookmark.userIdx !== loginUser.idx) {
+      throw new ForbiddenException('Permission denied');
+    }
 
-  //   return await this.bookmarkRepository.deleteBookmarkByPlaceIdxAndUserIdx(
-  //     placeIdx,
-  //     userIdx,
-  //   );
-  // }
+    await this.bookmarkCoreService.deleteBookmark({
+      userIdx: loginUser.idx,
+      placeIdx: placeIdx,
+    });
+  }
 }
