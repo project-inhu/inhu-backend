@@ -11,5 +11,5 @@ export type UserSeedInput = {
    * @default false
    */
   isAdmin?: boolean;
-  deletedAt: Date | null;
+  deletedAt?: Date | null;
 };
