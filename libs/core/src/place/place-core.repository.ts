@@ -97,6 +97,10 @@ export class PlaceCoreRepository {
 
     // 요일 (0: 일요일, 1: 월요일, ..., 6: 토요일)
     const dayOfWeek = this.dateUtilService.getTodayDayOfWeek();
+    const nowKoreanTime =
+      '1970-01-01T' + this.dateUtilService.transformKoreanTime(now);
+    const nowKoreanDate =
+      this.dateUtilService.transformKoreanDate(now) + 'T00:00:00Z';
 
     const mustBeOpenWhereClause: Prisma.PlaceWhereInput = {
       AND: [
@@ -107,20 +111,20 @@ export class PlaceCoreRepository {
           operatingHourList: {
             some: {
               day: dayOfWeek,
-              startAt: { lte: now },
-              endAt: { gte: now },
+              startAt: { lte: nowKoreanTime },
+              endAt: { gte: nowKoreanTime },
             },
           },
         },
         // 오늘 날짜의 휴무일이 존재하지 않아야 함.
-        { weeklyClosedDayList: { none: { closedDate: now } } },
+        { weeklyClosedDayList: { none: { closedDate: nowKoreanDate } } },
         // 오늘 요일에 해당하는 브레이크 타임에 어떤 데이터도 없어야함.
         {
           breakTimeList: {
             none: {
               day: dayOfWeek,
-              startAt: { lte: now },
-              endAt: { gte: now },
+              startAt: { lte: nowKoreanTime },
+              endAt: { gte: nowKoreanTime },
             },
           },
         },
@@ -240,8 +244,8 @@ export class PlaceCoreRepository {
         operatingHourList: {
           createMany: {
             data: input.operatingHourList.map(({ startAt, endAt, day }) => ({
-              startAt,
-              endAt,
+              startAt: `1970-01-01T${startAt}Z`,
+              endAt: `1970-01-01T${endAt}Z`,
               day,
             })),
           },
@@ -249,7 +253,7 @@ export class PlaceCoreRepository {
         weeklyClosedDayList: {
           createMany: {
             data: input.weeklyClosedDayList.map(({ closedDate, type }) => ({
-              closedDate,
+              closedDate: `${closedDate}T00:00:00Z`,
               type,
             })),
           },
@@ -258,8 +262,8 @@ export class PlaceCoreRepository {
           createMany: {
             data: input.breakTimeList.map(({ day, startAt, endAt }) => ({
               day,
-              startAt,
-              endAt,
+              startAt: `1970-01-01T${startAt}Z`,
+              endAt: `1970-01-01T${endAt}Z`,
             })),
           },
         },
@@ -333,8 +337,8 @@ export class PlaceCoreRepository {
               createMany: {
                 data: input.operatingHourList.map(
                   ({ startAt, endAt, day }) => ({
-                    startAt,
-                    endAt,
+                    startAt: `1970-01-01T${startAt}Z`,
+                    endAt: `1970-01-01T${endAt}Z`,
                     day,
                   }),
                 ),
@@ -346,7 +350,7 @@ export class PlaceCoreRepository {
               deleteMany: {},
               createMany: {
                 data: input.weeklyClosedDayList.map(({ closedDate, type }) => ({
-                  closedDate,
+                  closedDate: `${closedDate}T00:00:00Z`,
                   type,
                 })),
               },
@@ -358,8 +362,8 @@ export class PlaceCoreRepository {
               createMany: {
                 data: input.breakTimeList.map(({ day, startAt, endAt }) => ({
                   day,
-                  startAt,
-                  endAt,
+                  startAt: `1970-01-01T${startAt}Z`,
+                  endAt: `1970-01-01T${endAt}Z`,
                 })),
               },
             }

@@ -16,22 +16,52 @@ export class CreatePlaceInput {
     addressY: number;
   };
   permanentlyClosedAt: Date | null;
+
+  /**
+   * 정기 휴무일
+   */
   closedDayList: {
     day: DayOfWeek;
     week: number;
   }[];
+
+  /**
+   * 운영 시간
+   */
   operatingHourList: {
-    startAt: Date;
-    endAt: Date;
+    /**
+     * 한국 시간
+     * @example '10:00:00'
+     */
+    startAt: `${number}:${number}:${number}`;
+
+    /**
+     * 한국 시간
+     * @example '12:00:00'
+     */
+    endAt: `${number}:${number}:${number}`;
     day: DayOfWeek;
   }[];
   weeklyClosedDayList: {
-    closedDate: Date;
+    /**
+     * 한국 날짜
+     * @example '2025-07-22'
+     */
+    closedDate: `${number}-${number}-${number}`;
     type: WeeklyCloseType;
   }[];
   breakTimeList: {
-    startAt: Date;
-    endAt: Date;
+    /**
+     * 한국 시간
+     * @example '10:00:00'
+     */
+    startAt: `${number}:${number}:${number}`;
+
+    /**
+     * 한국 시간
+     * @example '12:00:00'
+     */
+    endAt: `${number}:${number}:${number}`;
     day: DayOfWeek;
   }[];
 }

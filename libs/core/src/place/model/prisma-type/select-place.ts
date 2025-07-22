@@ -13,7 +13,9 @@ export const SELECT_PLACE = Prisma.validator<Prisma.PlaceDefaultArgs>()({
     permanentlyClosedAt: true,
     placeKeywordCountList: {
       take: 2,
-      orderBy: [{ count: 'desc' }, { keyword: { idx: 'asc' } }],
+      orderBy: {
+        count: 'desc',
+      },
       select: {
         keyword: { select: { content: true, idx: true } },
       },
