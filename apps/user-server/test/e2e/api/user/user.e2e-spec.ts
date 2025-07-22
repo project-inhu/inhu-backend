@@ -1,6 +1,5 @@
 import { UserCoreService } from '@libs/core';
 import { UserEntity } from '@user/api/user/entity/user.entity';
-import { UserService } from '@user/api/user/user.service';
 import { AppModule } from '@user/app.module';
 import { TestHelper } from 'apps/user-server/test/e2e/setup/test.helper';
 
@@ -125,6 +124,28 @@ describe('User E2E test', () => {
         .expect(500);
 
       spy.mockRestore();
+    });
+
+    it('400 - should return 400 if nickname is an empty string', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .patch('/user')
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .send({ nickname: '' })
+        .expect(400);
+    });
+
+    it('400 - should return 400 if profileImagePath is an empty string', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .patch('/user')
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .send({ profileImagePath: '' })
+        .expect(400);
     });
   });
 });
