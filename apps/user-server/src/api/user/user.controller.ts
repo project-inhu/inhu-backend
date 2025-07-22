@@ -1,10 +1,10 @@
 import { Body, Controller, Delete, Get, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '@user/common/decorator/user.decorator';
-import { GetUserResponseDto } from './dto/response/get-user-response.dto';
 import { LoginUser } from '@user/common/types/LoginUser';
 import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
 import { UpdateUserDto } from './dto/request/update-user.dto';
+import { UserEntity } from './entity/user.entity';
 
 @Controller('user')
 export class UserController {
@@ -17,7 +17,7 @@ export class UserController {
    */
   @Get()
   @LoginAuth()
-  async getUserByIdx(@User() user: LoginUser): Promise<GetUserResponseDto> {
+  async getUserByIdx(@User() user: LoginUser): Promise<UserEntity> {
     return await this.userService.getUserByIdx(user.idx);
   }
 

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserCoreService } from '@libs/core';
 import { UserEntity } from './entity/user.entity';
-import { UpdateUserInput } from './input/update-user.input';
+import { UpdateUserDto } from './dto/request/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -28,14 +28,14 @@ export class UserService {
    */
   async updateUserByIdx(
     userIdx: number,
-    updateUserInput: UpdateUserInput,
+    updateUserDto: UpdateUserDto,
   ): Promise<void> {
     const user = await this.userCoreService.getUserByIdx(userIdx);
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    await this.userCoreService.updateUserByIdx(userIdx, updateUserInput);
+    await this.userCoreService.updateUserByIdx(userIdx, updateUserDto);
   }
 
   /**
