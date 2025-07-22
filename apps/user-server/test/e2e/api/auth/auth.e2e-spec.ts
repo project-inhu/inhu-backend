@@ -727,8 +727,8 @@ describe('Auth E2E test', () => {
       // testing
       const response = await testHelper
         .test()
-        .get('/auth/apple/callback/web')
-        .query({ code: 'mocking-code' })
+        .post('/auth/apple/callback/web')
+        .send({ code: 'mocking-code' })
         .expect(200);
 
       // access token과 refresh token이 발급되어야 함
@@ -920,8 +920,8 @@ describe('Auth E2E test', () => {
       // testing
       const response = await testHelper
         .test()
-        .get('/auth/apple/callback/app')
-        .query({ code: 'mocking-code' })
+        .post('/auth/apple/callback/app')
+        .send({ code: 'mocking-code' })
         .expect(200);
 
       // access token과 refresh token이 발급되어야 함
