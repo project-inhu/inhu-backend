@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserCoreService } from '@libs/core';
 import { UserEntity } from './entity/user.entity';
 import { UpdateUserDto } from './dto/request/update-user.dto';
+import { LoginUser } from '@user/common/types/LoginUser';
 
 @Injectable()
 export class UserService {
@@ -12,13 +13,13 @@ export class UserService {
    *
    * @author 조희주
    */
-  public async getMyInfo(userIdx: number): Promise<UserEntity> {
-    const user = await this.userCoreService.getUserByIdx(userIdx);
-    if (!user) {
+  public async getMyInfo(user: LoginUser): Promise<UserEntity> {
+    const userModel = await this.userCoreService.getUserByIdx(user.idx);
+    if (!userModel) {
       throw new NotFoundException('User not found');
     }
 
-    return UserEntity.fromModel(user);
+    return UserEntity.fromModel(userModel);
   }
 
   /**
@@ -27,14 +28,14 @@ export class UserService {
    * @author 조희주
    */
   public async updateMyInfo(
-    userIdx: number,
+    user: LoginUser,
     updateUserDto: UpdateUserDto,
   ): Promise<void> {
-    const user = await this.userCoreService.getUserByIdx(userIdx);
-    if (!user) {
+    const userModel = await this.userCoreService.getUserByIdx(user.idx);
+    if (!userModel) {
       throw new NotFoundException('User not found');
     }
 
-    await this.userCoreService.updateUserByIdx(userIdx, updateUserDto);
+    await this.userCoreService.updateUserByIdx(user.idx, updateUserDto);
   }
 }

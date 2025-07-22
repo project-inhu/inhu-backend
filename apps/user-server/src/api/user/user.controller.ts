@@ -18,7 +18,7 @@ export class UserController {
   @Get()
   @LoginAuth()
   async getMyInfo(@User() user: LoginUser): Promise<UserEntity> {
-    return await this.userService.getMyInfo(user.idx);
+    return await this.userService.getMyInfo(user);
   }
 
   /**
@@ -32,6 +32,6 @@ export class UserController {
     @User() user: LoginUser,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<void> {
-    await this.userService.updateMyInfo(user.idx, updateUserDto);
+    await this.userService.updateMyInfo(user, updateUserDto);
   }
 }
