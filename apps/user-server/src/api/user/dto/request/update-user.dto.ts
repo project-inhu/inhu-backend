@@ -1,4 +1,10 @@
-import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 /**
  * 사용자 정보 수정 입력 DTO
@@ -25,5 +31,6 @@ export class UpdateUserDto {
    */
   @IsOptional()
   @IsString()
+  @IsNotEmpty()
   profileImagePath?: string | null;
 }
