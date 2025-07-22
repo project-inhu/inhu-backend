@@ -26,5 +26,10 @@ export * from './seed/menu/menu.seed';
 export * from './seed/menu/type/menu-seed.input';
 export * from './seed/menu/type/menu-seed.output';
 
+// Bookmark seed
+export * from './seed/bookmark/bookmark.seed';
+export * from './seed/bookmark/type/bookmark-seed.input';
+export * from './seed/bookmark/type/bookmark-seed.output';
+
 // Utils
 export * from './utils/extract-cookie-value.util';
