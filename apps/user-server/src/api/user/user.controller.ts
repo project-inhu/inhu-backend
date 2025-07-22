@@ -17,8 +17,8 @@ export class UserController {
    */
   @Get()
   @LoginAuth()
-  async getUserByIdx(@User() user: LoginUser): Promise<UserEntity> {
-    return await this.userService.getUserByIdx(user.idx);
+  async getMyInfo(@User() user: LoginUser): Promise<UserEntity> {
+    return await this.userService.getMyInfo(user.idx);
   }
 
   /**
@@ -28,10 +28,10 @@ export class UserController {
    */
   @Patch()
   @LoginAuth()
-  async updateUserByIdx(
+  async updateMyInfo(
     @User() user: LoginUser,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<void> {
-    await this.userService.updateUserByIdx(user.idx, updateUserDto);
+    await this.userService.updateMyInfo(user.idx, updateUserDto);
   }
 }
