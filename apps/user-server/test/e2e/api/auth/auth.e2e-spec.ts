@@ -322,6 +322,68 @@ describe('Auth E2E test', () => {
       expect(refreshTokenKeys.length).toBe(1);
     });
 
+    it('200 - tokens have correct issuedBy for web)', async () => {
+      // mocking
+      const mockingOAuthInfo = {
+        snsId: 'test-sns-id',
+        provider: AUTH_PROVIDER.KAKAO,
+      };
+
+      // mocking kakao social login
+      const kakaoLoginStrategy = testHelper.get(KakaoLoginStrategy);
+      jest
+        .spyOn(kakaoLoginStrategy, 'socialLogin')
+        .mockResolvedValue(mockingOAuthInfo);
+
+      // testing
+      const response = await testHelper
+        .test()
+        .get('/auth/kakao/callback/web')
+        .query({ code: 'mocking-code' })
+        .expect(200);
+
+      // access token과 refresh token이 발급되어야 함
+      const [type, refreshToken] = extractCookieValueFromSetCookieHeader(
+        response.headers['set-cookie'][0],
+        'refreshToken',
+      )?.split(' ') || [null, null];
+      expect(response.body).toHaveProperty('accessToken');
+      expect(refreshToken).not.toBeNull();
+      expect(type).toBe('Bearer');
+
+      // 사용자 정보 조회
+      const prisma = testHelper.getPrisma();
+      const user = await prisma.user.findFirstOrThrow({
+        include: {
+          userProvider: true,
+        },
+        where: {
+          userProvider: {
+            snsId: mockingOAuthInfo.snsId,
+            name: AUTH_PROVIDER.KAKAO,
+          },
+        },
+      });
+
+      // refresh token 에 의도된 정보가 포함되어야 함
+      const loginTokenService = testHelper.get(LoginTokenService);
+      const refreshTokenPayload = await loginTokenService.verifyRefreshToken(
+        refreshToken ?? '',
+      );
+      expect(refreshTokenPayload.category).toBe(TokenCategory.REFRESH);
+      expect(refreshTokenPayload.issuedBy).toBe(TokenIssuedBy.WEB);
+      expect(refreshTokenPayload.idx).toBe(user.idx);
+
+      // access token 에 의도된 정보가 포함되어야 함
+      const accessToken = response.body.accessToken;
+      const accessTokenPayload =
+        await loginTokenService.verifyAccessToken(accessToken);
+      expect(accessTokenPayload.category).toBe(TokenCategory.ACCESS);
+      expect(accessTokenPayload.issuedBy).toBe(TokenIssuedBy.WEB);
+      expect(accessTokenPayload.idx).toBe(user.idx);
+      expect(accessTokenPayload.id).toBe(refreshTokenPayload.jti);
+    });
+
     it('500 - invalid provider', async () => {
       const invalidProvider = 'invalid provider';
       await testHelper
@@ -449,6 +511,63 @@ describe('Auth E2E test', () => {
       const redisService = testHelper.get(RedisService);
       const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
       expect(refreshTokenKeys.length).toBe(1);
+    });
+
+    it('200 - tokens have correct issuedBy for app)', async () => {
+      // mocking
+      const mockingOAuthInfo = {
+        snsId: 'test-sns-id',
+        provider: AUTH_PROVIDER.KAKAO,
+      };
+
+      // mocking kakao social login
+      const kakaoLoginStrategy = testHelper.get(KakaoLoginStrategy);
+      jest
+        .spyOn(kakaoLoginStrategy, 'socialLogin')
+        .mockResolvedValue(mockingOAuthInfo);
+
+      // testing
+      const response = await testHelper
+        .test()
+        .get('/auth/kakao/callback/app')
+        .query({ code: 'mocking-code' })
+        .expect(200);
+
+      // access token과 refresh token이 발급되어야 함
+      expect(response.body).toHaveProperty('accessToken');
+      expect(response.body).toHaveProperty('refreshToken');
+
+      // 사용자 정보 조회
+      const prisma = testHelper.getPrisma();
+      const user = await prisma.user.findFirstOrThrow({
+        include: {
+          userProvider: true,
+        },
+        where: {
+          userProvider: {
+            snsId: mockingOAuthInfo.snsId,
+            name: AUTH_PROVIDER.KAKAO,
+          },
+        },
+      });
+
+      // refresh token 에 의도된 정보가 포함되어야 함
+      const loginTokenService = testHelper.get(LoginTokenService);
+      const refreshTokenPayload = await loginTokenService.verifyRefreshToken(
+        response.body.refreshToken,
+      );
+      expect(refreshTokenPayload.category).toBe(TokenCategory.REFRESH);
+      expect(refreshTokenPayload.issuedBy).toBe(TokenIssuedBy.APP);
+      expect(refreshTokenPayload.idx).toBe(user.idx);
+
+      // access token 에 의도된 정보가 포함되어야 함
+      const accessToken = response.body.accessToken;
+      const accessTokenPayload =
+        await loginTokenService.verifyAccessToken(accessToken);
+      expect(accessTokenPayload.category).toBe(TokenCategory.ACCESS);
+      expect(accessTokenPayload.issuedBy).toBe(TokenIssuedBy.APP);
+      expect(accessTokenPayload.idx).toBe(user.idx);
+      expect(accessTokenPayload.id).toBe(refreshTokenPayload.jti);
     });
 
     it('500 - invalid provider', async () => {
@@ -592,6 +711,68 @@ describe('Auth E2E test', () => {
       expect(refreshTokenKeys.length).toBe(1);
     });
 
+    it('200 - tokens have correct issuedBy for web)', async () => {
+      // mocking
+      const mockingOAuthInfo = {
+        snsId: 'test-sns-id',
+        provider: AUTH_PROVIDER.APPLE,
+      };
+
+      // mocking apple social login
+      const appleLoginStrategy = testHelper.get(AppleLoginStrategy);
+      jest
+        .spyOn(appleLoginStrategy, 'socialLogin')
+        .mockResolvedValue(mockingOAuthInfo);
+
+      // testing
+      const response = await testHelper
+        .test()
+        .get('/auth/apple/callback/web')
+        .query({ code: 'mocking-code' })
+        .expect(200);
+
+      // access token과 refresh token이 발급되어야 함
+      const [type, refreshToken] = extractCookieValueFromSetCookieHeader(
+        response.headers['set-cookie'][0],
+        'refreshToken',
+      )?.split(' ') || [null, null];
+      expect(response.body).toHaveProperty('accessToken');
+      expect(refreshToken).not.toBeNull();
+      expect(type).toBe('Bearer');
+
+      // 사용자 정보 조회
+      const prisma = testHelper.getPrisma();
+      const user = await prisma.user.findFirstOrThrow({
+        include: {
+          userProvider: true,
+        },
+        where: {
+          userProvider: {
+            snsId: mockingOAuthInfo.snsId,
+            name: AUTH_PROVIDER.APPLE,
+          },
+        },
+      });
+
+      // refresh token 에 의도된 정보가 포함되어야 함
+      const loginTokenService = testHelper.get(LoginTokenService);
+      const refreshTokenPayload = await loginTokenService.verifyRefreshToken(
+        refreshToken ?? '',
+      );
+      expect(refreshTokenPayload.category).toBe(TokenCategory.REFRESH);
+      expect(refreshTokenPayload.issuedBy).toBe(TokenIssuedBy.WEB);
+      expect(refreshTokenPayload.idx).toBe(user.idx);
+
+      // access token 에 의도된 정보가 포함되어야 함
+      const accessToken = response.body.accessToken;
+      const accessTokenPayload =
+        await loginTokenService.verifyAccessToken(accessToken);
+      expect(accessTokenPayload.category).toBe(TokenCategory.ACCESS);
+      expect(accessTokenPayload.issuedBy).toBe(TokenIssuedBy.WEB);
+      expect(accessTokenPayload.idx).toBe(user.idx);
+      expect(accessTokenPayload.id).toBe(refreshTokenPayload.jti);
+    });
+
     it('500 - invalid provider', async () => {
       const invalidProvider = 'invalid provider';
       await testHelper
@@ -721,6 +902,63 @@ describe('Auth E2E test', () => {
       const redisService = testHelper.get(RedisService);
       const refreshTokenKeys = await redisService.hkeys(`user:${user.idx}:rt`);
       expect(refreshTokenKeys.length).toBe(1);
+    });
+
+    it('200 - tokens have correct issuedBy for app)', async () => {
+      // mocking
+      const mockingOAuthInfo = {
+        snsId: 'test-sns-id',
+        provider: AUTH_PROVIDER.APPLE,
+      };
+
+      // mocking apple social login
+      const appleLoginStrategy = testHelper.get(AppleLoginStrategy);
+      jest
+        .spyOn(appleLoginStrategy, 'socialLogin')
+        .mockResolvedValue(mockingOAuthInfo);
+
+      // testing
+      const response = await testHelper
+        .test()
+        .get('/auth/apple/callback/app')
+        .query({ code: 'mocking-code' })
+        .expect(200);
+
+      // access token과 refresh token이 발급되어야 함
+      expect(response.body).toHaveProperty('accessToken');
+      expect(response.body).toHaveProperty('refreshToken');
+
+      // 사용자 정보 조회
+      const prisma = testHelper.getPrisma();
+      const user = await prisma.user.findFirstOrThrow({
+        include: {
+          userProvider: true,
+        },
+        where: {
+          userProvider: {
+            snsId: mockingOAuthInfo.snsId,
+            name: AUTH_PROVIDER.APPLE,
+          },
+        },
+      });
+
+      // refresh token 에 의도된 정보가 포함되어야 함
+      const loginTokenService = testHelper.get(LoginTokenService);
+      const refreshTokenPayload = await loginTokenService.verifyRefreshToken(
+        response.body.refreshToken,
+      );
+      expect(refreshTokenPayload.category).toBe(TokenCategory.REFRESH);
+      expect(refreshTokenPayload.issuedBy).toBe(TokenIssuedBy.APP);
+      expect(refreshTokenPayload.idx).toBe(user.idx);
+
+      // access token 에 의도된 정보가 포함되어야 함
+      const accessToken = response.body.accessToken;
+      const accessTokenPayload =
+        await loginTokenService.verifyAccessToken(accessToken);
+      expect(accessTokenPayload.category).toBe(TokenCategory.ACCESS);
+      expect(accessTokenPayload.issuedBy).toBe(TokenIssuedBy.APP);
+      expect(accessTokenPayload.idx).toBe(user.idx);
+      expect(accessTokenPayload.id).toBe(refreshTokenPayload.jti);
     });
 
     it('500 - invalid provider', async () => {
