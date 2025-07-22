@@ -13,6 +13,7 @@ import { LoginTokenModule } from '@user/common/module/login-token/login-token.mo
 import { AccessTokenMiddleware } from '@user/common/middleware/access-token.middleware';
 import { UserModule } from './api/user/user.module';
 import { MenuModule } from '@user/api/menu/menu.module';
+import { S3UploadModule } from './api/s3-upload/s3-upload.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { MenuModule } from '@user/api/menu/menu.module';
     AuthModule,
     LoginTokenModule,
     MenuModule,
+    S3UploadModule,
     ClsModule.forRoot({
       plugins: [
         new ClsPluginTransactional({
