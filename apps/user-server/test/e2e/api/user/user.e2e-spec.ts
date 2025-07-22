@@ -1,4 +1,6 @@
+import { UserCoreService } from '@libs/core';
 import { UserEntity } from '@user/api/user/entity/user.entity';
+import { UserService } from '@user/api/user/user.service';
 import { AppModule } from '@user/app.module';
 import { TestHelper } from 'apps/user-server/test/e2e/setup/test.helper';
 
@@ -51,6 +53,22 @@ describe('User E2E test', () => {
 
     it('401 - no accessToken', async () => {
       await testHelper.test().get('/user').expect(401);
+    });
+
+    it('500 - Authenticated user not found in DB', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      const spy = jest
+        .spyOn(testHelper.get(UserCoreService), 'getUserByIdx')
+        .mockResolvedValueOnce(null);
+
+      await testHelper
+        .test()
+        .get('/user')
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(500);
+
+      spy.mockRestore();
     });
   });
 });
