@@ -6,7 +6,7 @@ import { GetPresignedUrlDto } from './dto/request/get-presigned-url.dto';
 export class S3UploadService {
   constructor(private readonly s3Service: S3Service) {}
 
-  public async getProfileImagePresignedUrl(
+  public async CreateProfileImagePresignedUrl(
     getPresignedUrlDto: GetPresignedUrlDto,
   ): Promise<PresignedUrlModel> {
     return this.s3Service.getPresignedUrl(getPresignedUrlDto);
