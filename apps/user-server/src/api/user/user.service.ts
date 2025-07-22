@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserCoreService } from '@libs/core';
 import { UserEntity } from './entity/user.entity';
 import { UpdateUserDto } from './dto/request/update-user.dto';

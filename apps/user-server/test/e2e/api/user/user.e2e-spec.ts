@@ -26,7 +26,8 @@ describe('User E2E test', () => {
       const responseBody: UserEntity = response.body;
 
       expect(responseBody).toBeDefined();
-      expect(responseBody.nickname).toBeDefined();
+      expect(responseBody).toHaveProperty('idx');
+      expect(responseBody).toHaveProperty('nickname');
       expect(responseBody).toHaveProperty('profileImagePath');
       expect(responseBody).toHaveProperty('createdAt');
       expect(responseBody).toHaveProperty('provider');
