@@ -6,7 +6,7 @@ import { IsIn, IsNotEmpty, IsString } from 'class-validator';
  *
  * @author 조희주
  */
-export class GetPresignedUrlDto {
+export class CreatePresignedUrlDto {
   /**
    * S3에 업로드할 파일의 폴더 경로
    *
