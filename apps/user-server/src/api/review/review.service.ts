@@ -10,6 +10,7 @@ import { ReviewEntity } from './entity/review.entity';
 import { LoginUser } from '@user/common/types/LoginUser';
 import { ReviewAuthService } from '@user/api/review/review-auth.service';
 import { CreateReviewDto } from '@user/api/review/dto/request/create-review.dto';
+import { UpdateReviewDto } from './dto/request/update-review-dto';
 
 @Injectable()
 export class ReviewService {
@@ -76,14 +77,30 @@ export class ReviewService {
   ): Promise<ReviewEntity> {
     const reviewModel = await this.reviewCoreService.getReviewByIdx(idx);
     if (!reviewModel) {
-      throw new BadRequestException('Review not found');
+      throw new NotFoundException('Review not found');
     }
 
-    this.reviewAuthService.checkGetReviewByIdxPermission(
-      reviewModel,
-      loginUser,
-    );
+    this.reviewAuthService.checkReviewPermission(reviewModel, loginUser);
 
     return ReviewEntity.fromModel(reviewModel);
+  }
+
+  public async updateReviewByIdx(
+    idx: number,
+    dto: UpdateReviewDto,
+    loginUser: LoginUser,
+  ): Promise<void> {
+    await this.getReviewByIdx(idx, loginUser);
+
+    await this.reviewCoreService.updateReviewByIdx(idx, dto);
+  }
+
+  public async deleteReviewByIdx(
+    idx: number,
+    loginUser: LoginUser,
+  ): Promise<void> {
+    await this.getReviewByIdx(idx, loginUser);
+
+    await this.reviewCoreService.deleteReviewByIdx(idx);
   }
 }

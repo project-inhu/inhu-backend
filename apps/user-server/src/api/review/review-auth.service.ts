@@ -7,6 +7,11 @@ import { LoginUser } from '@user/common/types/LoginUser';
 export class ReviewAuthService {
   constructor() {}
 
+  /**
+   * 리뷰 목록 조회 권한을 검사
+   * - placeIdx 또는 userIdx 필터가 반드시 하나 이상 존재해야 함
+   * - userIdx로 필터링하는 경우, 반드시 본인의 userIdx여야 함
+   */
   public checkGetAllReviewPermission(
     dto: GetAllReviewDto,
     loginUser?: LoginUser,
@@ -23,10 +28,11 @@ export class ReviewAuthService {
     return;
   }
 
-  public checkGetReviewByIdxPermission(
-    reviewModel: ReviewModel,
-    loginUser: LoginUser,
-  ) {
+  /**
+   * 특정 리뷰에 대한 권한을 검사
+   * - 리뷰 작성자 본인인지 검사
+   */
+  public checkReviewPermission(reviewModel: ReviewModel, loginUser: LoginUser) {
     if (reviewModel.author.idx !== loginUser.idx) {
       throw new ForbiddenException('You can only access your own reviews');
     }
