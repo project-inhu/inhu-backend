@@ -14,6 +14,7 @@ import { AccessTokenMiddleware } from '@user/common/middleware/access-token.midd
 import { UserModule } from './api/user/user.module';
 import { MenuModule } from '@user/api/menu/menu.module';
 import { S3UploadModule } from './api/s3-upload/s3-upload.module';
+import { BookmarkModule } from './api/bookmark/bookmark.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { S3UploadModule } from './api/s3-upload/s3-upload.module';
     LoginTokenModule,
     MenuModule,
     S3UploadModule,
+    BookmarkModule,
     ClsModule.forRoot({
       plugins: [
         new ClsPluginTransactional({
