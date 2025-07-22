@@ -12,7 +12,7 @@ export class UserService {
    *
    * @author 조희주
    */
-  async getUserByIdx(userIdx: number): Promise<UserEntity> {
+  public async getUserByIdx(userIdx: number): Promise<UserEntity> {
     const user = await this.userCoreService.getUserByIdx(userIdx);
     if (!user) {
       throw new NotFoundException('User not found');
@@ -26,7 +26,7 @@ export class UserService {
    *
    * @author 조희주
    */
-  async updateUserByIdx(
+  public async updateUserByIdx(
     userIdx: number,
     updateUserDto: UpdateUserDto,
   ): Promise<void> {
