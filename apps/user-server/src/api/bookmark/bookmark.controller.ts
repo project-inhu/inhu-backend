@@ -37,7 +37,6 @@ export class BookmarkController {
    */
   @LoginAuth()
   @Exception(400, 'Invalid placeIdx')
-  @Exception(403, 'Permission denied')
   @Exception(404, 'Place not found')
   @Delete('place/:placeIdx/bookmark')
   async deleteBookmarkByPlaceIdxAndUserIdx(

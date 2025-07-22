@@ -58,18 +58,6 @@ export class BookmarkService {
       throw new NotFoundException('Place not found');
     }
 
-    const bookmark = await this.bookmarkCoreService.getBookmarkByIdx({
-      userIdx: loginUser.idx,
-      placeIdx: placeIdx,
-    });
-
-    if (!bookmark) {
-      return;
-    }
-    if (bookmark.userIdx !== loginUser.idx) {
-      throw new ForbiddenException('Permission denied');
-    }
-
     await this.bookmarkCoreService.deleteBookmark({
       userIdx: loginUser.idx,
       placeIdx: placeIdx,
