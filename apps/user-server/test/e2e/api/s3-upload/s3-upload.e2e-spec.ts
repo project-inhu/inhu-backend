@@ -32,5 +32,9 @@ describe('s3-upload E2E test', () => {
       expect(responseBody).toHaveProperty('presignedUrl');
       expect(responseBody).toHaveProperty('key');
     });
+
+    it('401 - no accessToken', async () => {
+      await testHelper.test().get('/user').expect(401);
+    });
   });
 });
