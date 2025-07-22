@@ -107,5 +107,24 @@ describe('User E2E test', () => {
     it('401 - no accessToken', async () => {
       await testHelper.test().patch('/user').expect(401);
     });
+
+    it('500 - Authenticated user not found in DB', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      const spy = jest
+        .spyOn(testHelper.get(UserCoreService), 'updateUserByIdx')
+        .mockRejectedValueOnce(
+          new Error('Authenticate User not found in database'),
+        );
+
+      await testHelper
+        .test()
+        .patch('/user')
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .send({ nickname: 'newName' })
+        .expect(500);
+
+      spy.mockRestore();
+    });
   });
 });
