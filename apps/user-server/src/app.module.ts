@@ -11,6 +11,7 @@ import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { AuthModule } from '@user/api/auth/auth.module';
 import { LoginTokenModule } from '@user/common/module/login-token/login-token.module';
 import { AccessTokenMiddleware } from '@user/common/middleware/access-token.middleware';
+import { MenuModule } from '@user/api/menu/menu.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AccessTokenMiddleware } from '@user/common/middleware/access-token.midd
     PickedPlaceModule,
     AuthModule,
     LoginTokenModule,
+    MenuModule,
     ClsModule.forRoot({
       plugins: [
         new ClsPluginTransactional({
