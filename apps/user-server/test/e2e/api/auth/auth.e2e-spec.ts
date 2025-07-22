@@ -771,37 +771,6 @@ describe('Auth E2E test', () => {
     it('200 - no refresh token provided', async () => {
       await testHelper.test().post('/auth/logout/web').expect(200);
     });
-
-    it('401 - invalid refresh token', async () => {
-      const invalidRefreshToken = 'invalid-refresh-token';
-
-      await testHelper
-        .test()
-        .post('/auth/logout/web')
-        .set('Cookie', [`refreshToken=Bearer ${invalidRefreshToken}`])
-        .expect(401);
-    });
-
-    it('401 - using invalidated refresh token', async () => {
-      const user = testHelper.loginUsers.user1;
-      const refreshToken = user.web.refreshToken;
-
-      // invalidate the refresh token
-      const loginTokenService = testHelper.get(LoginTokenService);
-      const refreshTokenPayload =
-        await loginTokenService.verifyRefreshToken(refreshToken);
-      await loginTokenService.invalidateRefreshTokenById(
-        refreshTokenPayload.idx,
-        refreshTokenPayload.jti,
-        TokenIssuedBy.WEB,
-      );
-
-      await testHelper
-        .test()
-        .post('/auth/logout/web')
-        .set('Cookie', [`refreshToken=Bearer ${refreshToken}`])
-        .expect(401);
-    });
   });
 
   describe('POST /auth/logout/app', () => {
@@ -842,37 +811,6 @@ describe('Auth E2E test', () => {
 
     it('400 - no refresh token provided', async () => {
       await testHelper.test().post('/auth/logout/app').expect(400);
-    });
-
-    it('401 - invalid refresh token', async () => {
-      const invalidRefreshToken = 'invalid-refresh-token';
-
-      await testHelper
-        .test()
-        .post('/auth/logout/app')
-        .send({ refreshTokenWithType: `Bearer ${invalidRefreshToken}` })
-        .expect(401);
-    });
-
-    it('401 - using invalidated refresh token', async () => {
-      const user = testHelper.loginUsers.user1;
-      const refreshToken = user.app.refreshToken;
-
-      // invalidate the refresh token
-      const loginTokenService = testHelper.get(LoginTokenService);
-      const refreshTokenPayload =
-        await loginTokenService.verifyRefreshToken(refreshToken);
-      await loginTokenService.invalidateRefreshTokenById(
-        refreshTokenPayload.idx,
-        refreshTokenPayload.jti,
-        TokenIssuedBy.APP,
-      );
-
-      await testHelper
-        .test()
-        .post('/auth/logout/app')
-        .send({ refreshTokenWithType: `Bearer ${refreshToken}` })
-        .expect(401);
     });
   });
 });
