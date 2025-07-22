@@ -72,7 +72,7 @@ export class AuthController {
    * App 전용 Social Login Callback을 처리하는 엔드포인트
    */
   @Get('/:provider/callback/app')
-  public async socialLogin(
+  public async socialLoginViaGet(
     @Req() req: Request,
     @Param('provider') provider: AuthProvider,
   ): Promise<SocialLoginAppResponseDto> {
@@ -89,8 +89,47 @@ export class AuthController {
    * Web 전용 Social Login Callback을 처리하는 엔드포인트
    */
   @Get('/:provider/callback/web')
-  public async socialLoginWeb(
-    @Res() res: Response,
+  public async socialLoginWebViaGet(
+    @Res({ passthrough: true }) res: Response,
+    @Req() req: Request,
+    @Param('provider') provider: AuthProvider,
+  ): Promise<SocialLoginWebResponseDto> {
+    const { accessToken, refreshToken } = await this.authService.login(
+      req,
+      provider,
+      TokenIssuedBy.WEB,
+    );
+
+    res.cookie('refreshToken', `Bearer ${refreshToken}`, cookieConfig());
+
+    return { accessToken };
+  }
+
+  /**
+   * App 전용 Social Login Callback을 처리하는 엔드포인트
+   */
+  @Post('/:provider/callback/app')
+  @HttpCode(200)
+  public async socialLoginViaPost(
+    @Req() req: Request,
+    @Param('provider') provider: AuthProvider,
+  ): Promise<SocialLoginAppResponseDto> {
+    const { accessToken, refreshToken } = await this.authService.login(
+      req,
+      provider,
+      TokenIssuedBy.APP,
+    );
+
+    return { accessToken, refreshToken };
+  }
+
+  /**
+   * Web 전용 Social Login Callback을 처리하는 엔드포인트
+   */
+  @Post('/:provider/callback/web')
+  @HttpCode(200)
+  public async socialLoginWebViaPost(
+    @Res({ passthrough: true }) res: Response,
     @Req() req: Request,
     @Param('provider') provider: AuthProvider,
   ): Promise<SocialLoginWebResponseDto> {
@@ -109,6 +148,7 @@ export class AuthController {
    * 앱용 로그아웃 API
    */
   @Post('/logout/app')
+  @HttpCode(200)
   public async logout(@Body() dto: LogoutAppDto): Promise<void> {
     const refreshToken = dto.refreshTokenWithType?.replace('Bearer ', '');
 
@@ -119,6 +159,7 @@ export class AuthController {
    * 웹용 로그아웃 API
    */
   @Post('/logout/web')
+  @HttpCode(200)
   public async logoutWeb(
     @Res({ passthrough: true }) res: Response,
     @Cookie('refreshToken') refreshTokenWithType?: string,

@@ -12,6 +12,7 @@ import { AuthModule } from '@user/api/auth/auth.module';
 import { LoginTokenModule } from '@user/common/module/login-token/login-token.module';
 import { AccessTokenMiddleware } from '@user/common/middleware/access-token.middleware';
 import { UserModule } from './api/user/user.module';
+import { MenuModule } from '@user/api/menu/menu.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { UserModule } from './api/user/user.module';
     PickedPlaceModule,
     AuthModule,
     LoginTokenModule,
+    MenuModule,
     ClsModule.forRoot({
       plugins: [
         new ClsPluginTransactional({
