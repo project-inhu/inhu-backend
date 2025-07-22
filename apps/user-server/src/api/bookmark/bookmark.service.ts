@@ -1,10 +1,5 @@
 import { BookmarkCoreService, PlaceCoreService } from '@libs/core';
-import {
-  ConflictException,
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { BookmarkEntity } from './entity/bookmark.entity';
 import { LoginUser } from '@user/common/types/LoginUser';
 
@@ -27,14 +22,6 @@ export class BookmarkService {
     const place = await this.placeCoreService.getPlaceByIdx(placeIdx);
     if (!place) {
       throw new NotFoundException('Place not found');
-    }
-
-    const bookmark = await this.bookmarkCoreService.getBookmarkByIdx({
-      userIdx: loginUser.idx,
-      placeIdx: placeIdx,
-    });
-    if (bookmark) {
-      throw new ConflictException('Bookmark already exists');
     }
 
     const bookmarkModel = await this.bookmarkCoreService.createBookmark({
