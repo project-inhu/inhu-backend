@@ -13,6 +13,7 @@ import { LoginTokenModule } from '@user/common/module/login-token/login-token.mo
 import { AccessTokenMiddleware } from '@user/common/middleware/access-token.middleware';
 import { UserModule } from './api/user/user.module';
 import { MenuModule } from '@user/api/menu/menu.module';
+import { S3UploadModule } from './api/s3-upload/s3-upload.module';
 import { BookmarkModule } from './api/bookmark/bookmark.module';
 
 @Module({
@@ -26,6 +27,7 @@ import { BookmarkModule } from './api/bookmark/bookmark.module';
     AuthModule,
     LoginTokenModule,
     MenuModule,
+    S3UploadModule,
     BookmarkModule,
     ClsModule.forRoot({
       plugins: [

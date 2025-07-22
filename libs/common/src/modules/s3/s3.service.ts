@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
+import { ConfigService, ConfigType } from '@nestjs/config';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { GetPresignedUrlInput } from './input/get-presigned-url.input';
@@ -13,12 +13,9 @@ export class S3Service {
   private readonly bucketName: string;
   private readonly region: string;
 
-  constructor(
-    @Inject(s3Config.KEY)
-    private readonly s3TypedConfig: ConfigType<typeof s3Config>,
-  ) {
-    const region = this.s3TypedConfig.region;
-    const bucketName = this.s3TypedConfig.bucketName;
+  constructor(configService: ConfigService) {
+    const region = configService.get<string>('s3.region');
+    const bucketName = configService.get<string>('s3.bucketName');
 
     if (!region || !bucketName) {
       throw new Error('S3 environment variables are not configured.');
