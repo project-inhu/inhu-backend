@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Patch } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '@user/common/decorator/user.decorator';
 import { LoginUser } from '@user/common/types/LoginUser';
@@ -33,16 +33,5 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<void> {
     await this.userService.updateUserByIdx(user.idx, updateUserDto);
-  }
-
-  /**
-   * 회원 탈퇴
-   *
-   * @author 조희주
-   */
-  @Delete()
-  @LoginAuth()
-  async deleteUserByIdx(@User() user: LoginUser): Promise<void> {
-    await this.userService.deleteUserByIdx(user.idx);
   }
 }

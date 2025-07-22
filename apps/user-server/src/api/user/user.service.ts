@@ -37,18 +37,4 @@ export class UserService {
 
     await this.userCoreService.updateUserByIdx(userIdx, updateUserDto);
   }
-
-  /**
-   * 회원 탈퇴
-   *
-   * @author 조희주
-   */
-  async deleteUserByIdx(userIdx: number): Promise<void> {
-    const user = await this.userCoreService.getUserByIdx(userIdx);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    await this.userCoreService.deleteUserByIdx(userIdx);
-  }
 }
