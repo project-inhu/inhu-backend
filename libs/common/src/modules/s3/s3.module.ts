@@ -5,14 +5,7 @@ import s3Config from './config/s3.config';
 
 @Module({
   imports: [ConfigModule.forFeature(s3Config)],
-  providers: [
-    S3Service,
-    {
-      provide: s3Config.KEY,
-      useFactory: (config: ConfigType<typeof s3Config>) => config,
-      inject: [s3Config.KEY],
-    },
-  ],
+  providers: [S3Service],
   exports: [S3Service],
 })
 export class S3Module {}
