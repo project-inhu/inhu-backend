@@ -11,6 +11,7 @@ import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { AuthModule } from '@user/api/auth/auth.module';
 import { LoginTokenModule } from '@user/common/module/login-token/login-token.module';
 import { AccessTokenMiddleware } from '@user/common/middleware/access-token.middleware';
+import { UserModule } from './api/user/user.module';
 import { MenuModule } from '@user/api/menu/menu.module';
 
 @Module({
@@ -18,6 +19,7 @@ import { MenuModule } from '@user/api/menu/menu.module';
     PrismaModule,
     PlaceModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    UserModule,
     ReviewModule,
     PickedPlaceModule,
     AuthModule,

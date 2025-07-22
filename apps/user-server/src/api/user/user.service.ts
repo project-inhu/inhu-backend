@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserCoreService } from '@libs/core';
 import { UserEntity } from './entity/user.entity';
-import { UpdateUserInput } from './input/update-user.input';
+import { UpdateUserDto } from './dto/request/update-user.dto';
+import { LoginUser } from '@user/common/types/LoginUser';
 
 @Injectable()
 export class UserService {
@@ -12,13 +13,13 @@ export class UserService {
    *
    * @author 조희주
    */
-  async getUserByIdx(userIdx: number): Promise<UserEntity> {
-    const user = await this.userCoreService.getUserByIdx(userIdx);
-    if (!user) {
-      throw new NotFoundException('User not found');
+  public async getMyInfo(user: LoginUser): Promise<UserEntity> {
+    const userModel = await this.userCoreService.getUserByIdx(user.idx);
+    if (!userModel) {
+      throw new Error('Authenticated user not found in database');
     }
 
-    return UserEntity.fromModel(user);
+    return UserEntity.fromModel(userModel);
   }
 
   /**
@@ -26,10 +27,15 @@ export class UserService {
    *
    * @author 조희주
    */
-  async updateUserByIdx(
-    userIdx: number,
-    updateUserInput: UpdateUserInput,
+  public async updateMyInfo(
+    user: LoginUser,
+    updateUserDto: UpdateUserDto,
   ): Promise<void> {
-    await this.userCoreService.updateUserByIdx(userIdx, updateUserInput);
+    const userModel = await this.userCoreService.getUserByIdx(user.idx);
+    if (!userModel) {
+      throw new Error('Authenticated user not found in database');
+    }
+
+    await this.userCoreService.updateUserByIdx(user.idx, updateUserDto);
   }
 }
