@@ -19,11 +19,22 @@ export class BookmarkSeedHelper extends ISeedHelper<
   public async seed(input: BookmarkSeedInput): Promise<BookmarkSeedOutput> {
     const filledInput = this.generateFilledInputValue(input);
 
-    return await this.prisma.bookmark.create({
+    const bookmark = await this.prisma.bookmark.create({
       data: {
         userIdx: filledInput.userIdx,
         placeIdx: filledInput.placeIdx,
       },
     });
+
+    await this.prisma.place.update({
+      where: { idx: filledInput.placeIdx },
+      data: {
+        bookmarkCount: {
+          increment: 1,
+        },
+      },
+    });
+
+    return { ...bookmark };
   }
 }
