@@ -11,12 +11,15 @@ import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { AuthModule } from '@user/api/auth/auth.module';
 import { LoginTokenModule } from '@user/common/module/login-token/login-token.module';
 import { AccessTokenMiddleware } from '@user/common/middleware/access-token.middleware';
+import { UserModel } from '@libs/core';
+import { UserModule } from './api/user/user.module';
 
 @Module({
   imports: [
     PrismaModule,
     PlaceModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    UserModule,
     ReviewModule,
     PickedPlaceModule,
     AuthModule,
