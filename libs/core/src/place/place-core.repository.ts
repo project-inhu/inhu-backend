@@ -97,6 +97,7 @@ export class PlaceCoreRepository {
 
     // 요일 (0: 일요일, 1: 월요일, ..., 6: 토요일)
     const dayOfWeek = this.dateUtilService.getTodayDayOfWeek();
+    // ! 주의: startAt과 endAt은 한국 시간으로 저장됩니다. 따라서 now를 한국 시간으로 변환하여 필터링해야 합니다.
     const nowKoreanTime =
       '1970-01-01T' + this.dateUtilService.transformKoreanTime(now);
     const nowKoreanDate =
@@ -244,6 +245,7 @@ export class PlaceCoreRepository {
         operatingHourList: {
           createMany: {
             data: input.operatingHourList.map(({ startAt, endAt, day }) => ({
+              // ! 주의: startAt과 endAt은 한국 시간으로 저장됩니다. 따라서 1970-01-01T00:00:00Z 형태로 변환하여 저장합니다.
               startAt: `1970-01-01T${startAt}Z`,
               endAt: `1970-01-01T${endAt}Z`,
               day,
@@ -253,6 +255,7 @@ export class PlaceCoreRepository {
         weeklyClosedDayList: {
           createMany: {
             data: input.weeklyClosedDayList.map(({ closedDate, type }) => ({
+              // ! 주의: closedDate는 한국 날짜로 저장됩니다. 따라서 2025-07-22T00:00:00Z 형태로 변환하여 저장합니다.
               closedDate: `${closedDate}T00:00:00Z`,
               type,
             })),
@@ -262,6 +265,7 @@ export class PlaceCoreRepository {
           createMany: {
             data: input.breakTimeList.map(({ day, startAt, endAt }) => ({
               day,
+              // ! 주의: startAt과 endAt은 한국 시간으로 저장됩니다. 따라서 1970-01-01T00:00:00Z 형태로 변환하여 저장합니다.
               startAt: `1970-01-01T${startAt}Z`,
               endAt: `1970-01-01T${endAt}Z`,
             })),
@@ -320,6 +324,8 @@ export class PlaceCoreRepository {
               create: { placeTypeIdx: input.type },
             }
           : undefined,
+
+        // ! 주의: Date 관련한 필드들은 insertPlace 메서드 주석을 참고하여 변환해야합니다.
         closedDayList: input.closedDayList
           ? {
               deleteMany: {},
