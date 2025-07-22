@@ -16,7 +16,7 @@ export class UserService {
   public async getMyInfo(user: LoginUser): Promise<UserEntity> {
     const userModel = await this.userCoreService.getUserByIdx(user.idx);
     if (!userModel) {
-      throw new Error('User not found in database');
+      throw new Error('Authenticated user not found in database');
     }
 
     return UserEntity.fromModel(userModel);
@@ -33,7 +33,7 @@ export class UserService {
   ): Promise<void> {
     const userModel = await this.userCoreService.getUserByIdx(user.idx);
     if (!userModel) {
-      throw new Error('User not found in database');
+      throw new Error('Authenticated user not found in database');
     }
 
     await this.userCoreService.updateUserByIdx(user.idx, updateUserDto);
