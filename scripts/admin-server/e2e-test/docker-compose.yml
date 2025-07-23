@@ -11,6 +11,22 @@ services:
       - inhu-admin-server-test-data:/var/lib/postgresql/data
       - ./init:/docker-entrypoint-initdb.d
       - ../../rdb:/rdb
+    networks:
+      - inhu-admin-server-test-network
+
+  redis:
+    image: redis:7.4.0
+    container_name: inhu-admin-server-test-redis
+    ports:
+      - '6381:6379'
+    networks:
+      - inhu-admin-server-test-network
+    volumes:
+      - inhu-admin-server-test-redis-data:/data
 
 volumes:
   inhu-admin-server-test-data:
+  inhu-admin-server-test-redis-data:
+
+networks:
+  inhu-admin-server-test-network:

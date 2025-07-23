@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'apps/admin-server/src/api/auth/auth.service';
 import { getCookieConfig } from 'apps/admin-server/src/api/auth/config/cookie.config';
@@ -21,5 +21,14 @@ export class AuthController {
     const token = await this.authService.login(dto.id, dto.pw);
 
     res.cookie('token', token, getCookieConfig());
+  }
+
+  /**
+   * 로그아웃 Endpoint
+   */
+  @Post('/logout')
+  @HttpCode(200)
+  async logout(@Res() res: Response): Promise<void> {
+    res.clearCookie('token', getCookieConfig());
   }
 }
