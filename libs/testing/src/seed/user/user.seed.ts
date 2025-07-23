@@ -15,7 +15,6 @@ export class UserSeedHelper extends ISeedHelper<UserSeedInput, UserSeedOutput> {
       data: {
         nickname: requiredInput.nickname,
         profileImagePath: requiredInput.profileImagePath,
-        isAdmin: requiredInput.isAdmin,
         userProvider: requiredInput.social
           ? {
               create: {
@@ -47,7 +46,6 @@ export class UserSeedHelper extends ISeedHelper<UserSeedInput, UserSeedOutput> {
         input.profileImagePath,
         `/user-profile/${faker.string.uuid()}.png`,
       ),
-      isAdmin: defaultValue(input.isAdmin, false),
       social: defaultValue(
         {
           provider: defaultValue(

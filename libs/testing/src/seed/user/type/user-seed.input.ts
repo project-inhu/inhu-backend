@@ -7,9 +7,5 @@ export type UserSeedInput = {
     provider?: AuthProvider;
     snsId?: string;
   } | null;
-  /**
-   * @default false
-   */
-  isAdmin?: boolean;
   deletedAt?: Date | null;
 };
