@@ -24,7 +24,8 @@
       "@libs/core/*": ["libs/core/src/*"],
       "@libs/testing": ["libs/testing/src"],
       "@libs/testing/*": ["libs/testing/src/*"],
-      "@user/*": ["apps/user-server/src/*"]
+      "@user/*": ["apps/user-server/src/*"],
+      "@admin/*": ["apps/admin-server/src/*"]
     }
   }
 }
