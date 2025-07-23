@@ -255,8 +255,19 @@ model User {
   service2ResultList        Service2Result[]
   userProvider              UserProvider?
   withdrawServiceResultList WithdrawServiceResult[]
+  adminAccount              AdminAccount?
 
   @@map("user_tb")
+}
+
+model AdminAccount {
+  idx       Int      @id @default(autoincrement())
+  id        String   @unique @db.VarChar
+  pw        String   @db.VarChar
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  user      User     @relation(fields: [idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_admin_account_tb")
+
+  @@map("admin_tb")
 }
 
 model WithdrawServiceResult {

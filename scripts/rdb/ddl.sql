@@ -208,6 +208,15 @@ CREATE TABLE user_tb
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE admin_tb
+(
+  idx        int                      NOT NULL,
+  id         varchar                  NOT NULL,
+  pw         varchar                  NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (idx)
+);
+
 CREATE TABLE weekly_closed_day_tb
 (
   idx         int      NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -362,3 +371,8 @@ ALTER TABLE place_tb
   ADD CONSTRAINT FK_road_address_tb_TO_place_tb
     FOREIGN KEY (road_address_idx)
     REFERENCES road_address_tb (idx);
+
+ALTER TABLE admin_tb
+  ADD CONSTRAINT FK_user_tb_TO_admin_tb
+    FOREIGN KEY (idx)
+    REFERENCES user_tb (idx);
