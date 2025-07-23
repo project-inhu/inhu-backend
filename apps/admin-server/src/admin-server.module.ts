@@ -6,13 +6,10 @@ import { ClsModule } from 'nestjs-cls';
 import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { PrismaService } from '@libs/common/modules/prisma/prisma.service';
-import { ConfigModule } from '@nestjs/config';
 import { LoginTokenModule } from './common/modules/login-token/login-token.module';
 
 @Module({
   imports: [
-    PrismaModule,
-    ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
     LoginTokenModule,
     ClsModule.forRoot({
