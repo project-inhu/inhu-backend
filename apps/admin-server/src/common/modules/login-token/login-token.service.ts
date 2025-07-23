@@ -29,7 +29,7 @@ export class LoginTokenService {
     });
   }
 
-  public async verifyToken(token: string): Promise<TokenPayload> {
+  public async verifyAdminToken(token: string): Promise<TokenPayload> {
     try {
       return await this.jwtService.verifyAsync<TokenPayload>(token, {
         secret: this.TOKEN_SECRET,
