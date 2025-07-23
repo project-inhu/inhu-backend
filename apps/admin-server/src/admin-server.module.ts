@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AuthModule } from './api/auth/auth.module';
-import { AdminAccessTokenMiddleware } from './common/middleware/access-token.middleware';
+import { AdminAccessTokenMiddleware } from './common/middleware/admin-access-token.middleware';
 import { PrismaModule } from '@libs/common/modules/prisma/prisma.module';
 import { ClsModule } from 'nestjs-cls';
 import { ClsPluginTransactional } from '@nestjs-cls/transactional';
