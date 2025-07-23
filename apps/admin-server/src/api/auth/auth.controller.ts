@@ -10,6 +10,9 @@ import { Response } from 'express';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  /**
+   * 로그인 Endpoint
+   */
   @Post('/login')
   async login(
     @Body() dto: LoginDto,
