@@ -110,6 +110,46 @@ describe('Place E2E test', () => {
       ]);
     });
 
+    it('200 - orderby review check', async () => {
+      const [firstPlace, secondPlace, thirdPlace] =
+        await placeSeedHelper.seedAll([
+          {
+            // 리뷰가 가장 많은 장소
+            activatedAt: new Date(),
+            name: 'first place with most reviews',
+            reviewCount: 10,
+          },
+          {
+            activatedAt: new Date(),
+            name: 'second place with 5 reviews',
+            reviewCount: 5,
+          },
+          {
+            activatedAt: new Date(),
+            name: 'third place with 8 reviews',
+            reviewCount: 8,
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/all')
+        .query({
+          page: 1,
+          orderby: 'review',
+          order: 'desc',
+        })
+        .expect(200);
+
+      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+
+      expect(placeList.map(({ idx }) => idx)).toStrictEqual([
+        firstPlace.idx,
+        thirdPlace.idx,
+        secondPlace.idx,
+      ]);
+    });
+
     it('200 - operating filtering check', async () => {
       const now = testHelper.mockTodayTime('10:00');
 
@@ -476,7 +516,7 @@ describe('Place E2E test', () => {
       );
     });
 
-    it('400 - coordinate filtering check', async () => {
+    it('200 - coordinate filtering check', async () => {
       const coordinate = {
         leftTopX: 123.00001,
         leftTopY: 78.00001,
