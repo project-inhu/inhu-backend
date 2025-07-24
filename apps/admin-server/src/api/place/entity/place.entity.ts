@@ -58,11 +58,6 @@ export class PlaceEntity {
   public isClosedOnHoliday: boolean;
 
   /**
-   * 현재 사용자가 특정 항목을 북마크했는지 여부
-   */
-  public bookmark: boolean;
-
-  /**
    * 특정 장소 image path list
    *
    * @example ['place/f9c2e36f-8e99-4b18-b3e8-7cd327682f94_20240706_124512.jpg', 'place/12345678-1234-5678-1234-123456789012_20240706_124512.jpg']
@@ -98,7 +93,7 @@ export class PlaceEntity {
     Object.assign(this, data);
   }
 
-  public static fromModel(model: PlaceModel, bookmark: boolean): PlaceEntity {
+  public static fromModel(model: PlaceModel): PlaceEntity {
     return new PlaceEntity({
       idx: model.idx,
       name: model.name,
@@ -108,7 +103,6 @@ export class PlaceEntity {
       createdAt: model.createdAt,
       reviewCount: model.reviewCount,
       isClosedOnHoliday: model.isClosedOnHoliday,
-      bookmark,
       imagePathList: model.imgPathList,
       type: model.type,
       weeklyClosedDayList: model.weeklyClosedDayList.map(
