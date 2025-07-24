@@ -700,5 +700,51 @@ describe('Place E2E test', () => {
       expect(place.bookmark).toBe(true);
       expect(place.imagePathList.sort()).toEqual(place.imagePathList.sort());
     });
+
+    it('400 - invalid querystring', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const invalidPage = 'invalid page parameter';
+
+      await testHelper
+        .test()
+        .get('/place/bookmarked/all')
+        .query({ page: invalidPage })
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(400);
+    });
+
+    it('400 - invalid order parameter', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const invalidOrder = 'invalid order parameter';
+
+      await testHelper
+        .test()
+        .get('/place/bookmarked/all')
+        .query({
+          page: 1,
+          order: invalidOrder,
+        })
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(400);
+    });
+
+    it('401 - invalid access token', async () => {
+      const invalidToken = 'invalid-access-token';
+
+      await testHelper
+        .test()
+        .get('/place/bookmarked/all')
+        .query({ page: 1 })
+        .set('Authorization', `Bearer ${invalidToken}`)
+        .expect(401);
+    });
+
+    it('401 - no token provided', async () => {
+      await testHelper
+        .test()
+        .get('/place/bookmarked/all')
+        .query({ page: 1 })
+        .expect(401);
+    });
   });
 });
