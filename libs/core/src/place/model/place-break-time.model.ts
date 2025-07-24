@@ -11,13 +11,17 @@ export class PlaceBreakTimeModel {
 
   /**
    * 시작 시간
+   *
+   * @example "12:00:00.000"
    */
-  public startAt: Date;
+  public startAt: string;
 
   /**
    * 종료 시간
+   *
+   * @example "12:00:00.000"
    */
-  public endAt: Date;
+  public endAt: string;
 
   /**
    * 요일 (0: 일요일, 1: 월요일, ..., 6: 토요일)
@@ -33,8 +37,11 @@ export class PlaceBreakTimeModel {
   ): PlaceBreakTimeModel {
     return new PlaceBreakTimeModel({
       idx: breakTime.idx,
-      startAt: breakTime.startAt,
-      endAt: breakTime.endAt,
+      startAt: breakTime.startAt
+        .toISOString()
+        .split('T')[1]
+        .replaceAll('Z', ''),
+      endAt: breakTime.endAt.toISOString().split('T')[1].replaceAll('Z', ''),
       day: breakTime.day as DayOfWeek,
     });
   }

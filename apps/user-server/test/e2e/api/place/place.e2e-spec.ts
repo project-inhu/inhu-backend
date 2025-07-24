@@ -1,7 +1,8 @@
-import { DateUtilService } from '@libs/common';
+import { DateUtilService, dayOfWeeks } from '@libs/common';
 import { PLACE_TYPE, PlaceCoreService, WEEKLY_CLOSE_TYPE } from '@libs/core';
 import { BookmarkSeedHelper, PlaceSeedHelper } from '@libs/testing';
 import { PlaceOverviewEntity } from '@user/api/place/entity/place-overview.entity';
+import { PlaceEntity } from '@user/api/place/entity/place.entity';
 import { AppModule } from '@user/app.module';
 import { TestHelper } from 'apps/user-server/test/e2e/setup/test.helper';
 
@@ -745,6 +746,213 @@ describe('Place E2E test', () => {
         .get('/place/bookmarked/all')
         .query({ page: 1 })
         .expect(401);
+    });
+  });
+
+  describe('GET /place/:placeIdx', () => {
+    it('200 - field check', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const now = testHelper.mockTodayTime('10:00');
+
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+        name: 'Test Place',
+        tel: '032-1111-2222',
+        roadAddress: {
+          name: 'Test Road',
+          detail: 'Test Detail',
+          addressX: 123.456,
+          addressY: 78.91,
+        },
+        type: PLACE_TYPE.CAFE,
+        reviewCount: 5,
+        placeImgList: ['/place/test-image1.png', '/place/test-image2.png'],
+        bookmarkCount: 1,
+        isClosedOnHoliday: false,
+        deletedAt: null,
+        permanentlyClosedAt: null,
+        keywordCountList: [
+          {
+            keywordIdx: 1,
+            count: 10,
+          },
+          {
+            keywordIdx: 2,
+            count: 12,
+          },
+          {
+            keywordIdx: 3,
+            count: 8,
+          },
+        ],
+        breakTime: [
+          {
+            day: dayOfWeeks.THU,
+            startAt: now.new('12:00'),
+            endAt: now.new('13:00'),
+          },
+          {
+            day: dayOfWeeks.THU,
+            startAt: now.new('20:00'),
+            endAt: now.new('21:00'),
+          },
+        ],
+        operatingHourList: [
+          {
+            day: dayOfWeeks.FRI,
+            startAt: now.new('10:00'),
+            endAt: now.new('20:00'),
+          },
+          {
+            day: dayOfWeeks.SAT,
+            startAt: now.new('10:00'),
+            endAt: now.new('20:00'),
+          },
+        ],
+        weeklyClosedDayList: [
+          {
+            closedDate: now.new(),
+            type: WEEKLY_CLOSE_TYPE.BIWEEKLY,
+          },
+          {
+            closedDate: now.dateAfter(1),
+            type: WEEKLY_CLOSE_TYPE.BIWEEKLY,
+          },
+        ],
+        closedDayList: [
+          {
+            day: dayOfWeeks.FRI,
+            week: 1,
+          },
+          {
+            day: dayOfWeeks.SAT,
+            week: 2,
+          },
+        ],
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/place/${placeSeed.idx}`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(200);
+
+      const place: PlaceEntity = response.body;
+
+      expect(place.idx).toBe(placeSeed.idx);
+      expect(place.name).toBe(placeSeed.name);
+      expect(place.roadAddress.name).toBe(placeSeed.roadAddress.name);
+      expect(place.roadAddress.detail).toBe(placeSeed.roadAddress.detail);
+      expect(place.roadAddress.addressX).toBe(placeSeed.roadAddress.addressX);
+      expect(place.roadAddress.addressY).toBe(placeSeed.roadAddress.addressY);
+      expect(place.reviewCount).toBe(placeSeed.reviewCount);
+      expect(place.topKeywordList.map(({ idx }) => idx)).toStrictEqual([2, 1]);
+      expect(place.bookmark).toBe(false);
+      expect(place.imagePathList.sort()).toEqual(place.imagePathList.sort());
+      expect(place.isClosedOnHoliday).toBe(placeSeed.isClosedOnHoliday);
+      expect(place.type).toBe(placeSeed.type);
+      expect(place.breakTimeList.length).toBe(2);
+      expect(place.breakTimeList[0].startAt).toBe('12:00:00.000');
+      expect(place.breakTimeList[0].endAt).toBe('13:00:00.000');
+      expect(place.breakTimeList[1].startAt).toBe('20:00:00.000');
+      expect(place.breakTimeList[1].endAt).toBe('21:00:00.000');
+      expect(place.operatingHourList.length).toBe(2);
+      expect(place.operatingHourList[0].startAt).toBe('10:00:00.000');
+      expect(place.operatingHourList[0].endAt).toBe('20:00:00.000');
+      expect(place.operatingHourList[1].startAt).toBe('10:00:00.000');
+      expect(place.operatingHourList[1].endAt).toBe('20:00:00.000');
+      expect(place.weeklyClosedDayList.length).toBe(2);
+      expect(place.weeklyClosedDayList[0].date).toBe(
+        now.new().toISOString().split('T')[0],
+      );
+      expect(place.weeklyClosedDayList[0].type).toBe(
+        WEEKLY_CLOSE_TYPE.BIWEEKLY,
+      );
+      expect(place.weeklyClosedDayList[1].date).toBe(
+        now.dateAfter(1).toISOString().split('T')[0],
+      );
+      expect(place.weeklyClosedDayList[1].type).toBe(
+        WEEKLY_CLOSE_TYPE.BIWEEKLY,
+      );
+      expect(place.closedDayList.length).toBe(2);
+      expect(place.closedDayList[0].day).toBe(dayOfWeeks.FRI);
+      expect(place.closedDayList[0].week).toBe(1);
+      expect(place.closedDayList[1].day).toBe(dayOfWeeks.SAT);
+      expect(place.closedDayList[1].week).toBe(2);
+    });
+
+    it('404 - place not found', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const place = await placeSeedHelper.seed({
+        activatedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .get(`/place/${place.idx}`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(404);
+    });
+
+    it('404 - deleted place', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+        deletedAt: new Date(),
+      });
+
+      const place = await testHelper.getPrisma().place.findUnique({
+        where: { idx: placeSeed.idx },
+      });
+      console.log(place);
+
+      await testHelper
+        .test()
+        .get(`/place/${placeSeed.idx}`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(404);
+    });
+
+    it('404 - not activated place', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const nonExistentPlaceIdx = 9999;
+
+      await testHelper
+        .test()
+        .get(`/place/${nonExistentPlaceIdx}`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(404);
+    });
+
+    it('200 - no token provided', async () => {
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      await testHelper.test().get(`/place/${placeSeed.idx}`).expect(200);
+    });
+
+    it('200 - bookmark field check', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      await bookmarkSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        userIdx: loginUser.idx,
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/place/${placeSeed.idx}`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(200);
+
+      const place: PlaceEntity = response.body;
+
+      expect(place.bookmark).toBe(true);
     });
   });
 });

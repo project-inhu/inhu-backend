@@ -75,6 +75,7 @@ export class PlaceSeedHelper extends ISeedHelper<
         isClosedOnHoliday: filledInput.isClosedOnHoliday,
         permanentlyClosedAt: filledInput.permanentlyClosedAt,
         activatedAt: filledInput.activatedAt,
+        deletedAt: filledInput.deletedAt,
         placeImageList: {
           createMany: {
             data: filledInput.placeImgList.map((path) => ({
