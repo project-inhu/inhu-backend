@@ -94,7 +94,9 @@ model PickedPlace {
 model OperatingHour {
   idx      Int      @id @default(autoincrement())
   placeIdx Int      @map("place_idx")
+  // 한국 시간으로 저장합니다.
   startAt  DateTime @map("start_at") @db.Time(6)
+  // 한국 시간으로 저장합니다.
   endAt    DateTime @map("end_at") @db.Time(6)
   day      Int      @db.SmallInt
   place    Place    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_operating_hour_tb")
@@ -105,7 +107,9 @@ model OperatingHour {
 model BreakTime {
   idx      Int      @id @default(autoincrement())
   placeIdx Int      @map("place_idx")
+  // 한국 시간으로 저장합니다.
   startAt  DateTime @map("start_at") @db.Time(6)
+  // 한국 시간으로 저장합니다.
   endAt    DateTime @map("end_at") @db.Time(6)
   day      Int      @db.SmallInt
   place    Place    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_break_time_tb")
@@ -301,6 +305,7 @@ model ClosedDay {
 model WeeklyClosedDay {
   idx        Int      @id @default(autoincrement())
   placeIdx   Int      @map("place_idx")
+  // 한국 날짜로 저장합니다.
   closedDate DateTime @map("closed_date") @db.Date
   type       Int      @default(0) @db.SmallInt
   place      Place    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_weekly_closed_day_tb")

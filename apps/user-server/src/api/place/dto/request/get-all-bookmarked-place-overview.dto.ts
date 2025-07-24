@@ -5,6 +5,7 @@ import {
   IsIn,
   IsInt,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   Min,
 } from 'class-validator';
@@ -56,27 +57,31 @@ export class GetAllBookmarkedPlaceOverviewPlaceDto {
    * 왼쪽 위 x좌표
    */
   @IsOptional()
-  @IsDecimal()
+  @Type(() => Number)
+  @IsNumber()
   leftTopX?: number;
 
   /**
    * 왼쪽 위 y좌표
    */
   @IsOptional()
-  @IsDecimal()
+  @Type(() => Number)
+  @IsNumber()
   leftTopY?: number;
 
   /**
    * 오른쪽 아래 x좌표
    */
   @IsOptional()
-  @IsDecimal()
+  @Type(() => Number)
+  @IsNumber()
   rightBottomX?: number;
 
   /**
    * 오른쪽 아래 y좌표
    */
   @IsOptional()
-  @IsDecimal()
+  @Type(() => Number)
+  @IsNumber()
   rightBottomY?: number;
 }

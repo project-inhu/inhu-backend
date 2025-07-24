@@ -75,6 +75,7 @@ export class PlaceSeedHelper extends ISeedHelper<
         isClosedOnHoliday: filledInput.isClosedOnHoliday,
         permanentlyClosedAt: filledInput.permanentlyClosedAt,
         activatedAt: filledInput.activatedAt,
+        deletedAt: filledInput.deletedAt,
         placeImageList: {
           createMany: {
             data: filledInput.placeImgList.map((path) => ({
@@ -93,7 +94,7 @@ export class PlaceSeedHelper extends ISeedHelper<
               createMany: {
                 data: filledInput.closedDayList.map((day) => ({
                   day: day.day,
-                  week: day.dayOfWeek,
+                  week: day.week,
                 })),
               },
             }
@@ -104,8 +105,8 @@ export class PlaceSeedHelper extends ISeedHelper<
                 data: filledInput.operatingHourList.map(
                   ({ day, endAt, startAt }) => ({
                     day,
-                    endAt,
-                    startAt,
+                    endAt: this.transformKoreanTime(endAt),
+                    startAt: this.transformKoreanTime(startAt),
                   }),
                 ),
               },
@@ -116,7 +117,7 @@ export class PlaceSeedHelper extends ISeedHelper<
               createMany: {
                 data: filledInput.weeklyClosedDayList.map(
                   ({ closedDate, type }) => ({
-                    closedDate,
+                    closedDate: this.transformKoreanDate(closedDate),
                     type,
                   }),
                 ),
@@ -128,8 +129,8 @@ export class PlaceSeedHelper extends ISeedHelper<
               createMany: {
                 data: filledInput.breakTime.map(({ day, endAt, startAt }) => ({
                   day,
-                  endAt,
-                  startAt,
+                  endAt: this.transformKoreanTime(endAt),
+                  startAt: this.transformKoreanTime(startAt),
                 })),
               },
             }
@@ -150,5 +151,22 @@ export class PlaceSeedHelper extends ISeedHelper<
     });
 
     return { idx: place.idx, ...filledInput };
+  }
+
+  private transformKoreanTime(date: Date): string {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+    const milliseconds = date.getMilliseconds().toString().padStart(3, '0');
+
+    return `1970-01-01T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
+  }
+
+  private transformKoreanDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+
+    return `${year}-${month}-${day}T00:00:00Z`;
   }
 }

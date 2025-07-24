@@ -9,11 +9,11 @@ export class PlaceWeeklyClosedDayEntity {
   public idx: number;
 
   /**
-   * 휴무 날짜
+   * 휴무 날짜 (한국 날짜)
    *
-   * @example '2023-10-01T00:00:00.000Z'
+   * @example '2023-10-01'
    */
-  public date: Date;
+  public date: string;
 
   /**
    * 휴무 타입
@@ -22,7 +22,7 @@ export class PlaceWeeklyClosedDayEntity {
    */
   public type: WeeklyCloseType;
 
-  constructor(data: PlaceWeeklyClosedDayModel) {
+  constructor(data: PlaceWeeklyClosedDayEntity) {
     Object.assign(this, data);
   }
 

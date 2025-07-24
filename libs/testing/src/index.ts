@@ -33,3 +33,4 @@ export * from './seed/bookmark/type/bookmark-seed.output';
 
 // Utils
 export * from './utils/extract-cookie-value.util';
+export * from './utils/date.util';

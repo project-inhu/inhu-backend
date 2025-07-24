@@ -10,13 +10,17 @@ export class PlaceOperatingHourEntity {
 
   /**
    * 운영 시작 시간
+   *
+   * @example "09:00:00.000"
    */
-  public startAt: Date;
+  public startAt: string;
 
   /**
    * 운영 종료 시간
+   *
+   * @example "18:00:00.000"
    */
-  public endAt: Date;
+  public endAt: string;
 
   constructor(data: PlaceOperatingHourEntity) {
     Object.assign(this, data);

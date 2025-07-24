@@ -18,7 +18,7 @@ export type PlaceSeedInput = {
    * @default false
    */
   isClosedOnHoliday?: boolean;
-  deletedAt: Date | null;
+  deletedAt?: Date | null;
   permanentlyClosedAt?: Date | null;
   activatedAt?: Date | null;
   placeImgList?: string[];
@@ -31,8 +31,8 @@ export type PlaceSeedInput = {
   };
   closedDayList?:
     | {
-        day: number;
-        dayOfWeek: DayOfWeek;
+        day: DayOfWeek;
+        week: number;
       }[]
     | null;
   operatingHourList?:
