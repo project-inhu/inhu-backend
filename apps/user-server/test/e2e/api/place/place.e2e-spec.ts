@@ -289,10 +289,6 @@ describe('Place E2E test', () => {
         },
       ]);
 
-      console.log(
-        await testHelper.get(PlaceCoreService).getPlaceByIdx(place1.idx),
-      );
-
       const response = await testHelper
         .test()
         .get('/place/all')
