@@ -20,6 +20,11 @@ export class ReviewModel {
   public createdAt: Date;
 
   /**
+   * 삭제 시간
+   */
+  public deletedAt: Date | null;
+
+  /**
    * 이미지 경로 리스트
    */
   public imagePathList: string[];
@@ -48,6 +53,7 @@ export class ReviewModel {
       idx: review.idx,
       content: review.content,
       createdAt: review.createdAt,
+      deletedAt: review.deletedAt,
       imagePathList: review.reviewImageList.map(({ path }) => path),
       keywordList: review.reviewKeywordMappingList.map(({ keyword }) =>
         KeywordModel.fromPrisma(keyword),
