@@ -1,4 +1,4 @@
-import { PlaceCoreService } from '@libs/core';
+import { PlaceCoreService, WEEKLY_CLOSE_TYPE } from '@libs/core';
 import { PlaceSeedHelper } from '@libs/testing';
 import { PlaceOverviewEntity } from '@user/api/place/entity/place-overview.entity';
 import { AppModule } from '@user/app.module';
@@ -302,6 +302,62 @@ describe('Place E2E test', () => {
 
       expect(placeList.map(({ name }) => name).sort()).toStrictEqual(
         [place2.name, place3.name, place4.name].sort(),
+      );
+    });
+
+    it('200 - weekly closed date filtering check', async () => {
+      const now = testHelper.mockTodayTime('10:00');
+
+      const [place1, place2] = await placeSeedHelper.seedAll([
+        {
+          activatedAt: new Date(),
+          name: 'place1: 원래 오늘 영업일이지만 오늘은 특별 휴무인 가게',
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.after('1h'),
+            },
+          ],
+          weeklyClosedDayList: [
+            {
+              closedDate: now.new(),
+              type: WEEKLY_CLOSE_TYPE.BIWEEKLY,
+            },
+          ],
+        },
+        {
+          activatedAt: new Date(),
+          name: 'place2: 원래 오늘 영업일이고 휴무는 내일인 가게',
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.after('1h'),
+            },
+          ],
+          weeklyClosedDayList: [
+            {
+              closedDate: now.dateAfter(1),
+              type: WEEKLY_CLOSE_TYPE.BIWEEKLY,
+            },
+          ],
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/all')
+        .query({
+          page: 1,
+          operating: true,
+        })
+        .expect(200);
+
+      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+
+      expect(placeList.map(({ name }) => name).sort()).toStrictEqual(
+        [place2.name].sort(),
       );
     });
 
