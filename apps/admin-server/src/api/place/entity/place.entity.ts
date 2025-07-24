@@ -1,10 +1,18 @@
 import { PlaceRoadAddressEntity } from './place-road-address.entity';
 import { PlaceWeeklyClosedDayEntity } from './place-weekly-closed-day';
 import { PlaceOperatingHourEntity } from './place-operating-hour.entity';
-import { PlaceModel, PlaceType } from '@libs/core';
+import { PLACE_TYPE, PlaceModel, PlaceType } from '@libs/core';
 import { PlaceClosedDayEntity } from './place-closed-day.entity';
 import { PlaceBreakTimeEntity } from './place-break-time.entity';
 import { KeywordEntity } from '@admin/api/keyword/entity/keyword.entity';
+import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsBoolean,
+  IsIn,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class PlaceEntity {
   /**
@@ -19,6 +27,7 @@ export class PlaceEntity {
    *
    * @example '동아리 닭갈비'
    */
+  @IsString()
   public name: string;
 
   /**
@@ -26,6 +35,8 @@ export class PlaceEntity {
    *
    * @example '032-1111-2222'
    */
+  @IsString()
+  @IsOptional()
   public tel: string | null;
 
   /**
@@ -55,6 +66,7 @@ export class PlaceEntity {
    *
    * @example false
    */
+  @IsBoolean()
   public isClosedOnHoliday: boolean;
 
   /**
@@ -62,11 +74,15 @@ export class PlaceEntity {
    *
    * @example ['place/f9c2e36f-8e99-4b18-b3e8-7cd327682f94_20240706_124512.jpg', 'place/12345678-1234-5678-1234-123456789012_20240706_124512.jpg']
    */
+  @IsString({ each: true })
+  @ArrayMinSize(1)
+  @ArrayMaxSize(5)
   public imagePathList: string[];
 
   /**
    * 특정 장소의 타입
    */
+  @IsIn(Object.values(PLACE_TYPE))
   public type: PlaceType;
 
   /**

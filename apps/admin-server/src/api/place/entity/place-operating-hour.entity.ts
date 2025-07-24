@@ -1,4 +1,6 @@
+import { IsKoreanTime } from '@libs/common';
 import { PlaceOperatingHourModel } from '@libs/core';
+import { IsString } from 'class-validator';
 
 export class PlaceOperatingHourEntity {
   /**
@@ -13,6 +15,8 @@ export class PlaceOperatingHourEntity {
    *
    * @example "09:00:00.000"
    */
+  @IsString()
+  @IsKoreanTime()
   public startAt: string;
 
   /**
@@ -20,6 +24,8 @@ export class PlaceOperatingHourEntity {
    *
    * @example "18:00:00.000"
    */
+  @IsString()
+  @IsKoreanTime()
   public endAt: string;
 
   constructor(data: PlaceOperatingHourEntity) {

@@ -1,4 +1,10 @@
-import { PlaceWeeklyClosedDayModel, WeeklyCloseType } from '@libs/core';
+import { IsKoreanDate } from '@libs/common';
+import {
+  PlaceWeeklyClosedDayModel,
+  WEEKLY_CLOSE_TYPE,
+  WeeklyCloseType,
+} from '@libs/core';
+import { IsIn, IsString } from 'class-validator';
 
 export class PlaceWeeklyClosedDayEntity {
   /**
@@ -13,6 +19,8 @@ export class PlaceWeeklyClosedDayEntity {
    *
    * @example '2023-10-01'
    */
+  @IsString()
+  @IsKoreanDate()
   public date: string;
 
   /**
@@ -20,6 +28,7 @@ export class PlaceWeeklyClosedDayEntity {
    *
    * @example 0
    */
+  @IsIn(Object.values(WEEKLY_CLOSE_TYPE))
   public type: WeeklyCloseType;
 
   constructor(data: PlaceWeeklyClosedDayEntity) {

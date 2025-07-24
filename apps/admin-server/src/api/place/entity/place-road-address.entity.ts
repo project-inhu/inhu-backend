@@ -1,4 +1,5 @@
 import { PlaceRoadAddressModel } from '@libs/core';
+import { IsNumber, IsOptional, IsString, Max } from 'class-validator';
 
 export class PlaceRoadAddressEntity {
   /**
@@ -6,6 +7,8 @@ export class PlaceRoadAddressEntity {
    *
    * @example "인천광역시 연수구 송도동 1-1"
    */
+  @IsString()
+  @Max(40)
   public name: string;
 
   /**
@@ -13,13 +16,17 @@ export class PlaceRoadAddressEntity {
    *
    * @example "2층"
    */
-  public detail: string | null;
+  @IsString()
+  @Max(30)
+  @IsOptional()
+  public detail: string | null = null;
 
   /**
    * 주소 X 좌표
    *
    * @example 37.123456
    */
+  @IsNumber()
   public addressX: number;
 
   /**
@@ -27,6 +34,7 @@ export class PlaceRoadAddressEntity {
    *
    * @example 126.123456
    */
+  @IsNumber()
   public addressY: number;
 
   constructor(data: PlaceRoadAddressEntity) {
