@@ -93,7 +93,7 @@ export class PlaceSeedHelper extends ISeedHelper<
               createMany: {
                 data: filledInput.closedDayList.map((day) => ({
                   day: day.day,
-                  week: day.dayOfWeek,
+                  week: day.week,
                 })),
               },
             }

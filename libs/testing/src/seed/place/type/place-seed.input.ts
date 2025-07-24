@@ -31,8 +31,8 @@ export type PlaceSeedInput = {
   };
   closedDayList?:
     | {
-        day: number;
-        dayOfWeek: DayOfWeek;
+        day: DayOfWeek;
+        week: number;
       }[]
     | null;
   operatingHourList?:

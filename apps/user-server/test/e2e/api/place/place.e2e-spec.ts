@@ -1,3 +1,4 @@
+import { DateUtilService } from '@libs/common';
 import { PlaceCoreService, WEEKLY_CLOSE_TYPE } from '@libs/core';
 import { PlaceSeedHelper } from '@libs/testing';
 import { PlaceOverviewEntity } from '@user/api/place/entity/place-overview.entity';
@@ -358,6 +359,85 @@ describe('Place E2E test', () => {
 
       expect(placeList.map(({ name }) => name).sort()).toStrictEqual(
         [place2.name].sort(),
+      );
+    });
+
+    it('200 - close day filtering check', async () => {
+      // ? close day: 정기 휴무일
+
+      const now = testHelper.mockTodayTime('10:00');
+      // now에 해당하는 날짜가 이번 달에 몇 번째 주인지 확인
+      const nowNthOfWeek = testHelper
+        .get(DateUtilService)
+        .getTodayNthDayOfWeekInMonth();
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          activatedAt: new Date(),
+          name: 'place1: 영업중이지만, 오늘 정기 휴무일인 가게',
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.after('1h'),
+            },
+          ],
+          closedDayList: [
+            {
+              day: now.day(),
+              week: nowNthOfWeek,
+            },
+          ],
+        },
+        {
+          activatedAt: new Date(),
+          name: 'place2: 영업중이지만, 내일 정기 휴무일인 가게',
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.after('1h'),
+            },
+          ],
+          closedDayList: [
+            {
+              day: now.dayAfter(1),
+              week: nowNthOfWeek,
+            },
+          ],
+        },
+        {
+          activatedAt: new Date(),
+          name: 'place3: 영업중이지만, 다음 주에 정기 휴무인 가게',
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.after('1h'),
+            },
+          ],
+          closedDayList: [
+            {
+              day: now.day(),
+              week: nowNthOfWeek + 1,
+            },
+          ],
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/all')
+        .query({
+          page: 1,
+          operating: true,
+        })
+        .expect(200);
+
+      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+
+      expect(placeList.map(({ name }) => name).sort()).toStrictEqual(
+        [place2.name, place3.name].sort(),
       );
     });
 
