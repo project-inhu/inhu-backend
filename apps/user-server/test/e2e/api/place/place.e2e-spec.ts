@@ -638,4 +638,67 @@ describe('Place E2E test', () => {
         .expect(400);
     });
   });
+
+  describe('GET /place/bookmarked/all', () => {
+    it('200 - field check', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+        roadAddress: {
+          name: 'Test Road',
+          detail: 'Test Detail',
+          addressX: 123.456,
+          addressY: 78.91,
+        },
+        reviewCount: 5,
+        placeImgList: ['/place/test-image1.png', '/place/test-image2.png'],
+        keywordCountList: [
+          {
+            keywordIdx: 1,
+            count: 10,
+          },
+          {
+            keywordIdx: 2,
+            count: 12,
+          },
+          {
+            keywordIdx: 3,
+            count: 8,
+          },
+        ],
+      });
+
+      await bookmarkSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        userIdx: loginUser.idx,
+      });
+
+      const response = await testHelper
+        .test()
+        .get('/place/bookmarked/all')
+        .query({ page: 1 })
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(200);
+
+      const hasNext: boolean = response.body.hasNext;
+      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+
+      expect(hasNext).toBe(false);
+      expect(Array.isArray(placeList)).toBe(true);
+
+      const place = placeList[0];
+
+      expect(place.idx).toBe(placeSeed.idx);
+      expect(place.name).toBe(placeSeed.name);
+      expect(place.roadAddress.name).toBe(placeSeed.roadAddress.name);
+      expect(place.roadAddress.detail).toBe(placeSeed.roadAddress.detail);
+      expect(place.roadAddress.addressX).toBe(placeSeed.roadAddress.addressX);
+      expect(place.roadAddress.addressY).toBe(placeSeed.roadAddress.addressY);
+      expect(place.reviewCount).toBe(placeSeed.reviewCount);
+      expect(place.topKeywordList.map(({ idx }) => idx)).toStrictEqual([2, 1]);
+      expect(place.bookmark).toBe(true);
+      expect(place.imagePathList.sort()).toEqual(place.imagePathList.sort());
+    });
+  });
 });
