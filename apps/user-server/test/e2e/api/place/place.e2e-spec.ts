@@ -1,5 +1,5 @@
 import { DateUtilService } from '@libs/common';
-import { PlaceCoreService, WEEKLY_CLOSE_TYPE } from '@libs/core';
+import { PLACE_TYPE, PlaceCoreService, WEEKLY_CLOSE_TYPE } from '@libs/core';
 import { PlaceSeedHelper } from '@libs/testing';
 import { PlaceOverviewEntity } from '@user/api/place/entity/place-overview.entity';
 import { AppModule } from '@user/app.module';
@@ -438,6 +438,41 @@ describe('Place E2E test', () => {
 
       expect(placeList.map(({ name }) => name).sort()).toStrictEqual(
         [place2.name, place3.name].sort(),
+      );
+    });
+
+    it('200 - type filtering check', async () => {
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          activatedAt: new Date(),
+          name: 'place1: 카페',
+          type: PLACE_TYPE.CAFE,
+        },
+        {
+          activatedAt: new Date(),
+          name: 'place2: 음식점',
+          type: PLACE_TYPE.RESTAURANT,
+        },
+        {
+          activatedAt: new Date(),
+          name: 'place3: 술집',
+          type: PLACE_TYPE.BAR,
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/all')
+        .query({
+          page: 1,
+          type: PLACE_TYPE.CAFE,
+        })
+        .expect(200);
+
+      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+
+      expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
+        [place1.idx].sort(),
       );
     });
 

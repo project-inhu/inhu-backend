@@ -59,6 +59,7 @@ export class GetAllPlaceOverviewDto {
    * 3: 편의점
    */
   @IsOptional()
+  @Type(() => Number)
   type?: PlaceType;
 
   /**
