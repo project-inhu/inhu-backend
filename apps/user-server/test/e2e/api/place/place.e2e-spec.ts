@@ -476,6 +476,72 @@ describe('Place E2E test', () => {
       );
     });
 
+    it('400 - coordinate filtering check', async () => {
+      const coordinate = {
+        leftTopX: 123.00001,
+        leftTopY: 78.00001,
+        rightBottomX: 124.99999,
+        rightBottomY: 76.99999,
+      };
+
+      const [place1] = await placeSeedHelper.seedAll([
+        {
+          activatedAt: new Date(),
+          name: 'place1: 좌표 범위 내의 장소',
+          roadAddress: {
+            addressX: coordinate.leftTopX + 0.1,
+            addressY: coordinate.rightBottomY + 0.1,
+          },
+        },
+        {
+          activatedAt: new Date(),
+          name: 'place2: y좌표 위로 벗어난 장소',
+          roadAddress: {
+            addressX: coordinate.leftTopX + 0.1,
+            addressY: coordinate.leftTopY + 0.1, // ! Y 좌표 위로 벗어남
+          },
+        },
+        {
+          activatedAt: new Date(),
+          name: 'place3: x좌표 왼쪽으로 벗어난 장소',
+          roadAddress: {
+            addressX: coordinate.leftTopX - 0.1, // ! X 좌표 왼쪽으로 벗어남
+            addressY: coordinate.rightBottomY + 0.1,
+          },
+        },
+        {
+          activatedAt: new Date(),
+          name: 'place4: x좌표 오른쪽으로 벗어난 장소',
+          roadAddress: {
+            addressX: coordinate.rightBottomX + 0.1, // ! X 좌표 오른쪽으로 벗어남
+            addressY: coordinate.rightBottomY + 0.1,
+          },
+        },
+        {
+          activatedAt: new Date(),
+          name: 'place5: y좌표 아래로 벗어난 장소',
+          roadAddress: {
+            addressX: coordinate.leftTopX + 0.1,
+            addressY: coordinate.rightBottomY - 0.1, // ! Y 좌표 아래로 벗어남
+          },
+        },
+      ]);
+
+      const response = await testHelper.test().get('/place/all').query({
+        page: 1,
+        leftTopX: coordinate.leftTopX,
+        leftTopY: coordinate.leftTopY,
+        rightBottomX: coordinate.rightBottomX,
+        rightBottomY: coordinate.rightBottomY,
+      });
+
+      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+
+      expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
+        [place1.idx].sort(),
+      );
+    });
+
     it('400 - invalid page parameter', async () => {
       const invalidPage = 'invalid page parameter';
 

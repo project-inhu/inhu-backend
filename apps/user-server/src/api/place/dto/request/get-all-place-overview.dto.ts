@@ -1,10 +1,10 @@
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
-  IsDecimal,
   IsIn,
   IsInt,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   Min,
 } from 'class-validator';
@@ -66,27 +66,31 @@ export class GetAllPlaceOverviewDto {
    * 왼쪽 위 x좌표
    */
   @IsOptional()
-  @IsDecimal()
+  @IsNumber()
+  @Type(() => Number)
   leftTopX?: number;
 
   /**
    * 왼쪽 위 y좌표
    */
   @IsOptional()
-  @IsDecimal()
+  @IsNumber()
+  @Type(() => Number)
   leftTopY?: number;
 
   /**
    * 오른쪽 아래 x좌표
    */
   @IsOptional()
-  @IsDecimal()
+  @IsNumber()
+  @Type(() => Number)
   rightBottomX?: number;
 
   /**
    * 오른쪽 아래 y좌표
    */
   @IsOptional()
-  @IsDecimal()
+  @IsNumber()
+  @Type(() => Number)
   rightBottomY?: number;
 }
