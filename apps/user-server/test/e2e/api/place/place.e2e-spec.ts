@@ -1,6 +1,6 @@
 import { DateUtilService } from '@libs/common';
 import { PLACE_TYPE, PlaceCoreService, WEEKLY_CLOSE_TYPE } from '@libs/core';
-import { PlaceSeedHelper } from '@libs/testing';
+import { BookmarkSeedHelper, PlaceSeedHelper } from '@libs/testing';
 import { PlaceOverviewEntity } from '@user/api/place/entity/place-overview.entity';
 import { AppModule } from '@user/app.module';
 import { TestHelper } from 'apps/user-server/test/e2e/setup/test.helper';
@@ -8,6 +8,7 @@ import { TestHelper } from 'apps/user-server/test/e2e/setup/test.helper';
 describe('Place E2E test', () => {
   const testHelper = TestHelper.create(AppModule);
   const placeSeedHelper = testHelper.seedHelper(PlaceSeedHelper);
+  const bookmarkSeedHelper = testHelper.seedHelper(BookmarkSeedHelper);
 
   beforeEach(async () => {
     await testHelper.init();
@@ -580,6 +581,49 @@ describe('Place E2E test', () => {
       expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
         [place1.idx].sort(),
       );
+    });
+
+    it('200 - bookmark filed check', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          activatedAt: new Date(),
+        },
+        {
+          activatedAt: new Date(),
+        },
+        {
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await bookmarkSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          userIdx: loginUser.idx,
+        },
+        {
+          placeIdx: place3.idx,
+          userIdx: loginUser.idx,
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/all')
+        .query({ page: 1 })
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(200);
+
+      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+
+      expect(
+        placeList
+          .filter(({ bookmark }) => bookmark)
+          .map(({ idx }) => idx)
+          .sort(),
+      ).toStrictEqual([place1.idx, place3.idx].sort());
     });
 
     it('400 - invalid page parameter', async () => {
