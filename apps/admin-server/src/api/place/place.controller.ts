@@ -6,4 +6,8 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('Place')
 export class PlaceController {
   constructor(private readonly placeService: PlaceService) {}
+
+  /**
+   *
+   */
 }
