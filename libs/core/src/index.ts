@@ -64,9 +64,11 @@ export * from './user/user-core.module';
 export * from './user/user-core.service';
 
 export * from './user/model/user.model';
+export * from './user/model/user-for-admin.model';
 export * from './user/model/user-provider.model';
 
 export * from './user/constants/auth-provider.constant';
 
 export * from './user/inputs/create-user.input';
 export * from './user/inputs/update-user.input';
+export * from './user/inputs/get-user-overview.input';

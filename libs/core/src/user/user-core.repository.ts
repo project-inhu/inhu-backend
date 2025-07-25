@@ -47,6 +47,9 @@ export class UserCoreRepository {
 
     return this.txHost.tx.user.findMany({
       ...SELECT_USER_FOR_ADMIN,
+      where: {
+        deletedAt: null,
+      },
       orderBy: {
         idx: 'desc',
       },
