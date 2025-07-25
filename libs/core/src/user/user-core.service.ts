@@ -4,6 +4,7 @@ import { CreateUserInput } from './inputs/create-user.input';
 import { UserModel } from './model/user.model';
 import { AuthProvider } from './constants/auth-provider.constant';
 import { UpdateUserInput } from '@libs/core/user/inputs/update-user.input';
+import { GetAllUsersInput } from './inputs/get-user-overview.input';
 
 @Injectable()
 export class UserCoreService {
@@ -25,6 +26,14 @@ export class UserCoreService {
     );
 
     return user && UserModel.fromPrisma(user);
+  }
+
+  public async getUserAll(
+    input: GetAllUsersInput,
+  ): Promise<UserModel[] | null> {
+    const users = await this.userCoreRepository.selectUserAll(input);
+
+    return users && users.map(UserModel.fromPrisma);
   }
 
   public async createUser(input: CreateUserInput): Promise<UserModel> {
