@@ -1746,10 +1746,6 @@ describe('Review E2E test', () => {
       for (const keywordIdx of keywordIdxList) {
         const before = beforeMap.get(keywordIdx) ?? 0;
         const after = afterMap.get(keywordIdx) ?? 0;
-        console.log(
-          `🔍 keywordIdx=${keywordIdx} | before=${before} | after=${after}`,
-        );
-
         expect(after).toBe(before);
       }
     });
