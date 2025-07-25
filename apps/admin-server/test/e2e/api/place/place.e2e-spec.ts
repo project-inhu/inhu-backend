@@ -584,4 +584,60 @@ describe('Place E2E test', () => {
         .expect(404);
     });
   });
+
+  describe('DELETE /place/:idx', () => {
+    it('200 - confirms place is deleted successfully', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .delete(`/place/${place.idx}`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .expect(200);
+
+      const placeAfterDelete = await testHelper
+        .getPrisma()
+        .place.findUniqueOrThrow({
+          where: { idx: place.idx },
+        });
+
+      expect(placeAfterDelete.deletedAt).not.toBeNull();
+    });
+
+    it('404 - attempt to delete a place that was already deleted', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+        deletedAt: new Date(), // ! already deleted
+      });
+
+      await testHelper
+        .test()
+        .delete(`/place/${place.idx}`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .expect(404);
+    });
+
+    it('401 - no access token provided', async () => {
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      await testHelper.test().delete(`/place/${place.idx}`).expect(401);
+    });
+
+    it('400 - invalid place idx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const invalidPlaceIdx = 'invalid-idx';
+
+      await testHelper
+        .test()
+        .delete(`/place/${invalidPlaceIdx}`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .expect(400);
+    });
+  });
 });

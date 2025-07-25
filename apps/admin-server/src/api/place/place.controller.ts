@@ -7,6 +7,7 @@ import { Exception } from '@libs/common';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -57,5 +58,19 @@ export class PlaceController {
     @Body() dto: UpdatePlaceDto,
   ): Promise<void> {
     await this.placeService.updatePlaceByIdx(idx, dto);
+  }
+
+  /**
+   * 장소 삭제하기 Endpoint
+   */
+  @Delete('/:idx')
+  @Exception(400, 'Invalid place idx')
+  @Exception(404, 'Place not found or already deleted')
+  @HttpCode(200)
+  @AdminAuth()
+  public async deletedPlaceByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+  ): Promise<void> {
+    return await this.placeService.deletePlaceByIdx(idx);
   }
 }

@@ -103,4 +103,14 @@ export class PlaceService {
       })),
     });
   }
+
+  public async deletePlaceByIdx(idx: number): Promise<void> {
+    const place = await this.placeCoreService.getPlaceByIdx(idx);
+
+    if (!place) {
+      throw new PlaceNotFoundException('Cannot find place with idx: ' + idx);
+    }
+
+    return await this.placeCoreService.deletePlaceByIdx(idx);
+  }
 }
