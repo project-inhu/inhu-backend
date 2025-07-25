@@ -90,5 +90,6 @@ jobs:
             npm run user-server:dev:infra:up
             npm run admin-server:dev:infra:down
             npm run admin-server:dev:infra:up
-            pm2 reload inhu-backend-dev
+            pm2 reload inhu-backend-user-dev
+            pm2 reload inhu-backend-admin-dev
           EOF

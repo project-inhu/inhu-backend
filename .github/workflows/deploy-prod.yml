@@ -82,5 +82,6 @@ jobs:
             tar -xzf deploy.tar.gz
             rm deploy.tar.gz
             npm ci
-            pm2 reload inhu-backend-prod
+            pm2 reload inhu-backend-admin-prod
+            pm2 reload inhu-backend-user-prod
           EOF
