@@ -852,15 +852,15 @@ describe('Place E2E test', () => {
       expect(place.isClosedOnHoliday).toBe(placeSeed.isClosedOnHoliday);
       expect(place.type).toBe(placeSeed.type);
       expect(place.breakTimeList.length).toBe(2);
-      expect(place.breakTimeList[0].startAt).toBe('12:00:00.000');
-      expect(place.breakTimeList[0].endAt).toBe('13:00:00.000');
-      expect(place.breakTimeList[1].startAt).toBe('20:00:00.000');
-      expect(place.breakTimeList[1].endAt).toBe('21:00:00.000');
+      expect(place.breakTimeList[0].startAt).toBe('12:00:00');
+      expect(place.breakTimeList[0].endAt).toBe('13:00:00');
+      expect(place.breakTimeList[1].startAt).toBe('20:00:00');
+      expect(place.breakTimeList[1].endAt).toBe('21:00:00');
       expect(place.operatingHourList.length).toBe(2);
-      expect(place.operatingHourList[0].startAt).toBe('10:00:00.000');
-      expect(place.operatingHourList[0].endAt).toBe('20:00:00.000');
-      expect(place.operatingHourList[1].startAt).toBe('10:00:00.000');
-      expect(place.operatingHourList[1].endAt).toBe('20:00:00.000');
+      expect(place.operatingHourList[0].startAt).toBe('10:00:00');
+      expect(place.operatingHourList[0].endAt).toBe('20:00:00');
+      expect(place.operatingHourList[1].startAt).toBe('10:00:00');
+      expect(place.operatingHourList[1].endAt).toBe('20:00:00');
       expect(place.weeklyClosedDayList.length).toBe(2);
       expect(place.weeklyClosedDayList[0].date).toBe(
         now.new().toISOString().split('T')[0],
