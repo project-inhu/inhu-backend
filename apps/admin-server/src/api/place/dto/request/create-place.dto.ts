@@ -4,8 +4,10 @@ import { CreateOperatingHourDto } from '@admin/api/place/dto/request/create-oper
 import { CreateRoadAddressDto } from '@admin/api/place/dto/request/create-road-address.dto';
 import { CreateWeeklyClosedDayDto } from '@admin/api/place/dto/request/create-weekly-closed-day.dto';
 import { PlaceEntity } from '@admin/api/place/entity/place.entity';
+import { IsKoreanTime } from '@libs/common';
 import { PickType } from '@nestjs/swagger';
-import { Validate, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsOptional, Validate, ValidateNested } from 'class-validator';
 
 export class CreatePlaceDto extends PickType(PlaceEntity, [
   'name',
@@ -18,14 +20,18 @@ export class CreatePlaceDto extends PickType(PlaceEntity, [
   public roadAddress: CreateRoadAddressDto;
 
   @ValidateNested({ each: true })
+  @Type(() => CreateWeeklyClosedDayDto)
   public weeklyClosedDayList: CreateWeeklyClosedDayDto[];
 
   @ValidateNested({ each: true })
+  @Type(() => CreateOperatingHourDto)
   public operatingHourList: CreateOperatingHourDto[];
 
   @ValidateNested({ each: true })
+  @Type(() => CreateBreakTimeDto)
   public breakTimeList: CreateBreakTimeDto[];
 
   @ValidateNested({ each: true })
+  @Type(() => CreateClosedDayDto)
   public closedDayList: CreateClosedDayDto[];
 }

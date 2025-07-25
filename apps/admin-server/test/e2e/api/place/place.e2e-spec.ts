@@ -1,4 +1,5 @@
 import { AdminServerModule } from '@admin/admin-server.module';
+import { CreatePlaceDto } from '@admin/api/place/dto/request/create-place.dto';
 import { PlaceEntity } from '@admin/api/place/entity/place.entity';
 import { dayOfWeeks } from '@libs/common';
 import { PLACE_TYPE, WEEKLY_CLOSE_TYPE } from '@libs/core';
@@ -119,15 +120,15 @@ describe('Place E2E test', () => {
       expect(place.isClosedOnHoliday).toBe(placeSeed.isClosedOnHoliday);
       expect(place.type).toBe(placeSeed.type);
       expect(place.breakTimeList.length).toBe(2);
-      expect(place.breakTimeList[0].startAt).toBe('12:00:00.000');
-      expect(place.breakTimeList[0].endAt).toBe('13:00:00.000');
-      expect(place.breakTimeList[1].startAt).toBe('20:00:00.000');
-      expect(place.breakTimeList[1].endAt).toBe('21:00:00.000');
+      expect(place.breakTimeList[0].startAt).toBe('12:00:00');
+      expect(place.breakTimeList[0].endAt).toBe('13:00:00');
+      expect(place.breakTimeList[1].startAt).toBe('20:00:00');
+      expect(place.breakTimeList[1].endAt).toBe('21:00:00');
       expect(place.operatingHourList.length).toBe(2);
-      expect(place.operatingHourList[0].startAt).toBe('10:00:00.000');
-      expect(place.operatingHourList[0].endAt).toBe('20:00:00.000');
-      expect(place.operatingHourList[1].startAt).toBe('10:00:00.000');
-      expect(place.operatingHourList[1].endAt).toBe('20:00:00.000');
+      expect(place.operatingHourList[0].startAt).toBe('10:00:00');
+      expect(place.operatingHourList[0].endAt).toBe('20:00:00');
+      expect(place.operatingHourList[1].startAt).toBe('10:00:00');
+      expect(place.operatingHourList[1].endAt).toBe('20:00:00');
       expect(place.weeklyClosedDayList.length).toBe(2);
       expect(place.weeklyClosedDayList[0].date).toBe(
         now.new().toISOString().split('T')[0],
@@ -194,6 +195,192 @@ describe('Place E2E test', () => {
         .test()
         .get(`/place/${invalidPlaceIdx}`)
         .set('Authorization', `Bearer ${loginUser.token}`)
+        .expect(400);
+    });
+  });
+
+  describe('POST /place', () => {
+    it('200 - field check', async () => {
+      const createPlaceDto: CreatePlaceDto = {
+        name: 'New Place',
+        tel: '032-1234-5678',
+        isClosedOnHoliday: false,
+        imagePathList: ['/place/image1.png', '/place/image2.png'],
+        type: PLACE_TYPE.RESTAURANT,
+        roadAddress: {
+          name: 'New Road',
+          detail: 'New Detail',
+          addressX: 123.456,
+          addressY: 78.91,
+        },
+        closedDayList: [
+          { day: dayOfWeeks.MON, week: 1 },
+          { day: dayOfWeeks.TUE, week: 2 },
+        ],
+        breakTimeList: [
+          { startAt: '12:00:00', endAt: '13:00:00', day: dayOfWeeks.WED },
+          { startAt: '14:00:00', endAt: '15:00:00', day: dayOfWeeks.FRI },
+        ],
+        operatingHourList: [
+          { startAt: '10:00:00', endAt: '20:00:00', day: dayOfWeeks.THU },
+          { startAt: '11:00:00', endAt: '21:00:00', day: dayOfWeeks.SAT },
+        ],
+        weeklyClosedDayList: [
+          { date: '2025-07-22', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
+          { date: '2025-07-23', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
+        ],
+      };
+
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const response = await testHelper
+        .test()
+        .post('/place')
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .send(createPlaceDto)
+        .expect(201);
+
+      const place: PlaceEntity = response.body;
+
+      expect(place.name).toBe(createPlaceDto.name);
+      expect(place.roadAddress.name).toBe(createPlaceDto.roadAddress.name);
+      expect(place.roadAddress.detail).toBe(createPlaceDto.roadAddress.detail);
+      expect(place.roadAddress.addressX).toBe(
+        createPlaceDto.roadAddress.addressX,
+      );
+      expect(place.roadAddress.addressY).toBe(
+        createPlaceDto.roadAddress.addressY,
+      );
+      expect(place.imagePathList.sort()).toEqual(place.imagePathList.sort());
+      expect(place.isClosedOnHoliday).toBe(createPlaceDto.isClosedOnHoliday);
+      expect(place.type).toBe(createPlaceDto.type);
+      expect(place.breakTimeList.length).toBe(2);
+      expect(place.breakTimeList[0].startAt).toBe('12:00:00');
+      expect(place.breakTimeList[0].endAt).toBe('13:00:00');
+      expect(place.breakTimeList[0].day).toBe(dayOfWeeks.WED);
+      expect(place.breakTimeList[1].startAt).toBe('14:00:00');
+      expect(place.breakTimeList[1].endAt).toBe('15:00:00');
+      expect(place.breakTimeList[1].day).toBe(dayOfWeeks.FRI);
+      expect(place.operatingHourList.length).toBe(2);
+      expect(place.operatingHourList[0].startAt).toBe('10:00:00');
+      expect(place.operatingHourList[0].endAt).toBe('20:00:00');
+      expect(place.operatingHourList[0].day).toBe(dayOfWeeks.THU);
+      expect(place.operatingHourList[1].startAt).toBe('11:00:00');
+      expect(place.operatingHourList[1].endAt).toBe('21:00:00');
+      expect(place.operatingHourList[1].day).toBe(dayOfWeeks.SAT);
+      expect(place.weeklyClosedDayList.length).toBe(2);
+      expect(place.weeklyClosedDayList[0].date).toBe(
+        createPlaceDto.weeklyClosedDayList[0].date,
+      );
+      expect(place.weeklyClosedDayList[0].type).toBe(
+        createPlaceDto.weeklyClosedDayList[0].type,
+      );
+      expect(place.weeklyClosedDayList[1].date).toBe(
+        createPlaceDto.weeklyClosedDayList[1].date,
+      );
+      expect(place.weeklyClosedDayList[1].type).toBe(
+        createPlaceDto.weeklyClosedDayList[1].type,
+      );
+      expect(place.closedDayList.length).toBe(2);
+      expect(place.closedDayList[0].day).toBe(dayOfWeeks.MON);
+      expect(place.closedDayList[0].week).toBe(1);
+      expect(place.closedDayList[1].day).toBe(dayOfWeeks.TUE);
+      expect(place.closedDayList[1].week).toBe(2);
+    });
+
+    it('401 - no access token', async () => {
+      const createPlaceDto: CreatePlaceDto = {
+        name: 'New Place',
+        tel: '032-1234-5678',
+        isClosedOnHoliday: false,
+        imagePathList: ['/place/image1.png', '/place/image2.png'],
+        type: PLACE_TYPE.RESTAURANT,
+        roadAddress: {
+          name: 'New Road',
+          detail: 'New Detail',
+          addressX: 123.456,
+          addressY: 78.91,
+        },
+        closedDayList: [
+          { day: dayOfWeeks.MON, week: 1 },
+          { day: dayOfWeeks.TUE, week: 2 },
+        ],
+        breakTimeList: [
+          { startAt: '12:00:00', endAt: '13:00:00', day: dayOfWeeks.WED },
+          { startAt: '14:00:00', endAt: '15:00:00', day: dayOfWeeks.FRI },
+        ],
+        operatingHourList: [
+          { startAt: '10:00:00', endAt: '20:00:00', day: dayOfWeeks.THU },
+          { startAt: '11:00:00', endAt: '21:00:00', day: dayOfWeeks.SAT },
+        ],
+        weeklyClosedDayList: [
+          { date: '2025-07-22', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
+          { date: '2025-07-23', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
+        ],
+      };
+
+      await testHelper.test().post('/place').send(createPlaceDto).expect(401);
+    });
+
+    it('401 - ensures invalid times are rejected by IsKoreanTime decorator', async () => {
+      const createPlaceDto: CreatePlaceDto = {
+        name: 'New Place',
+        tel: '032-1234-5678',
+        isClosedOnHoliday: false,
+        imagePathList: ['/place/image1.png', '/place/image2.png'],
+        type: PLACE_TYPE.RESTAURANT,
+        roadAddress: {
+          name: 'New Road',
+          detail: 'New Detail',
+          addressX: 123.456,
+          addressY: 78.91,
+        },
+        closedDayList: [],
+        breakTimeList: [
+          { startAt: '12:00:00.00z', endAt: '13:00:00', day: dayOfWeeks.WED },
+        ],
+        operatingHourList: [],
+        weeklyClosedDayList: [],
+      };
+
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .post('/place')
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .send(createPlaceDto)
+        .expect(400);
+    });
+
+    it('400 - ensures invalid date are rejected by IsKoreanDate decorator', async () => {
+      const createPlaceDto: CreatePlaceDto = {
+        name: 'New Place',
+        tel: '032-1234-5678',
+        isClosedOnHoliday: false,
+        imagePathList: ['/place/image1.png', '/place/image2.png'],
+        type: PLACE_TYPE.RESTAURANT,
+        roadAddress: {
+          name: 'New Road',
+          detail: 'New Detail',
+          addressX: 123.456,
+          addressY: 78.91,
+        },
+        closedDayList: [],
+        breakTimeList: [],
+        operatingHourList: [],
+        weeklyClosedDayList: [
+          { date: '2025/07/01', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
+        ],
+      };
+
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .post('/place')
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .send(createPlaceDto)
         .expect(400);
     });
   });

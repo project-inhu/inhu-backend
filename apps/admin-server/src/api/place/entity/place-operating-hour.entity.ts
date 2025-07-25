@@ -1,6 +1,6 @@
-import { IsKoreanTime } from '@libs/common';
+import { DayOfWeek, dayOfWeeks, IsKoreanTime } from '@libs/common';
 import { PlaceOperatingHourModel } from '@libs/core';
-import { IsString } from 'class-validator';
+import { IsIn, IsString } from 'class-validator';
 
 export class PlaceOperatingHourEntity {
   /**
@@ -28,6 +28,14 @@ export class PlaceOperatingHourEntity {
   @IsKoreanTime()
   public endAt: string;
 
+  /**
+   * 요일
+   *
+   * @example 0 (일요일)
+   */
+  @IsIn(Object.values(dayOfWeeks))
+  public day: DayOfWeek;
+
   constructor(data: PlaceOperatingHourEntity) {
     Object.assign(this, data);
   }
@@ -37,6 +45,7 @@ export class PlaceOperatingHourEntity {
       idx: model.idx,
       startAt: model.startAt,
       endAt: model.endAt,
+      day: model.day,
     });
   }
 }

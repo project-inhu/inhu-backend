@@ -4,4 +4,5 @@ import { PickType } from '@nestjs/swagger';
 export class CreateBreakTimeDto extends PickType(PlaceBreakTimeEntity, [
   'startAt',
   'endAt',
+  'day',
 ]) {}
