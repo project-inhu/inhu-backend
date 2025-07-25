@@ -81,8 +81,6 @@ export class PlaceService {
         addressX: dto.roadAddress.addressX,
         addressY: dto.roadAddress.addressY,
       },
-      activatedAt: null,
-      permanentlyClosedAt: null,
       closedDayList: dto.closedDayList.map(({ day, week }) => ({
         day,
         week,
