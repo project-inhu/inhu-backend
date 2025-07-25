@@ -4,6 +4,7 @@ import { PlaceEntity } from '@admin/api/place/entity/place.entity';
 import { AlreadyActivatedPlaceException } from '@admin/api/place/exception/already-activated-place.exception';
 import { AlreadyClosedPermanentlyPlaceException } from '@admin/api/place/exception/already-closed-permanently-place.exception';
 import { AlreadyDeactivatedPlaceException } from '@admin/api/place/exception/already-deactivated-place.exception';
+import { NotClosedPermanentlyPlaceException } from '@admin/api/place/exception/not-closed-permanently-place.exception';
 import { PlaceNotFoundException } from '@admin/api/place/exception/place-not-found.exception';
 import { PlaceCoreService } from '@libs/core';
 import { Injectable } from '@nestjs/common';
@@ -168,6 +169,24 @@ export class PlaceService {
 
     return await this.placeCoreService.updatePlaceByIdx(idx, {
       permanentlyClosedAt: new Date(),
+    });
+  }
+
+  public async cancelClosePermanentlyPlaceByIdx(idx: number): Promise<void> {
+    const place = await this.placeCoreService.getPlaceByIdx(idx);
+
+    if (!place) {
+      throw new PlaceNotFoundException('Cannot find place with idx: ' + idx);
+    }
+
+    if (!place.permanentlyClosedAt) {
+      throw new NotClosedPermanentlyPlaceException(
+        'Place is not permanently closed: ' + idx,
+      );
+    }
+
+    return await this.placeCoreService.updatePlaceByIdx(idx, {
+      permanentlyClosedAt: null,
     });
   }
 }

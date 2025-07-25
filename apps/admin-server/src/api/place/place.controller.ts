@@ -118,4 +118,19 @@ export class PlaceController {
   ): Promise<void> {
     return await this.placeService.closePermanentlyPlaceByIdx(idx);
   }
+
+  /**
+   * 장소 영구적으로 닫기 취소하기
+   */
+  @Post('/:idx/cancel-close-permanently')
+  @Exception(400, 'Invalid place idx')
+  @Exception(404, 'Place not found')
+  @Exception(409, 'Place is not permanently closed')
+  @HttpCode(200)
+  @AdminAuth()
+  public async cancelClosePermanentlyPlaceByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+  ): Promise<void> {
+    return await this.placeService.cancelClosePermanentlyPlaceByIdx(idx);
+  }
 }
