@@ -1,20 +1,23 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Delete, Param, ParseIntPipe } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { Exception } from '@libs/common';
-import { GetAllReviewDto } from './dto/request/get-all-review.dto';
-import { GetAllReviewResponseDto } from './dto/response/get-all-review.response.dto';
 import { AdminAuth } from '@admin/common/decorator/admin-login.decorator';
 
 @Controller()
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
-  @Get('/review/all')
-  @Exception(400, 'Query parameter type is invalid')
+  /**
+   * 리뷰 삭제하기 API
+   *
+   * @author 강정연
+   */
+  @Delete('/review/:reviewIdx')
   @AdminAuth()
-  public async getAllReview(
-    @Query() dto: GetAllReviewDto,
-  ): Promise<GetAllReviewResponseDto> {
-    return this.reviewService.getAllReview(dto);
+  @Exception(400, 'Invalid reviewIdx')
+  async deleteReview(
+    @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
+  ): Promise<void> {
+    await this.reviewService.deleteReviewByIdx(reviewIdx);
   }
 }
