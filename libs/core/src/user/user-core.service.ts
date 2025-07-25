@@ -31,10 +31,10 @@ export class UserCoreService {
 
   public async getUserAll(
     input: GetAllUsersInput,
-  ): Promise<UserForAdminModel[] | null> {
+  ): Promise<UserForAdminModel[]> {
     const users = await this.userCoreRepository.selectUserAll(input);
 
-    return users && users.map(UserForAdminModel.fromPrisma);
+    return users.map(UserForAdminModel.fromPrisma);
   }
 
   public async createUser(input: CreateUserInput): Promise<UserModel> {
