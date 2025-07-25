@@ -770,4 +770,75 @@ describe('Place E2E test', () => {
         .expect(409);
     });
   });
+
+  describe('POST /place/:idx/close-permanently', () => {
+    it('200 - confirms place is closed permanently successfully', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+        permanentlyClosedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/close-permanently`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .expect(200);
+
+      const place = await testHelper.getPrisma().place.findUniqueOrThrow({
+        where: { idx: placeSeed.idx },
+      });
+
+      expect(place.permanentlyClosedAt).not.toBeNull();
+    });
+
+    it('400 - attempt to close permanently a place with invalid place idx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const invalidPlaceIdx = 'invalid-idx'; // ! invalid place idx
+
+      await testHelper
+        .test()
+        .post(`/place/${invalidPlaceIdx}/close-permanently`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .expect(400);
+    });
+
+    it('401 - no access token provided', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+        permanentlyClosedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/close-permanently`)
+        .expect(401);
+    });
+
+    it('404 - attempt to close permanently a place that does not exist', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const nonExistentPlaceIdx = -1; // ! no place with this idx
+
+      await testHelper
+        .test()
+        .post(`/place/${nonExistentPlaceIdx}/close-permanently`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .expect(404);
+    });
+
+    it('409 - attempt to close permanently a place that was already closed permanently', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+        permanentlyClosedAt: new Date(), // ! already closed permanently
+      });
+
+      await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/close-permanently`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .expect(409);
+    });
+  });
 });
