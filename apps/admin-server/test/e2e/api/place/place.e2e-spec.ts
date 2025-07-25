@@ -708,4 +708,66 @@ describe('Place E2E test', () => {
         .expect(409);
     });
   });
+
+  describe('POST /place/:idx/deactivate', () => {
+    it('200 - confirms place is deactivated successfully', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/deactivate`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .expect(200);
+    });
+
+    it('401 - no access token provided', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/deactivate`)
+        .expect(401);
+    });
+
+    it('400 - attempt to deactivate a place with invalid place idx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const invalidPlaceIdx = 'invalid-idx'; // ! invalid place idx
+
+      await testHelper
+        .test()
+        .post(`/place/${invalidPlaceIdx}/deactivate`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .expect(400);
+    });
+
+    it('404 - attempt to deactivate a place that does not exist', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const nonExistentPlaceIdx = -1; // ! no place with this idx
+
+      await testHelper
+        .test()
+        .post(`/place/${nonExistentPlaceIdx}/deactivate`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .expect(404);
+    });
+
+    it('409 - attempt to deactivate a place that is not activated', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: null, // ! not activated
+      });
+
+      await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/deactivate`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .expect(409);
+    });
+  });
 });

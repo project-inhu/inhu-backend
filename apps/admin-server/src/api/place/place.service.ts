@@ -2,6 +2,7 @@ import { CreatePlaceDto } from '@admin/api/place/dto/request/create-place.dto';
 import { UpdatePlaceDto } from '@admin/api/place/dto/request/update-place.dto';
 import { PlaceEntity } from '@admin/api/place/entity/place.entity';
 import { AlreadyActivatedPlaceException } from '@admin/api/place/exception/already-activated-place.exception';
+import { AlreadyDeactivatedPlaceException } from '@admin/api/place/exception/already-deactivated-place.exception';
 import { PlaceNotFoundException } from '@admin/api/place/exception/place-not-found.exception';
 import { PlaceCoreService } from '@libs/core';
 import { Injectable } from '@nestjs/common';
@@ -130,6 +131,24 @@ export class PlaceService {
 
     return await this.placeCoreService.updatePlaceByIdx(idx, {
       activatedAt: new Date(),
+    });
+  }
+
+  public async deactivatePlaceByIdx(idx: number): Promise<void> {
+    const place = await this.placeCoreService.getPlaceByIdx(idx);
+
+    if (!place) {
+      throw new PlaceNotFoundException('Cannot find place with idx: ' + idx);
+    }
+
+    if (!place.activatedAt) {
+      throw new AlreadyDeactivatedPlaceException(
+        'Place is not activated: ' + idx,
+      );
+    }
+
+    return await this.placeCoreService.updatePlaceByIdx(idx, {
+      activatedAt: null,
     });
   }
 }
