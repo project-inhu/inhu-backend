@@ -87,7 +87,7 @@ export class ReviewController {
    */
   @Delete('/review/:reviewIdx')
   @LoginAuth()
-  @Exception(400, 'Invalid reviewIdx or request body')
+  @Exception(400, 'Invalid reviewIdx')
   @Exception(401, 'Token is missing or invalid')
   @Exception(403, 'Permission denied')
   async deleteReview(
