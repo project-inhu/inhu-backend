@@ -7,7 +7,6 @@ export const SELECT_REVIEW = Prisma.validator<Prisma.ReviewDefaultArgs>()({
     idx: true,
     content: true,
     createdAt: true,
-    deletedAt: true,
     reviewImageList: {
       select: {
         path: true,

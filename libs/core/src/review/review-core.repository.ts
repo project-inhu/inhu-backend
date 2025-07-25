@@ -18,9 +18,7 @@ export class ReviewCoreRepository {
       ...SELECT_REVIEW,
       where: {
         AND: [
-          this.getDeletedFilter(input.includeDeleted),
-          this.getPlaceNameFilter(input.placeName),
-          this.getUserNicknameFilter(input.userNickname),
+          { deletedAt: null },
           this.getPlaceFilter(input.placeIdx),
           this.getUserFilter(input.userIdx),
         ],
@@ -133,36 +131,5 @@ export class ReviewCoreRepository {
   private getUserFilter(userIdx?: number): Prisma.ReviewWhereInput {
     if (!userIdx) return {};
     return { userIdx };
-  }
-
-  private getDeletedFilter(includeDeleted?: boolean): Prisma.ReviewWhereInput {
-    if (includeDeleted) return {};
-    return { deletedAt: null };
-  }
-
-  private getUserNicknameFilter(
-    userNickname?: string,
-  ): Prisma.ReviewWhereInput {
-    if (!userNickname) return {};
-    return {
-      user: {
-        nickname: {
-          contains: userNickname,
-          mode: 'insensitive',
-        },
-      },
-    };
-  }
-
-  private getPlaceNameFilter(placeName?: string): Prisma.ReviewWhereInput {
-    if (!placeName) return {};
-    return {
-      place: {
-        name: {
-          contains: placeName,
-          mode: 'insensitive',
-        },
-      },
-    };
   }
 }
