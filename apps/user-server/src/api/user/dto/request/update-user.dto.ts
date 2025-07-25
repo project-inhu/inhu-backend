@@ -20,8 +20,8 @@ export class UpdateUserDto {
    */
   @IsOptional()
   @IsString()
-  @MinLength(2)
-  @MaxLength(8)
+  @MinLength(1)
+  @MaxLength(10)
   nickname?: string;
 
   /**
