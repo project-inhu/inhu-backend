@@ -27,8 +27,12 @@ jobs:
       - name: Run tests on pull request
         if: github.event_name == 'pull_request'
         run: |
+          npm run user-server:test:infra:up
           npm run user-server:test:e2e
+          npm run user-server:test:infra:down
+          npm run admin-server:test:infra:up
           npm run admin-server:test:e2e
+          npm run admin-server:test:infra:down
 
       - name: Build for production
         if: github.event_name == 'push'

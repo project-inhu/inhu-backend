@@ -1,3 +1,5 @@
+name: inhu-user-server-e2e-test
+
 services:
   postgres:
     image: postgres:15.4
