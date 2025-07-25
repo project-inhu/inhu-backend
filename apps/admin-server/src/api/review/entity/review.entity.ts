@@ -80,6 +80,6 @@ export class ReviewEntity {
       keywordList: model.keywordList.map(KeywordEntity.fromModel),
       author: ReviewAuthorEntity.fromModel(model.author),
       place: ReviewPlaceEntity.fromModel(model.place),
-    } as any);
+    });
   }
 }
