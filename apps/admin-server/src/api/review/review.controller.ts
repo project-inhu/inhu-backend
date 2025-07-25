@@ -1,7 +1,7 @@
 import { Controller, Delete, Param, ParseIntPipe } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { Exception } from '@libs/common';
-import { AdminAuth } from '@admin/common/decorator/admin-login.decorator';
+import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 
 @Controller()
 export class ReviewController {
