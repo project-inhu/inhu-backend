@@ -7,7 +7,6 @@ export const SELECT_USER = Prisma.validator<Prisma.UserDefaultArgs>()({
     nickname: true,
     profileImagePath: true,
     createdAt: true,
-    deletedAt: true,
     userProvider: SELECT_USER_PROVIDER,
   },
 });

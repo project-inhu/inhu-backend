@@ -36,9 +36,7 @@ export class UserCoreRepository {
     });
   }
 
-  public async selectUserAll(
-    input: GetAllUsersInput,
-  ): Promise<SelectUser[] | null> {
+  public async selectUserAll(input: GetAllUsersInput): Promise<SelectUser[]> {
     const { skip, take } = input;
 
     return this.txHost.tx.user.findMany({
