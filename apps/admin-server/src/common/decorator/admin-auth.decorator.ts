@@ -6,6 +6,5 @@ export const AdminAuth = () => {
   return applyDecorators(
     UseGuards(AdminLoginAuthGuard),
     Exception(401, 'token not provided or expired'),
-    Exception(403, 'Access denied'),
   );
 };
