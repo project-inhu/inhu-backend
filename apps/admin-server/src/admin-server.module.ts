@@ -7,6 +7,7 @@ import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { PrismaService } from '@libs/common/modules/prisma/prisma.service';
 import { LoginTokenModule } from './common/modules/login-token/login-token.module';
+import { PlaceModule } from '@admin/api/place/place.module';
 
 @Module({
   imports: [
@@ -23,9 +24,8 @@ import { LoginTokenModule } from './common/modules/login-token/login-token.modul
         }),
       ],
     }),
+    PlaceModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AdminServerModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

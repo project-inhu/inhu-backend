@@ -33,13 +33,13 @@ export class CreatePlaceInput {
      * 한국 시간
      * @example '10:00:00'
      */
-    startAt: `${number}:${number}:${number}`;
+    startAt: string;
 
     /**
      * 한국 시간
      * @example '12:00:00'
      */
-    endAt: `${number}:${number}:${number}`;
+    endAt: string;
     day: DayOfWeek;
   }[];
   weeklyClosedDayList: {
@@ -47,7 +47,7 @@ export class CreatePlaceInput {
      * 한국 날짜
      * @example '2025-07-22'
      */
-    closedDate: `${number}-${number}-${number}`;
+    closedDate: string;
     type: WeeklyCloseType;
   }[];
   breakTimeList: {
@@ -55,13 +55,13 @@ export class CreatePlaceInput {
      * 한국 시간
      * @example '10:00:00'
      */
-    startAt: `${number}:${number}:${number}`;
+    startAt: string;
 
     /**
      * 한국 시간
      * @example '12:00:00'
      */
-    endAt: `${number}:${number}:${number}`;
+    endAt: string;
     day: DayOfWeek;
   }[];
 }

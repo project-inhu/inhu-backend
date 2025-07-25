@@ -15,14 +15,14 @@ export class PlaceOperatingHourModel {
   /**
    * 시작 시간
    *
-   * @example "09:00:00.000"
+   * @example "09:00:00"
    */
   public startAt: string;
 
   /**
    * 종료 시간
    *
-   * @example "09:00:00.000"
+   * @example "09:00:00"
    */
   public endAt: string;
 
@@ -40,8 +40,8 @@ export class PlaceOperatingHourModel {
   ): PlaceOperatingHourModel {
     return new PlaceOperatingHourModel({
       idx: hour.idx,
-      startAt: hour.startAt.toISOString().split('T')[1].replaceAll('Z', ''),
-      endAt: hour.endAt.toISOString().split('T')[1].replaceAll('Z', ''),
+      startAt: hour.startAt.toISOString().split('T')[1].split('.')[0],
+      endAt: hour.endAt.toISOString().split('T')[1].split('.')[0],
       day: hour.day as DayOfWeek,
     });
   }
