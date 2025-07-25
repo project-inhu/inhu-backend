@@ -1,0 +1,82 @@
+name: Build and Deploy to Raspberry Pi
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22.13.0
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests on pull request
+        if: github.event_name == 'pull_request'
+        run: |
+          npm run user-server:test:e2e
+          npm run admin-server:test:e2e
+
+      - name: Build for production
+        if: github.event_name == 'push'
+        run: |
+          npx prisma generate
+          npm run build user-server
+          npm run build admin-server
+
+      - name: Upload build artifacts
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: inhu-backend-build
+          path: |
+            dist
+            prisma
+            package.json
+            package-lock.json
+
+  deploy:
+    name: Deploy to EC2
+    needs: build
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: inhu-backend-build
+          path: ./deploy-files
+
+      - name: Compress deployment files
+        run: |
+          tar -czf deploy.tar.gz -C ./deploy-files .
+
+      - name: Deploy to Ec2
+        env:
+          HOST: ${{ secrets.EC2_HOST }}
+          KEY: ${{ secrets.EC2_KEY }}
+          USER: ubuntu
+        run: |
+          echo "$KEY" > key.pem
+          chmod 400 key.pem
+          scp -o StrictHostKeyChecking=no -i key.pem deploy.tar.gz $USER@$HOST:~/inhu-backend/
+          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST << 'EOF'
+            cd ~/inhu-backend
+            tar -xzf deploy.tar.gz
+            rm deploy.tar.gz
+            npm ci
+            pm2 reload inhu-backend-prod
+          EOF

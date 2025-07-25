@@ -3,11 +3,9 @@ name: Build and Deploy to Raspberry Pi
 on:
   push:
     branches:
-      - master
       - develop
   pull_request:
     branches:
-      - master
       - develop
 
 jobs:
@@ -28,35 +26,35 @@ jobs:
 
       - name: Run tests on pull request
         if: github.event_name == 'pull_request'
-        env:
-          ENV_TEST_FILE: ${{ secrets.ENV_TEST_FILE }}
         run: |
-          echo "$ENV_TEST_FILE" | base64 --decode > .env.test
-          npm run test:e2e
+          npm run user-server:test:e2e
+          npm run admin-server:test:e2e
 
       - name: Build for production
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
+        if: github.event_name == 'push'
         run: |
           npx prisma generate
-          npm run build
+          npm run build user-server
+          npm run build admin-server
 
       - name: Upload build artifacts
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
+        if: github.event_name == 'push'
         uses: actions/upload-artifact@v4
         with:
           name: inhu-backend-build
           path: |
-            DB/**
+            scripts/rdb
+            scripts/user-server/dev
+            scripts/admin-server/dev
             dist
             prisma
             package.json
             package-lock.json
-            docker-compose.yml
 
   deploy:
     name: Deploy to Raspberry Pi
     needs: build
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Download build artifacts
@@ -84,9 +82,9 @@ jobs:
             tar -xzf deploy.tar.gz
             rm deploy.tar.gz
             npm ci
-            docker compose down -v
-            docker compose up -d
-            until docker exec inhu-postgres psql -U inhu_admin -d inhu -c "SELECT 1;" >/dev/null 2>&1; do sleep 1; done
-            npm run seed
-            pm2 reload inhu-backend
+            npm run user-server:dev:infra:down
+            npm run user-server:dev:infra:up
+            npm run admin-server:dev:infra:down
+            npm run admin-server:dev:infra:up
+            pm2 reload inhu-backend-dev
           EOF
