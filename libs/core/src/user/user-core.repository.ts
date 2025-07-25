@@ -5,6 +5,11 @@ import { SELECT_USER, SelectUser } from './model/prisma-type/select-user';
 import { CreateUserInput } from './inputs/create-user.input';
 import { UpdateUserInput } from './inputs/update-user.input';
 import { AuthProvider } from './constants/auth-provider.constant';
+import { GetAllUsersInput } from './inputs/get-user-overview.input';
+import {
+  SELECT_USER_FOR_ADMIN,
+  SelectUserForAdmin,
+} from './model/prisma-type/select-user-for-admin';
 
 @Injectable()
 export class UserCoreRepository {
@@ -32,6 +37,24 @@ export class UserCoreRepository {
           name: provider,
         },
       },
+    });
+  }
+
+  public async selectUserAll(
+    input: GetAllUsersInput,
+  ): Promise<SelectUserForAdmin[]> {
+    const { skip, take } = input;
+
+    return this.txHost.tx.user.findMany({
+      ...SELECT_USER_FOR_ADMIN,
+      where: {
+        deletedAt: null,
+      },
+      orderBy: {
+        idx: 'desc',
+      },
+      skip,
+      take,
     });
   }
 
