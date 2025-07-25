@@ -640,4 +640,72 @@ describe('Place E2E test', () => {
         .expect(400);
     });
   });
+
+  describe('POST /place/:idx/activate', () => {
+    it('200 - confirms place is activated successfully', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/activate`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .expect(200);
+
+      const place = await testHelper.getPrisma().place.findUniqueOrThrow({
+        where: { idx: placeSeed.idx },
+      });
+
+      expect(place.activatedAt).not.toBeNull();
+    });
+
+    it('400 - attempt to activate a place with invalid place idx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const invalidPlaceIdx = 'invalid-idx'; // ! invalid place idx
+
+      await testHelper
+        .test()
+        .post(`/place/${invalidPlaceIdx}/activate`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .expect(400);
+    });
+
+    it('401 - no access token provided', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/activate`)
+        .expect(401);
+    });
+
+    it('404 - attempt to activate a place that does not exist', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const nonExistentPlaceIdx = -1; // ! no place with this idx
+
+      await testHelper
+        .test()
+        .post(`/place/${nonExistentPlaceIdx}/activate`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .expect(404);
+    });
+
+    it('409 - attempt to activate a place that was already activated', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(), // ! already activated
+      });
+
+      await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/activate`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .expect(409);
+    });
+  });
 });

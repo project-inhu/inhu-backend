@@ -73,4 +73,19 @@ export class PlaceController {
   ): Promise<void> {
     return await this.placeService.deletePlaceByIdx(idx);
   }
+
+  /**
+   * 장소 활성화하기 Endpoint
+   */
+  @Post('/:idx/activate')
+  @Exception(400, 'Invalid place idx')
+  @Exception(404, 'Place not found')
+  @Exception(409, 'Place is already activated')
+  @HttpCode(200)
+  @AdminAuth()
+  public async activatePlaceByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+  ): Promise<void> {
+    return await this.placeService.activatePlaceByIdx(idx);
+  }
 }
