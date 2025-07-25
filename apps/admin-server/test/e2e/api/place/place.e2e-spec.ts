@@ -1,8 +1,9 @@
 import { AdminServerModule } from '@admin/admin-server.module';
 import { CreatePlaceDto } from '@admin/api/place/dto/request/create-place.dto';
+import { UpdatePlaceDto } from '@admin/api/place/dto/request/update-place.dto';
 import { PlaceEntity } from '@admin/api/place/entity/place.entity';
 import { dayOfWeeks } from '@libs/common';
-import { PLACE_TYPE, WEEKLY_CLOSE_TYPE } from '@libs/core';
+import { PLACE_TYPE, PlaceCoreService, WEEKLY_CLOSE_TYPE } from '@libs/core';
 import { PlaceSeedHelper } from '@libs/testing';
 import { TestHelper } from 'apps/admin-server/test/e2e/setup/test.helper';
 
@@ -238,7 +239,7 @@ describe('Place E2E test', () => {
         .post('/place')
         .set('Authorization', `Bearer ${loginUser.token}`)
         .send(createPlaceDto)
-        .expect(201);
+        .expect(200);
 
       const place: PlaceEntity = response.body;
 
@@ -382,6 +383,205 @@ describe('Place E2E test', () => {
         .set('Authorization', `Bearer ${loginUser.token}`)
         .send(createPlaceDto)
         .expect(400);
+    });
+  });
+
+  describe('PUT /place/:idx', () => {
+    it('200 - confirms fields are updated successfully', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const updatePlaceDto: UpdatePlaceDto = {
+        name: 'Updated Place',
+        tel: '032-9876-5432',
+        isClosedOnHoliday: true,
+        imagePathList: [
+          '/place/updated-image1.png',
+          '/place/updated-image2.png',
+        ],
+        type: PLACE_TYPE.RESTAURANT,
+        roadAddress: {
+          name: 'Updated Road',
+          detail: 'Updated Detail',
+          addressX: 123.456,
+          addressY: 78.91,
+        },
+        closedDayList: [
+          { day: dayOfWeeks.MON, week: 1 },
+          { day: dayOfWeeks.TUE, week: 2 },
+        ],
+        breakTimeList: [
+          { startAt: '12:00:00', endAt: '13:00:00', day: dayOfWeeks.WED },
+          { startAt: '14:00:00', endAt: '15:00:00', day: dayOfWeeks.FRI },
+        ],
+        operatingHourList: [
+          { startAt: '10:00:00', endAt: '20:00:00', day: dayOfWeeks.THU },
+          { startAt: '11:00:00', endAt: '21:00:00', day: dayOfWeeks.SAT },
+        ],
+        weeklyClosedDayList: [
+          { date: '2025-07-22', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
+          { date: '2025-07-23', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
+        ],
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .send(updatePlaceDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.name).toBe(updatePlaceDto.name);
+      expect(placeModel.tel).toBe(updatePlaceDto.tel);
+      expect(placeModel.isClosedOnHoliday).toBe(
+        updatePlaceDto.isClosedOnHoliday,
+      );
+      expect(placeModel.type).toBe(updatePlaceDto.type);
+      expect(placeModel.roadAddress.name).toBe(updatePlaceDto.roadAddress.name);
+      expect(placeModel.roadAddress.detail).toBe(
+        updatePlaceDto.roadAddress.detail,
+      );
+      expect(placeModel.roadAddress.addressX).toBe(
+        updatePlaceDto.roadAddress.addressX,
+      );
+      expect(placeModel.roadAddress.addressY).toBe(
+        updatePlaceDto.roadAddress.addressY,
+      );
+      expect(placeModel.imgPathList.sort()).toEqual(
+        updatePlaceDto.imagePathList.sort(),
+      );
+      expect(placeModel.closedDayList.length).toBe(2);
+      expect(placeModel.closedDayList[0].day).toBe(dayOfWeeks.MON);
+      expect(placeModel.closedDayList[0].week).toBe(1);
+      expect(placeModel.closedDayList[1].day).toBe(dayOfWeeks.TUE);
+      expect(placeModel.closedDayList[1].week).toBe(2);
+      expect(placeModel.breakTimeList.length).toBe(2);
+      expect(placeModel.breakTimeList[0].startAt).toBe('12:00:00');
+      expect(placeModel.breakTimeList[0].endAt).toBe('13:00:00');
+      expect(placeModel.breakTimeList[0].day).toBe(dayOfWeeks.WED);
+      expect(placeModel.breakTimeList[1].startAt).toBe('14:00:00');
+      expect(placeModel.breakTimeList[1].endAt).toBe('15:00:00');
+      expect(placeModel.breakTimeList[1].day).toBe(dayOfWeeks.FRI);
+      expect(placeModel.operatingHourList.length).toBe(2);
+      expect(placeModel.operatingHourList[0].startAt).toBe('10:00:00');
+      expect(placeModel.operatingHourList[0].endAt).toBe('20:00:00');
+      expect(placeModel.operatingHourList[0].day).toBe(dayOfWeeks.THU);
+      expect(placeModel.operatingHourList[1].startAt).toBe('11:00:00');
+      expect(placeModel.operatingHourList[1].endAt).toBe('21:00:00');
+      expect(placeModel.operatingHourList[1].day).toBe(dayOfWeeks.SAT);
+      expect(placeModel.weeklyClosedDayList.length).toBe(2);
+      expect(placeModel.weeklyClosedDayList[0].date).toBe(
+        updatePlaceDto.weeklyClosedDayList[0].date,
+      );
+      expect(placeModel.weeklyClosedDayList[0].type).toBe(
+        updatePlaceDto.weeklyClosedDayList[0].type,
+      );
+      expect(placeModel.weeklyClosedDayList[1].date).toBe(
+        updatePlaceDto.weeklyClosedDayList[1].date,
+      );
+      expect(placeModel.weeklyClosedDayList[1].type).toBe(
+        updatePlaceDto.weeklyClosedDayList[1].type,
+      );
+    });
+
+    it('401 - no access token provided', async () => {
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const updatePlaceDto: UpdatePlaceDto = {
+        name: 'Updated Place',
+        tel: '032-9876-5432',
+        isClosedOnHoliday: true,
+        imagePathList: [
+          '/place/updated-image1.png',
+          '/place/updated-image2.png',
+        ],
+        type: PLACE_TYPE.RESTAURANT,
+        roadAddress: {
+          name: 'Updated Road',
+          detail: 'Updated Detail',
+          addressX: 123.456,
+          addressY: 78.91,
+        },
+        closedDayList: [
+          { day: dayOfWeeks.MON, week: 1 },
+          { day: dayOfWeeks.TUE, week: 2 },
+        ],
+        breakTimeList: [
+          { startAt: '12:00:00', endAt: '13:00:00', day: dayOfWeeks.WED },
+          { startAt: '14:00:00', endAt: '15:00:00', day: dayOfWeeks.FRI },
+        ],
+        operatingHourList: [
+          { startAt: '10:00:00', endAt: '20:00:00', day: dayOfWeeks.THU },
+          { startAt: '11:00:00', endAt: '21:00:00', day: dayOfWeeks.SAT },
+        ],
+        weeklyClosedDayList: [
+          { date: '2025-07-22', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
+          { date: '2025-07-23', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
+        ],
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}`)
+        .send(updatePlaceDto)
+        .expect(401);
+    });
+
+    it('404 - there is no place with the given idx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeIdx = -1; // ! no place with this idx
+
+      const updatePlaceDto: UpdatePlaceDto = {
+        name: 'Updated Place',
+        tel: '032-9876-5432',
+        isClosedOnHoliday: true,
+        imagePathList: [
+          '/place/updated-image1.png',
+          '/place/updated-image2.png',
+        ],
+        type: PLACE_TYPE.RESTAURANT,
+        roadAddress: {
+          name: 'Updated Road',
+          detail: 'Updated Detail',
+          addressX: 123.456,
+          addressY: 78.91,
+        },
+        closedDayList: [
+          { day: dayOfWeeks.MON, week: 1 },
+          { day: dayOfWeeks.TUE, week: 2 },
+        ],
+        breakTimeList: [
+          { startAt: '12:00:00', endAt: '13:00:00', day: dayOfWeeks.WED },
+          { startAt: '14:00:00', endAt: '15:00:00', day: dayOfWeeks.FRI },
+        ],
+        operatingHourList: [
+          { startAt: '10:00:00', endAt: '20:00:00', day: dayOfWeeks.THU },
+          { startAt: '11:00:00', endAt: '21:00:00', day: dayOfWeeks.SAT },
+        ],
+        weeklyClosedDayList: [
+          { date: '2025-07-22', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
+          { date: '2025-07-23', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
+        ],
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${placeIdx}`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .send(updatePlaceDto)
+        .expect(404);
     });
   });
 });

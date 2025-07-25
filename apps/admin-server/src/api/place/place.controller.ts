@@ -1,4 +1,5 @@
 import { CreatePlaceDto } from '@admin/api/place/dto/request/create-place.dto';
+import { UpdatePlaceDto } from '@admin/api/place/dto/request/update-place.dto';
 import { PlaceEntity } from '@admin/api/place/entity/place.entity';
 import { PlaceService } from '@admin/api/place/place.service';
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
@@ -7,9 +8,11 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Param,
   ParseIntPipe,
   Post,
+  Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -35,8 +38,24 @@ export class PlaceController {
    */
   @Post()
   @Exception(400, 'Invalid place data')
+  @HttpCode(200)
   @AdminAuth()
   public async createPlace(@Body() dto: CreatePlaceDto): Promise<PlaceEntity> {
     return await this.placeService.createPlace(dto);
+  }
+
+  /**
+   * 장소 수정하기 Endpoint
+   */
+  @Put('/:idx')
+  @Exception(400, 'Invalid place idx or data')
+  @Exception(404, 'Place not found')
+  @HttpCode(200)
+  @AdminAuth()
+  public async updatePlace(
+    @Param('idx', ParseIntPipe) idx: number,
+    @Body() dto: UpdatePlaceDto,
+  ): Promise<void> {
+    await this.placeService.updatePlaceByIdx(idx, dto);
   }
 }
