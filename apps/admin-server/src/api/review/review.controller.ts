@@ -15,6 +15,8 @@ export class ReviewController {
   @Delete('/review/:reviewIdx')
   @AdminAuth()
   @Exception(400, 'Invalid reviewIdx')
+  @Exception(401, 'Token is missing or invalid')
+  @Exception(404, 'Place does not exist')
   async deleteReview(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
   ): Promise<void> {
