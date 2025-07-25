@@ -5,6 +5,7 @@ import { SELECT_USER, SelectUser } from './model/prisma-type/select-user';
 import { CreateUserInput } from './inputs/create-user.input';
 import { UpdateUserInput } from './inputs/update-user.input';
 import { AuthProvider } from './constants/auth-provider.constant';
+import { GetAllUsersInput } from './inputs/get-user-overview.input';
 
 @Injectable()
 export class UserCoreRepository {
@@ -32,6 +33,21 @@ export class UserCoreRepository {
           name: provider,
         },
       },
+    });
+  }
+
+  public async selectUserAll(
+    input: GetAllUsersInput,
+  ): Promise<SelectUser[] | null> {
+    const { skip, take } = input;
+
+    return this.txHost.tx.user.findMany({
+      ...SELECT_USER,
+      orderBy: {
+        idx: 'desc',
+      },
+      skip,
+      take,
     });
   }
 
