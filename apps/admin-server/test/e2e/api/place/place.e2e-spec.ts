@@ -1,6 +1,8 @@
 import { AdminServerModule } from '@admin/admin-server.module';
 import { CreatePlaceDto } from '@admin/api/place/dto/request/create-place.dto';
+import { GetPlaceOverviewDto } from '@admin/api/place/dto/request/get-place-overview-all.dto';
 import { UpdatePlaceDto } from '@admin/api/place/dto/request/update-place.dto';
+import { PlaceOverviewEntity } from '@admin/api/place/entity/place-overview.entity';
 import { PlaceEntity } from '@admin/api/place/entity/place.entity';
 import { dayOfWeeks } from '@libs/common';
 import { PLACE_TYPE, PlaceCoreService, WEEKLY_CLOSE_TYPE } from '@libs/core';
@@ -17,6 +19,100 @@ describe('Place E2E test', () => {
 
   afterEach(async () => {
     await testHelper.destroy();
+  });
+
+  describe('GET /place', () => {
+    it('200 - field check', async () => {
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+      };
+
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({});
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const place: PlaceOverviewEntity = response.body.placeList[0];
+      const count: number = response.body.count;
+
+      expect(count).toBe(1);
+
+      expect(place.idx).toBe(placeSeed.idx);
+      expect(place.name).toBe(placeSeed.name);
+      expect(place.roadAddress.name).toBe(placeSeed.roadAddress.name);
+      expect(place.roadAddress.detail).toBe(placeSeed.roadAddress.detail);
+      expect(place.roadAddress.addressX).toBe(placeSeed.roadAddress.addressX);
+      expect(place.roadAddress.addressY).toBe(placeSeed.roadAddress.addressY);
+      expect(place.reviewCount).toBe(placeSeed.reviewCount);
+      expect(place.type).toBe(placeSeed.type);
+    });
+
+    it('401 - no access token provided', async () => {
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+      };
+
+      await testHelper.test().get('/place').query(dto).expect(401);
+    });
+
+    it('400 - invalid page', async () => {
+      const dto = {
+        page: 'invalid page',
+      };
+
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .get('/place')
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(400);
+    });
+
+    it('200 - check active filtering', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        active: true,
+      };
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: null,
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places.map(({ name }) => name).sort()).toStrictEqual(
+        [place3.name, place1.name].sort(),
+      );
+      expect(count).toBe(2);
+    });
   });
 
   describe('GET /place/:idx', () => {

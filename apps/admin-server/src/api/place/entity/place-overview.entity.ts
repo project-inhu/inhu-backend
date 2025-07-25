@@ -12,6 +12,8 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
   'topKeywordList',
   'imagePathList',
   'type',
+  'activatedAt',
+  'permanentlyClosedAt',
 ]) {
   constructor(data: PlaceOverviewEntity) {
     super();
@@ -27,6 +29,8 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
       topKeywordList: model.topKeywordList.map(KeywordEntity.fromModel),
       imagePathList: model.imgPathList,
       type: model.type,
+      activatedAt: model.activatedAt,
+      permanentlyClosedAt: model.permanentlyClosedAt,
     });
   }
 }

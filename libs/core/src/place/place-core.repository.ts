@@ -66,6 +66,33 @@ export class PlaceCoreRepository {
     });
   }
 
+  public async selectPlaceCount({
+    operating,
+    bookmarkUserIdx,
+    coordinate,
+    types,
+    skip,
+    take,
+    order,
+    orderBy,
+    activated,
+    permanentlyClosed,
+  }: GetPlaceOverviewInput): Promise<number> {
+    return await this.txHost.tx.place.count({
+      where: {
+        AND: [
+          { deletedAt: null },
+          this.getOperatingFilterWhereClause(operating), // 영업중 필터링
+          this.getBookmarkFilterWhereClause(bookmarkUserIdx), // 북마크 필터링
+          this.getCoordinateFilterWhereClause(coordinate), // 좌표 필터링
+          this.getTypesFilterWhereClause(types), // 타입 필터링
+          this.getActivatedAtFilterWhereClause(activated), // 활성화 필터링
+          this.getPermanentlyClosedFilterWhereClause(permanentlyClosed), // 폐점 여부 필터링
+        ],
+      },
+    });
+  }
+
   /**
    * 폐점 여부 필터링
    */

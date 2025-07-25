@@ -1,5 +1,7 @@
 import { CreatePlaceDto } from '@admin/api/place/dto/request/create-place.dto';
+import { GetPlaceOverviewDto } from '@admin/api/place/dto/request/get-place-overview-all.dto';
 import { UpdatePlaceDto } from '@admin/api/place/dto/request/update-place.dto';
+import { GetPlaceOverviewAllResponseDto } from '@admin/api/place/dto/response/get-place-overview-all-response.dto';
 import { PlaceEntity } from '@admin/api/place/entity/place.entity';
 import { PlaceService } from '@admin/api/place/place.service';
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
@@ -14,6 +16,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -21,6 +24,18 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('Place')
 export class PlaceController {
   constructor(private readonly placeService: PlaceService) {}
+
+  /**
+   * 장소 목록 조회 Endpoint
+   */
+  @Get()
+  @Exception(400, 'Invalid place overview request')
+  @AdminAuth()
+  public async getPlaceOverviewAll(
+    @Query() dto: GetPlaceOverviewDto,
+  ): Promise<GetPlaceOverviewAllResponseDto> {
+    return await this.placeService.getPlaceAll(dto);
+  }
 
   /**
    * 장소 자세히보기 Endpoint

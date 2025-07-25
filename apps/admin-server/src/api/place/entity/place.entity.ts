@@ -62,6 +62,20 @@ export class PlaceEntity {
   public reviewCount: number;
 
   /**
+   * 활성화 여부
+   *
+   * @example null
+   */
+  public activatedAt: Date | null;
+
+  /**
+   * 가게 폐점 여부
+   *
+   * @example null
+   */
+  public permanentlyClosedAt: Date | null;
+
+  /**
    * 공휴일에 쉬는지 유무
    *
    * @example false
@@ -129,6 +143,8 @@ export class PlaceEntity {
       ),
       closedDayList: model.closedDayList.map(PlaceClosedDayEntity.fromModel),
       breakTimeList: model.breakTimeList.map(PlaceBreakTimeEntity.fromModel),
+      activatedAt: model.activatedAt,
+      permanentlyClosedAt: model.permanentlyClosedAt,
     });
   }
 }

@@ -17,6 +17,12 @@ export class PlaceCoreService {
     return place && PlaceModel.fromPrisma(place);
   }
 
+  public async getPlaceOverviewCount(
+    input: GetPlaceOverviewInput,
+  ): Promise<number> {
+    return await this.placeCoreRepository.selectPlaceCount(input);
+  }
+
   public async getBookmarkedPlace(
     input: GetBookmarkedPlaceOverviewInput,
   ): Promise<BookmarkedPlaceOverviewModel[]> {

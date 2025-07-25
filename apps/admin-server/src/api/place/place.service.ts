@@ -1,17 +1,38 @@
 import { CreatePlaceDto } from '@admin/api/place/dto/request/create-place.dto';
+import { GetPlaceOverviewDto } from '@admin/api/place/dto/request/get-place-overview-all.dto';
 import { UpdatePlaceDto } from '@admin/api/place/dto/request/update-place.dto';
+import { PlaceOverviewEntity } from '@admin/api/place/entity/place-overview.entity';
 import { PlaceEntity } from '@admin/api/place/entity/place.entity';
 import { AlreadyActivatedPlaceException } from '@admin/api/place/exception/already-activated-place.exception';
 import { AlreadyClosedPermanentlyPlaceException } from '@admin/api/place/exception/already-closed-permanently-place.exception';
 import { AlreadyDeactivatedPlaceException } from '@admin/api/place/exception/already-deactivated-place.exception';
 import { NotClosedPermanentlyPlaceException } from '@admin/api/place/exception/not-closed-permanently-place.exception';
 import { PlaceNotFoundException } from '@admin/api/place/exception/place-not-found.exception';
-import { PlaceCoreService } from '@libs/core';
+import { GetPlaceOverviewInput, PlaceCoreService } from '@libs/core';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class PlaceService {
   constructor(private readonly placeCoreService: PlaceCoreService) {}
+
+  public async getPlaceAll(
+    dto: GetPlaceOverviewDto,
+  ): Promise<{ placeList: PlaceOverviewEntity[]; count: number }> {
+    const input: GetPlaceOverviewInput = {
+      take: 10,
+      skip: (dto.page - 1) * 10,
+      activated: dto.active,
+      order: 'desc',
+      orderBy: 'time',
+    };
+
+    return {
+      placeList: (await this.placeCoreService.getPlaceAll(input)).map(
+        PlaceOverviewEntity.fromModel,
+      ),
+      count: await this.placeCoreService.getPlaceOverviewCount(input),
+    };
+  }
 
   public async getPlaceByIdx(idx: number): Promise<PlaceEntity> {
     const place = await this.placeCoreService.getPlaceByIdx(idx);
