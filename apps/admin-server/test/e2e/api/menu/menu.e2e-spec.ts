@@ -370,95 +370,6 @@ describe('Menu e2e test', () => {
         .expect(400);
     });
 
-    it('400 - missing price', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-
-      const placeSeed = await placeSeedHelper.seed({
-        deletedAt: null,
-        activatedAt: new Date(),
-      });
-
-      const createMenuDto = {
-        name: 'Test Menu',
-        content: null,
-        imagePath: null,
-      };
-
-      return await testHelper
-        .test()
-        .post(`/place/${placeSeed.idx}/menu`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
-        .send(createMenuDto)
-        .expect(400);
-    });
-
-    it('400 - missing content', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-
-      const placeSeed = await placeSeedHelper.seed({
-        deletedAt: null,
-        activatedAt: new Date(),
-      });
-
-      const createMenuDto = {
-        name: 'Test Menu',
-        price: null,
-        imagePath: null,
-      };
-
-      return await testHelper
-        .test()
-        .post(`/place/${placeSeed.idx}/menu`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
-        .send(createMenuDto)
-        .expect(400);
-    });
-
-    it('400 - missing imagePath', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-
-      const placeSeed = await placeSeedHelper.seed({
-        deletedAt: null,
-        activatedAt: new Date(),
-      });
-
-      const createMenuDto = {
-        content: null,
-        price: null,
-        imagePath: null,
-      };
-
-      return await testHelper
-        .test()
-        .post(`/place/${placeSeed.idx}/menu`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
-        .send(createMenuDto)
-        .expect(400);
-    });
-
-    it('400 - missing isFlexible', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-
-      const placeSeed = await placeSeedHelper.seed({
-        deletedAt: null,
-        activatedAt: new Date(),
-      });
-
-      const createMenuDto = {
-        name: 'Test Menu',
-        content: null,
-        price: null,
-        imagePath: null,
-      };
-
-      return await testHelper
-        .test()
-        .post(`/place/${placeSeed.idx}/menu`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
-        .send(createMenuDto)
-        .expect(400);
-    });
-
     it('401 - token is missing', async () => {
       const placeSeed = await placeSeedHelper.seed({
         deletedAt: null,
@@ -496,6 +407,480 @@ describe('Menu e2e test', () => {
         .post(`/place/99999/menu`) //! 존재하지 않는 장소
         .set('Authorization', `Bearer ${loginUser.token}`)
         .send(createMenuDto)
+        .expect(404);
+    });
+  });
+
+  describe('PUT /menu/:menuIdx', () => {
+    it('200 - all fields modified', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        name: 'Old Menu',
+        content: 'Old Content',
+        price: 5000,
+        isFlexible: false,
+        imagePath: 'menu/old-image.png',
+      });
+
+      const updateMenuDto = {
+        name: 'Updated Menu',
+        content: 'Updated Content',
+        price: 10000,
+        isFlexible: true,
+        imagePath: 'menu/updated-image.png',
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .send(updateMenuDto)
+        .expect(200);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu.name).toBe(updateMenuDto.name);
+      expect(updatedMenu.content).toBe(updateMenuDto.content);
+      expect(updatedMenu.price).toBe(updateMenuDto.price);
+      expect(updatedMenu.isFlexible).toBe(updateMenuDto.isFlexible);
+      expect(updatedMenu.imagePath).toBe(updateMenuDto.imagePath);
+    });
+
+    it('200 - all fields deleted (keep name)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        name: 'Old Menu',
+        content: 'Old Content',
+        price: 5000,
+        isFlexible: false,
+        imagePath: 'menu/old-image.png',
+      });
+
+      const updateMenuDto = {
+        name: 'Updated Menu', // ! name은 삭제 불가
+        content: null,
+        price: null,
+        isFlexible: false,
+        imagePath: null,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .send(updateMenuDto)
+        .expect(200);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu.name).toBe(updateMenuDto.name);
+      expect(updatedMenu.content).toBeNull();
+      expect(updatedMenu.price).toBeNull();
+      expect(updatedMenu.isFlexible).toBe(updateMenuDto.isFlexible);
+      expect(updatedMenu.imagePath).toBeNull();
+    });
+
+    it('200 - all fields kept', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        name: 'Old Menu',
+        content: 'Old Content',
+        price: 5000,
+        isFlexible: false,
+        imagePath: 'menu/old-image.png',
+      });
+
+      const updateMenuDto = {
+        name: menuSeed.name,
+        content: menuSeed.content,
+        price: menuSeed.price,
+        isFlexible: menuSeed.isFlexible,
+        imagePath: menuSeed.imagePath,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .send(updateMenuDto)
+        .expect(200);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu.name).toBe(menuSeed.name);
+      expect(updatedMenu.content).toBe(menuSeed.content);
+      expect(updatedMenu.price).toBe(menuSeed.price);
+      expect(updatedMenu.isFlexible).toBe(menuSeed.isFlexible);
+      expect(updatedMenu.imagePath).toBe(menuSeed.imagePath);
+    });
+
+    it('200 - name only modified', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        name: 'Old Menu',
+        content: 'Old Content',
+        price: 5000,
+        isFlexible: false,
+        imagePath: 'menu/old-image.png',
+      });
+
+      const updateMenuDto = {
+        name: 'Updated Menu',
+        content: menuSeed.content,
+        price: menuSeed.price,
+        isFlexible: menuSeed.isFlexible,
+        imagePath: menuSeed.imagePath,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .send(updateMenuDto)
+        .expect(200);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu.name).toBe(updateMenuDto.name);
+      expect(updatedMenu.content).toBe(menuSeed.content);
+      expect(updatedMenu.price).toBe(menuSeed.price);
+      expect(updatedMenu.isFlexible).toBe(menuSeed.isFlexible);
+      expect(updatedMenu.imagePath).toBe(menuSeed.imagePath);
+    });
+
+    it('200 - price only modified', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        name: 'Old Menu',
+        content: 'Old Content',
+        price: 5000,
+        isFlexible: false,
+        imagePath: 'menu/old-image.png',
+      });
+
+      const updateMenuDto = {
+        price: 10000,
+        name: menuSeed.name,
+        content: menuSeed.content,
+        isFlexible: menuSeed.isFlexible,
+        imagePath: menuSeed.imagePath,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .send(updateMenuDto)
+        .expect(200);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu.name).toBe(menuSeed.name);
+      expect(updatedMenu.content).toBe(menuSeed.content);
+      expect(updatedMenu.price).toBe(updateMenuDto.price);
+      expect(updatedMenu.isFlexible).toBe(menuSeed.isFlexible);
+      expect(updatedMenu.imagePath).toBe(menuSeed.imagePath);
+    });
+
+    it('200 - content only modified', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        name: 'Old Menu',
+        content: 'Old Content',
+        price: 5000,
+        isFlexible: false,
+        imagePath: 'menu/old-image.png',
+      });
+
+      const updateMenuDto = {
+        content: 'Updated Content',
+        name: menuSeed.name,
+        price: menuSeed.price,
+        isFlexible: menuSeed.isFlexible,
+        imagePath: menuSeed.imagePath,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .send(updateMenuDto)
+        .expect(200);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu.name).toBe(menuSeed.name);
+      expect(updatedMenu.content).toBe(updateMenuDto.content);
+      expect(updatedMenu.price).toBe(menuSeed.price);
+      expect(updatedMenu.isFlexible).toBe(menuSeed.isFlexible);
+      expect(updatedMenu.imagePath).toBe(menuSeed.imagePath);
+    });
+
+    it('200 - imagePath only modified', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        name: 'Old Menu',
+        content: 'Old Content',
+        price: 5000,
+        isFlexible: false,
+        imagePath: 'menu/old-image.png',
+      });
+
+      const updateMenuDto = {
+        imagePath: 'menu/updated-image.png',
+        name: menuSeed.name,
+        content: menuSeed.content,
+        price: menuSeed.price,
+        isFlexible: menuSeed.isFlexible,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .send(updateMenuDto)
+        .expect(200);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu.name).toBe(menuSeed.name);
+      expect(updatedMenu.content).toBe(menuSeed.content);
+      expect(updatedMenu.price).toBe(menuSeed.price);
+      expect(updatedMenu.isFlexible).toBe(menuSeed.isFlexible);
+      expect(updatedMenu.imagePath).toBe(updateMenuDto.imagePath);
+    });
+
+    it('200 - isFlexible only modified', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        name: 'Old Menu',
+        content: 'Old Content',
+        price: 5000,
+        isFlexible: false,
+        imagePath: 'menu/old-image.png',
+      });
+
+      const updateMenuDto = {
+        isFlexible: true,
+        name: menuSeed.name,
+        content: menuSeed.content,
+        price: menuSeed.price,
+        imagePath: menuSeed.imagePath,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .send(updateMenuDto)
+        .expect(200);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu.name).toBe(menuSeed.name);
+      expect(updatedMenu.content).toBe(menuSeed.content);
+      expect(updatedMenu.price).toBe(menuSeed.price);
+      expect(updatedMenu.isFlexible).toBe(updateMenuDto.isFlexible);
+      expect(updatedMenu.imagePath).toBe(menuSeed.imagePath);
+    });
+
+    it('400 - invalid menuIdx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const updateMenuDto = {
+        name: 'Updated Menu',
+        content: null,
+        price: null,
+        isFlexible: false,
+        imagePath: null,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/invalid`) // ! invalid menuIdx
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .send(updateMenuDto)
+        .expect(400);
+    });
+
+    it('400 - empty content', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        name: 'Old Menu',
+        content: 'Old Content',
+        price: 5000,
+        isFlexible: false,
+        imagePath: 'menu/old-image.png',
+      });
+
+      const updateMenuDto = {
+        name: '',
+        content: null,
+        price: null,
+        isFlexible: false,
+        imagePath: null,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .send(updateMenuDto)
+        .expect(400);
+    });
+
+    it('400 - missing name', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        name: 'Old Menu',
+        content: 'Old Content',
+        price: 5000,
+        isFlexible: false,
+        imagePath: 'menu/old-image.png',
+      });
+
+      const updateMenuDto = {
+        content: null,
+        price: null,
+        isFlexible: false,
+        imagePath: null,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .send(updateMenuDto)
+        .expect(400);
+    });
+
+    it('401 - token is missing', async () => {
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+
+      const updateMenuDto = {
+        name: 'Updated Menu',
+        content: null,
+        price: null,
+        isFlexible: false,
+        imagePath: null,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}`)
+        .send(updateMenuDto)
+        .expect(401);
+    });
+
+    it('404 - menu does not exist', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const updateMenuDto = {
+        name: 'Updated Menu',
+        content: null,
+        price: null,
+        isFlexible: false,
+        imagePath: null,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/99999`) // ! 존재하지 않는 메뉴
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .send(updateMenuDto)
         .expect(404);
     });
   });
