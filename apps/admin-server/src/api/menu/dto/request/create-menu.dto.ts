@@ -2,8 +2,8 @@ import {
   IsBoolean,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
-  ValidateIf,
 } from 'class-validator';
 
 export class CreateMenuDto {
@@ -19,25 +19,25 @@ export class CreateMenuDto {
    * 메뉴 설명
    * @example "부드러운 크림과 진한 에스프레소의 조화"
    */
-  @ValidateIf((o) => o.content !== null)
+  @IsOptional()
   @IsString()
-  content: string | null;
+  content: string | null = null;
 
   /**
    * 메뉴 가격
    * @example 6500
    */
-  @ValidateIf((o) => o.price !== null)
+  @IsOptional()
   @IsNumber()
-  price: number | null;
+  price: number | null = null;
 
   /**
    * 메뉴 이미지 경로
    * @example "/menu/a7b1cde2.jpg"
    */
-  @ValidateIf((o) => o.imagePath !== null)
+  @IsOptional()
   @IsString()
-  imagePath: string | null;
+  imagePath: string | null = null;
 
   /**
    * 가격 변동 가능 여부
