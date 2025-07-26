@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -26,7 +27,7 @@ export class MenuController {
    * 메뉴 목록 보기
    */
   @AdminAuth()
-  @Exception(400, 'Invalid placeIdx or request body')
+  @Exception(400, 'Invalid placeIdx or query parameters')
   @Get('/place/:placeIdx/menu')
   public async getAllMenu(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
@@ -39,6 +40,7 @@ export class MenuController {
    * 메뉴 생성
    */
   @AdminAuth()
+  @Exception(400, 'Invalid placeIdx or request body')
   @Post('/place/:placeIdx/menu')
   public async createMenu(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
@@ -51,11 +53,26 @@ export class MenuController {
    * 메뉴 수정
    */
   @AdminAuth()
+  @Exception(400, 'Invalid menuIdx or request body')
+  @Exception(404, 'Menu does not exist')
   @Put('/menu/:menuIdx')
   public async updateMenu(
     @Param('menuIdx', ParseIntPipe) menuIdx: number,
     @Body() dto: UpdateMenuDto,
   ): Promise<void> {
     return await this.menuService.updateMenuByPlaceIdx(menuIdx, dto);
+  }
+
+  /**
+   * 메뉴 삭제
+   */
+  @AdminAuth()
+  @Exception(400, 'Invalid menuIdx')
+  @Exception(404, 'Menu does not exist')
+  @Delete('/menu/:menuIdx')
+  public async deleteMenu(
+    @Param('menuIdx', ParseIntPipe) menuIdx: number,
+  ): Promise<void> {
+    return await this.menuService.deleteMenuByIdx(menuIdx);
   }
 }

@@ -70,4 +70,14 @@ export class MenuService {
       isFlexible: dto.isFlexible,
     });
   }
+
+  public async deleteMenuByIdx(menuIdx: number): Promise<void> {
+    const menu = await this.menuCoreService.getMenuByIdx(menuIdx);
+
+    if (!menu) {
+      throw new NotFoundException('Cannot find menu with given idx');
+    }
+
+    await this.menuCoreService.deleteMenuByIdx(menuIdx);
+  }
 }

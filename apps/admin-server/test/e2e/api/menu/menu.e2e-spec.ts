@@ -884,4 +884,51 @@ describe('Menu e2e test', () => {
         .expect(404);
     });
   });
+
+  describe('DELETE /menu/:menuIdx', () => {
+    it('200 - delete check', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+
+      await testHelper
+        .test()
+        .delete(`/menu/${menuSeed.idx}`)
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .expect(200);
+
+      const deletedMenu = await testHelper.getPrisma().menu.findUnique({
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(deletedMenu?.deletedAt).not.toBeNull();
+    });
+
+    it('400 - invalid menuIdx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .delete(`/menu/invalid`) // ! invalid menuIdx
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .expect(400);
+    });
+
+    it('404 - menu does not exist', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .delete(`/menu/99999`) // ! 존재하지 않는 메뉴
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .expect(404);
+    });
+  });
 });
