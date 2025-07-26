@@ -1,10 +1,5 @@
-import {
-  IsBoolean,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { ToBoolean } from '@libs/common';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateMenuDto {
   /**
@@ -21,6 +16,7 @@ export class CreateMenuDto {
    */
   @IsOptional()
   @IsString()
+  @IsNotEmpty()
   content: string | null = null;
 
   /**
@@ -29,6 +25,7 @@ export class CreateMenuDto {
    */
   @IsOptional()
   @IsNumber()
+  @IsNotEmpty()
   price: number | null = null;
 
   /**
@@ -43,6 +40,7 @@ export class CreateMenuDto {
    * 가격 변동 가능 여부
    * @example false
    */
-  @IsBoolean()
+  @IsOptional()
+  @ToBoolean()
   isFlexible: boolean;
 }
