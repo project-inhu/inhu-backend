@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { GetUserOverviewAllDto } from './dto/request/get-user-overview-all.dto';
@@ -14,7 +14,7 @@ export class UserController {
   @Get()
   @AdminAuth()
   public async getUserOverviewAll(
-    getUserOverviewDto: GetUserOverviewAllDto,
+    @Query() getUserOverviewDto: GetUserOverviewAllDto,
   ): Promise<GetUserOverviewAllResponseDto> {
     return await this.userService.getUserAll(getUserOverviewDto);
   }
