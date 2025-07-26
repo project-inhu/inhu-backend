@@ -5,6 +5,7 @@ import { GetMenuAllInput } from './inputs/get-menu-all.input';
 import { SELECT_MENU, SelectMenu } from './model/prisma-type/select-menu';
 import { CreateMenuInput } from './inputs/create-menu.input';
 import { UpdateMenuInput } from './inputs/update-menu.input';
+import { CreateReviewInput } from '../review/inputs/create-review.input';
 
 @Injectable()
 export class MenuCoreRepository {
@@ -22,11 +23,10 @@ export class MenuCoreRepository {
     });
   }
 
-  public async selectMenuAllByPlaceIdx({
-    placeIdx,
-    take,
-    skip,
-  }: GetMenuAllInput): Promise<SelectMenu[]> {
+  public async selectMenuAllByPlaceIdx(
+    placeIdx: number,
+    { take, skip }: GetMenuAllInput,
+  ): Promise<SelectMenu[]> {
     return await this.txHost.tx.menu.findMany({
       ...SELECT_MENU,
       where: {
@@ -41,32 +41,34 @@ export class MenuCoreRepository {
     });
   }
 
-  public async insertMenu(input: CreateMenuInput): Promise<SelectMenu> {
+  public async insertMenu(
+    placeIdx: number,
+    { name, price, content, imagePath, isFlexible }: CreateMenuInput,
+  ): Promise<SelectMenu> {
     return await this.txHost.tx.menu.create({
       ...SELECT_MENU,
       data: {
-        placeIdx: input.placeIdx,
-        name: input.name,
-        price: input.price,
-        content: input.content,
-        imagePath: input.imagePath,
-        isFlexible: input.isFlexible,
+        placeIdx,
+        name,
+        price,
+        content,
+        imagePath,
+        isFlexible,
       },
     });
   }
 
   public async updateMenuByIdx(
     idx: number,
-    input: UpdateMenuInput,
+    { name, price, content, imagePath, isFlexible }: UpdateMenuInput,
   ): Promise<void> {
     await this.txHost.tx.menu.update({
       data: {
-        placeIdx: input.placeIdx,
-        name: input.name,
-        price: input.price,
-        content: input.content,
-        imagePath: input.imagePath,
-        isFlexible: input.isFlexible,
+        name,
+        price,
+        content,
+        imagePath,
+        isFlexible,
       },
       where: {
         idx,
