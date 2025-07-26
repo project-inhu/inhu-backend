@@ -69,12 +69,71 @@ describe('User E2E test', () => {
       expect(userList).toHaveLength(2);
     });
 
+    it('200 - should not include soft-deleted users', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetUserOverviewAllDto = { page: 1 };
+
+      await userSeedHelper.seedAll([{}, {}, { deletedAt: new Date() }]);
+
+      const response = await testHelper
+        .test()
+        .get('/user')
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const userList: UserOverviewEntity[] = response.body.userList;
+      const count: number = response.body.count;
+
+      expect(count).toBe(2);
+      expect(userList).toHaveLength(2);
+    });
+
+    it('200 - should not include admin accounts', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const admin2 = testHelper.loginAdmin.admin2;
+      const dto: GetUserOverviewAllDto = { page: 1 };
+
+      const regularUser = await userSeedHelper.seed({});
+
+      const response = await testHelper
+        .test()
+        .get('/user')
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const userList: UserOverviewEntity[] = response.body.userList;
+      const count: number = response.body.count;
+
+      expect(count).toBe(1);
+      expect(userList).toHaveLength(1);
+      expect(userList[0].idx).toBe(regularUser.idx);
+
+      const admin2ExistsInList = userList.some(
+        (user) => user.idx === admin2.idx,
+      );
+      expect(admin2ExistsInList).toBe(false);
+    });
+
     it('401 - no access token provided', async () => {
       const dto: GetUserOverviewAllDto = {
         page: 1,
       };
 
       await testHelper.test().get('/user').query(dto).expect(401);
+    });
+
+    it('400 - invalid page type', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto = { page: 'abc' };
+
+      await testHelper
+        .test()
+        .get('/user')
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(400);
     });
   });
 });
