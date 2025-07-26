@@ -1,4 +1,22 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
+import { UserService } from './user.service';
+import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
+import { GetUserOverviewAllDto } from './dto/request/get-user-overview-all.dto';
+import { GetUserOverviewAllResponseDto } from './dto/response/get-user-overview-all-response.dto';
+import { ArrayMinSize } from 'class-validator';
 
 @Controller('user')
-export class UserController {}
+export class UserController {
+  constructor(private readonly userService: UserService) {}
+
+  /**
+   * 사용자 목록 조회 Endpoint
+   */
+  @Get()
+  @AdminAuth()
+  public async getUserOverviewAll(
+    getUserOverviewDto: GetUserOverviewAllDto,
+  ): Promise<GetUserOverviewAllResponseDto> {
+    return await this.userService.getUserAll(getUserOverviewDto);
+  }
+}
