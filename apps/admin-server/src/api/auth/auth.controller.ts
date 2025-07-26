@@ -14,6 +14,7 @@ export class AuthController {
    * 로그인 Endpoint
    */
   @Post('/login')
+  @HttpCode(200)
   async login(
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) res: Response,
@@ -28,7 +29,7 @@ export class AuthController {
    */
   @Post('/logout')
   @HttpCode(200)
-  async logout(@Res() res: Response): Promise<void> {
+  async logout(@Res({ passthrough: true }) res: Response): Promise<void> {
     res.clearCookie('token', getCookieConfig());
   }
 }
