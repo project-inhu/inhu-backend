@@ -10,6 +10,7 @@ import {
   SELECT_USER_FOR_ADMIN,
   SelectUserForAdmin,
 } from './model/prisma-type/select-user-for-admin';
+import { th } from '@faker-js/faker/.';
 
 @Injectable()
 export class UserCoreRepository {
@@ -55,6 +56,14 @@ export class UserCoreRepository {
       },
       skip,
       take,
+    });
+  }
+
+  public async selectUserCount(): Promise<number> {
+    return this.txHost.tx.user.count({
+      where: {
+        deletedAt: null,
+      },
     });
   }
 
