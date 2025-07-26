@@ -9,6 +9,7 @@ import { PrismaService } from '@libs/common/modules/prisma/prisma.service';
 import { LoginTokenModule } from './common/modules/login-token/login-token.module';
 import { PlaceModule } from '@admin/api/place/place.module';
 import { UserModule } from '@admin/api/user/user.module';
+import { MenuModule } from './api/menu/menu.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { UserModule } from '@admin/api/user/user.module';
     }),
     PlaceModule,
     UserModule,
+    MenuModule,
   ],
 })
 export class AdminServerModule implements NestModule {

@@ -8,6 +8,7 @@ import { LoginUser } from '@user/common/types/LoginUser';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('')
+@ApiTags('Bookmark')
 export class BookmarkController {
   constructor(private readonly bookmarkService: BookmarkService) {}
 
@@ -17,7 +18,6 @@ export class BookmarkController {
    * @author 이수인
    */
   @LoginAuth()
-  @ApiTags('Bookmark')
   @Exception(400, 'Invalid placeIdx')
   @Exception(404, 'Place not found')
   @Exception(409, '이미 북마크가 있습니다.')
@@ -38,7 +38,6 @@ export class BookmarkController {
    * @author 이수인
    */
   @LoginAuth()
-  @ApiTags('Bookmark')
   @Exception(400, 'Invalid placeIdx')
   @Exception(404, 'Place not found')
   @Exception(409, '이미 북마크가 아닙니다.')
