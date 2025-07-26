@@ -4,7 +4,9 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { MenuService } from './menu.service';
@@ -14,6 +16,7 @@ import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { Exception } from '@libs/common';
 import { MenuEntity } from './entity/menu.entity';
 import { CreateMenuDto } from './dto/request/create-menu.dto';
+import { UpdateMenuDto } from './dto/request/update-menu.dto';
 
 @Controller()
 export class MenuController {
@@ -42,5 +45,17 @@ export class MenuController {
     @Body() dto: CreateMenuDto,
   ): Promise<MenuEntity> {
     return await this.menuService.createMenuByPlaceIdx(placeIdx, dto);
+  }
+
+  /**
+   * 메뉴 수정
+   */
+  @AdminAuth()
+  @Put('/menu/:menuIdx')
+  public async updateMenu(
+    @Param('menuIdx', ParseIntPipe) menuIdx: number,
+    @Body() dto: UpdateMenuDto,
+  ): Promise<void> {
+    return await this.menuService.updateMenuByPlaceIdx(menuIdx, dto);
   }
 }

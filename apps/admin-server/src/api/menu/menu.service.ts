@@ -3,6 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { GetAllMenuDto } from './dto/request/get-all-menu.dto';
 import { MenuEntity } from './entity/menu.entity';
 import { CreateMenuDto } from './dto/request/create-menu.dto';
+import { UpdateMenuDto } from './dto/request/update-menu.dto';
 
 @Injectable()
 export class MenuService {
@@ -49,5 +50,24 @@ export class MenuService {
     });
 
     return MenuEntity.fromModel(menuModel);
+  }
+
+  public async updateMenuByPlaceIdx(
+    menuIdx: number,
+    dto: UpdateMenuDto,
+  ): Promise<void> {
+    const menu = await this.menuCoreService.getMenuByIdx(menuIdx);
+
+    if (!menu) {
+      throw new NotFoundException('Cannot find menu with given idx');
+    }
+
+    await this.menuCoreService.updateMenuByIdx(menuIdx, {
+      name: dto.name,
+      price: dto.price,
+      content: dto.content,
+      imagePath: dto.imagePath,
+      isFlexible: dto.isFlexible,
+    });
   }
 }
