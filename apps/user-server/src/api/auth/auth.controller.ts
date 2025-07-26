@@ -44,6 +44,8 @@ export class AuthController {
 
   /**
    * access token을 재발급하는 엔드포인트
+   *
+   * - request.cookies.refreshToken을 통해 쿠키에 접근합니다.
    */
   @Post('/refresh-token/regenerate/web')
   @HttpCode(200)
