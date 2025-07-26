@@ -47,5 +47,26 @@ describe('User E2E test', () => {
       expect(secondUserInList.nickname).toBe(user1.nickname);
       expect(secondUserInList.provider?.provider).toBe(user1.social?.provider);
     });
+
+    it('200 - should return the second page of users', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetUserOverviewAllDto = { page: 2 };
+
+      await userSeedHelper.seedAll(new Array(12).fill({}));
+
+      const response = await testHelper
+        .test()
+        .get('/user')
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const userList: UserOverviewEntity[] = response.body.userList;
+      const count: number = response.body.count;
+
+      expect(count).toBe(12);
+
+      expect(userList).toHaveLength(2);
+    });
   });
 });
