@@ -37,6 +37,10 @@ export class UserCoreService {
     return users.map(UserForAdminModel.fromPrisma);
   }
 
+  public async getUserOverviewCount(): Promise<number> {
+    return this.userCoreRepository.selectUserCount();
+  }
+
   public async createUser(input: CreateUserInput): Promise<UserModel> {
     return await this.userCoreRepository
       .insertUser(input)
