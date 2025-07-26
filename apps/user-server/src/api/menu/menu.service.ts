@@ -14,8 +14,7 @@ export class MenuService {
     const TAKE = 10;
     const SKIP = (dto.page - 1) * TAKE;
 
-    const menuList = await this.menuCoreService.getMenuAllByPlaceIdx({
-      placeIdx,
+    const menuList = await this.menuCoreService.getMenuAllByPlaceIdx(placeIdx, {
       take: TAKE + 1,
       skip: SKIP,
     });
