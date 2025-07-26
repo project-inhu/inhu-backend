@@ -9,6 +9,13 @@ export class MenuEntity {
   public idx: number;
 
   /**
+   * 메뉴가 있는 장소
+   *
+   * @example 1
+   */
+  public placeIdx: number;
+
+  /**
    * 메뉴 이름
    *
    * @example "칼국수"
@@ -43,6 +50,11 @@ export class MenuEntity {
    */
   public isFlexible: boolean;
 
+  /**
+   * 생성 시간
+   */
+  public createdAt: Date;
+
   constructor(data: MenuEntity) {
     Object.assign(this, data);
   }
@@ -50,11 +62,13 @@ export class MenuEntity {
   public static fromModel(model: MenuModel): MenuEntity {
     return new MenuEntity({
       idx: model.idx,
+      placeIdx: model.placeIdx,
       name: model.name,
       content: model.content,
       price: model.price,
       imagePath: model.imagePath,
       isFlexible: model.isFlexible,
+      createdAt: model.createdAt,
     });
   }
 }
