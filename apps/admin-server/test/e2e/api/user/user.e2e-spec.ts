@@ -68,5 +68,13 @@ describe('User E2E test', () => {
 
       expect(userList).toHaveLength(2);
     });
+
+    it('401 - no access token provided', async () => {
+      const dto: GetUserOverviewAllDto = {
+        page: 1,
+      };
+
+      await testHelper.test().get('/user').query(dto).expect(401);
+    });
   });
 });
