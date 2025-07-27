@@ -37,7 +37,7 @@ export class CreateReviewDto {
   @IsArray()
   @IsString({ each: true })
   @ArrayMaxSize(5)
-  imagePathList: string[] = [];
+  imagePathList: string[];
 
   /**
    * 리뷰에 포함된 키워드 Idx 리스트
@@ -50,5 +50,5 @@ export class CreateReviewDto {
   @IsArray()
   @ArrayMaxSize(5)
   @IsInt({ each: true })
-  keywordIdxList: number[] = [];
+  keywordIdxList: number[];
 }

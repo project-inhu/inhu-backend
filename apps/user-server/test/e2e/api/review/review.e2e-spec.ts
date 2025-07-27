@@ -648,6 +648,26 @@ describe('Review E2E test', () => {
         .expect(400);
     });
 
+    it('400 - missing keywordIdxList', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const createReviewDto = {
+        content: '기본 리뷰입니다.',
+        imagePathList: [],
+      };
+
+      await testHelper
+        .test()
+        .post(`/place/${place.idx}/review`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .send(createReviewDto)
+        .expect(400);
+    });
+
     it('400 - too many keywordIdxList', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const place = await placeSeedHelper.seed({
@@ -659,6 +679,26 @@ describe('Review E2E test', () => {
         content: '기본 리뷰입니다.',
         imagePathList: [],
         keywordIdxList: [1, 2, 3, 4, 5, 6],
+      };
+
+      await testHelper
+        .test()
+        .post(`/place/${place.idx}/review`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .send(createReviewDto)
+        .expect(400);
+    });
+
+    it('400 - missing imagePathList', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const createReviewDto = {
+        content: '기본 리뷰입니다.',
+        keywordIdxList: [],
       };
 
       await testHelper
@@ -1070,7 +1110,7 @@ describe('Review E2E test', () => {
 
       const updateReviewDto = {
         content: originalReview.content,
-        imagePathList: originalReview.reviewImgList,
+        imagePathList: originalReview.reviewImgList || [],
         keywordIdxList: [2, 3, 4],
       };
 
@@ -1144,6 +1184,37 @@ describe('Review E2E test', () => {
       await testHelper
         .test()
         .put(`/review/invalid`) // ! invalid reviewIdx
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .send(updateReviewDto)
+        .expect(400);
+    });
+
+    it('400 - missing content', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
+        content: '기본 리뷰입니다.',
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
+        ],
+        keywordIdxList: [1],
+      });
+
+      const updateReviewDto = {
+        imagePathList: [],
+        keywordIdxList: [],
+      };
+
+      await testHelper
+        .test()
+        .put(`/review/${originalReview.idx}`)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(updateReviewDto)
         .expect(400);
@@ -1245,6 +1316,37 @@ describe('Review E2E test', () => {
         .expect(400);
     });
 
+    it('400 - missing keywordIdxList', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
+        content: '기본 리뷰입니다.',
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
+        ],
+        keywordIdxList: [1],
+      });
+
+      const updateReviewDto = {
+        content: '수정된 리뷰입니다.',
+        imagePathList: [],
+      };
+
+      await testHelper
+        .test()
+        .put(`/review/${originalReview.idx}`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .send(updateReviewDto)
+        .expect(400);
+    });
+
     it('400 - too many keywordIdxList', async () => {
       const loginUser = testHelper.loginUsers.user1;
 
@@ -1267,6 +1369,37 @@ describe('Review E2E test', () => {
         content: '수정된 리뷰입니다.',
         imagePathList: [],
         keywordIdxList: [1, 2, 3, 4, 5, 6],
+      };
+
+      await testHelper
+        .test()
+        .put(`/review/${originalReview.idx}`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .send(updateReviewDto)
+        .expect(400);
+    });
+
+    it('400 - missing imagePathList', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: loginUser.idx,
+        content: '기본 리뷰입니다.',
+        reviewImgList: [
+          '/review/3b54e245-4f4d-41a0-9c1b-2f5e2f473b38-20250719.jpg',
+        ],
+        keywordIdxList: [1],
+      });
+
+      const updateReviewDto = {
+        content: '수정된 리뷰입니다.',
+        keywordIdxList: [],
       };
 
       await testHelper
