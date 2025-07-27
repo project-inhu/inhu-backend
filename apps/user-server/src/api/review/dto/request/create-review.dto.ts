@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, TransformFnParams, Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   IsArray,
@@ -35,10 +35,12 @@ export class CreateReviewDto {
    *
    * @example ['images/review/1/20240312/171923.jpg','images/review/1/20240312/17234.jpg']
    */
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   @ArrayMaxSize(5)
-  imagePathList: string[];
+  @Transform(({ value }: TransformFnParams) => (value === null ? [] : value))
+  imagePathList: string[] = [];
 
   /**
    * 리뷰에 포함된 키워드 Idx 리스트
@@ -46,10 +48,12 @@ export class CreateReviewDto {
    *
    * @example [1, 3]
    */
+  @IsOptional()
   @UniqueArray()
   @Type(() => Number)
   @IsArray()
   @ArrayMaxSize(5)
+  @Transform(({ value }: TransformFnParams) => (value === null ? [] : value))
   @IsInt({ each: true })
-  keywordIdxList: number[];
+  keywordIdxList: number[] = [];
 }

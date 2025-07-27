@@ -86,29 +86,16 @@ export class ReviewCoreRepository {
       where: { idx: reviewIdx, deletedAt: null },
       data: {
         content,
-        reviewImageList:
-          imagePathList !== undefined
-            ? {
-                deleteMany: {},
-                create:
-                  imagePathList.length > 0
-                    ? imagePathList.map((path: string) => ({ path }))
-                    : undefined,
-              }
-            : undefined,
-
-        reviewKeywordMappingList:
-          keywordIdxList !== undefined
-            ? {
-                deleteMany: {},
-                create:
-                  keywordIdxList.length > 0
-                    ? keywordIdxList.map((keywordIdx: number) => ({
-                        keyword: { connect: { idx: keywordIdx } },
-                      }))
-                    : undefined,
-              }
-            : undefined,
+        reviewImageList: {
+          deleteMany: {},
+          create: imagePathList.map((path: string) => ({ path })),
+        },
+        reviewKeywordMappingList: {
+          deleteMany: {},
+          create: keywordIdxList.map((keywordIdx: number) => ({
+            keyword: { connect: { idx: keywordIdx } },
+          })),
+        },
       },
     });
   }

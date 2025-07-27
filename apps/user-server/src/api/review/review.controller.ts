@@ -5,8 +5,8 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  Patch,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { ReviewService } from './review.service';
@@ -65,7 +65,7 @@ export class ReviewController {
    *
    * @author 강정연
    */
-  @Patch('/review/:reviewIdx')
+  @Put('/review/:reviewIdx')
   @LoginAuth()
   @Exception(400, 'Invalid reviewIdx or request body')
   @Exception(403, 'Permission denied')

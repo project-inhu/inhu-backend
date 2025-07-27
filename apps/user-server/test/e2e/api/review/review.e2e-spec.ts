@@ -648,26 +648,6 @@ describe('Review E2E test', () => {
         .expect(400);
     });
 
-    it('400 - missing keywordIdxList', async () => {
-      const loginUser = testHelper.loginUsers.user1;
-      const place = await placeSeedHelper.seed({
-        deletedAt: null,
-        activatedAt: new Date(),
-      });
-
-      const createReviewDto = {
-        content: '기본 리뷰입니다.',
-        imagePathList: [],
-      };
-
-      await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .send(createReviewDto)
-        .expect(400);
-    });
-
     it('400 - too many keywordIdxList', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const place = await placeSeedHelper.seed({
@@ -679,26 +659,6 @@ describe('Review E2E test', () => {
         content: '기본 리뷰입니다.',
         imagePathList: [],
         keywordIdxList: [1, 2, 3, 4, 5, 6],
-      };
-
-      await testHelper
-        .test()
-        .post(`/place/${place.idx}/review`)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .send(createReviewDto)
-        .expect(400);
-    });
-
-    it('400 - missing imagePathList', async () => {
-      const loginUser = testHelper.loginUsers.user1;
-      const place = await placeSeedHelper.seed({
-        deletedAt: null,
-        activatedAt: new Date(),
-      });
-
-      const createReviewDto = {
-        content: '기본 리뷰입니다.',
-        keywordIdxList: [],
       };
 
       await testHelper
@@ -807,7 +767,7 @@ describe('Review E2E test', () => {
     });
   });
 
-  describe('PATCH /review/:reviewIdx', () => {
+  describe('PUT /review/:reviewIdx', () => {
     it('200 - all fields modified', async () => {
       const loginUser = testHelper.loginUsers.user1;
 
@@ -837,7 +797,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${originalReview.idx}`)
+        .put(`/review/${originalReview.idx}`)
         .send(updateReviewDto)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(200);
@@ -885,7 +845,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${originalReview.idx}`)
+        .put(`/review/${originalReview.idx}`)
         .send(updateReviewDto)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(200);
@@ -920,11 +880,15 @@ describe('Review E2E test', () => {
         keywordIdxList: [1],
       });
 
-      const updateReviewDto = {};
+      const updateReviewDto = {
+        content: originalReview.content,
+        imagePathList: originalReview.reviewImgList,
+        keywordIdxList: originalReview.keywordIdxList,
+      };
 
       await testHelper
         .test()
-        .patch(`/review/${originalReview.idx}`)
+        .put(`/review/${originalReview.idx}`)
         .send(updateReviewDto)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(200);
@@ -966,11 +930,13 @@ describe('Review E2E test', () => {
 
       const updateReviewDto = {
         content: '수정된 리뷰입니다.',
+        imagePathList: originalReview.reviewImgList,
+        keywordIdxList: originalReview.keywordIdxList,
       };
 
       await testHelper
         .test()
-        .patch(`/review/${originalReview.idx}`)
+        .put(`/review/${originalReview.idx}`)
         .send(updateReviewDto)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(200);
@@ -1010,6 +976,8 @@ describe('Review E2E test', () => {
       });
 
       const updateReviewDto = {
+        content: originalReview.content,
+        keywordIdxList: originalReview.keywordIdxList,
         imagePathList: [
           '/review/1111aaaa-2222-bbbb-3333-cccc4444dddd-20250721.jpg',
           '/review/eeee5555-ffff-6666-7777-gggg8888hhhh-20250721.jpg',
@@ -1018,7 +986,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${originalReview.idx}`)
+        .put(`/review/${originalReview.idx}`)
         .send(updateReviewDto)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(200);
@@ -1058,12 +1026,14 @@ describe('Review E2E test', () => {
       });
 
       const updateReviewDto = {
+        content: originalReview.content,
+        imagePathList: originalReview.reviewImgList,
         keywordIdxList: [2, 3],
       };
 
       await testHelper
         .test()
-        .patch(`/review/${originalReview.idx}`)
+        .put(`/review/${originalReview.idx}`)
         .send(updateReviewDto)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(200);
@@ -1099,6 +1069,8 @@ describe('Review E2E test', () => {
       });
 
       const updateReviewDto = {
+        content: originalReview.content,
+        imagePathList: originalReview.reviewImgList,
         keywordIdxList: [2, 3, 4],
       };
 
@@ -1117,14 +1089,13 @@ describe('Review E2E test', () => {
             keywordIdx: { in: allKeywordIdxList },
           },
         });
-
       const beforeMap = new Map(
         keywordCountBefore.map((kc) => [kc.keywordIdx, kc.count]),
       );
 
       await testHelper
         .test()
-        .patch(`/review/${originalReview.idx}`)
+        .put(`/review/${originalReview.idx}`)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(updateReviewDto)
         .expect(200);
@@ -1172,7 +1143,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/invalid`) // ! invalid reviewIdx
+        .put(`/review/invalid`) // ! invalid reviewIdx
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(updateReviewDto)
         .expect(400);
@@ -1204,7 +1175,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${originalReview.idx}`)
+        .put(`/review/${originalReview.idx}`)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(updateReviewDto)
         .expect(400);
@@ -1236,7 +1207,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${originalReview.idx}`)
+        .put(`/review/${originalReview.idx}`)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(updateReviewDto)
         .expect(400);
@@ -1268,7 +1239,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${originalReview.idx}`)
+        .put(`/review/${originalReview.idx}`)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(updateReviewDto)
         .expect(400);
@@ -1300,7 +1271,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${originalReview.idx}`)
+        .put(`/review/${originalReview.idx}`)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(updateReviewDto)
         .expect(400);
@@ -1339,7 +1310,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${originalReview}`)
+        .put(`/review/${originalReview}`)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(updateReviewDto)
         .expect(400);
@@ -1371,7 +1342,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${originalReview.idx}`)
+        .put(`/review/${originalReview.idx}`)
         .send(updateReviewDto)
         .expect(401);
     });
@@ -1403,7 +1374,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${originalReview.idx}`)
+        .put(`/review/${originalReview.idx}`)
         .set('Authorization', `Bearer ${loginUser2.app.accessToken}`)
         .send(updateReviewDto)
         .expect(403);
@@ -1420,7 +1391,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/999999`) // ! 존재하지 않는 reviewIdx
+        .put(`/review/999999`) // ! 존재하지 않는 reviewIdx
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(updateReviewDto)
         .expect(404);
@@ -1446,6 +1417,8 @@ describe('Review E2E test', () => {
 
       // 존재하지 않는 keywordIdx를 포함시켜 의도적으로 에러 유발
       const updateReviewDto = {
+        content: originalReview.content,
+        imagePathList: originalReview.reviewImgList,
         keywordIdxList: [999999], // ! 존재하지 않는 keywordIdx
       };
 
@@ -1471,7 +1444,7 @@ describe('Review E2E test', () => {
 
       await testHelper
         .test()
-        .patch(`/review/${originalReview.idx}`)
+        .put(`/review/${originalReview.idx}`)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(updateReviewDto)
         .expect(500);
