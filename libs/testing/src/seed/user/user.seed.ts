@@ -15,6 +15,7 @@ export class UserSeedHelper extends ISeedHelper<UserSeedInput, UserSeedOutput> {
       data: {
         nickname: requiredInput.nickname,
         profileImagePath: requiredInput.profileImagePath,
+        deletedAt: requiredInput.deletedAt,
         userProvider: requiredInput.social
           ? {
               create: {

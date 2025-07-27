@@ -49,12 +49,22 @@ export class UserCoreRepository {
       ...SELECT_USER_FOR_ADMIN,
       where: {
         deletedAt: null,
+        adminAccount: null,
       },
       orderBy: {
         idx: 'desc',
       },
       skip,
       take,
+    });
+  }
+
+  public async selectUserCount(): Promise<number> {
+    return this.txHost.tx.user.count({
+      where: {
+        deletedAt: null,
+        adminAccount: null,
+      },
     });
   }
 
