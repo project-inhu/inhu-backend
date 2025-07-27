@@ -5,7 +5,7 @@ import { S3Folder } from '../constants/s3-folder.constants';
  *
  * @author 조희주
  */
-export class GetPresignedUrlInput {
+export class GetPresignedUrlsInput {
   folder: S3Folder;
-  filename: string;
+  filename: string[];
 }
