@@ -882,7 +882,7 @@ describe('Review E2E test', () => {
 
       const updateReviewDto = {
         content: originalReview.content,
-        imagePathList: originalReview.reviewImgList,
+        imagePathList: originalReview.reviewImgList || [],
         keywordIdxList: originalReview.keywordIdxList,
       };
 

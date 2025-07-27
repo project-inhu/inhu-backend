@@ -65,7 +65,10 @@ export class ReviewCoreService {
       throw new ReviewNotFoundException('Cannot find review with idx: ' + idx);
     }
 
-    if (this.isChangedReviewKeyword(input, review)) {
+    if (
+      input.keywordIdxList !== undefined &&
+      this.isChangedReviewKeyword(input, review)
+    ) {
       await Promise.all(
         review.reviewKeywordMappingList.map(({ keyword }) =>
           this.placeCoreService.decreaseKeywordCount(

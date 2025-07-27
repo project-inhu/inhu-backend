@@ -1,10 +1,9 @@
-import { Transform, TransformFnParams, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   IsArray,
   IsInt,
   IsNotEmpty,
-  IsOptional,
   IsString,
   Length,
 } from 'class-validator';
@@ -35,11 +34,9 @@ export class CreateReviewDto {
    *
    * @example ['images/review/1/20240312/171923.jpg','images/review/1/20240312/17234.jpg']
    */
-  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   @ArrayMaxSize(5)
-  @Transform(({ value }: TransformFnParams) => (value === null ? [] : value))
   imagePathList: string[] = [];
 
   /**
@@ -48,12 +45,10 @@ export class CreateReviewDto {
    *
    * @example [1, 3]
    */
-  @IsOptional()
   @UniqueArray()
   @Type(() => Number)
   @IsArray()
   @ArrayMaxSize(5)
-  @Transform(({ value }: TransformFnParams) => (value === null ? [] : value))
   @IsInt({ each: true })
   keywordIdxList: number[] = [];
 }
