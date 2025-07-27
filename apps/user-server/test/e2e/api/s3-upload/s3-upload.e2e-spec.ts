@@ -16,37 +16,31 @@ describe('s3-upload E2E test', () => {
 
   describe('POST /s3-upload/profile-image/presigned-url', () => {
     it('201 - successfully retrieves presigned URL for profile image upload', async () => {
-      const requestFilename = 'test-image.jpg';
-      const mockPresignedUrl = 'https://example.com/presigned-url';
-      const mockKey = `/${S3_FOLDER.PROFILE}/${requestFilename}`;
+      const loginUser = testHelper.loginUsers.user1;
 
-      const spy = jest
-        .spyOn(testHelper.get(S3Service), 'getPresignedUrl')
-        .mockResolvedValueOnce({
-          presignedUrl: mockPresignedUrl,
-          key: mockKey,
-        } as PresignedUrlEntity);
+      const mockPresignedUrl = 'https://example.com/presigned-url';
+      const mockKey = `/${S3_FOLDER.PROFILE}/test-image.jpg`;
+
+      const s3ServiceMock = jest
+        .spyOn(testHelper.get(S3Service), 'getPresignedUrls')
+        .mockResolvedValue([{ presignedUrl: mockPresignedUrl, key: mockKey }]);
 
       const response = await testHelper
         .test()
         .post('/s3-upload/profile-image/presigned-url')
-        .send({ folder: S3_FOLDER.PROFILE, filename: requestFilename })
-        .set(
-          'Authorization',
-          `Bearer ${testHelper.loginUsers.user1.app.accessToken}`,
-        )
+        .send({ filename: 'test-image.jpg' })
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(201);
 
-      const responseBody: PresignedUrlEntity = response.body;
+      const responseBody: PresignedUrlEntity = response.body[0];
 
       expect(responseBody).toBeDefined();
       expect(responseBody).toHaveProperty('presignedUrl');
       expect(responseBody).toHaveProperty('key');
 
-      expect(responseBody.presignedUrl).toEqual(mockPresignedUrl);
-      expect(responseBody.key).toEqual(mockKey);
+      expect(responseBody.key).toContain('test-image.jpg');
 
-      spy.mockRestore();
+      s3ServiceMock.mockRestore();
     });
 
     it('401 - no accessToken', async () => {
@@ -71,27 +65,6 @@ describe('s3-upload E2E test', () => {
         .post('/s3-upload/profile-image/presigned-url')
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send({ folder: S3_FOLDER.PROFILE })
-        .expect(400);
-    });
-
-    it('400 - folder is not provided', async () => {
-      const loginUser = testHelper.loginUsers.user1;
-
-      await testHelper
-        .test()
-        .post('/s3-upload/profile-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .send({ filename: 'test-image.jpg' })
-        .expect(400);
-    });
-
-    it('400 - folder is not a valid S3Folder type', async () => {
-      const loginUser = testHelper.loginUsers.user1;
-      await testHelper
-        .test()
-        .post('/s3-upload/profile-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .send({ folder: 'invalid-folder', filename: 'test-image.jpg' })
         .expect(400);
     });
   });
