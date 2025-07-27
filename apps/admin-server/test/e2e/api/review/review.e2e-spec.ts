@@ -1,4 +1,4 @@
-import { TestHelper } from './setup/test.helper';
+import { TestHelper } from '../../setup/test.helper';
 import {
   PlaceSeedHelper,
   ReviewSeedHelper,
