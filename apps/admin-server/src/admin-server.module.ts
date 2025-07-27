@@ -10,6 +10,7 @@ import { LoginTokenModule } from './common/modules/login-token/login-token.modul
 import { PlaceModule } from '@admin/api/place/place.module';
 import { UserModule } from '@admin/api/user/user.module';
 import { MenuModule } from './api/menu/menu.module';
+import { ReviewModule } from './api/review/review.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { MenuModule } from './api/menu/menu.module';
     PlaceModule,
     UserModule,
     MenuModule,
+    ReviewModule,
   ],
 })
 export class AdminServerModule implements NestModule {
