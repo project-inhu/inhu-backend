@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsNotEmpty, IsOptional, Min } from 'class-validator';
+import { IsIn, IsInt, IsNotEmpty, IsOptional, Min } from 'class-validator';
 
 export class GetAllReviewDto {
   /**
@@ -34,4 +34,23 @@ export class GetAllReviewDto {
   @Type(() => Number)
   @IsInt()
   userIdx?: number;
+
+  /**
+   * 정렬 옵션
+   *time = 시간순
+   *
+   * @example 'time'
+   */
+  @IsOptional()
+  @IsIn(['time'])
+  orderBy?: 'time';
+
+  /**
+   * 정렬 방향
+   *
+   * @example 'desc'
+   */
+  @IsOptional()
+  @IsIn(['desc', 'asc'])
+  order?: 'desc' | 'asc';
 }

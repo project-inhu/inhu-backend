@@ -1,7 +1,16 @@
-import { Controller, Delete, Param, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { Exception } from '@libs/common';
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
+import { GetAllReviewResponseDto } from './dto/response/get-all-review.reponse.dto';
+import { GetAllReviewDto } from './dto/request/get-all-review.dto';
 
 @Controller()
 export class ReviewController {
@@ -20,5 +29,20 @@ export class ReviewController {
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
   ): Promise<void> {
     await this.reviewService.deleteReviewByIdx(reviewIdx);
+  }
+
+  /**
+   * 리뷰 목록 가져오기 API
+   *
+   * @author 강정연
+   */
+  @Get('/review/all')
+  @AdminAuth()
+  @Exception(400, 'Query parameter type is invalid')
+  @Exception(403, 'Permission denied')
+  async getAllReview(
+    @Query() dto: GetAllReviewDto,
+  ): Promise<GetAllReviewResponseDto> {
+    return await this.reviewService.getAllReview(dto);
   }
 }
