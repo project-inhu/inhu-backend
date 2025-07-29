@@ -15,12 +15,22 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
   'activatedAt',
   'permanentlyClosedAt',
 ]) {
+  /**
+   * 현재 사용자가 특정 항목을 북마크했는지 여부
+   *
+   * @example false
+   */
+  bookmark: boolean;
+
   constructor(data: PlaceOverviewEntity) {
     super();
     Object.assign(this, data);
   }
 
-  public static fromModel(model: PlaceOverviewModel): PlaceOverviewEntity {
+  public static fromModel(
+    model: PlaceOverviewModel,
+    bookmark: boolean,
+  ): PlaceOverviewEntity {
     return new PlaceOverviewEntity({
       idx: model.idx,
       name: model.name,
@@ -31,6 +41,7 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
       type: model.type,
       activatedAt: model.activatedAt,
       permanentlyClosedAt: model.permanentlyClosedAt,
+      bookmark,
     });
   }
 }
