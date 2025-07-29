@@ -8,9 +8,10 @@ import { PresignedUrlModel } from '@libs/common';
 
 export class PresignedUrlEntity {
   /**
-   * S3에 파일을 직접 업로드할 때 사용하는 정해진 시간 동안만 유효한 임시 URL
+   * 파일을 S3에 `multipart/form-data` 형태로 `POST` 업로드할 때 요청을 보낼 S3 버킷의 엔드포인트 URL
+   * 이 URL 자체는 서명되지 않으며, 함께 제공되는 `fields`를 통해 인증 및 정책 검증이 이루어짐
    *
-   * @example "https://inhu.s3.ap-northeast-2.amazonaws.com/profile/a1b2c3d4-e5f6...-myphoto.jpg?X-Amz-Algorithm=..."
+   * @example "https://inhu.s3.ap-northeast-2.amazonaws.com/"
    */
   url: string;
 

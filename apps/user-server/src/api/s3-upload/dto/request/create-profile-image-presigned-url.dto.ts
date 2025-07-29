@@ -5,7 +5,7 @@ import {
 import { IsIn, IsNotEmpty, IsString } from 'class-validator';
 
 /**
- * Presigned URL 생성을 위한 입력 값
+ * Profile Image의 Presigned URL 생성을 위한 입력 값
  *
  * @author 조희주
  */
