@@ -15,14 +15,14 @@
     "user-server:test:infra:down": "docker compose -f ./scripts/user-server/e2e-test/docker-compose.yml down -v",
     "user-server:dev:infra:up": "docker compose -f ./scripts/user-server/dev/docker-compose.yml up -d",
     "user-server:dev:infra:down": "docker compose -f ./scripts/user-server/dev/docker-compose.yml down -v",
-    "user-server:dev:infra:connect": "docker exec -it inhu-postgres psql -d inhu -U inhu_admin",
+    "user-server:dev:infra:connect": "docker exec -it inhu-user-server-dev-postgres psql -d inhu -U inhu_admin",
 
     "admin-server:test:e2e": "dotenv -e ./scripts/admin-server/e2e-test/.env.e2e-test -- jest --config ./apps/admin-server/test/jest-e2e.json ./apps/admin-server",
     "admin-server:test:infra:up": "docker compose -f ./scripts/admin-server/e2e-test/docker-compose.yml up -d",
     "admin-server:test:infra:down": "docker compose -f ./scripts/admin-server/e2e-test/docker-compose.yml down -v",
     "admin-server:dev:infra:up": "docker compose -f ./scripts/admin-server/dev/docker-compose.yml up -d",
     "admin-server:dev:infra:down": "docker compose -f ./scripts/admin-server/dev/docker-compose.yml down -v",
-    "admin-server:dev:infra:connect": "docker exec -it inhu-postgres psql -d inhu -U inhu_admin"
+    "admin-server:dev:infra:connect": "docker exec -it inhu-admin-server-dev-postgres psql -d inhu -U inhu_admin"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.848.0",
