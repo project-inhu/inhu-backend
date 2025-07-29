@@ -61,7 +61,7 @@ export class S3Service {
    */
   async getPresignedUrls(
     getPresignedUrlsInput: GetPresignedUrlsInput,
-  ): Promise<{ url: string; fields: Record<string, string> }[]> {
+  ): Promise<PresignedUrlModel[]> {
     const { folder, extensions } = getPresignedUrlsInput;
 
     const presignedPostList = await Promise.all(
