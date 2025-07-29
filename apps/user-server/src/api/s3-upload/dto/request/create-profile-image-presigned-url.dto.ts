@@ -1,5 +1,8 @@
-import { ImageExtension } from '@libs/common/modules/s3/constants/image-extension.constants';
-import { IsNotEmpty, IsString } from 'class-validator';
+import {
+  IMAGE_EXTENSION,
+  ImageExtension,
+} from '@libs/common/modules/s3/constants/image-extension.constants';
+import { IsIn, IsNotEmpty, IsString } from 'class-validator';
 
 /**
  * Presigned URL 생성을 위한 입력 값
@@ -14,5 +17,6 @@ export class CreateProfileImagePresignedUrlDto {
    */
   @IsNotEmpty()
   @IsString()
+  @IsIn(Object.values(IMAGE_EXTENSION))
   extension: ImageExtension;
 }
