@@ -12,14 +12,13 @@ export class PresignedUrlEntity {
    *
    * @example "https://inhu.s3.ap-northeast-2.amazonaws.com/profile/a1b2c3d4-e5f6...-myphoto.jpg?X-Amz-Algorithm=..."
    */
-  presignedUrl: string;
+  url: string;
 
   /**
-   * S3에 파일 업로드 완료 후 S3 버킷에 저장될 파일의 최종 경로이자 고유 식별자
-   *
-   * @example '/profile/a1b2c3d4-e5f6-7890-1234-abcdefghijkl-myphoto.jpg'
+   * 프론트엔드에서 form-data에 포함해야 하는 모든 필드와 값들의 객체
+   * (Key, Policy, Signature 등)
    */
-  key: string;
+  fields: Record<string, string>;
 
   constructor(data: PresignedUrlEntity) {
     Object.assign(this, data);
@@ -27,8 +26,8 @@ export class PresignedUrlEntity {
 
   public static fromModel(model: PresignedUrlModel): PresignedUrlEntity {
     return new PresignedUrlEntity({
-      presignedUrl: model.presignedUrl,
-      key: model.key,
+      url: model.url,
+      fields: model.fields,
     });
   }
 }
