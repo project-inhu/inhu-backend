@@ -9,7 +9,7 @@ import { IsIn, IsNotEmpty, IsString } from 'class-validator';
  *
  * @author 조희주
  */
-export class CreateBannerImagePresignedUrlDto {
+export class CreateMenuImagePresignedUrlDto {
   /**
    * 업로드할 파일의 확장자명
    *

@@ -1,6 +1,7 @@
 import { PresignedUrlModel, S3_FOLDER, S3Service } from '@libs/common';
 import { Injectable } from '@nestjs/common';
 import { CreateBannerImagePresignedUrlDto } from './dto/request/create-banner-image-presigned-url.dto';
+import { CreateMenuImagePresignedUrlDto } from './dto/request/create-menu-image-presigned-url.dto';
 import { CreatePlaceImagePresignedUrlsDto } from './dto/request/create-place-image-presigned-url.dto';
 
 @Injectable()
@@ -17,7 +18,7 @@ export class S3UploadService {
   }
 
   public async createMenuImagePresignedUrl(
-    createMenuImagePresignedUrlDto: CreateBannerImagePresignedUrlDto,
+    createMenuImagePresignedUrlDto: CreateMenuImagePresignedUrlDto,
   ): Promise<PresignedUrlModel> {
     return await this.s3Service.getPresignedUrl({
       folder: S3_FOLDER.MENU,
