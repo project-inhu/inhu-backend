@@ -301,6 +301,13 @@ async function main() {
       addressX: 126.721,
       addressY: 37.42,
     },
+    {
+      name: '비활성화된 장소',
+      tel: '032-111-0027',
+      addressName: '인천 미추홀구 휴무로 907',
+      addressX: 346.203,
+      addressY: 98.47,
+    },
   ];
 
   for (let i = 0; i < placesData.length; i++) {
@@ -321,6 +328,7 @@ async function main() {
         tel: placeData.tel,
         roadAddressIdx: createdRoadAddress.idx,
         isClosedOnHoliday: placeData.isClosedOnHoliday ?? false,
+        activatedAt: new Date(),
       },
     });
 
@@ -423,31 +431,37 @@ async function main() {
         await createDefaultPlaceTypeMapping(place.idx);
         break;
 
-      // case '정기 휴무일 있음':
-      //   await createDefaultMenu(place.idx);
-      //   await createDefaultPlaceImage(place.idx);
-      //   await createDefaultReview(place.idx, user1.idx);
-      //   await createDefaultPlaceTypeMapping(place.idx);
-      //   const operatingDays = [0, 1, 2, 3, 4, 5];
-      //   const operatingHours = operatingDays.map((day) => ({
-      //     placeIdx: place.idx,
-      //     day,
-      //     startAt: new Date('1970-01-01T10:00:00Z'),
-      //     endAt: new Date('1970-01-01T20:00:00Z'),
-      //   }));
-      //   const breakTimes = operatingDays.map((day) => ({
-      //     placeIdx: place.idx,
-      //     day,
-      //     startAt: new Date('1970-01-01T12:00:00Z'),
-      //     endAt: new Date('1970-01-01T13:00:00Z'),
-      //   }));
-      //   await prisma.operatingHour.createMany({ data: operatingHours });
-      //   await prisma.breakTime.createMany({ data: breakTimes });
-      //   await prisma.closedDay.create({
-      //     data: { placeIdx: place.idx, day: 6 },
-      //   });
-
-      //   break;
+      case '정기 휴무일 있음':
+        await createDefaultMenu(place.idx);
+        await createDefaultPlaceImage(place.idx);
+        await createDefaultReview(place.idx, user1.idx);
+        await createDefaultPlaceTypeMapping(place.idx);
+        const operatingDays = [0, 1, 2, 3, 4, 5];
+        const operatingHours = operatingDays.map((day) => ({
+          placeIdx: place.idx,
+          day,
+          startAt: new Date('1970-01-01T10:00:00Z'),
+          endAt: new Date('1970-01-01T20:00:00Z'),
+        }));
+        const breakTimes = operatingDays.map((day) => ({
+          placeIdx: place.idx,
+          day,
+          startAt: new Date('1970-01-01T12:00:00Z'),
+          endAt: new Date('1970-01-01T13:00:00Z'),
+        }));
+        await prisma.operatingHour.createMany({ data: operatingHours });
+        await prisma.breakTime.createMany({ data: breakTimes });
+        await prisma.closedDay.createMany({
+          data: [
+            { placeIdx: place.idx, day: 6, week: 1 },
+            { placeIdx: place.idx, day: 6, week: 2 },
+            { placeIdx: place.idx, day: 6, week: 3 },
+            { placeIdx: place.idx, day: 6, week: 4 },
+            { placeIdx: place.idx, day: 6, week: 5 },
+            { placeIdx: place.idx, day: 6, week: 6 },
+          ],
+        });
+        break;
 
       case '브레이크시간 없음':
         await createDefaultMenu(place.idx);
@@ -764,6 +778,16 @@ async function main() {
             closedDate: new Date('2025-07-02T00:00:00'),
           },
         });
+        break;
+
+      case '비활성화된 장소':
+        await createDefaultMenu(place.idx);
+        await createDefaultPlaceImage(place.idx);
+        await createDefaultReview(place.idx, user1.idx);
+        await createDefaultOperatingHour(place.idx);
+        await createDefaultBreakTime(place.idx);
+        await createDefaultPlaceTypeMapping(place.idx);
+        break;
     }
   }
 
@@ -812,8 +836,8 @@ async function main() {
     { placeIdx: 22, keywordIdx: 1, count: 4 },
     { placeIdx: 22, keywordIdx: 2, count: 3 },
     { placeIdx: 22, keywordIdx: 3, count: 3 },
-    { placeIdx: 22, keywordIdx: 4, count: 6 },
-    { placeIdx: 22, keywordIdx: 5, count: 6 },
+    { placeIdx: 22, keywordIdx: 4, count: 5 },
+    { placeIdx: 22, keywordIdx: 5, count: 5 },
     { placeIdx: 23, keywordIdx: 1, count: 1 },
     { placeIdx: 23, keywordIdx: 2, count: 1 },
     { placeIdx: 24, keywordIdx: 1, count: 1 },
@@ -822,6 +846,8 @@ async function main() {
     { placeIdx: 25, keywordIdx: 2, count: 1 },
     { placeIdx: 26, keywordIdx: 1, count: 1 },
     { placeIdx: 26, keywordIdx: 2, count: 1 },
+    { placeIdx: 27, keywordIdx: 1, count: 1 },
+    { placeIdx: 27, keywordIdx: 2, count: 1 },
   ];
   await prisma.placeKeywordCount.createMany({
     data: keywordCounts,
