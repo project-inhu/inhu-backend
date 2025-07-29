@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { S3Service } from './s3.service';
-import { ConfigModule, ConfigType } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import s3Config from './config/s3.config';
 
 @Module({
