@@ -787,6 +787,10 @@ async function main() {
         await createDefaultOperatingHour(place.idx);
         await createDefaultBreakTime(place.idx);
         await createDefaultPlaceTypeMapping(place.idx);
+        await prisma.place.update({
+          where: { idx: place.idx },
+          data: { activatedAt: null },
+        });
         break;
     }
   }
