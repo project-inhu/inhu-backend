@@ -1,7 +1,8 @@
 import { AdminServerModule } from '@admin/admin-server.module';
-import { S3Service } from '@libs/common';
+import { S3_FOLDER, S3Service } from '@libs/common';
 import { IMAGE_EXTENSION } from '@libs/common/modules/s3/constants/image-extension.constants';
 import { TestHelper } from '../../setup/test.helper';
+import { CreatePlaceImagePresignedUrlsDto } from '@admin/api/s3-upload/dto/request/create-place-image-presigned-url.dto';
 
 describe('s3-upload E2E test', () => {
   const testHelper = TestHelper.create(AdminServerModule);
@@ -54,6 +55,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/banner-image/presigned-url')
+        .send({ extension: IMAGE_EXTENSION.JPG })
         .expect(401);
     });
 
@@ -119,6 +121,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/menu-image/presigned-url')
+        .send({ extension: IMAGE_EXTENSION.JPG })
         .expect(401);
     });
 
@@ -141,6 +144,48 @@ describe('s3-upload E2E test', () => {
         .set('Authorization', `Bearer ${loginUser.token}`)
         .send({ extension: 'webp' })
         .expect(400);
+    });
+  });
+
+  describe('POST /s3-upload/place-image/presigned-urls', () => {
+    it('201 - should successfully retrieve multiple presigned post data', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const dto: CreatePlaceImagePresignedUrlsDto = {
+        extensions: ['jpg', 'png', 'png'],
+      };
+
+      const mockS3Response = [
+        { url: 'https://s3.com/1', fields: { Key: 'place/uuid1.jpg' } },
+        { url: 'https://s3.com/2', fields: { Key: 'place/uuid2.png' } },
+        { url: 'https://s3.com/3', fields: { Key: 'place/uuid3.png' } },
+      ];
+
+      const s3ServiceMock = jest
+        .spyOn(testHelper.get(S3Service), 'getPresignedUrls')
+        .mockResolvedValue(mockS3Response);
+
+      const response = await testHelper
+        .test()
+        .post('/s3-upload/place-image/presigned-urls')
+        .set('Authorization', `Bearer ${loginUser.token}`)
+        .send(dto)
+        .expect(201);
+
+      const responseBody = response.body;
+
+      expect(responseBody).toHaveLength(3);
+
+      expect(responseBody[0]).toHaveProperty('url');
+      expect(responseBody[0]).toHaveProperty('fields');
+      expect(responseBody[0].url).toEqual(mockS3Response[0].url);
+
+      expect(s3ServiceMock).toHaveBeenCalledWith({
+        folder: S3_FOLDER.PLACE,
+        extensions: dto.extensions,
+      });
+
+      s3ServiceMock.mockRestore();
     });
   });
 });
