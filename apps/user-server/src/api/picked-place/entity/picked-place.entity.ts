@@ -1,4 +1,4 @@
-import { PlaceEntity } from '@admin/api/place/entity/place.entity';
+import { PlaceEntity } from '../../place/entity/place.entity';
 import { PickedPlaceModel } from '@libs/core';
 
 export class PickedPlaceEntity {
@@ -26,12 +26,15 @@ export class PickedPlaceEntity {
     Object.assign(this, data);
   }
 
-  public static fromModel(model: PickedPlaceModel): PickedPlaceEntity {
+  public static fromModel(
+    model: PickedPlaceModel,
+    bookmark: boolean,
+  ): PickedPlaceEntity {
     return new PickedPlaceEntity({
       idx: model.idx,
       title: model.title,
       content: model.content,
-      place: PlaceEntity.fromModel(model.place),
+      place: PlaceEntity.fromModel(model.place, bookmark),
     });
   }
 }
