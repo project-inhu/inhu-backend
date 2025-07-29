@@ -51,7 +51,10 @@ describe('s3-upload E2E test', () => {
     });
 
     it('401 - no accessToken', async () => {
-      await testHelper.test().get('/user').expect(401);
+      await testHelper
+        .test()
+        .post('/s3-upload/profile-image/presigned-url')
+        .expect(401);
     });
 
     it('400 - extension is not provided', async () => {
