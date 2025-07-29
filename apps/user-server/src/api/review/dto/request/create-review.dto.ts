@@ -4,7 +4,6 @@ import {
   IsArray,
   IsInt,
   IsNotEmpty,
-  IsOptional,
   IsString,
   Length,
 } from 'class-validator';

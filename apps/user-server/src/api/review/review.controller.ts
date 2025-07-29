@@ -5,8 +5,8 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  Patch,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { ReviewService } from './review.service';
@@ -32,9 +32,7 @@ export class ReviewController {
   @Post('/place/:placeIdx/review')
   @LoginAuth()
   @Exception(400, 'Invalid placeIdx or request body')
-  @Exception(401, 'Token is missing or invalid')
   @Exception(404, 'Place does not exist')
-  @Exception(500, 'Transaction failed')
   async createReview(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @Body() dto: CreateReviewDto,
@@ -67,10 +65,9 @@ export class ReviewController {
    *
    * @author 강정연
    */
-  @Patch('/review/:reviewIdx')
+  @Put('/review/:reviewIdx')
   @LoginAuth()
   @Exception(400, 'Invalid reviewIdx or request body')
-  @Exception(401, 'Token is missing or invalid')
   @Exception(403, 'Permission denied')
   async updateReview(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
@@ -87,8 +84,7 @@ export class ReviewController {
    */
   @Delete('/review/:reviewIdx')
   @LoginAuth()
-  @Exception(400, 'Invalid reviewIdx or request body')
-  @Exception(401, 'Token is missing or invalid')
+  @Exception(400, 'Invalid reviewIdx')
   @Exception(403, 'Permission denied')
   async deleteReview(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,

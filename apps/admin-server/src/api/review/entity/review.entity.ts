@@ -1,7 +1,7 @@
-import { KeywordEntity } from '@user/api/keyword/entity/keyword.entity';
+import { KeywordEntity } from '@admin/api/keyword/entity/keyword.entity';
+import { ReviewModel } from '@libs/core/review/model/review.model';
 import { ReviewAuthorEntity } from './review-author.entity';
 import { ReviewPlaceEntity } from './review-place.entity';
-import { ReviewModel } from '@libs/core/review/model/review.model';
 
 /**
  * 리뷰 엔티티 클래스

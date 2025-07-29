@@ -13,21 +13,26 @@ export class ReviewCoreRepository {
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
   ) {}
 
-  async selectAllReview(input: GetAllReviewInput): Promise<SelectReview[]> {
+  async selectAllReview({
+    placeIdx,
+    userIdx,
+    order,
+    orderBy,
+    take,
+    skip,
+  }: GetAllReviewInput): Promise<SelectReview[]> {
     return await this.txHost.tx.review.findMany({
       ...SELECT_REVIEW,
       where: {
         AND: [
           { deletedAt: null },
-          this.getPlaceFilter(input.placeIdx),
-          this.getUserFilter(input.userIdx),
+          this.getPlaceFilter(placeIdx),
+          this.getUserFilter(userIdx),
         ],
       },
-      orderBy: {
-        idx: 'desc',
-      },
-      take: input.take,
-      skip: input.skip,
+      orderBy: this.getOrderByClause({ order, orderBy }),
+      take,
+      skip,
     });
   }
 
@@ -131,5 +136,15 @@ export class ReviewCoreRepository {
   private getUserFilter(userIdx?: number): Prisma.ReviewWhereInput {
     if (!userIdx) return {};
     return { userIdx };
+  }
+
+  private getOrderByClause({
+    order = 'desc',
+    orderBy = 'time',
+  }: Pick<
+    GetAllReviewInput,
+    'order' | 'orderBy'
+  >): Prisma.ReviewOrderByWithRelationInput {
+    return { createdAt: order };
   }
 }
