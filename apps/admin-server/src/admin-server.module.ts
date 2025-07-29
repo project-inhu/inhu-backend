@@ -11,6 +11,7 @@ import { PlaceModule } from '@admin/api/place/place.module';
 import { UserModule } from '@admin/api/user/user.module';
 import { MenuModule } from './api/menu/menu.module';
 import { ReviewModule } from './api/review/review.module';
+import { S3UploadModule } from '@admin/api/s3-upload/s3-upload.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ReviewModule } from './api/review/review.module';
     UserModule,
     MenuModule,
     ReviewModule,
+    S3UploadModule,
   ],
 })
 export class AdminServerModule implements NestModule {
