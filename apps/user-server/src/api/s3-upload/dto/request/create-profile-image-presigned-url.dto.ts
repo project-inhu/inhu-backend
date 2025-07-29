@@ -1,5 +1,5 @@
-import { S3_FOLDER, S3Folder } from '@libs/common';
-import { ArrayMaxSize, IsIn, IsNotEmpty, IsString } from 'class-validator';
+import { ImageExtension } from '@libs/common/modules/s3/constants/image-extension.constants';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 /**
  * Presigned URL 생성을 위한 입력 값
@@ -8,12 +8,11 @@ import { ArrayMaxSize, IsIn, IsNotEmpty, IsString } from 'class-validator';
  */
 export class CreateProfileImagePresignedUrlDto {
   /**
-   * 업로드할 파일의 원본 이름
-   * 프론트엔드에서 사용자가 선택한 파일의 .name 속성 값
+   * 업로드할 파일의 확장자명
    *
-   * @example "myProfile.jpg"
+   * @example "jpg"
    */
   @IsNotEmpty()
   @IsString()
-  filename: string;
+  extension: ImageExtension;
 }
