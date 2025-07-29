@@ -21,7 +21,7 @@ describe('s3-upload E2E test', () => {
       const mockS3Response = {
         url: 'https://your-bucket.s3.amazonaws.com/',
         fields: {
-          Key: `profile/some-uuid-for`,
+          Key: `profile/some-uuid-for.jpg`,
           Policy: 'base64-encoded-policy-string',
           'X-Amz-Signature': 'signature-string',
         },
