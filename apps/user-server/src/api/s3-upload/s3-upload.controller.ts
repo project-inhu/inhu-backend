@@ -9,11 +9,11 @@ export class S3UploadController {
 
   @Post('/profile-image/presigned-url')
   @LoginAuth()
-  async CreateProfileImagePresignedUrl(
+  async createProfileImagePresignedUrl(
     @Body()
     createProfileImagePresignedUrlDto: CreateProfileImagePresignedUrlDto,
   ): Promise<PresignedUrlEntity> {
-    return this.s3UploadService.CreateProfileImagePresignedUrl(
+    return this.s3UploadService.createProfileImagePresignedUrl(
       createProfileImagePresignedUrlDto,
     );
   }

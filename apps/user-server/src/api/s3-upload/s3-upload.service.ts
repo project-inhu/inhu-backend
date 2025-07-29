@@ -6,12 +6,12 @@ import { CreateProfileImagePresignedUrlDto } from './dto/request/create-profile-
 export class S3UploadService {
   constructor(private readonly s3Service: S3Service) {}
 
-  public async CreateProfileImagePresignedUrl(
-    createPresignedUrlDto: CreateProfileImagePresignedUrlDto,
-  ): Promise<PresignedUrlModel[]> {
-    return await this.s3Service.getPresignedUrls({
+  public async createProfileImagePresignedUrl(
+    createProfileImagePresignedUrlDto: CreateProfileImagePresignedUrlDto,
+  ): Promise<PresignedUrlModel> {
+    return await this.s3Service.getPresignedUrl({
       folder: S3_FOLDER.PROFILE,
-      filename: [createPresignedUrlDto.filename],
+      extension: createProfileImagePresignedUrlDto.extension,
     });
   }
 }
