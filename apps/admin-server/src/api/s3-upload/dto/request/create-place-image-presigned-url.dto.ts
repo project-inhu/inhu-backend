@@ -2,7 +2,13 @@ import {
   IMAGE_EXTENSION,
   ImageExtension,
 } from '@libs/common/modules/s3/constants/image-extension.constants';
-import { ArrayMaxSize, IsIn, IsNotEmpty, IsString } from 'class-validator';
+import {
+  ArrayMaxSize,
+  ArrayNotEmpty,
+  IsArray,
+  IsIn,
+  IsString,
+} from 'class-validator';
 
 /**
  * Presigned URL 여러개 생성을 위한 입력 값
@@ -15,9 +21,10 @@ export class CreatePlaceImagePresignedUrlsDto {
    *
    * @example "jpg"
    */
-  @IsNotEmpty()
-  @IsString()
-  @IsIn(Object.values(IMAGE_EXTENSION))
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsString({ each: true })
+  @IsIn(Object.values(IMAGE_EXTENSION), { each: true })
   @ArrayMaxSize(5)
   extensions: ImageExtension[];
 }
