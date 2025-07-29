@@ -192,7 +192,7 @@ describe('s3-upload E2E test', () => {
   it('401 - no accessToken', async () => {
     await testHelper
       .test()
-      .post('/s3-upload/place-image/presigned-url')
+      .post('/s3-upload/place-image/presigned-urls')
       .send({ extension: IMAGE_EXTENSION.JPG })
       .expect(401);
   });
