@@ -25,11 +25,15 @@ export class GetAllReviewInput {
    * 정렬 옵션
    *
    * time = 시간순
+   *
+   * @default 'time'
    */
   orderBy?: 'time';
 
   /**
    * 정렬 방향
+   *
+   * @default 'desc'
    */
   order?: 'desc' | 'asc';
 }

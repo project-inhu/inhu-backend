@@ -40,6 +40,7 @@ export class GetAllReviewDto {
    *time = 시간순
    *
    * @example 'time'
+   * @default 'time'
    */
   @IsOptional()
   @IsIn(['time'])
@@ -49,6 +50,7 @@ export class GetAllReviewDto {
    * 정렬 방향
    *
    * @example 'desc'
+   * @default 'desc'
    */
   @IsOptional()
   @IsIn(['desc', 'asc'])
