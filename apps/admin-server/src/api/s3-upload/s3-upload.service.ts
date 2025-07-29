@@ -34,4 +34,13 @@ export class S3UploadService {
       extensions: createPlaceImagePresignedUrlsDto.extensions,
     });
   }
+
+  public async createReviewImagePresignedUrls(
+    createReviewImagePresignedUrlsDto: CreatePlaceImagePresignedUrlsDto,
+  ): Promise<PresignedUrlModel[]> {
+    return this.s3Service.getPresignedUrls({
+      folder: S3_FOLDER.REVIEW,
+      extensions: createReviewImagePresignedUrlsDto.extensions,
+    });
+  }
 }

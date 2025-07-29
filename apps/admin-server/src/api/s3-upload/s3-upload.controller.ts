@@ -10,7 +10,7 @@ export class S3UploadController {
   constructor(private readonly s3UploadService: S3UploadService) {}
 
   @Post('/banner-image/presigned-url')
-  @AdminAuth()
+  //@AdminAuth()
   async createBannerImagePresignedUrl(
     @Body() createBannerImagePresignedUrlDto: CreateBannerImagePresignedUrlDto,
   ): Promise<PresignedUrlEntity> {
@@ -30,7 +30,7 @@ export class S3UploadController {
   }
 
   @Post('/place-image/presigned-urls')
-  @AdminAuth()
+  //@AdminAuth()
   async createPlaceImagePresignedUrls(
     @Body() createPlaceImagePresignedUrlsDto: CreatePlaceImagePresignedUrlsDto,
   ): Promise<PresignedUrlEntity[]> {
