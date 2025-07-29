@@ -17,4 +17,14 @@ export class S3UploadController {
       createBannerImagePresignedUrlDto,
     );
   }
+
+  @Post('/menu-image/presigned-url')
+  @AdminAuth()
+  async createMenuImagePresignedUrl(
+    @Body() createMenuImagePresignedUrlDto: CreateBannerImagePresignedUrlDto,
+  ): Promise<PresignedUrlEntity> {
+    return this.s3UploadService.createMenuImagePresignedUrl(
+      createMenuImagePresignedUrlDto,
+    );
+  }
 }

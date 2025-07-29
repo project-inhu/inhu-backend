@@ -14,4 +14,13 @@ export class S3UploadService {
       extension: createBannerImagePresignedUrlDto.extension,
     });
   }
+
+  public async createMenuImagePresignedUrl(
+    createMenuImagePresignedUrlDto: CreateBannerImagePresignedUrlDto,
+  ): Promise<PresignedUrlModel> {
+    return await this.s3Service.getPresignedUrl({
+      folder: S3_FOLDER.MENU,
+      extension: createMenuImagePresignedUrlDto.extension,
+    });
+  }
 }
