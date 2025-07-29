@@ -3,6 +3,7 @@ import { S3UploadService } from '@admin/api/s3-upload/s3-upload.service';
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { CreateBannerImagePresignedUrlDto } from '@admin/api/s3-upload/dto/request/create-banner-image-presigned-url.dto';
 import { PresignedUrlEntity } from '@admin/api/s3-upload/entity/presigned-url.entity';
+import { CreatePlaceImagePresignedUrlsDto } from '@admin/api/s3-upload/dto/request/create-place-image-presigned-url.dto';
 
 @Controller('s3-upload')
 export class S3UploadController {
@@ -25,6 +26,16 @@ export class S3UploadController {
   ): Promise<PresignedUrlEntity> {
     return this.s3UploadService.createMenuImagePresignedUrl(
       createMenuImagePresignedUrlDto,
+    );
+  }
+
+  @Post('/place-image/presigned-urls')
+  @AdminAuth()
+  async createPlaceImagePresignedUrls(
+    @Body() createPlaceImagePresignedUrlsDto: CreatePlaceImagePresignedUrlsDto,
+  ): Promise<PresignedUrlEntity[]> {
+    return this.s3UploadService.createPlaceImagePresignedUrls(
+      createPlaceImagePresignedUrlsDto,
     );
   }
 }
