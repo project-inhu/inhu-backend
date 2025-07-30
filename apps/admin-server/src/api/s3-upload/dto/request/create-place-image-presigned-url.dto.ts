@@ -7,6 +7,9 @@ import {
   ArrayNotEmpty,
   IsArray,
   IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsPositive,
   IsString,
 } from 'class-validator';
 
@@ -27,4 +30,22 @@ export class CreatePlaceImagePresignedUrlsDto {
   @IsIn(Object.values(IMAGE_EXTENSION), { each: true })
   @ArrayMaxSize(5)
   extensions: ImageExtension[];
+
+  /**
+   * 최대 파일 크기 (MB 단위)
+   *
+   * @example "10"
+   */
+  @IsNumber()
+  @IsPositive()
+  maxSize: number;
+
+  /**
+   * 허용할 Content-Type 시작 문자열
+   *
+   * @example "image/"
+   */
+  @IsString()
+  @IsNotEmpty()
+  contentType: string;
 }

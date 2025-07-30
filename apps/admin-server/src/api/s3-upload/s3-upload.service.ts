@@ -14,6 +14,8 @@ export class S3UploadService {
     return await this.s3Service.getPresignedUrl({
       folder: S3_FOLDER.BANNER,
       extension: createBannerImagePresignedUrlDto.extension,
+      maxSize: createBannerImagePresignedUrlDto.maxSize,
+      contentType: createBannerImagePresignedUrlDto.contentType,
     });
   }
 
@@ -23,6 +25,8 @@ export class S3UploadService {
     return await this.s3Service.getPresignedUrl({
       folder: S3_FOLDER.MENU,
       extension: createMenuImagePresignedUrlDto.extension,
+      maxSize: createMenuImagePresignedUrlDto.maxSize,
+      contentType: createMenuImagePresignedUrlDto.contentType,
     });
   }
 
@@ -32,6 +36,8 @@ export class S3UploadService {
     return this.s3Service.getPresignedUrls({
       folder: S3_FOLDER.PLACE,
       extensions: createPlaceImagePresignedUrlsDto.extensions,
+      maxSize: createPlaceImagePresignedUrlsDto.maxSize,
+      contentType: createPlaceImagePresignedUrlsDto.contentType,
     });
   }
 
@@ -41,6 +47,8 @@ export class S3UploadService {
     return this.s3Service.getPresignedUrls({
       folder: S3_FOLDER.REVIEW,
       extensions: createReviewImagePresignedUrlsDto.extensions,
+      maxSize: createReviewImagePresignedUrlsDto.maxSize,
+      contentType: createReviewImagePresignedUrlsDto.contentType,
     });
   }
 }
