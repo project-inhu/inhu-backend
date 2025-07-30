@@ -7,8 +7,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { GetPresignedUrlsInput } from './input/get-presigned-urls.input';
 
-const MAX_IMAGE_FILE_SIZE = 10 * 1024 * 1024;
-
 @Injectable()
 export class S3Service {
   private readonly s3Client: S3Client;
@@ -39,7 +37,7 @@ export class S3Service {
   async getPresignedUrl(
     getPresignedUrl: GetPresignedUrlInput,
   ): Promise<PresignedUrlModel> {
-    const { folder, extension } = getPresignedUrl;
+    const { folder, extension, maxSize, contentType } = getPresignedUrl;
 
     const key = `${folder}/${uuidv4()}.${extension}`;
 
@@ -48,8 +46,8 @@ export class S3Service {
       Key: key,
       Expires: 5 * 60,
       Conditions: [
-        ['content-length-range', 0, MAX_IMAGE_FILE_SIZE],
-        ['starts-with', '$Content-Type', 'image/'],
+        ['content-length-range', 0, maxSize * 1024 * 1024],
+        ['starts-with', '$Content-Type', contentType],
       ],
     });
   }
@@ -62,7 +60,7 @@ export class S3Service {
   async getPresignedUrls(
     getPresignedUrlsInput: GetPresignedUrlsInput,
   ): Promise<PresignedUrlModel[]> {
-    const { folder, extensions } = getPresignedUrlsInput;
+    const { folder, extensions, maxSize, contentType } = getPresignedUrlsInput;
 
     const presignedPostList = await Promise.all(
       extensions.map(async (extension) => {
@@ -73,8 +71,8 @@ export class S3Service {
           Key: key,
           Expires: 5 * 60,
           Conditions: [
-            ['content-length-range', 0, MAX_IMAGE_FILE_SIZE],
-            ['starts-with', '$Content-Type', 'image/'],
+            ['content-length-range', 0, maxSize * 1024 * 1024],
+            ['starts-with', '$Content-Type', contentType],
           ],
         });
       }),

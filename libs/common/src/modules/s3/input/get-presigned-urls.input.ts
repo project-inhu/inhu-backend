@@ -9,4 +9,6 @@ import { S3Folder } from '../constants/s3-folder.constants';
 export class GetPresignedUrlsInput {
   folder: S3Folder;
   extensions: ImageExtension[];
+  maxSize: number;
+  contentType: string;
 }
