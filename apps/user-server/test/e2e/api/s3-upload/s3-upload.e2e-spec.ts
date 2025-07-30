@@ -34,7 +34,11 @@ describe('s3-upload E2E test', () => {
       const response = await testHelper
         .test()
         .post('/s3-upload/profile-image/presigned-url')
-        .send({ extension: IMAGE_EXTENSION.JPG })
+        .send({
+          extension: IMAGE_EXTENSION.JPG,
+          maxSize: 10,
+          contentType: 'image/',
+        })
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(201);
 
@@ -75,6 +79,46 @@ describe('s3-upload E2E test', () => {
         .post('/s3-upload/profile-image/presigned-url')
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send({ extension: 'txt' })
+        .expect(400);
+    });
+
+    it('400 - maxSize is not provided', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .post('/s3-upload/profile-image/presigned-url')
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .send({ extension: IMAGE_EXTENSION.JPG, contentType: 'image/' })
+        .expect(400);
+    });
+
+    it('400 - maxSize is not a number', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .post('/s3-upload/profile-image/presigned-url')
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .send({
+          extension: IMAGE_EXTENSION.JPG,
+          maxSizeInMB: 'ten',
+          contentType: 'image/',
+        })
+        .expect(400);
+    });
+
+    it('400 - contentType is not provided', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .post('/s3-upload/profile-image/presigned-url')
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .send({
+          extension: IMAGE_EXTENSION.JPG,
+          maxSizeInMB: 10,
+        })
         .expect(400);
     });
   });
