@@ -1,11 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService, ConfigType } from '@nestjs/config';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { S3Client } from '@aws-sdk/client-s3';
 import { GetPresignedUrlInput } from './input/get-presigned-url.input';
 import { PresignedUrlModel } from './model/presigned-url.model';
-import s3Config from './config/s3.config';
 import { v4 as uuidv4 } from 'uuid';
+import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
+import { GetPresignedUrlsInput } from './input/get-presigned-urls.input';
 
 @Injectable()
 export class S3Service {
@@ -30,29 +30,54 @@ export class S3Service {
   }
 
   /**
-   * S3 업로드 위한 Presigned URL 생성
+   * S3 업로드 위한 Presigned URL 단일 생성
    *
    * @author 조희주
    */
   async getPresignedUrl(
     getPresignedUrl: GetPresignedUrlInput,
   ): Promise<PresignedUrlModel> {
-    const { folder, filename } = getPresignedUrl;
+    const { folder, extension, maxSize, contentType } = getPresignedUrl;
 
-    const key = `/${folder}/${uuidv4()}-${filename}`;
+    const key = `${folder}/${uuidv4()}.${extension}`;
 
-    const command = new PutObjectCommand({
+    return await createPresignedPost(this.s3Client, {
       Bucket: this.bucketName,
       Key: key,
+      Expires: 5 * 60,
+      Conditions: [
+        ['content-length-range', 0, maxSize * 1024 * 1024],
+        ['starts-with', '$Content-Type', contentType],
+      ],
     });
+  }
 
-    const presignedUrl = await getSignedUrl(this.s3Client, command, {
-      expiresIn: 5 * 60,
-    });
+  /**
+   * S3 업로드 위한 Presigned URL 여러개 생성
+   *
+   * @author 조희주
+   */
+  async getPresignedUrls(
+    getPresignedUrlsInput: GetPresignedUrlsInput,
+  ): Promise<PresignedUrlModel[]> {
+    const { folder, extensions, maxSize, contentType } = getPresignedUrlsInput;
 
-    return {
-      presignedUrl,
-      key,
-    };
+    const presignedPostList = await Promise.all(
+      extensions.map(async (extension) => {
+        const key = `${folder}/${uuidv4()}.${extension}`;
+
+        return createPresignedPost(this.s3Client, {
+          Bucket: this.bucketName,
+          Key: key,
+          Expires: 5 * 60,
+          Conditions: [
+            ['content-length-range', 0, maxSize * 1024 * 1024],
+            ['starts-with', '$Content-Type', contentType],
+          ],
+        });
+      }),
+    );
+
+    return presignedPostList;
   }
 }

@@ -1,5 +1,5 @@
-import { S3_FOLDER, S3Service } from '@libs/common';
-import { PresignedUrlEntity } from '@user/api/s3-upload/entity/presigned-url.entity';
+import { S3Service } from '@libs/common';
+import { IMAGE_EXTENSION } from '@libs/common/modules/s3/constants/image-extension.constants';
 import { AppModule } from '@user/app.module';
 import { TestHelper } from 'apps/user-server/test/e2e/setup/test.helper';
 
@@ -15,45 +15,53 @@ describe('s3-upload E2E test', () => {
   });
 
   describe('POST /s3-upload/profile-image/presigned-url', () => {
-    it('201 - successfully retrieves presigned URL for profile image upload', async () => {
-      const requestFilename = 'test-image.jpg';
-      const mockPresignedUrl = 'https://example.com/presigned-url';
-      const mockKey = `/${S3_FOLDER.PROFILE}/${requestFilename}`;
+    it('201 - successfully retrieves presigned post data for profile image upload', async () => {
+      const loginUser = testHelper.loginUsers.user1;
 
-      const spy = jest
+      const mockS3Response = {
+        url: 'https://your-bucket.s3.amazonaws.com/',
+        fields: {
+          Key: `profile/some-uuid-for.jpg`,
+          Policy: 'base64-encoded-policy-string',
+          'X-Amz-Signature': 'signature-string',
+        },
+      };
+
+      const s3ServiceMock = jest
         .spyOn(testHelper.get(S3Service), 'getPresignedUrl')
-        .mockResolvedValueOnce({
-          presignedUrl: mockPresignedUrl,
-          key: mockKey,
-        } as PresignedUrlEntity);
+        .mockResolvedValue(mockS3Response);
 
       const response = await testHelper
         .test()
         .post('/s3-upload/profile-image/presigned-url')
-        .send({ folder: S3_FOLDER.PROFILE, filename: requestFilename })
-        .set(
-          'Authorization',
-          `Bearer ${testHelper.loginUsers.user1.app.accessToken}`,
-        )
+        .send({
+          extension: IMAGE_EXTENSION.JPG,
+          maxSize: 10,
+          contentType: 'image/',
+        })
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(201);
 
-      const responseBody: PresignedUrlEntity = response.body;
+      const responseBody = response.body;
 
       expect(responseBody).toBeDefined();
-      expect(responseBody).toHaveProperty('presignedUrl');
-      expect(responseBody).toHaveProperty('key');
+      expect(responseBody).toHaveProperty('url');
+      expect(responseBody).toHaveProperty('fields');
 
-      expect(responseBody.presignedUrl).toEqual(mockPresignedUrl);
-      expect(responseBody.key).toEqual(mockKey);
+      expect(responseBody.url).toEqual(mockS3Response.url);
+      expect(responseBody.fields.Key).toEqual(mockS3Response.fields.Key);
 
-      spy.mockRestore();
+      s3ServiceMock.mockRestore();
     });
 
     it('401 - no accessToken', async () => {
-      await testHelper.test().get('/user').expect(401);
+      await testHelper
+        .test()
+        .post('/s3-upload/profile-image/presigned-url')
+        .expect(401);
     });
 
-    it('400 - folder and filename are not provided', async () => {
+    it('400 - extension is not provided', async () => {
       const loginUser = testHelper.loginUsers.user1;
 
       await testHelper
@@ -63,35 +71,54 @@ describe('s3-upload E2E test', () => {
         .expect(400);
     });
 
-    it('400 - filename is not provided', async () => {
+    it('400 - extension is not in IMAGE_EXTENSION type', async () => {
       const loginUser = testHelper.loginUsers.user1;
 
       await testHelper
         .test()
         .post('/s3-upload/profile-image/presigned-url')
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .send({ folder: S3_FOLDER.PROFILE })
+        .send({ extension: 'txt' })
         .expect(400);
     });
 
-    it('400 - folder is not provided', async () => {
+    it('400 - maxSize is not provided', async () => {
       const loginUser = testHelper.loginUsers.user1;
 
       await testHelper
         .test()
         .post('/s3-upload/profile-image/presigned-url')
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .send({ filename: 'test-image.jpg' })
+        .send({ extension: IMAGE_EXTENSION.JPG, contentType: 'image/' })
         .expect(400);
     });
 
-    it('400 - folder is not a valid S3Folder type', async () => {
+    it('400 - maxSize is not a number', async () => {
       const loginUser = testHelper.loginUsers.user1;
+
       await testHelper
         .test()
         .post('/s3-upload/profile-image/presigned-url')
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .send({ folder: 'invalid-folder', filename: 'test-image.jpg' })
+        .send({
+          extension: IMAGE_EXTENSION.JPG,
+          maxSizeInMB: 'ten',
+          contentType: 'image/',
+        })
+        .expect(400);
+    });
+
+    it('400 - contentType is not provided', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .post('/s3-upload/profile-image/presigned-url')
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .send({
+          extension: IMAGE_EXTENSION.JPG,
+          maxSizeInMB: 10,
+        })
         .expect(400);
     });
   });

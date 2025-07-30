@@ -5,11 +5,13 @@
  */
 export class PresignedUrlModel {
   /**
-   * S3에 파일을 직접 업로드할 때 사용하는 정해진 시간 동안만 유효한 임시 URL
+   * S3에 파일을 직접 업로드할 때 사용하는 정해진 시간 동안만 유효한 임시 URL (presignedUrl)
    */
-  presignedUrl: string;
+  url: string;
+
   /**
-   * S3에 파일 업로드 완료 후 S3 버킷에 저장될 파일의 최종 경로이자 고유 식별자
+   * 프론트엔드에서 form-data에 포함해야 하는 모든 필드와 값들의 객체
+   * (Key, Policy, Signature 등)
    */
-  key: string;
+  fields: Record<string, string>;
 }
