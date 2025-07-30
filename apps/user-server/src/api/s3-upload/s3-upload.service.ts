@@ -12,6 +12,8 @@ export class S3UploadService {
     return await this.s3Service.getPresignedUrl({
       folder: S3_FOLDER.PROFILE,
       extension: createProfileImagePresignedUrlDto.extension,
+      maxSize: createProfileImagePresignedUrlDto.maxSize,
+      contentType: createProfileImagePresignedUrlDto.contentType,
     });
   }
 }
