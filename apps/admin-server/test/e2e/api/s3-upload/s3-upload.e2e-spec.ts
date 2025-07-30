@@ -59,7 +59,7 @@ describe('s3-upload E2E test', () => {
         .expect(401);
     });
 
-    it('400 - extension is not provided', async () => {
+    it('400 - extension field is not provided', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
       await testHelper
@@ -125,7 +125,7 @@ describe('s3-upload E2E test', () => {
         .expect(401);
     });
 
-    it('400 - extension is not provided', async () => {
+    it('400 - extension field is not provided', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
       await testHelper
@@ -195,5 +195,51 @@ describe('s3-upload E2E test', () => {
       .post('/s3-upload/place-image/presigned-urls')
       .send({ extension: IMAGE_EXTENSION.JPG })
       .expect(401);
+  });
+
+  it('400 - extensions field is not provided', async () => {
+    const loginUser = testHelper.loginAdmin.admin1;
+
+    await testHelper
+      .test()
+      .post('/s3-upload/place-image/presigned-urls')
+      .set('Authorization', `Bearer ${loginUser.token}`)
+      .send({})
+      .expect(400);
+  });
+
+  it('400 - extensions array is empty', async () => {
+    const loginUser = testHelper.loginAdmin.admin1;
+
+    await testHelper
+      .test()
+      .post('/s3-upload/place-image/presigned-urls')
+      .set('Authorization', `Bearer ${loginUser.token}`)
+      .send({ extensions: [] })
+      .expect(400);
+  });
+
+  it('400 - extensions array contains an invalid extension', async () => {
+    const loginUser = testHelper.loginAdmin.admin1;
+
+    await testHelper
+      .test()
+      .post('/s3-upload/place-image/presigned-urls')
+      .set('Authorization', `Bearer ${loginUser.token}`)
+      .send({ extensions: ['jpg', 'gif'] })
+      .expect(400);
+  });
+
+  it('400 - extensions array exceeds max size', async () => {
+    const loginUser = testHelper.loginAdmin.admin1;
+
+    const tooManyExtensions = new Array(10).fill(IMAGE_EXTENSION.JPG);
+
+    await testHelper
+      .test()
+      .post('/s3-upload/place-image/presigned-urls')
+      .set('Authorization', `Bearer ${loginUser.token}`)
+      .send({ extensions: tooManyExtensions })
+      .expect(400);
   });
 });
