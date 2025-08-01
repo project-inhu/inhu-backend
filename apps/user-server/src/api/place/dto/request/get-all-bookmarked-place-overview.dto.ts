@@ -51,6 +51,8 @@ export class GetAllBookmarkedPlaceOverviewPlaceDto {
    * 3: 편의점
    */
   @IsOptional()
+  @IsIn([1, 2, 3])
+  @Type(() => Number)
   type?: PlaceType;
 
   /**

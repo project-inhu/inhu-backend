@@ -71,6 +71,8 @@ export class PlaceEntity {
 
   /**
    * 특정 장소의 타입
+   *
+   * @example 1
    */
   public type: PlaceType;
 

@@ -11,14 +11,14 @@ export class PlaceBreakTimeEntity {
   /**
    * 브레이크 타임 시작 시간
    *
-   * @example "12:00:00.000"
+   * @example "12:00:00"
    */
   public startAt: string;
 
   /**
    * 브레이크 타임 종료 시간
    *
-   * @example "13:00:00.000"
+   * @example "13:00:00"
    */
   public endAt: string;
 
