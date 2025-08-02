@@ -3,6 +3,11 @@ import { BookmarkSeedInput } from './type/bookmark-seed.input';
 import { BookmarkSeedOutput } from './type/bookmark-seed.output';
 import { FilledSeedInput } from '@libs/testing/types/SeedFilledValue';
 
+/**
+ * Bookmark 시드 헬퍼 클래스
+ *
+ * @publicApi
+ */
 export class BookmarkSeedHelper extends ISeedHelper<
   BookmarkSeedInput,
   BookmarkSeedOutput

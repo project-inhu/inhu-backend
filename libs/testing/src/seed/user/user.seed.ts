@@ -1,11 +1,17 @@
 import { faker } from '@faker-js/faker';
-import { defaultValue, pickRandomValue } from '@libs/common';
-import { AUTH_PROVIDER } from '@libs/core';
+import { defaultValue } from '@libs/common/utils/default-value.util';
+import { pickRandomValue } from '@libs/common/utils/random.util';
+import { AUTH_PROVIDER } from '@libs/core/user/constants/auth-provider.constant';
 import { ISeedHelper } from '@libs/testing/interface/seed-helper.interface';
 import { UserSeedInput } from '@libs/testing/seed/user/type/user-seed.input';
 import { UserSeedOutput } from '@libs/testing/seed/user/type/user-seed.output';
 import { FilledSeedInput } from '@libs/testing/types/SeedFilledValue';
 
+/**
+ * 유저 시드 헬퍼 클래스
+ * @publicApi
+ *
+ */
 export class UserSeedHelper extends ISeedHelper<UserSeedInput, UserSeedOutput> {
   public async seed(input: UserSeedInput): Promise<UserSeedOutput> {
     const requiredInput = this.generateFilledInputValue(input);

@@ -1,10 +1,15 @@
 import { faker } from '@faker-js/faker';
-import { defaultValue } from '@libs/common';
+import { defaultValue } from '@libs/common/utils/default-value.util';
 import { ISeedHelper } from '@libs/testing/interface/seed-helper.interface';
 import { PickedPlaceSeedInput } from '@libs/testing/seed/picked-place/type/picked-place-seed.input';
 import { PickedPlaceSeedOutput } from '@libs/testing/seed/picked-place/type/picked-place-seed.output';
 import { FilledSeedInput } from '@libs/testing/types/SeedFilledValue';
 
+/**
+ * Picked place 시드 헬퍼 클래스
+ *
+ * @publicApi
+ */
 export class PickedPlaceSeedHelper extends ISeedHelper<
   PickedPlaceSeedInput,
   PickedPlaceSeedOutput

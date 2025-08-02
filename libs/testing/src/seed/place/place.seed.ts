@@ -1,11 +1,20 @@
 import { faker } from '@faker-js/faker';
-import { defaultValue, getRandomValues, pickRandomValue } from '@libs/common';
-import { PLACE_TYPE } from '@libs/core';
+import { defaultValue } from '@libs/common/utils/default-value.util';
+import {
+  getRandomValues,
+  pickRandomValue,
+} from '@libs/common/utils/random.util';
+import { PLACE_TYPE } from '@libs/core/place/constants/place-type.constant';
 import { ISeedHelper } from '@libs/testing/interface/seed-helper.interface';
 import { PlaceSeedInput } from '@libs/testing/seed/place/type/place-seed.input';
 import { PlaceSeedOutput } from '@libs/testing/seed/place/type/place-seed.output';
 import { FilledSeedInput } from '@libs/testing/types/SeedFilledValue';
 
+/**
+ * place 시드 헬퍼 클래스
+ *
+ * @publicApi
+ */
 export class PlaceSeedHelper extends ISeedHelper<
   PlaceSeedInput,
   PlaceSeedOutput

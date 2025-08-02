@@ -1,10 +1,15 @@
 import { ISeedHelper } from '@libs/testing/interface/seed-helper.interface';
 import { ReviewSeedInput } from './type/review-seed.input';
 import { ReviewSeedOutput } from './type/review-seed.output';
-import { defaultValue } from '@libs/common';
 import { faker } from '@faker-js/faker';
 import { FilledSeedInput } from '@libs/testing/types/SeedFilledValue';
+import { defaultValue } from '@libs/common/utils/default-value.util';
 
+/**
+ * Review 시드 헬퍼 클래스
+ *
+ * @publicApi
+ */
 export class ReviewSeedHelper extends ISeedHelper<
   ReviewSeedInput,
   ReviewSeedOutput
