@@ -1,5 +1,10 @@
 import { SelectAdminAccount } from '@libs/core/admin-account/model/prisma-type/select-admin-account';
 
+/**
+ * 관리자 계정 모델
+ *
+ * @publicApi
+ */
 export class AdminAccountModel {
   /**
    * 사용자 인덱스

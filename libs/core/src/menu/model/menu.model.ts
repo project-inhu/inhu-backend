@@ -1,5 +1,10 @@
 import { SelectMenu } from './prisma-type/select-menu';
 
+/**
+ * Menu 모델
+ *
+ * @publicApi
+ */
 export class MenuModel {
   /**
    * 메뉴 식별자

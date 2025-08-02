@@ -1,3 +1,8 @@
+/**
+ * CreateMenuInput 클래스
+ *
+ * @publicApi
+ */
 export class CreateMenuInput {
   name: string;
   content: string | null;

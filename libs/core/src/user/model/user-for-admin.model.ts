@@ -1,6 +1,11 @@
 import { SelectUserForAdmin } from './prisma-type/select-user-for-admin';
 import { UserProviderModel } from './user-provider.model';
 
+/**
+ * 사용자 정보 모델 (관리자용)
+ *
+ * @publicApi
+ */
 export class UserForAdminModel {
   /**
    * 사용자 식별자

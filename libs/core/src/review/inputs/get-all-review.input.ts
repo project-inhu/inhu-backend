@@ -1,3 +1,8 @@
+/**
+ * 리뷰 조회 입력 input
+ *
+ * @publicApi
+ */
 export class GetAllReviewInput {
   /**
    * 한 번에 가져올 개수

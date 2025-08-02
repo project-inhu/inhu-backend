@@ -5,6 +5,11 @@ import { MenuModel } from './model/menu.model';
 import { CreateMenuInput } from './inputs/create-menu.input';
 import { UpdateMenuInput } from './inputs/update-menu.input';
 
+/**
+ * MenuCoreService 클래스
+ *
+ * @publicApi
+ */
 @Injectable()
 export class MenuCoreService {
   constructor(private readonly menuCoreRepository: MenuCoreRepository) {}

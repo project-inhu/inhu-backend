@@ -1,8 +1,10 @@
-import { DayOfWeek } from '@libs/common';
+import { DayOfWeek } from '@libs/common/modules/date-util/constants/day-of-week.constants';
 import { SelectPlaceOperatingHour } from './prisma-type/select-place-operating-hour';
 
 /**
  * 운영 시간 정보
+ *
+ * @publicApi
  */
 export class PlaceOperatingHourModel {
   /**

@@ -2,6 +2,7 @@
  * 모든 사용자 목록 조회를 위한 input
  *
  * @author 조희주
+ * @publicApi
  */
 export class GetAllUsersInput {
   /**

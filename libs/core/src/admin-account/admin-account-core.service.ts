@@ -2,6 +2,11 @@ import { AdminAccountCoreRepository } from '@libs/core/admin-account/admin-accou
 import { AdminAccountModel } from '@libs/core/admin-account/model/admin-account.model';
 import { Injectable } from '@nestjs/common';
 
+/**
+ * 관리자 계정 코어 서비스
+ *
+ * @publicApi
+ */
 @Injectable()
 export class AdminAccountCoreService {
   constructor(

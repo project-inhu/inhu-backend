@@ -6,6 +6,11 @@ import { PickedPlaceModel } from './model/picked-place.model';
 import { PickedPlaceCoreRepository } from './picked-place-core.repository';
 import { Injectable } from '@nestjs/common';
 
+/**
+ * PickedPlaceCoreService 클래스
+ *
+ * @publicApi
+ */
 @Injectable()
 export class PickedPlaceCoreService {
   constructor(

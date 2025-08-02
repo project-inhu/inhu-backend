@@ -1,7 +1,12 @@
-import { DayOfWeek } from '@libs/common';
+import { DayOfWeek } from '@libs/common/modules/date-util/constants/day-of-week.constants';
 import { PlaceType } from '../constants/place-type.constant';
 import { WeeklyCloseType } from '../constants/weekly-close-type.constant';
 
+/**
+ * 장소 생성 입력 input
+ *
+ * @publicApi
+ */
 export class CreatePlaceInput {
   name: string;
   tel: string | null;

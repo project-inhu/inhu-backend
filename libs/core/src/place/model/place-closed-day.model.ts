@@ -1,8 +1,10 @@
-import { DayOfWeek } from '@libs/common';
+import { DayOfWeek } from '@libs/common/modules/date-util/constants/day-of-week.constants';
 import { SelectPlaceClosedDay } from './prisma-type/select-place-closed-day';
 
 /**
  * 정기 휴무 모델
+ *
+ * @publicApi
  */
 export class PlaceClosedDayModel {
   /**

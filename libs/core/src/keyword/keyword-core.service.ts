@@ -4,6 +4,11 @@ import { KeywordModel } from './model/keyword.model';
 import { CreateKeywordInput } from './inputs/create-keyword.input';
 import { UpdateKeywordInput } from './inputs/update-keyword.input';
 
+/**
+ * 키워드 관련 핵심 서비스
+ *
+ * @publicApi
+ */
 @Injectable()
 export class KeywordCoreService {
   constructor(private readonly keywordCoreRepository: KeywordCoreRepository) {}

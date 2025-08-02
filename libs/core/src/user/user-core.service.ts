@@ -7,6 +7,11 @@ import { UpdateUserInput } from '@libs/core/user/inputs/update-user.input';
 import { GetAllUsersInput } from './inputs/get-user-overview.input';
 import { UserForAdminModel } from './model/user-for-admin.model';
 
+/**
+ * 사용자 코어 서비스
+ *
+ * @publicApi
+ */
 @Injectable()
 export class UserCoreService {
   constructor(private readonly userCoreRepository: UserCoreRepository) {}
