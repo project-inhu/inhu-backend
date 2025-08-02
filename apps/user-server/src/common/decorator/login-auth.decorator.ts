@@ -1,9 +1,9 @@
 import { applyDecorators, UseGuards } from '@nestjs/common';
 import { TokenIssuedBy } from '@user/common/module/login-token/constants/token-issued-by.constants';
-import { Exception } from '@libs/common';
 import { AppLoginAuthGuard } from '@user/api/auth/app-login-auth.guard';
 import { LoginAuthGuard } from '@user/api/auth/login-auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { Exception } from '@libs/common/decorator/exception.decorator';
 
 export const LoginAuth = (issuedBy: TokenIssuedBy = TokenIssuedBy.WEB) => {
   if (issuedBy === TokenIssuedBy.APP) {

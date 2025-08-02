@@ -1,10 +1,10 @@
-import { UserModel } from '@libs/core';
-
 /**
  * 사용자 정보를 담은 entity
  *
  * @author 조희주
  */
+
+import { UserModel } from '@libs/core/user/model/user.model';
 
 export class UserEntity {
   /**

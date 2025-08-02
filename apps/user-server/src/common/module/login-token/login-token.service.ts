@@ -1,4 +1,4 @@
-import { UserModel } from '@libs/core';
+import { UserModel } from '@libs/core/user/model/user.model';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';

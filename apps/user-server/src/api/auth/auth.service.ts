@@ -1,9 +1,9 @@
 import {
   AUTH_PROVIDER,
   AuthProvider,
-  UserCoreService,
-  UserModel,
-} from '@libs/core';
+} from '@libs/core/user/constants/auth-provider.constant';
+import { UserModel } from '@libs/core/user/model/user.model';
+import { UserCoreService } from '@libs/core/user/user-core.service';
 import {
   Injectable,
   InternalServerErrorException,

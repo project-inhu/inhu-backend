@@ -1,4 +1,4 @@
-import { BookmarkModel } from '@libs/core';
+import { BookmarkModel } from '@libs/core/bookmark/model/bookmark.model';
 
 /**
  * 북마크 엔티티 클래스

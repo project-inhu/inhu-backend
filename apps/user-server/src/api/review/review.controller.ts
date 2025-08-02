@@ -17,8 +17,8 @@ import { LoginUser } from '@user/common/types/LoginUser';
 import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
 import { CreateReviewDto } from '@user/api/review/dto/request/create-review.dto';
 import { ReviewEntity } from '@user/api/review/entity/review.entity';
-import { Exception } from '@libs/common';
 import { UpdateReviewDto } from './dto/request/update-review-dto';
+import { Exception } from '@libs/common/decorator/exception.decorator';
 
 @Controller('')
 export class ReviewController {

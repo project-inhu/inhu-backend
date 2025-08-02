@@ -1,4 +1,5 @@
-import { PlaceSeedHelper, ReviewSeedHelper } from '@libs/testing';
+import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
+import { ReviewSeedHelper } from '@libs/testing/seed/review/review.seed';
 import { GetAllReviewResponseDto } from '@user/api/review/dto/response/get-all-review.response.dto';
 import { ReviewEntity } from '@user/api/review/entity/review.entity';
 import { AppModule } from '@user/app.module';

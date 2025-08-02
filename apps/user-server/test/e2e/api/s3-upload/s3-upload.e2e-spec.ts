@@ -1,5 +1,5 @@
-import { S3Service } from '@libs/common';
 import { IMAGE_EXTENSION } from '@libs/common/modules/s3/constants/image-extension.constants';
+import { S3Service } from '@libs/common/modules/s3/s3.service';
 import { AppModule } from '@user/app.module';
 import { TestHelper } from 'apps/user-server/test/e2e/setup/test.helper';
 

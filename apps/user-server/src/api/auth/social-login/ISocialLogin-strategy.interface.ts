@@ -1,4 +1,4 @@
-import { AuthProvider } from '@libs/core';
+import { AuthProvider } from '@libs/core/user/constants/auth-provider.constant';
 import { OAuthInfo } from '@user/api/auth/types/OAuthInfo';
 import { Request } from 'express';
 

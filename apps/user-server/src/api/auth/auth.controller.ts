@@ -1,5 +1,6 @@
-import { Cookie, Exception } from '@libs/common';
-import { AuthProvider } from '@libs/core';
+import { Cookie } from '@libs/common/decorator/cookie.decorator';
+import { Exception } from '@libs/common/decorator/exception.decorator';
+import { AuthProvider } from '@libs/core/user/constants/auth-provider.constant';
 import {
   Body,
   Controller,

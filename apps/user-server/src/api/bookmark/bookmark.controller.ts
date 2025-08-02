@@ -1,11 +1,11 @@
 import { Controller, Delete, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { BookmarkService } from './bookmark.service';
 import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
-import { Exception } from '@libs/common';
 import { User } from '@user/common/decorator/user.decorator';
 import { BookmarkEntity } from './entity/bookmark.entity';
 import { LoginUser } from '@user/common/types/LoginUser';
 import { ApiTags } from '@nestjs/swagger';
+import { Exception } from '@libs/common/decorator/exception.decorator';
 
 @Controller('')
 @ApiTags('Bookmark')

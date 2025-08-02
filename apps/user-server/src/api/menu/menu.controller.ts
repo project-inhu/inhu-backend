@@ -1,4 +1,4 @@
-import { Exception } from '@libs/common';
+import { Exception } from '@libs/common/decorator/exception.decorator';
 import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { GetMenuByPlaceIdxDto } from '@user/api/menu/dto/request/get-menu-by-place-idx.dto';

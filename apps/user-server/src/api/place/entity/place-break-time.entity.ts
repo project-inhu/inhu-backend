@@ -1,4 +1,4 @@
-import { PlaceBreakTimeModel } from '@libs/core';
+import { PlaceBreakTimeModel } from '@libs/core/place/model/place-break-time.model';
 
 export class PlaceBreakTimeEntity {
   /**
