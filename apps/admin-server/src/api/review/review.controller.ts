@@ -7,10 +7,10 @@ import {
   Query,
 } from '@nestjs/common';
 import { ReviewService } from './review.service';
-import { Exception } from '@libs/common';
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { GetAllReviewResponseDto } from './dto/response/get-all-review.reponse.dto';
 import { GetAllReviewDto } from './dto/request/get-all-review.dto';
+import { Exception } from '@libs/common/decorator/exception.decorator';
 
 @Controller()
 export class ReviewController {

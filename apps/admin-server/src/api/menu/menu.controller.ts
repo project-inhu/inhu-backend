@@ -5,7 +5,6 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  Patch,
   Post,
   Put,
   Query,
@@ -14,10 +13,10 @@ import { MenuService } from './menu.service';
 import { GetAllMenuDto } from './dto/request/get-all-menu.dto';
 import { GetAllMenuResponseDto } from './dto/response/get-all-menu.response.dto';
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
-import { Exception } from '@libs/common';
 import { MenuEntity } from './entity/menu.entity';
 import { CreateMenuDto } from './dto/request/create-menu.dto';
 import { UpdateMenuDto } from './dto/request/update-menu.dto';
+import { Exception } from '@libs/common/decorator/exception.decorator';
 
 @Controller()
 export class MenuController {

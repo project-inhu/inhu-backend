@@ -5,7 +5,7 @@ import { GetPlaceOverviewAllResponseDto } from '@admin/api/place/dto/response/ge
 import { PlaceEntity } from '@admin/api/place/entity/place.entity';
 import { PlaceService } from '@admin/api/place/place.service';
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
-import { Exception } from '@libs/common';
+import { Exception } from '@libs/common/decorator/exception.decorator';
 import {
   Body,
   Controller,

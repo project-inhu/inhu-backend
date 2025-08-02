@@ -1,4 +1,4 @@
-import { MenuModel } from '@libs/core';
+import { MenuModel } from '@libs/core/menu/model/menu.model';
 
 export class MenuEntity {
   /**

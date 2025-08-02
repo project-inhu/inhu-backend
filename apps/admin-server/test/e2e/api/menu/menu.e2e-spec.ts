@@ -1,8 +1,9 @@
 import { AdminServerModule } from '@admin/admin-server.module';
 import { TestHelper } from '../../setup/test.helper';
-import { MenuSeedHelper, PlaceSeedHelper } from '@libs/testing';
 import { MenuEntity } from '@user/api/menu/entity/menu.entity';
 import { GetAllMenuResponseDto } from '@admin/api/menu/dto/response/get-all-menu.response.dto';
+import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
+import { MenuSeedHelper } from '@libs/testing/seed/menu/menu.seed';
 
 describe('Menu e2e test', () => {
   const testHelper = TestHelper.create(AdminServerModule);

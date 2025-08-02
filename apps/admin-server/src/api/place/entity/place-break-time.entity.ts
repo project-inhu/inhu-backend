@@ -1,5 +1,9 @@
-import { DayOfWeek, dayOfWeeks, IsKoreanTime } from '@libs/common';
-import { PlaceBreakTimeModel } from '@libs/core';
+import { IsKoreanTime } from '@libs/common/decorator/is-korean-time.decorator';
+import {
+  DayOfWeek,
+  dayOfWeeks,
+} from '@libs/common/modules/date-util/constants/day-of-week.constants';
+import { PlaceBreakTimeModel } from '@libs/core/place/model/place-break-time.model';
 import { IsIn, IsString } from 'class-validator';
 
 export class PlaceBreakTimeEntity {

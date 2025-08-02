@@ -1,8 +1,8 @@
 import { AdminServerModule } from '@admin/admin-server.module';
 import { TestHelper } from '../../setup/test.helper';
-import { UserSeedHelper } from '@libs/testing';
 import { GetUserOverviewAllDto } from '@admin/api/user/dto/request/get-user-overview-all.dto';
 import { UserOverviewEntity } from '@admin/api/user/entity/user-overview.entity';
+import { UserSeedHelper } from '@libs/testing/seed/user/user.seed';
 
 describe('User E2E test', () => {
   let testHelper = TestHelper.create(AdminServerModule);

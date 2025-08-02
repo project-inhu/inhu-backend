@@ -1,4 +1,4 @@
-import { PlaceRoadAddressModel } from '@libs/core';
+import { PlaceRoadAddressModel } from '@libs/core/place/model/place-road-address.model';
 import { IsNumber, IsOptional, IsString, Max } from 'class-validator';
 
 export class PlaceRoadAddressEntity {

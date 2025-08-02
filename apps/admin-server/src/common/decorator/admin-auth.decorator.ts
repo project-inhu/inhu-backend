@@ -1,7 +1,7 @@
 import { applyDecorators, UseGuards } from '@nestjs/common';
 import { AdminLoginAuthGuard } from '../../api/auth/admin-login-auth.guard';
-import { Exception } from '@libs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { Exception } from '@libs/common/decorator/exception.decorator';
 
 export const AdminAuth = () => {
   return applyDecorators(

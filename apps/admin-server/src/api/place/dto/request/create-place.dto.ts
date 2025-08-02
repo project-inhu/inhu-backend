@@ -4,10 +4,9 @@ import { CreateOperatingHourDto } from '@admin/api/place/dto/request/create-oper
 import { CreateRoadAddressDto } from '@admin/api/place/dto/request/create-road-address.dto';
 import { CreateWeeklyClosedDayDto } from '@admin/api/place/dto/request/create-weekly-closed-day.dto';
 import { PlaceEntity } from '@admin/api/place/entity/place.entity';
-import { IsKoreanTime } from '@libs/common';
 import { PickType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsOptional, Validate, ValidateNested } from 'class-validator';
+import { ValidateNested } from 'class-validator';
 
 export class CreatePlaceDto extends PickType(PlaceEntity, [
   'name',

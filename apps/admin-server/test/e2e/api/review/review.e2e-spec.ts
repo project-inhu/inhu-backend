@@ -1,11 +1,9 @@
 import { TestHelper } from '../../setup/test.helper';
-import {
-  PlaceSeedHelper,
-  ReviewSeedHelper,
-  UserSeedHelper,
-} from '@libs/testing';
 import { AdminServerModule } from '@admin/admin-server.module';
 import { GetAllReviewResponseDto } from '@admin/api/review/dto/response/get-all-review.reponse.dto';
+import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
+import { ReviewSeedHelper } from '@libs/testing/seed/review/review.seed';
+import { UserSeedHelper } from '@libs/testing/seed/user/user.seed';
 
 describe('Admin Review E2E Tests', () => {
   const testHelper = TestHelper.create(AdminServerModule);

@@ -1,4 +1,4 @@
-import { ToBoolean } from '@libs/common';
+import { ToBoolean } from '@libs/common/decorator/to-boolean.decorator';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsNumber, IsOptional } from 'class-validator';
 

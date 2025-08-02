@@ -1,8 +1,10 @@
-import { PresignedUrlModel, S3_FOLDER, S3Service } from '@libs/common';
 import { Injectable } from '@nestjs/common';
 import { CreateBannerImagePresignedUrlDto } from './dto/request/create-banner-image-presigned-url.dto';
 import { CreateMenuImagePresignedUrlDto } from './dto/request/create-menu-image-presigned-url.dto';
 import { CreatePlaceImagePresignedUrlsDto } from './dto/request/create-place-image-presigned-url.dto';
+import { S3Service } from '@libs/common/modules/s3/s3.service';
+import { PresignedUrlModel } from '@libs/common/modules/s3/model/presigned-url.model';
+import { S3_FOLDER } from '@libs/common/modules/s3/constants/s3-folder.constants';
 
 @Injectable()
 export class S3UploadService {

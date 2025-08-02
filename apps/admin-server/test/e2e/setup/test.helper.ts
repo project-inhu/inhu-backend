@@ -1,8 +1,8 @@
-import { Type } from '@libs/common';
-import { ITestHelper } from '@libs/testing';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { LoginAdminForTest, LoginAdminHelper } from './login-admin.helper';
+import { ITestHelper } from '@libs/testing/interface/test-helper.interface';
+import { Type } from '@libs/common/types/Type';
 
 export class TestHelper extends ITestHelper {
   /**
