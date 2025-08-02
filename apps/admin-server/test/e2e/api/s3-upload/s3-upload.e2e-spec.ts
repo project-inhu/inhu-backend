@@ -1,9 +1,10 @@
 import { AdminServerModule } from '@admin/admin-server.module';
-import { S3_FOLDER, S3Service } from '@libs/common';
 import { IMAGE_EXTENSION } from '@libs/common/modules/s3/constants/image-extension.constants';
 import { TestHelper } from '../../setup/test.helper';
 import { CreatePlaceImagePresignedUrlsDto } from '@admin/api/s3-upload/dto/request/create-place-image-presigned-url.dto';
 import { CreateReviewImagePresignedUrlsDto } from '@admin/api/s3-upload/dto/request/create-review-image-presigned-url.dto';
+import { S3Service } from '@libs/common/modules/s3/s3.service';
+import { S3_FOLDER } from '@libs/common/modules/s3/constants/s3-folder.constants';
 
 describe('s3-upload E2E test', () => {
   const testHelper = TestHelper.create(AdminServerModule);

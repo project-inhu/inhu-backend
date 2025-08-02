@@ -1,10 +1,10 @@
-import { PresignedUrlModel } from '@libs/common';
-
 /**
  * presignedUrl 응답을 위한 entity
  *
  * @author 조희주
  */
+
+import { PresignedUrlModel } from '@libs/common/modules/s3/model/presigned-url.model';
 
 export class PresignedUrlEntity {
   /**

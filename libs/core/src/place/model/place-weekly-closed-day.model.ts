@@ -1,6 +1,11 @@
 import { SelectPlaceWeeklyClosedDay } from './prisma-type/select-place-weekly-closed-day';
 import { WeeklyCloseType } from '../constants/weekly-close-type.constant';
 
+/**
+ * 주간 휴무 모델
+ *
+ * @publicApi
+ */
 export class PlaceWeeklyClosedDayModel {
   /**
    * 운영 시간 식별자

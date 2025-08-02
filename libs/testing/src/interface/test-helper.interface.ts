@@ -6,9 +6,16 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import * as uuid from 'uuid';
-import { DateUtilService, Type } from '@libs/common';
-import { DateUtil } from '@libs/testing';
+import { Type } from '@libs/common/types/Type';
+import { DateUtilService } from '@libs/common/modules/date-util/date-util.service';
+import { DateUtil } from '../utils/date.util';
 
+/**
+ * 테스트 헬퍼 인터페이스입니다.
+ * 이 인터페이스는 테스트 환경을 설정하고, 시딩 헬퍼를 제공하며, 테스트 중에 필요한 메서드를 정의합니다.
+ *
+ * @publicApi
+ */
 interface OverrideBy {
   useValue: (value: any) => ITestHelper;
 }

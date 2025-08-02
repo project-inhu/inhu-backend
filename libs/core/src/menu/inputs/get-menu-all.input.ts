@@ -1,3 +1,8 @@
+/**
+ * GetMenuAllInput 클래스
+ *
+ * @publicApi
+ */
 export class GetMenuAllInput {
   /**
    * 한 번에 가져올 개수

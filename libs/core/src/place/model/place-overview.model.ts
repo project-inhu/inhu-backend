@@ -5,6 +5,11 @@ import { KeywordModel } from '@libs/core/keyword/model/keyword.model';
 import { PlaceRoadAddressModel } from './place-road-address.model';
 import { PlaceType } from '../constants/place-type.constant';
 
+/**
+ * 장소 개요 모델
+ *
+ * @publicApi
+ */
 export class PlaceOverviewModel extends PickType(PlaceModel, [
   'idx',
   'name',

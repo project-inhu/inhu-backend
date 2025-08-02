@@ -1,9 +1,9 @@
-import { IsKoreanDate } from '@libs/common';
+import { IsKoreanDate } from '@libs/common/decorator/is-korean-date.decorator';
 import {
-  PlaceWeeklyClosedDayModel,
   WEEKLY_CLOSE_TYPE,
   WeeklyCloseType,
-} from '@libs/core';
+} from '@libs/core/place/constants/weekly-close-type.constant';
+import { PlaceWeeklyClosedDayModel } from '@libs/core/place/model/place-weekly-closed-day.model';
 import { IsIn, IsString } from 'class-validator';
 
 export class PlaceWeeklyClosedDayEntity {

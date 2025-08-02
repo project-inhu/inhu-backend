@@ -1,6 +1,11 @@
-import { DayOfWeek } from '@libs/common';
+import { DayOfWeek } from '@libs/common/modules/date-util/constants/day-of-week.constants';
 import type { SelectPlaceBreakTime } from './prisma-type/select-place-break-time';
 
+/**
+ * 장소의 휴식 시간 모델
+ *
+ * @publicApi
+ */
 export class PlaceBreakTimeModel {
   /**
    * 휴식 시간 정보 식별자

@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { DayOfWeek } from './constants/day-of-week.constants';
 
+/**
+ * DateUtil 서비스
+ *
+ * @publicApi
+ */
 @Injectable()
 export class DateUtilService {
   constructor() {}

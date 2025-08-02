@@ -10,6 +10,11 @@ import { ReviewNotFoundException } from '@libs/core/review/exception/review-not-
 import { SelectReview } from '@libs/core/review/model/prisma-type/select-review';
 import { isEqualArray } from '@libs/core/review/util/is-equal-array.util';
 
+/**
+ * 리뷰 코어 서비스
+ *
+ * @publicApi
+ */
 @Injectable()
 export class ReviewCoreService {
   constructor(

@@ -1,5 +1,6 @@
-import { BookmarkCoreService } from '@libs/core';
-import { BookmarkSeedHelper, PlaceSeedHelper } from '@libs/testing';
+import { BookmarkCoreService } from '@libs/core/bookmark/bookmark-core.service';
+import { BookmarkSeedHelper } from '@libs/testing/seed/bookmark/bookmark.seed';
+import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { AppModule } from '@user/app.module';
 import { TestHelper } from 'apps/user-server/test/e2e/setup/test.helper';
 

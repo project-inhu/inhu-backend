@@ -1,5 +1,9 @@
-import { DayOfWeek, dayOfWeeks, IsKoreanTime } from '@libs/common';
-import { PlaceOperatingHourModel } from '@libs/core';
+import { IsKoreanTime } from '@libs/common/decorator/is-korean-time.decorator';
+import {
+  DayOfWeek,
+  dayOfWeeks,
+} from '@libs/common/modules/date-util/constants/day-of-week.constants';
+import { PlaceOperatingHourModel } from '@libs/core/place/model/place-operating-hour.model';
 import { IsIn, IsString } from 'class-validator';
 
 export class PlaceOperatingHourEntity {

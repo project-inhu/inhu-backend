@@ -1,4 +1,4 @@
-import { AuthProvider } from '@libs/core';
+import { AuthProvider } from '@libs/core/user/constants/auth-provider.constant';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

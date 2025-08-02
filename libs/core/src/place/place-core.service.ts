@@ -8,6 +8,11 @@ import { Injectable } from '@nestjs/common';
 import { BookmarkedPlaceOverviewModel } from './model/bookmarked-place-overview.model';
 import { GetBookmarkedPlaceOverviewInput } from './inputs/get-bookmarked-place-overview.input';
 
+/**
+ * 장소 관련 핵심 서비스
+ *
+ * @publicApi
+ */
 @Injectable()
 export class PlaceCoreService {
   constructor(private readonly placeCoreRepository: PlaceCoreRepository) {}

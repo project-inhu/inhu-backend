@@ -3,6 +3,11 @@ import { SelectPickedPlaceOverview } from './prisma-type/select-picked-place-ove
 import { PlaceOverviewModel } from '@libs/core/place/model/place-overview.model';
 import { PickType } from '@nestjs/swagger';
 
+/**
+ * picked place overview 모델
+ *
+ * @publicApi
+ */
 export class PickedPlaceOverviewModel extends PickType(PickedPlaceModel, [
   'idx',
   'title',

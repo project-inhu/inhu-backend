@@ -1,3 +1,8 @@
+/**
+ * 리뷰 생성 입력 input
+ *
+ * @publicApi
+ */
 export class CreateReviewInput {
   /**
    * 리뷰 내용

@@ -1,6 +1,12 @@
-import { DayOfWeek } from '@libs/common';
-import { PlaceType, WeeklyCloseType } from '@libs/core';
+import { DayOfWeek } from '@libs/common/modules/date-util/constants/day-of-week.constants';
+import { PlaceType } from '@libs/core/place/constants/place-type.constant';
+import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 
+/**
+ * place 시드 입력 타입 정의
+ *
+ * @publicApi
+ */
 export type PlaceSeedInput = {
   name?: string;
   tel?: string | null;

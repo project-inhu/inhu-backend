@@ -9,6 +9,11 @@ import { AlreadyNotBookmarkException } from './exception/already-not-bookmark.ex
 import { AlreadyBookmarkException } from './exception/already-bookmark.exception';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 
+/**
+ * 북마크 관련 핵심 서비스
+ *
+ * @publicApi
+ */
 @Injectable()
 export class BookmarkCoreService {
   constructor(

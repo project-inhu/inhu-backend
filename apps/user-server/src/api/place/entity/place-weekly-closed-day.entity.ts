@@ -1,4 +1,5 @@
-import { PlaceWeeklyClosedDayModel, WeeklyCloseType } from '@libs/core';
+import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
+import { PlaceWeeklyClosedDayModel } from '@libs/core/place/model/place-weekly-closed-day.model';
 
 export class PlaceWeeklyClosedDayEntity {
   /**

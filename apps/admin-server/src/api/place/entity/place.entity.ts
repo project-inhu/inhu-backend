@@ -1,7 +1,6 @@
 import { PlaceRoadAddressEntity } from './place-road-address.entity';
 import { PlaceWeeklyClosedDayEntity } from './place-weekly-closed-day';
 import { PlaceOperatingHourEntity } from './place-operating-hour.entity';
-import { PLACE_TYPE, PlaceModel, PlaceType } from '@libs/core';
 import { PlaceClosedDayEntity } from './place-closed-day.entity';
 import { PlaceBreakTimeEntity } from './place-break-time.entity';
 import { KeywordEntity } from '@admin/api/keyword/entity/keyword.entity';
@@ -13,6 +12,11 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import {
+  PLACE_TYPE,
+  PlaceType,
+} from '@libs/core/place/constants/place-type.constant';
+import { PlaceModel } from '@libs/core/place/model/place.model';
 
 export class PlaceEntity {
   /**

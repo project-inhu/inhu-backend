@@ -8,7 +8,8 @@ import { AlreadyClosedPermanentlyPlaceException } from '@admin/api/place/excepti
 import { AlreadyDeactivatedPlaceException } from '@admin/api/place/exception/already-deactivated-place.exception';
 import { NotClosedPermanentlyPlaceException } from '@admin/api/place/exception/not-closed-permanently-place.exception';
 import { PlaceNotFoundException } from '@admin/api/place/exception/place-not-found.exception';
-import { GetPlaceOverviewInput, PlaceCoreService } from '@libs/core';
+import { GetPlaceOverviewInput } from '@libs/core/place/inputs/get-place-overview.input';
+import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

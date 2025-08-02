@@ -1,5 +1,10 @@
-import { DayOfWeek } from '@libs/common';
+import { DayOfWeek } from '@libs/common/modules/date-util/constants/day-of-week.constants';
 
+/**
+ * Date 유틸리티 클래스
+ *
+ * @publicApi
+ */
 export class DateUtil {
   constructor(private readonly date: Date) {
     // !주의: 어떤 메서드도 date 객체의 속성을 건드려서는 안 됩니다.

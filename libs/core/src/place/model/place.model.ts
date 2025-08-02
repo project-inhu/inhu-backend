@@ -7,6 +7,11 @@ import { SelectPlace } from './prisma-type/select-place';
 import { PlaceWeeklyClosedDayModel } from './place-weekly-closed-day.model';
 import { KeywordModel } from '@libs/core/keyword/model/keyword.model';
 
+/**
+ * 장소 모델
+ *
+ * @publicApi
+ */
 export class PlaceModel {
   /**
    * 장소 식별자

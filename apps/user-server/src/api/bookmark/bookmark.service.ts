@@ -1,7 +1,8 @@
-import { BookmarkCoreService, PlaceCoreService } from '@libs/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BookmarkEntity } from './entity/bookmark.entity';
 import { LoginUser } from '@user/common/types/LoginUser';
+import { PlaceCoreService } from '@libs/core/place/place-core.service';
+import { BookmarkCoreService } from '@libs/core/bookmark/bookmark-core.service';
 
 @Injectable()
 export class BookmarkService {

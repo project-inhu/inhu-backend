@@ -1,7 +1,5 @@
-import { PrismaService } from '@libs/common/modules/prisma/prisma.service';
-import { AUTH_PROVIDER } from '@libs/core';
-import { ITestHelper } from '@libs/testing';
-import { INestApplication, Type } from '@nestjs/common';
+import { AUTH_PROVIDER } from '@libs/core/user/constants/auth-provider.constant';
+import { ITestHelper } from '@libs/testing/interface/test-helper.interface';
 import { TokenIssuedBy } from '@user/common/module/login-token/constants/token-issued-by.constants';
 import { LoginTokenService } from '@user/common/module/login-token/login-token.service';
 

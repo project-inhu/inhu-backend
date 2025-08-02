@@ -1,7 +1,8 @@
-import { GetAllUsersInput, UserCoreService } from '@libs/core';
 import { Injectable } from '@nestjs/common';
 import { GetUserOverviewAllDto } from './dto/request/get-user-overview-all.dto';
 import { UserOverviewEntity } from './entity/user-overview.entity';
+import { UserCoreService } from '@libs/core/user/user-core.service';
+import { GetAllUsersInput } from '@libs/core/user/inputs/get-user-overview.input';
 
 @Injectable()
 export class UserService {

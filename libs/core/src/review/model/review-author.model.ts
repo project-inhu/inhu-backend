@@ -2,6 +2,11 @@ import { PickType } from '@nestjs/swagger';
 import { SelectReviewAuthor } from './prisma-type/select-review-author';
 import { UserModel } from '@libs/core/user/model/user.model';
 
+/**
+ * 리뷰 작성자 모델
+ *
+ * @publicApi
+ */
 export class ReviewAuthorModel extends PickType(UserModel, [
   'idx',
   'nickname',

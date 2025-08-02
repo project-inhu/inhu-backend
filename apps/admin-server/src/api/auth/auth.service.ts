@@ -1,4 +1,3 @@
-import { UserCoreService } from '@libs/core';
 import { AdminAccountCoreService } from '@libs/core/admin-account/admin-account-core.service';
 import { Injectable } from '@nestjs/common';
 import { InvalidIdOrPwException } from 'apps/admin-server/src/api/auth/exception/invalid-id-or-pw.exception';

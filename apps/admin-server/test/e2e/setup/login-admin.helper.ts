@@ -1,6 +1,6 @@
 import { HashService } from '@admin/common/modules/hash/hash.service';
 import { LoginTokenService } from '@admin/common/modules/login-token/login-token.service';
-import { ITestHelper } from '@libs/testing';
+import { ITestHelper } from '@libs/testing/interface/test-helper.interface';
 
 export type LoginAdminForTest = {
   idx: number;

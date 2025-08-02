@@ -1,4 +1,3 @@
-import { UserCoreModule } from '@libs/core';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -10,6 +9,7 @@ import { KakaoLoginStrategy } from '@user/api/auth/social-login/strategy/kakao/k
 import { AppleLoginStrategy } from '@user/api/auth/social-login/strategy/apple/apple-login.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import authConfig from '@user/api/auth/config/auth.config';
+import { UserCoreModule } from '@libs/core/user/user-core.module';
 
 @Module({
   imports: [

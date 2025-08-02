@@ -1,6 +1,11 @@
 import { SelectPickedPlace } from '@libs/core/picked-place/model/prisma-type/select-picked-place';
 import { PlaceModel } from '@libs/core/place/model/place.model';
 
+/**
+ * picked place 모델
+ *
+ * @publicApi
+ */
 export class PickedPlaceModel {
   /**
    * picked idx 식별자

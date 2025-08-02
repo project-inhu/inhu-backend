@@ -1,6 +1,11 @@
 import { AuthProvider } from '../constants/auth-provider.constant';
 import { SelectUserProvider } from '../model/prisma-type/select-user-provider';
 
+/**
+ * 사용자 제공자 모델
+ *
+ * @publicApi
+ */
 export class UserProviderModel {
   /**
    * SNS ID

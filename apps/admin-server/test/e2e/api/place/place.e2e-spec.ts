@@ -4,9 +4,11 @@ import { GetPlaceOverviewDto } from '@admin/api/place/dto/request/get-place-over
 import { UpdatePlaceDto } from '@admin/api/place/dto/request/update-place.dto';
 import { PlaceOverviewEntity } from '@admin/api/place/entity/place-overview.entity';
 import { PlaceEntity } from '@admin/api/place/entity/place.entity';
-import { dayOfWeeks } from '@libs/common';
-import { PLACE_TYPE, PlaceCoreService, WEEKLY_CLOSE_TYPE } from '@libs/core';
-import { PlaceSeedHelper } from '@libs/testing';
+import { dayOfWeeks } from '@libs/common/modules/date-util/constants/day-of-week.constants';
+import { PLACE_TYPE } from '@libs/core/place/constants/place-type.constant';
+import { WEEKLY_CLOSE_TYPE } from '@libs/core/place/constants/weekly-close-type.constant';
+import { PlaceCoreService } from '@libs/core/place/place-core.service';
+import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { TestHelper } from 'apps/admin-server/test/e2e/setup/test.helper';
 
 describe('Place E2E test', () => {

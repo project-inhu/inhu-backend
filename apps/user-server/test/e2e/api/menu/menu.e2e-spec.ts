@@ -1,4 +1,5 @@
-import { MenuSeedHelper, PlaceSeedHelper } from '@libs/testing';
+import { MenuSeedHelper } from '@libs/testing/seed/menu/menu.seed';
+import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { MenuEntity } from '@user/api/menu/entity/menu.entity';
 import { AppModule } from '@user/app.module';
 import { TestHelper } from 'apps/user-server/test/e2e/setup/test.helper';

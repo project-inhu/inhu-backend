@@ -1,4 +1,5 @@
-import { UserForAdminModel, UserProviderModel } from '@libs/core';
+import { UserForAdminModel } from '@libs/core/user/model/user-for-admin.model';
+import { UserProviderModel } from '@libs/core/user/model/user-provider.model';
 
 export class UserOverviewEntity {
   /**

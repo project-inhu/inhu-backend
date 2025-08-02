@@ -1,4 +1,4 @@
-import { MenuCoreService } from '@libs/core';
+import { MenuCoreService } from '@libs/core/menu/menu-core.service';
 import { Injectable } from '@nestjs/common';
 import { GetMenuByPlaceIdxDto } from '@user/api/menu/dto/request/get-menu-by-place-idx.dto';
 import { MenuEntity } from '@user/api/menu/entity/menu.entity';

@@ -1,4 +1,4 @@
-import { UserCoreService } from '@libs/core';
+import { UserCoreService } from '@libs/core/user/user-core.service';
 import { UserEntity } from '@user/api/user/entity/user.entity';
 import { AppModule } from '@user/app.module';
 import { TestHelper } from 'apps/user-server/test/e2e/setup/test.helper';

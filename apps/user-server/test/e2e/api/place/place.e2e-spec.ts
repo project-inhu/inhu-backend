@@ -1,6 +1,9 @@
-import { DateUtilService, dayOfWeeks } from '@libs/common';
-import { PLACE_TYPE, PlaceCoreService, WEEKLY_CLOSE_TYPE } from '@libs/core';
-import { BookmarkSeedHelper, PlaceSeedHelper } from '@libs/testing';
+import { dayOfWeeks } from '@libs/common/modules/date-util/constants/day-of-week.constants';
+import { DateUtilService } from '@libs/common/modules/date-util/date-util.service';
+import { PLACE_TYPE } from '@libs/core/place/constants/place-type.constant';
+import { WEEKLY_CLOSE_TYPE } from '@libs/core/place/constants/weekly-close-type.constant';
+import { BookmarkSeedHelper } from '@libs/testing/seed/bookmark/bookmark.seed';
+import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { PlaceOverviewEntity } from '@user/api/place/entity/place-overview.entity';
 import { PlaceEntity } from '@user/api/place/entity/place.entity';
 import { AppModule } from '@user/app.module';

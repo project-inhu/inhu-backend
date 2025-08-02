@@ -1,6 +1,6 @@
-import { DayOfWeek, dayOfWeeks } from '@libs/common';
 import { IsDayOfWeek } from '@libs/common/decorator/is-day-of-week.decorator';
-import { PlaceClosedDayModel } from '@libs/core';
+import { DayOfWeek } from '@libs/common/modules/date-util/constants/day-of-week.constants';
+import { PlaceClosedDayModel } from '@libs/core/place/model/place-closed-day.model';
 import { IsIn, IsInt, IsNumber } from 'class-validator';
 
 /**

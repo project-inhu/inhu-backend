@@ -1,10 +1,11 @@
-import { BookmarkCoreService, PlaceCoreService } from '@libs/core';
 import { Inject, Injectable } from '@nestjs/common';
 import { PlaceOverviewEntity } from './entity/place-overview.entity';
 import { GetAllPlaceOverviewDto } from './dto/request/get-all-place-overview.dto';
 import { PlaceEntity } from '@user/api/place/entity/place.entity';
 import { PlaceNotFoundException } from '@user/api/place/exception/place-not-found.exception';
 import { GetAllBookmarkedPlaceOverviewPlaceDto } from '@user/api/place/dto/request/get-all-bookmarked-place-overview.dto';
+import { PlaceCoreService } from '@libs/core/place/place-core.service';
+import { BookmarkCoreService } from '@libs/core/bookmark/bookmark-core.service';
 
 @Injectable()
 export class PlaceService {

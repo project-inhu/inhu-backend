@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { ISocialLoginStrategy } from '../../ISocialLogin-strategy.interface';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
-import { AuthProvider } from '@libs/core';
 import { OAuthInfo } from '@user/api/auth/types/OAuthInfo';
 import { Request } from 'express';
 import { GetAppleTokenResponseDto } from './dto/get-apple-token-response.dto';
@@ -10,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { JwksClient } from 'jwks-rsa';
 import { GetAppleDecodedDto } from './dto/get-apple-decoded.dto';
 import { verify } from 'jsonwebtoken';
+import { AuthProvider } from '@libs/core/user/constants/auth-provider.constant';
 
 @Injectable()
 export class AppleLoginStrategy implements ISocialLoginStrategy {

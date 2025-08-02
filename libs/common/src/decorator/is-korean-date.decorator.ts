@@ -6,6 +6,8 @@ import {
 
 /**
  * YYYY-MM-DD 형식의 한국 날짜를 검사하는 데코레이터입니다.
+ *
+ * @publicApi
  */
 export const IsKoreanDate = (option?: ValidationOptions) => {
   return function (object: any, propertyName: string) {

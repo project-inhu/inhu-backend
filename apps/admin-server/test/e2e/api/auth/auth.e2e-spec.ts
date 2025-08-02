@@ -1,6 +1,6 @@
 import { AdminServerModule } from '@admin/admin-server.module';
 import { TestHelper } from '../../setup/test.helper';
-import { extractCookieValueFromSetCookieHeader } from '@libs/testing';
+import { extractCookieValueFromSetCookieHeader } from '@libs/testing/utils/extract-cookie-value.util';
 
 describe('Auth E2E Tests', () => {
   const testHelper = TestHelper.create(AdminServerModule);

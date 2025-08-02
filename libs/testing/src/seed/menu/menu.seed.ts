@@ -2,9 +2,14 @@ import { ISeedHelper } from '@libs/testing/interface/seed-helper.interface';
 import { MenuSeedInput } from './type/menu-seed.input';
 import { MenuSeedOutput } from './type/menu-seed.output';
 import { FilledSeedInput } from '@libs/testing/types/SeedFilledValue';
-import { defaultValue } from '@libs/common';
 import { faker } from '@faker-js/faker';
+import { defaultValue } from '@libs/common/utils/default-value.util';
 
+/**
+ * Menu 시드 헬퍼 클래스
+ *
+ * @publicApi
+ */
 export class MenuSeedHelper extends ISeedHelper<MenuSeedInput, MenuSeedOutput> {
   public generateFilledInputValue(
     input: MenuSeedInput,

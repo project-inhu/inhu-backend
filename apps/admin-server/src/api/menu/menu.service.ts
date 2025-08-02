@@ -1,9 +1,10 @@
-import { MenuCoreService, PlaceCoreService } from '@libs/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { GetAllMenuDto } from './dto/request/get-all-menu.dto';
 import { MenuEntity } from './entity/menu.entity';
 import { CreateMenuDto } from './dto/request/create-menu.dto';
 import { UpdateMenuDto } from './dto/request/update-menu.dto';
+import { MenuCoreService } from '@libs/core/menu/menu-core.service';
+import { PlaceCoreService } from '@libs/core/place/place-core.service';
 
 @Injectable()
 export class MenuService {

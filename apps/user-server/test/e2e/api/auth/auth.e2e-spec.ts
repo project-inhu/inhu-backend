@@ -1,10 +1,7 @@
 import { RedisService } from '@libs/common/modules/redis/redis.service';
-import { AUTH_PROVIDER } from '@libs/core';
-import {
-  extractCookieValueFromSetCookieHeader,
-  UserSeedHelper,
-} from '@libs/testing';
-import { HttpService } from '@nestjs/axios';
+import { AUTH_PROVIDER } from '@libs/core/user/constants/auth-provider.constant';
+import { UserSeedHelper } from '@libs/testing/seed/user/user.seed';
+import { extractCookieValueFromSetCookieHeader } from '@libs/testing/utils/extract-cookie-value.util';
 import { AppleLoginStrategy } from '@user/api/auth/social-login/strategy/apple/apple-login.strategy';
 import { KakaoLoginStrategy } from '@user/api/auth/social-login/strategy/kakao/kakao-login.strategy';
 import { AppModule } from '@user/app.module';

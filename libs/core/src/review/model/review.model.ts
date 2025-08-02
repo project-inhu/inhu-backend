@@ -3,6 +3,11 @@ import { SelectReview } from './prisma-type/select-review';
 import { ReviewAuthorModel } from './review-author.model';
 import { ReviewPlaceModel } from './review-place.model';
 
+/**
+ * 리뷰 모델
+ *
+ * @publicApi
+ */
 export class ReviewModel {
   /**
    * 리뷰 식별자

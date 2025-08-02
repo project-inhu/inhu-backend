@@ -1,5 +1,5 @@
-import { Type } from '@libs/common';
-import { ITestHelper } from '@libs/testing';
+import { ITestHelper } from '@libs/testing/interface/test-helper.interface';
+import { Type } from '@libs/common/types/Type';
 import { ValidationPipe } from '@nestjs/common';
 import {
   LoginUserForTest,
