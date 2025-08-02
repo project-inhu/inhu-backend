@@ -2,6 +2,7 @@
  * Presigned URL과 파일 키를 담는 모델
  *
  * @author 조희주
+ * @publicApi
  */
 export class PresignedUrlModel {
   /**

@@ -7,6 +7,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { GetPresignedUrlsInput } from './input/get-presigned-urls.input';
 
+/**
+ * S3 서비스
+ *
+ * @publicApi
+ */
 @Injectable()
 export class S3Service {
   private readonly s3Client: S3Client;

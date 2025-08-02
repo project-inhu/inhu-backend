@@ -3,6 +3,11 @@ import { S3Service } from './s3.service';
 import { ConfigModule } from '@nestjs/config';
 import s3Config from './config/s3.config';
 
+/**
+ * S3 모듈
+ *
+ * @publicApi
+ */
 @Module({
   imports: [ConfigModule.forFeature(s3Config)],
   providers: [S3Service],
