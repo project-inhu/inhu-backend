@@ -1,4 +1,5 @@
-import { BookmarkCoreService, PickedPlaceCoreService } from '@libs/core';
+import { BookmarkCoreService } from '@libs/core/bookmark/bookmark-core.service';
+import { PickedPlaceCoreService } from '@libs/core/picked-place/picked-place-core.service';
 import { Injectable } from '@nestjs/common';
 import { PickedPlaceOverviewEntity } from './entity/picked-place-overview.entity';
 import { GetAllPickedPlaceOverviewDto } from './dto/request/get-all-picked-place-overview.dto';

@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { PickedPlaceService } from './picked-place.service';
 import { User } from '@user/common/decorator/user.decorator';
-import { Exception } from '@libs/common';
+import { Exception } from '@libs/common/decorator/exception.decorator';
 import { GetAllPickedPlaceOverviewDto } from './dto/request/get-all-picked-place-overview.dto';
 import { LoginUser } from '@user/common/types/LoginUser';
 import { GetAllPickedPlaceOverviewResponseDto } from './dto/response/get-all-picked-place.response.dto';

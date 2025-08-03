@@ -1,5 +1,5 @@
 import { PlaceEntity } from '../../place/entity/place.entity';
-import { PickedPlaceModel } from '@libs/core';
+import { PickedPlaceModel } from '@libs/core/picked-place/model/picked-place.model';
 
 export class PickedPlaceEntity {
   /**

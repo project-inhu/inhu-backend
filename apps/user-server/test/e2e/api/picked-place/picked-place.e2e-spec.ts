@@ -1,10 +1,8 @@
 import { AppModule } from '@user/app.module';
 import { TestHelper } from '../../setup/test.helper';
-import {
-  BookmarkSeedHelper,
-  PickedPlaceSeedHelper,
-  PlaceSeedHelper,
-} from '@libs/testing';
+import { BookmarkSeedHelper } from '@libs/testing/seed/bookmark/bookmark.seed';
+import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
+import { PickedPlaceSeedHelper } from '@libs/testing/seed/picked-place/picked-place.seed';
 import { GetAllPickedPlaceOverviewResponseDto } from '@user/api/picked-place/dto/response/get-all-picked-place.response.dto';
 
 describe('Picked Place E2E test', () => {
