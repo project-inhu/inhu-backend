@@ -19,7 +19,7 @@ export class CreateReviewImagePresignedUrlsDto {
   /**
    * 업로드할 파일의 확장자명
    *
-   * @example ["jpg", "png", "jpeg"]
+   * @example ["jpg", "png", "jpeg", "png"]
    */
   @IsArray()
   @ArrayNotEmpty()
