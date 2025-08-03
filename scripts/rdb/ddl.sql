@@ -248,7 +248,7 @@ CREATE TABLE banner_tb
   name         varchar                  NOT NULL,
   image_path   varchar                  NOT NULL,
   link         varchar                 ,
-  order        smallint                 NOT NULL,
+  sort_order   smallint                 NOT NULL,
   startAt      date                     NOT NULL,
   endAt        date                     ,
   activated_at timestamp with time zone,
