@@ -5,6 +5,7 @@ import { CreatePlaceImagePresignedUrlsDto } from '@admin/api/s3-upload/dto/reque
 import { CreateReviewImagePresignedUrlsDto } from '@admin/api/s3-upload/dto/request/create-review-image-presigned-url.dto';
 import { S3Service } from '@libs/common/modules/s3/s3.service';
 import { S3_FOLDER } from '@libs/common/modules/s3/constants/s3-folder.constants';
+import { CONTENT_TYPE } from '@libs/common/modules/s3/constants/content-type.constants';
 
 describe('s3-upload E2E test', () => {
   const testHelper = TestHelper.create(AdminServerModule);
@@ -40,7 +41,7 @@ describe('s3-upload E2E test', () => {
         .send({
           extension: IMAGE_EXTENSION.JPG,
           maxSize: 10,
-          contentType: 'image/',
+          contentType: CONTENT_TYPE.IMAGE,
         })
         .set('Authorization', `Bearer ${loginUser.token}`)
         .expect(201);
@@ -85,46 +86,6 @@ describe('s3-upload E2E test', () => {
         .send({ extension: 'gif' })
         .expect(400);
     });
-
-    it('400 - maxSize is not provided', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-
-      await testHelper
-        .test()
-        .post('/s3-upload/banner-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.token}`)
-        .send({ extension: IMAGE_EXTENSION.JPG, contentType: 'image/' })
-        .expect(400);
-    });
-
-    it('400 - maxSize is not a number', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-
-      await testHelper
-        .test()
-        .post('/s3-upload/banner-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.token}`)
-        .send({
-          extension: IMAGE_EXTENSION.JPG,
-          maxSize: 'ten',
-          contentType: 'image/',
-        })
-        .expect(400);
-    });
-
-    it('400 - contentType is not provided', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-
-      await testHelper
-        .test()
-        .post('/s3-upload/banner-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.token}`)
-        .send({
-          extension: IMAGE_EXTENSION.JPG,
-          maxSize: 10,
-        })
-        .expect(400);
-    });
   });
 
   describe('POST /s3-upload/menu-image/presigned-url', () => {
@@ -150,7 +111,7 @@ describe('s3-upload E2E test', () => {
         .send({
           extension: IMAGE_EXTENSION.JPG,
           maxSize: 10,
-          contentType: 'image/',
+          contentType: CONTENT_TYPE.IMAGE,
         })
         .set('Authorization', `Bearer ${loginUser.token}`)
         .expect(201);
@@ -195,46 +156,6 @@ describe('s3-upload E2E test', () => {
         .send({ extension: 'webp' })
         .expect(400);
     });
-
-    it('400 - maxSize is not provided', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-
-      await testHelper
-        .test()
-        .post('/s3-upload/menu-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.token}`)
-        .send({ extension: IMAGE_EXTENSION.JPG, contentType: 'image/' })
-        .expect(400);
-    });
-
-    it('400 - maxSize is not a number', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-
-      await testHelper
-        .test()
-        .post('/s3-upload/menu-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.token}`)
-        .send({
-          extension: IMAGE_EXTENSION.JPG,
-          maxSize: 'ten',
-          contentType: 'image/',
-        })
-        .expect(400);
-    });
-
-    it('400 - contentType is not provided', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-
-      await testHelper
-        .test()
-        .post('/s3-upload/menu-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.token}`)
-        .send({
-          extension: IMAGE_EXTENSION.JPG,
-          maxSize: 10,
-        })
-        .expect(400);
-    });
   });
 
   describe('POST /s3-upload/place-image/presigned-urls', () => {
@@ -243,8 +164,6 @@ describe('s3-upload E2E test', () => {
 
       const dto: CreatePlaceImagePresignedUrlsDto = {
         extensions: ['jpg', 'png', 'png'],
-        maxSize: 10,
-        contentType: 'image/',
       };
 
       const mockS3Response = [
@@ -275,8 +194,8 @@ describe('s3-upload E2E test', () => {
       expect(s3ServiceMock).toHaveBeenCalledWith({
         folder: S3_FOLDER.PLACE,
         extensions: dto.extensions,
-        maxSize: dto.maxSize,
-        contentType: dto.contentType,
+        maxSize: 10,
+        contentType: 'image/',
       });
 
       s3ServiceMock.mockRestore();
@@ -335,46 +254,6 @@ describe('s3-upload E2E test', () => {
         .send({ extensions: tooManyExtensions })
         .expect(400);
     });
-
-    it('400 - maxSize is not provided', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-
-      await testHelper
-        .test()
-        .post('/s3-upload/place-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
-        .send({ extensions: ['jpg', 'png'], contentType: 'image/' })
-        .expect(400);
-    });
-
-    it('400 - maxSize is not a number', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-
-      await testHelper
-        .test()
-        .post('/s3-upload/place-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
-        .send({
-          extension: ['jpg', 'png'],
-          maxSize: 'ten',
-          contentType: 'image/',
-        })
-        .expect(400);
-    });
-
-    it('400 - contentType is not provided', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-
-      await testHelper
-        .test()
-        .post('/s3-upload/place-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
-        .send({
-          extension: ['jpg', 'png'],
-          maxSize: 10,
-        })
-        .expect(400);
-    });
   });
 
   describe('POST /s3-upload/review-image/presigned-urls', () => {
@@ -383,8 +262,6 @@ describe('s3-upload E2E test', () => {
 
       const dto: CreateReviewImagePresignedUrlsDto = {
         extensions: ['png', 'jpg', 'jpeg'],
-        maxSize: 10,
-        contentType: 'image/',
       };
 
       const mockS3Response = [
@@ -415,8 +292,8 @@ describe('s3-upload E2E test', () => {
       expect(s3ServiceMock).toHaveBeenCalledWith({
         folder: S3_FOLDER.REVIEW,
         extensions: dto.extensions,
-        maxSize: dto.maxSize,
-        contentType: dto.contentType,
+        maxSize: 10,
+        contentType: CONTENT_TYPE.IMAGE,
       });
 
       s3ServiceMock.mockRestore();
@@ -473,46 +350,6 @@ describe('s3-upload E2E test', () => {
         .post('/s3-upload/review-image/presigned-urls')
         .set('Authorization', `Bearer ${loginUser.token}`)
         .send({ extensions: tooManyExtensions })
-        .expect(400);
-    });
-
-    it('400 - maxSize is not provided', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-
-      await testHelper
-        .test()
-        .post('/s3-upload/review-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
-        .send({ extension: ['jpg', 'png'], contentType: 'image/' })
-        .expect(400);
-    });
-
-    it('400 - maxSize is not a number', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-
-      await testHelper
-        .test()
-        .post('/s3-upload/review-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
-        .send({
-          extension: ['jpg', 'png'],
-          maxSize: 'ten',
-          contentType: 'image/',
-        })
-        .expect(400);
-    });
-
-    it('400 - contentType is not provided', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-
-      await testHelper
-        .test()
-        .post('/s3-upload/review-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
-        .send({
-          extension: ['jpg', 'png'],
-          maxSize: 10,
-        })
         .expect(400);
     });
   });
