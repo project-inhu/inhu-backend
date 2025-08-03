@@ -29,7 +29,7 @@ describe('User E2E test', () => {
       const response = await testHelper
         .test()
         .get('/user')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .query(dto)
         .expect(200);
 
@@ -57,7 +57,7 @@ describe('User E2E test', () => {
       const response = await testHelper
         .test()
         .get('/user')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .query(dto)
         .expect(200);
 
@@ -78,7 +78,7 @@ describe('User E2E test', () => {
       const response = await testHelper
         .test()
         .get('/user')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .query(dto)
         .expect(200);
 
@@ -99,7 +99,7 @@ describe('User E2E test', () => {
       const response = await testHelper
         .test()
         .get('/user')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .query(dto)
         .expect(200);
 
@@ -131,7 +131,7 @@ describe('User E2E test', () => {
       await testHelper
         .test()
         .get('/user')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .query(dto)
         .expect(400);
     });

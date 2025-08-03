@@ -36,7 +36,7 @@ describe('Place E2E test', () => {
       const response = await testHelper
         .test()
         .get('/place')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .query(dto)
         .expect(200);
 
@@ -73,7 +73,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .get('/place')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .query(dto)
         .expect(400);
     });
@@ -103,7 +103,7 @@ describe('Place E2E test', () => {
       const response = await testHelper
         .test()
         .get('/place')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .query(dto)
         .expect(200);
 
@@ -202,7 +202,7 @@ describe('Place E2E test', () => {
       const response = await testHelper
         .test()
         .get(`/place/${placeSeed.idx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(200);
 
       const place: PlaceEntity = response.body;
@@ -258,7 +258,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .get(`/place/${place.idx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(200);
     });
 
@@ -273,7 +273,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .get(`/place/${place.idx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(404);
     });
 
@@ -293,7 +293,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .get(`/place/${invalidPlaceIdx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(400);
     });
   });
@@ -335,7 +335,7 @@ describe('Place E2E test', () => {
       const response = await testHelper
         .test()
         .post('/place')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send(createPlaceDto)
         .expect(200);
 
@@ -447,7 +447,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .post('/place')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send(createPlaceDto)
         .expect(400);
     });
@@ -478,7 +478,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .post('/place')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send(createPlaceDto)
         .expect(400);
     });
@@ -527,7 +527,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .put(`/place/${place.idx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send(updatePlaceDto)
         .expect(200);
 
@@ -677,7 +677,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .put(`/place/${placeIdx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send(updatePlaceDto)
         .expect(404);
     });
@@ -693,7 +693,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .delete(`/place/${place.idx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(200);
 
       const placeAfterDelete = await testHelper
@@ -715,7 +715,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .delete(`/place/${place.idx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(404);
     });
 
@@ -734,7 +734,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .delete(`/place/${invalidPlaceIdx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(400);
     });
   });
@@ -749,7 +749,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .post(`/place/${placeSeed.idx}/activate`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(200);
 
       const place = await testHelper.getPrisma().place.findUniqueOrThrow({
@@ -766,7 +766,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .post(`/place/${invalidPlaceIdx}/activate`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(400);
     });
 
@@ -789,7 +789,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .post(`/place/${nonExistentPlaceIdx}/activate`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(404);
     });
 
@@ -802,7 +802,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .post(`/place/${placeSeed.idx}/activate`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(409);
     });
   });
@@ -817,7 +817,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .post(`/place/${placeSeed.idx}/deactivate`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(200);
     });
 
@@ -840,7 +840,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .post(`/place/${invalidPlaceIdx}/deactivate`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(400);
     });
 
@@ -851,7 +851,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .post(`/place/${nonExistentPlaceIdx}/deactivate`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(404);
     });
 
@@ -864,7 +864,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .post(`/place/${placeSeed.idx}/deactivate`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(409);
     });
   });
@@ -880,7 +880,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .post(`/place/${placeSeed.idx}/close-permanently`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(200);
 
       const place = await testHelper.getPrisma().place.findUniqueOrThrow({
@@ -897,7 +897,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .post(`/place/${invalidPlaceIdx}/close-permanently`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(400);
     });
 
@@ -921,7 +921,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .post(`/place/${nonExistentPlaceIdx}/close-permanently`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(404);
     });
 
@@ -935,7 +935,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .post(`/place/${placeSeed.idx}/close-permanently`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(409);
     });
   });
@@ -951,7 +951,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .post(`/place/${placeSeed.idx}/cancel-close-permanently`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(200);
 
       const place = await testHelper.getPrisma().place.findUniqueOrThrow({
@@ -968,7 +968,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .post(`/place/${invalidPlaceIdx}/cancel-close-permanently`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(400);
     });
 
@@ -991,7 +991,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .post(`/place/${nonExistentPlaceIdx}/cancel-close-permanently`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(404);
     });
 
@@ -1005,7 +1005,7 @@ describe('Place E2E test', () => {
       await testHelper
         .test()
         .post(`/place/${placeSeed.idx}/cancel-close-permanently`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(409);
     });
   });
