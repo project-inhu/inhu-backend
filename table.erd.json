@@ -4692,7 +4692,7 @@
         "comment": "",
         "dataType": "date",
         "default": "",
-        "options": 8,
+        "options": 0,
         "ui": {
           "keys": 0,
           "widthName": 60,
@@ -4701,7 +4701,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1754037581372,
+          "updateAt": 1754199686495,
           "createAt": 1754037577704
         }
       },
