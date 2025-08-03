@@ -16,6 +16,20 @@ export class PresignedUrlEntity {
   url: string;
 
   /**
+   * 접근할 수 있는 경로
+   *
+   * @example "https://inhu.s3.ap-northeast-2.amazonaws.com"
+   */
+  fileHost: string;
+
+  /**
+   * S3에 업로드 된 파일의 경로
+   *
+   * @example "/place/c37409c8-11b4-4c24b2c5-3747aad1b846.png"
+   */
+  filePath: string;
+
+  /**
    * 프론트엔드에서 form-data에 포함해야 하는 모든 필드와 값들의 객체
    * 필드: `bucket`, `X-Amz-Algorithm`, `X-Amz-Credential`, `X-Amz-Date`, `Key`, `Policy`, `X-Amz-Signature`
    *
@@ -31,6 +45,8 @@ export class PresignedUrlEntity {
     return new PresignedUrlEntity({
       url: model.url,
       fields: model.fields,
+      fileHost: model.fileHost,
+      filePath: model.filePath,
     });
   }
 }

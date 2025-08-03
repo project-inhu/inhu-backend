@@ -26,6 +26,8 @@ describe('s3-upload E2E test', () => {
           Policy: 'base64-encoded-policy-string',
           'X-Amz-Signature': 'signature-string',
         },
+        fileHost: 'https://your-bucket.s3.amazonaws.com',
+        filePath: '/profile/some-uuid-for.jpg',
       };
 
       const s3ServiceMock = jest
