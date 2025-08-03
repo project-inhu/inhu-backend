@@ -21,7 +21,7 @@ export class AuthController {
   ): Promise<void> {
     const token = await this.authService.login(dto.id, dto.pw);
 
-    res.cookie('token', token, getCookieConfig());
+    res.cookie('token', `Bearer ${token}`, getCookieConfig());
   }
 
   /**
