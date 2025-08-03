@@ -3,7 +3,7 @@ import { S3UploadService } from './s3-upload.service';
 import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
 import { CreateProfileImagePresignedUrlDto } from './dto/request/create-profile-image-presigned-url.dto';
 import { PresignedUrlEntity } from './entity/presigned-url.entity';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiTags } from '@nestjs/swagger';
 import { Exception } from '@libs/common/decorator/exception.decorator';
 @Controller('s3-upload')
 @ApiTags('s3-upload')
@@ -13,8 +13,11 @@ export class S3UploadController {
   @Post('/profile-image/presigned-url')
   @HttpCode(201)
   @Exception(401, 'no accessToken')
-  @Exception(400, 'extension field is not provided')
-  @Exception(400, 'extension is not in IMAGE_EXTENSION type')
+  @ApiBadRequestResponse({
+    description:
+      '- extension field is not provided\n' +
+      '- extension is not in IMAGE_EXTENSION type\n',
+  })
   @LoginAuth()
   async createProfileImagePresignedUrl(
     @Body()
