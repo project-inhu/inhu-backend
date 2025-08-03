@@ -19,8 +19,8 @@ export class PlaceWeeklyClosedDayEntity {
    *
    * @example '2023-10-01'
    */
-  @IsString()
-  @IsKoreanDate()
+  // @IsString()
+  // @IsKoreanDate()
   public date: string;
 
   /**
@@ -28,7 +28,7 @@ export class PlaceWeeklyClosedDayEntity {
    *
    * @example 0
    */
-  @IsIn(Object.values(WEEKLY_CLOSE_TYPE))
+  // @IsIn(Object.values(WEEKLY_CLOSE_TYPE))
   public type: WeeklyCloseType;
 
   constructor(data: PlaceWeeklyClosedDayEntity) {
