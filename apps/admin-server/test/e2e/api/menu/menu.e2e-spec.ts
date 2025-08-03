@@ -40,7 +40,7 @@ describe('Menu e2e test', () => {
       const response = await testHelper
         .test()
         .get(`/place/${placeSeed.idx}/menu`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .query({ page: 1 })
         .expect(200);
 
@@ -84,7 +84,7 @@ describe('Menu e2e test', () => {
           placeIdx: placeSeed.idx,
           page: 1,
         })
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(200);
 
       const body: GetAllMenuResponseDto = response.body;
@@ -103,7 +103,7 @@ describe('Menu e2e test', () => {
           placeIdx: placeSeed.idx,
           page: 1,
         })
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(200);
 
       expect(response2.body.hasNext).toBe(true);
@@ -120,7 +120,7 @@ describe('Menu e2e test', () => {
       const response = await testHelper
         .test()
         .get(`/place/${placeSeed.idx}/menu`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .query({ page: 1 })
         .expect(200);
 
@@ -154,7 +154,7 @@ describe('Menu e2e test', () => {
       const response = await testHelper
         .test()
         .get(`/place/${placeSeed.idx}/menu`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .query({ page: 1 })
         .expect(200);
 
@@ -187,7 +187,7 @@ describe('Menu e2e test', () => {
       const firstPlaceResponse = await testHelper
         .test()
         .get(`/place/${firstPlaceSeed.idx}/menu`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .query({ page: 1 })
         .expect(200);
 
@@ -202,7 +202,7 @@ describe('Menu e2e test', () => {
       const secondPlaceResponse = await testHelper
         .test()
         .get(`/place/${secondPlaceSeed.idx}/menu`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .query({ page: 1 })
         .expect(200);
 
@@ -223,7 +223,7 @@ describe('Menu e2e test', () => {
       await testHelper
         .test()
         .get(`/place/${invalidPlaceIdx}/menu`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .query({ page: 1 })
         .expect(400);
     });
@@ -266,7 +266,7 @@ describe('Menu e2e test', () => {
       const response = await testHelper
         .test()
         .post(`/place/${placeSeed.idx}/menu`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send(createMenuDto)
         .expect(201);
 
@@ -300,7 +300,7 @@ describe('Menu e2e test', () => {
       const response = await testHelper
         .test()
         .post(`/place/${placeSeed.idx}/menu`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send(createMenuDto)
         .expect(201);
 
@@ -321,7 +321,7 @@ describe('Menu e2e test', () => {
       await testHelper
         .test()
         .get(`/place/${invalidPlaceIdx}/menu`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .query({ page: 1 })
         .expect(400);
     });
@@ -343,7 +343,7 @@ describe('Menu e2e test', () => {
       return await testHelper
         .test()
         .post(`/place/${placeSeed.idx}/menu`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send(createMenuDto)
         .expect(400);
     });
@@ -366,7 +366,7 @@ describe('Menu e2e test', () => {
       return await testHelper
         .test()
         .post(`/place/${placeSeed.idx}/menu`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send(createMenuDto)
         .expect(400);
     });
@@ -406,7 +406,7 @@ describe('Menu e2e test', () => {
       return await testHelper
         .test()
         .post(`/place/99999/menu`) //! 존재하지 않는 장소
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send(createMenuDto)
         .expect(404);
     });
@@ -441,7 +441,7 @@ describe('Menu e2e test', () => {
       await testHelper
         .test()
         .put(`/menu/${menuSeed.idx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send(updateMenuDto)
         .expect(200);
 
@@ -484,7 +484,7 @@ describe('Menu e2e test', () => {
       await testHelper
         .test()
         .put(`/menu/${menuSeed.idx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send(updateMenuDto)
         .expect(200);
 
@@ -527,7 +527,7 @@ describe('Menu e2e test', () => {
       await testHelper
         .test()
         .put(`/menu/${menuSeed.idx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send(updateMenuDto)
         .expect(200);
 
@@ -570,7 +570,7 @@ describe('Menu e2e test', () => {
       await testHelper
         .test()
         .put(`/menu/${menuSeed.idx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send(updateMenuDto)
         .expect(200);
 
@@ -613,7 +613,7 @@ describe('Menu e2e test', () => {
       await testHelper
         .test()
         .put(`/menu/${menuSeed.idx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send(updateMenuDto)
         .expect(200);
 
@@ -656,7 +656,7 @@ describe('Menu e2e test', () => {
       await testHelper
         .test()
         .put(`/menu/${menuSeed.idx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send(updateMenuDto)
         .expect(200);
 
@@ -699,7 +699,7 @@ describe('Menu e2e test', () => {
       await testHelper
         .test()
         .put(`/menu/${menuSeed.idx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send(updateMenuDto)
         .expect(200);
 
@@ -742,7 +742,7 @@ describe('Menu e2e test', () => {
       await testHelper
         .test()
         .put(`/menu/${menuSeed.idx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send(updateMenuDto)
         .expect(200);
 
@@ -771,7 +771,7 @@ describe('Menu e2e test', () => {
       await testHelper
         .test()
         .put(`/menu/invalid`) // ! invalid menuIdx
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send(updateMenuDto)
         .expect(400);
     });
@@ -804,7 +804,7 @@ describe('Menu e2e test', () => {
       await testHelper
         .test()
         .put(`/menu/${menuSeed.idx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send(updateMenuDto)
         .expect(400);
     });
@@ -836,7 +836,7 @@ describe('Menu e2e test', () => {
       await testHelper
         .test()
         .put(`/menu/${menuSeed.idx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send(updateMenuDto)
         .expect(400);
     });
@@ -880,7 +880,7 @@ describe('Menu e2e test', () => {
       await testHelper
         .test()
         .put(`/menu/99999`) // ! 존재하지 않는 메뉴
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send(updateMenuDto)
         .expect(404);
     });
@@ -902,7 +902,7 @@ describe('Menu e2e test', () => {
       await testHelper
         .test()
         .delete(`/menu/${menuSeed.idx}`)
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(200);
 
       const deletedMenu = await testHelper.getPrisma().menu.findUnique({
@@ -918,7 +918,7 @@ describe('Menu e2e test', () => {
       await testHelper
         .test()
         .delete(`/menu/invalid`) // ! invalid menuIdx
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(400);
     });
 
@@ -928,7 +928,7 @@ describe('Menu e2e test', () => {
       await testHelper
         .test()
         .delete(`/menu/99999`) // ! 존재하지 않는 메뉴
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(404);
     });
   });
