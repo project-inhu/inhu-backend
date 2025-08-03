@@ -42,7 +42,7 @@ describe('s3-upload E2E test', () => {
           maxSize: 10,
           contentType: 'image/',
         })
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(201);
 
       const responseBody = response.body;
@@ -71,7 +71,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/banner-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(400);
     });
 
@@ -81,7 +81,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/banner-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({ extension: 'gif' })
         .expect(400);
     });
@@ -92,7 +92,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/banner-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({ extension: IMAGE_EXTENSION.JPG, contentType: 'image/' })
         .expect(400);
     });
@@ -103,7 +103,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/banner-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({
           extension: IMAGE_EXTENSION.JPG,
           maxSize: 'ten',
@@ -118,7 +118,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/banner-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({
           extension: IMAGE_EXTENSION.JPG,
           maxSize: 10,
@@ -152,7 +152,7 @@ describe('s3-upload E2E test', () => {
           maxSize: 10,
           contentType: 'image/',
         })
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(201);
 
       const responseBody = response.body;
@@ -181,7 +181,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/menu-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(400);
     });
 
@@ -191,7 +191,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/menu-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({ extension: 'webp' })
         .expect(400);
     });
@@ -202,7 +202,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/menu-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({ extension: IMAGE_EXTENSION.JPG, contentType: 'image/' })
         .expect(400);
     });
@@ -213,7 +213,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/menu-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({
           extension: IMAGE_EXTENSION.JPG,
           maxSize: 'ten',
@@ -228,7 +228,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/menu-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({
           extension: IMAGE_EXTENSION.JPG,
           maxSize: 10,
@@ -260,7 +260,7 @@ describe('s3-upload E2E test', () => {
       const response = await testHelper
         .test()
         .post('/s3-upload/place-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send(dto)
         .expect(201);
 
@@ -296,7 +296,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/place-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({})
         .expect(400);
     });
@@ -307,7 +307,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/place-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({ extensions: [] })
         .expect(400);
     });
@@ -318,7 +318,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/place-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({ extensions: ['jpg', 'gif'] })
         .expect(400);
     });
@@ -331,7 +331,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/place-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({ extensions: tooManyExtensions })
         .expect(400);
     });
@@ -342,7 +342,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/place-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({ extensions: ['jpg', 'png'], contentType: 'image/' })
         .expect(400);
     });
@@ -353,7 +353,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/place-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({
           extension: ['jpg', 'png'],
           maxSize: 'ten',
@@ -368,7 +368,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/place-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({
           extension: ['jpg', 'png'],
           maxSize: 10,
@@ -400,7 +400,7 @@ describe('s3-upload E2E test', () => {
       const response = await testHelper
         .test()
         .post('/s3-upload/review-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send(dto)
         .expect(201);
 
@@ -436,7 +436,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/review-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({})
         .expect(400);
     });
@@ -447,7 +447,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/review-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({ extensions: [] })
         .expect(400);
     });
@@ -458,7 +458,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/review-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({ extensions: ['abc', 'gif'] })
         .expect(400);
     });
@@ -471,7 +471,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/review-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({ extensions: tooManyExtensions })
         .expect(400);
     });
@@ -482,7 +482,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/review-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({ extension: ['jpg', 'png'], contentType: 'image/' })
         .expect(400);
     });
@@ -493,7 +493,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/review-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({
           extension: ['jpg', 'png'],
           maxSize: 'ten',
@@ -508,7 +508,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/review-image/presigned-urls')
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .send({
           extension: ['jpg', 'png'],
           maxSize: 10,

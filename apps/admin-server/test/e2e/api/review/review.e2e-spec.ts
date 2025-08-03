@@ -46,7 +46,7 @@ describe('Admin Review E2E Tests', () => {
       await testHelper
         .test()
         .delete(`/review/${originalReview.idx}`)
-        .set('Authorization', `Bearer ${adminUser.token}`)
+        .set('Cookie', `Bearer ${adminUser.token}`)
         .expect(200);
 
       const review = await testHelper.getPrisma().review.findUnique({
@@ -101,7 +101,7 @@ describe('Admin Review E2E Tests', () => {
       await testHelper
         .test()
         .delete(`/review/${originalReview.idx}`)
-        .set('Authorization', `Bearer ${adminUser.token}`)
+        .set('Cookie', `Bearer ${adminUser.token}`)
         .expect(200);
 
       const placeAfter = await testHelper.getPrisma().place.findUniqueOrThrow({
@@ -163,7 +163,7 @@ describe('Admin Review E2E Tests', () => {
       await testHelper
         .test()
         .delete('/review/9999999') // ! 존재하지 않는 reviewIdx
-        .set('Authorization', `Bearer ${adminUser.token}`)
+        .set('Cookie', `Bearer ${adminUser.token}`)
         .expect(404);
     });
 
@@ -223,7 +223,7 @@ describe('Admin Review E2E Tests', () => {
         await testHelper
           .test()
           .delete(`/review/${originalReview.idx}`)
-          .set('Authorization', `Bearer ${adminUser.token}`)
+          .set('Cookie', `Bearer ${adminUser.token}`)
           .expect(500);
       } finally {
         // 원래 함수로 복원
@@ -299,7 +299,7 @@ describe('Admin Review E2E Tests', () => {
           placeIdx: place.idx,
           page: 1,
         })
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(200);
 
       const body: GetAllReviewResponseDto = response.body;
@@ -361,7 +361,7 @@ describe('Admin Review E2E Tests', () => {
           placeIdx: place.idx,
           page: 1,
         })
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(200);
 
       const body: GetAllReviewResponseDto = response.body;
@@ -381,7 +381,7 @@ describe('Admin Review E2E Tests', () => {
           placeIdx: place.idx,
           page: 1,
         })
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(200);
 
       expect(response2.body.hasNext).toBe(true);
@@ -417,7 +417,7 @@ describe('Admin Review E2E Tests', () => {
         .test()
         .get('/review/all')
         .query({ placeIdx: place.idx, page: 1, orderBy: 'time', order: 'asc' })
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(200);
 
       const { reviewList }: GetAllReviewResponseDto = response.body;
@@ -456,7 +456,7 @@ describe('Admin Review E2E Tests', () => {
         .test()
         .get('/review/all')
         .query({ placeIdx: place.idx, page: 1, orderBy: 'time', order: 'desc' })
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(200);
 
       const { reviewList }: GetAllReviewResponseDto = response.body;
@@ -494,7 +494,7 @@ describe('Admin Review E2E Tests', () => {
         .test()
         .get('/review/all')
         .query({ placeIdx: place.idx, page: 1 })
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(200);
 
       const { reviewList }: GetAllReviewResponseDto = response.body;
@@ -534,7 +534,7 @@ describe('Admin Review E2E Tests', () => {
           placeIdx: firstPlace.idx,
           page: 1,
         })
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(200);
 
       const reviewsOfFirstPlace = (
@@ -552,7 +552,7 @@ describe('Admin Review E2E Tests', () => {
           placeIdx: secondPlace.idx,
           page: 1,
         })
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(200);
 
       const reviewsOfSecondPlace = (
@@ -601,7 +601,7 @@ describe('Admin Review E2E Tests', () => {
           userIdx: firstUser.idx,
           page: 1,
         })
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(200);
 
       const reviewsOfFirstUser = (
@@ -619,7 +619,7 @@ describe('Admin Review E2E Tests', () => {
           userIdx: secondUser.idx,
           page: 1,
         })
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(200);
 
       const reviewsOfSecondUser = (
@@ -641,7 +641,7 @@ describe('Admin Review E2E Tests', () => {
           placeIdx: 'invalid', // ! invalid place idx
           page: 1,
         })
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(400);
     });
 
@@ -655,7 +655,7 @@ describe('Admin Review E2E Tests', () => {
           userIdx: 'invalid', // ! invalid place idx
           page: 1,
         })
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(400);
     });
 
@@ -668,7 +668,7 @@ describe('Admin Review E2E Tests', () => {
         .query({
           page: 1, // ! no placeIdx and no userIdx
         })
-        .set('Authorization', `Bearer ${loginUser.token}`)
+        .set('Cookie', `Bearer ${loginUser.token}`)
         .expect(403);
     });
   });
