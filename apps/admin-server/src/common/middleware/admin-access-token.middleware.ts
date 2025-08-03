@@ -20,7 +20,9 @@ export class AdminAccessTokenMiddleware implements NestMiddleware {
   }
 
   private extractAccessToken(req: Request): string | null {
-    const token = req.headers.cookie;
+    const token = req.cookies['token'];
+
+    console.log('Extracted token from cookies:', token);
 
     if (!token) {
       return null;
@@ -28,7 +30,9 @@ export class AdminAccessTokenMiddleware implements NestMiddleware {
 
     const [type, adminToken] = token.split(' ');
 
-    if (type.split('=')[1] !== 'Bearer' || !adminToken) {
+    console.log('Token type:', type, 'Admin token:', adminToken);
+
+    if (type !== 'Bearer' || !adminToken) {
       return null;
     }
 
