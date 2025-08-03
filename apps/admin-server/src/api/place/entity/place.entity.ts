@@ -1,5 +1,4 @@
 import { PlaceRoadAddressEntity } from './place-road-address.entity';
-import { PlaceWeeklyClosedDayEntity } from './place-weekly-closed-day';
 import { PlaceOperatingHourEntity } from './place-operating-hour.entity';
 import { PlaceClosedDayEntity } from './place-closed-day.entity';
 import { PlaceBreakTimeEntity } from './place-break-time.entity';
@@ -17,6 +16,7 @@ import {
   PlaceType,
 } from '@libs/core/place/constants/place-type.constant';
 import { PlaceModel } from '@libs/core/place/model/place.model';
+import { PlaceWeeklyClosedDayEntity } from './place-weekly-closed-day.entity';
 
 export class PlaceEntity {
   /**
