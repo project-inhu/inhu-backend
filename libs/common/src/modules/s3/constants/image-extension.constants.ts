@@ -10,10 +10,5 @@ export const IMAGE_EXTENSION = {
   PNG: 'png',
 } as const;
 
-/**
- * 이미지 확장자 타입
- *
- * @publicApi
- */
 export type ImageExtension =
   (typeof IMAGE_EXTENSION)[keyof typeof IMAGE_EXTENSION];

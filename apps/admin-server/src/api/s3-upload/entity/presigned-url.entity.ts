@@ -17,7 +17,9 @@ export class PresignedUrlEntity {
 
   /**
    * 프론트엔드에서 form-data에 포함해야 하는 모든 필드와 값들의 객체
-   * (Key, Policy, Signature 등)
+   * 필드: `bucket`, `X-Amz-Algorithm`, `X-Amz-Credential`, `X-Amz-Date`, `Key`, `Policy`, `X-Amz-Signature`
+   *
+   * @example "PresignedUrlEntity description 참고 : content-type은 프론트엔드에서 form-data에 직접 추가해야 함"
    */
   fields: Record<string, string>;
 

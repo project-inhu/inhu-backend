@@ -3,6 +3,7 @@ import { CreateProfileImagePresignedUrlDto } from './dto/request/create-profile-
 import { S3Service } from '@libs/common/modules/s3/s3.service';
 import { PresignedUrlModel } from '@libs/common/modules/s3/model/presigned-url.model';
 import { S3_FOLDER } from '@libs/common/modules/s3/constants/s3-folder.constants';
+import { CONTENT_TYPE } from '@libs/common/modules/s3/constants/content-type.constants';
 
 @Injectable()
 export class S3UploadService {
@@ -14,8 +15,8 @@ export class S3UploadService {
     return await this.s3Service.getPresignedUrl({
       folder: S3_FOLDER.PROFILE,
       extension: createProfileImagePresignedUrlDto.extension,
-      maxSize: createProfileImagePresignedUrlDto.maxSize,
-      contentType: createProfileImagePresignedUrlDto.contentType,
+      maxSize: 10,
+      contentType: CONTENT_TYPE.IMAGE,
     });
   }
 }
