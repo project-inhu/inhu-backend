@@ -13,8 +13,12 @@ export class AdminAccessTokenMiddleware implements NestMiddleware {
       return next();
     }
 
-    const payload = await this.loginTokenService.verifyAdminToken(adminToken);
-    (req as any).admin = payload;
+    try {
+      const payload = await this.loginTokenService.verifyAdminToken(adminToken);
+      (req as any).admin = payload;
+    } catch (err) {
+      // do nothing
+    }
 
     next();
   }
@@ -22,15 +26,11 @@ export class AdminAccessTokenMiddleware implements NestMiddleware {
   private extractAccessToken(req: Request): string | null {
     const token = req.cookies['token'];
 
-    console.log('Extracted token from cookies:', token);
-
     if (!token) {
       return null;
     }
 
     const [type, adminToken] = token.split(' ');
-
-    console.log('Token type:', type, 'Admin token:', adminToken);
 
     if (type !== 'Bearer' || !adminToken) {
       return null;
