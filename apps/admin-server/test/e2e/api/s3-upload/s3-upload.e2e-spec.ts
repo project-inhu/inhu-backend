@@ -29,6 +29,8 @@ describe('s3-upload E2E test', () => {
           Policy: 'base64-encoded-policy-string',
           'X-Amz-Signature': 'signature-string',
         },
+        fileHost: 'https://your-bucket.s3.amazonaws.com/',
+        filePath: `banner/some-uuid-for.jpg`,
       };
 
       const s3ServiceMock = jest
@@ -99,6 +101,8 @@ describe('s3-upload E2E test', () => {
           Policy: 'base64-encoded-policy-string',
           'X-Amz-Signature': 'signature-string',
         },
+        fileHost: 'https://your-bucket.s3.amazonaws.com/',
+        filePath: `banner/some-uuid-for.jpg`,
       };
 
       const s3ServiceMock = jest
@@ -167,9 +171,24 @@ describe('s3-upload E2E test', () => {
       };
 
       const mockS3Response = [
-        { url: 'https://s3.com/1', fields: { Key: 'place/uuid1.jpg' } },
-        { url: 'https://s3.com/2', fields: { Key: 'place/uuid2.png' } },
-        { url: 'https://s3.com/3', fields: { Key: 'place/uuid3.png' } },
+        {
+          url: 'https://s3.com/1',
+          fields: { Key: 'place/uuid1.jpg' },
+          fileHost: 'https://your-bucket.s3.amazonaws.com/',
+          filePath: `banner/some-uuid-for.jpg`,
+        },
+        {
+          url: 'https://s3.com/2',
+          fields: { Key: 'place/uuid2.png' },
+          fileHost: 'https://your-bucket.s3.amazonaws.com/',
+          filePath: `banner/some-uuid-for.jpg`,
+        },
+        {
+          url: 'https://s3.com/3',
+          fields: { Key: 'place/uuid3.png' },
+          fileHost: 'https://your-bucket.s3.amazonaws.com/',
+          filePath: `banner/some-uuid-for.jpg`,
+        },
       ];
 
       const s3ServiceMock = jest
@@ -265,9 +284,24 @@ describe('s3-upload E2E test', () => {
       };
 
       const mockS3Response = [
-        { url: 'https://s3.com/1', fields: { Key: 'review/uuid1.png' } },
-        { url: 'https://s3.com/2', fields: { Key: 'review/uuid2.jpg' } },
-        { url: 'https://s3.com/3', fields: { Key: 'review/uuid3.jpeg' } },
+        {
+          url: 'https://s3.com/1',
+          fields: { Key: 'review/uuid1.png' },
+          fileHost: 'https://your-bucket.s3.amazonaws.com/',
+          filePath: `banner/some-uuid-for.jpg`,
+        },
+        {
+          url: 'https://s3.com/2',
+          fields: { Key: 'review/uuid2.jpg' },
+          fileHost: 'https://your-bucket.s3.amazonaws.com/',
+          filePath: `banner/some-uuid-for.jpg`,
+        },
+        {
+          url: 'https://s3.com/3',
+          fields: { Key: 'review/uuid3.jpeg' },
+          fileHost: 'https://your-bucket.s3.amazonaws.com/',
+          filePath: `banner/some-uuid-for.jpg`,
+        },
       ];
 
       const s3ServiceMock = jest

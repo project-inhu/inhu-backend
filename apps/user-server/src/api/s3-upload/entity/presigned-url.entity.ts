@@ -23,6 +23,20 @@ export class PresignedUrlEntity {
    */
   fields: Record<string, string>;
 
+  /**
+   * 접근할 수 있는 경로
+   *
+   * @example "https://inhu.s3.ap-northeast-2.amazonaws.com"
+   */
+  fileHost: string;
+
+  /**
+   * S3에 업로드 된 파일의 경로
+   *
+   * @example "/place/c37409c8-11b4-4c24b2c5-3747aad1b846.png"
+   */
+  filePath: string;
+
   constructor(data: PresignedUrlEntity) {
     Object.assign(this, data);
   }
@@ -31,6 +45,8 @@ export class PresignedUrlEntity {
     return new PresignedUrlEntity({
       url: model.url,
       fields: model.fields,
+      fileHost: model.fileHost,
+      filePath: model.filePath,
     });
   }
 }
