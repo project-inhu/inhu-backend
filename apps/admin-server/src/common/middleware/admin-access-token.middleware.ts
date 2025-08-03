@@ -28,7 +28,7 @@ export class AdminAccessTokenMiddleware implements NestMiddleware {
 
     const [type, adminToken] = token.split(' ');
 
-    if (type !== 'Bearer' || !adminToken) {
+    if (type.split('=')[1] !== 'Bearer' || !adminToken) {
       return null;
     }
 
