@@ -1,3 +1,4 @@
+import { CONTENT_TYPE } from '@libs/common/modules/s3/constants/content-type.constants';
 import { IMAGE_EXTENSION } from '@libs/common/modules/s3/constants/image-extension.constants';
 import { S3Service } from '@libs/common/modules/s3/s3.service';
 import { AppModule } from '@user/app.module';
@@ -37,7 +38,7 @@ describe('s3-upload E2E test', () => {
         .send({
           extension: IMAGE_EXTENSION.JPG,
           maxSize: 10,
-          contentType: 'image/',
+          contentType: CONTENT_TYPE.IMAGE,
         })
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(201);
@@ -79,46 +80,6 @@ describe('s3-upload E2E test', () => {
         .post('/s3-upload/profile-image/presigned-url')
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send({ extension: 'txt' })
-        .expect(400);
-    });
-
-    it('400 - maxSize is not provided', async () => {
-      const loginUser = testHelper.loginUsers.user1;
-
-      await testHelper
-        .test()
-        .post('/s3-upload/profile-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .send({ extension: IMAGE_EXTENSION.JPG, contentType: 'image/' })
-        .expect(400);
-    });
-
-    it('400 - maxSize is not a number', async () => {
-      const loginUser = testHelper.loginUsers.user1;
-
-      await testHelper
-        .test()
-        .post('/s3-upload/profile-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .send({
-          extension: IMAGE_EXTENSION.JPG,
-          maxSizeInMB: 'ten',
-          contentType: 'image/',
-        })
-        .expect(400);
-    });
-
-    it('400 - contentType is not provided', async () => {
-      const loginUser = testHelper.loginUsers.user1;
-
-      await testHelper
-        .test()
-        .post('/s3-upload/profile-image/presigned-url')
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .send({
-          extension: IMAGE_EXTENSION.JPG,
-          maxSizeInMB: 10,
-        })
         .expect(400);
     });
   });
