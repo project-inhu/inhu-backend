@@ -270,7 +270,7 @@ model AdminAccount {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   user      User     @relation(fields: [idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_admin_account_tb")
 
-  @@map("admin_tb")
+  @@map("admin_account_tb")
 }
 
 model WithdrawServiceResult {
