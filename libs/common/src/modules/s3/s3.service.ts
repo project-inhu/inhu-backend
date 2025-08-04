@@ -55,9 +55,9 @@ export class S3Service {
       Key: key,
       Expires: 5 * 60,
       Conditions: [
+        ['eq', '$acl', 'public-read'],
         ['content-length-range', 0, maxSize * 1024 * 1024],
         ['starts-with', '$Content-Type', contentType],
-        { acl: 'public-read' },
       ],
     });
 
