@@ -57,6 +57,7 @@ export class S3Service {
       Conditions: [
         ['content-length-range', 0, maxSize * 1024 * 1024],
         ['starts-with', '$Content-Type', contentType],
+        { acl: 'public-read' },
       ],
     });
 
