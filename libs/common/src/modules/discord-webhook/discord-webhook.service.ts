@@ -11,6 +11,7 @@ import { inspect } from 'util';
 @Injectable()
 export class DiscordWebhookService {
   private readonly WEBHOOK_URL: string;
+  private readonly ERROR_WEBHOOK_URL: string;
 
   constructor(
     private readonly configService: ConfigService,
@@ -18,6 +19,8 @@ export class DiscordWebhookService {
   ) {
     this.WEBHOOK_URL =
       this.configService.get<string>('discordWebhook.url') || '';
+    this.ERROR_WEBHOOK_URL =
+      this.configService.get<string>('discordWebhook.errorWebhookUrl') || '';
   }
 
   public async sendErrorMessage(
@@ -27,7 +30,7 @@ export class DiscordWebhookService {
     context: DiscordWebhookContext,
   ) {
     await this.httpService.axiosRef.post(
-      this.WEBHOOK_URL,
+      this.ERROR_WEBHOOK_URL,
       {
         content: `# **🚨 에러 로그 알림**`,
         embeds: [
@@ -79,11 +82,14 @@ export class DiscordWebhookService {
     return inspect(err, { depth: 2 });
   }
 
-  public async sendWebhookMessage(message: string): Promise<void> {
+  public async sendWebhookMessage(
+    title: string,
+    message: string,
+  ): Promise<void> {
     await this.httpService.axiosRef.post(
       this.WEBHOOK_URL,
       {
-        content: `# 아아 마크다운 됩니까?`,
+        content: `# ${title}`,
         embeds: [
           {
             description: message,

@@ -1,20 +1,10 @@
-import { getMode } from '@user/common/utils/get-mode.util';
 import { CookieOptions } from 'express';
 
 export default (): CookieOptions => {
-  const mode = getMode();
-
-  if (mode === 'development') {
-    return {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-    };
-  }
-
+  // TODO: 배포 환경에서 쿠키 도메인을 설정하여 더욱 안전하게 관리할 수 있도록 해야함.
   return {
     httpOnly: true,
     secure: true,
-    sameSite: 'lax',
+    sameSite: 'none',
   };
 };
