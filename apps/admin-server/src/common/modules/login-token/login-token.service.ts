@@ -7,7 +7,7 @@ import { TokenPayload } from 'apps/admin-server/src/common/modules/login-token/t
 @Injectable()
 export class LoginTokenService {
   private readonly TOKEN_SECRET: string;
-  private readonly TOKEN_EXPIRATION: number;
+  private readonly TOKEN_EXPIRATION: string;
 
   constructor(
     configService: ConfigService,
