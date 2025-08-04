@@ -7,6 +7,9 @@ import {
   SwaggerModule,
 } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
+import { getMode } from '@libs/common/utils/get-mode.util';
+import { DiscordWebhookService } from '@libs/common/modules/discord-webhook/discord-webhook.service';
+import { DiscordWebhookContext } from '@libs/common/modules/discord-webhook/constants/discord-webhook-context.enum';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -23,6 +26,20 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  if (getMode() === 'production') {
+    try {
+      await app
+        .get(DiscordWebhookService)
+        .sendWebhookMessage(
+          `🚀 ${DiscordWebhookContext.USER_SERVER} 배포 알림 `,
+          `서버가 성공적으로 배포 되었습니다.`,
+        );
+    } catch (err) {
+      // ! 주의: 에러가 발생해도 서버가 중단되지 않도록 하기 위해 console.log로 에러를 출력합니다.
+      console.log(err);
+    }
+  }
 
   const config = new DocumentBuilder()
     .setTitle('Inhu API')

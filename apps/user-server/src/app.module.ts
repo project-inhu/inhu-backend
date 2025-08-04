@@ -15,6 +15,7 @@ import { UserModule } from './api/user/user.module';
 import { MenuModule } from '@user/api/menu/menu.module';
 import { S3UploadModule } from './api/s3-upload/s3-upload.module';
 import { BookmarkModule } from './api/bookmark/bookmark.module';
+import { DiscordWebhookModule } from '@libs/common/modules/discord-webhook/discord-webhook.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { BookmarkModule } from './api/bookmark/bookmark.module';
     MenuModule,
     S3UploadModule,
     BookmarkModule,
+    DiscordWebhookModule,
     ClsModule.forRoot({
       plugins: [
         new ClsPluginTransactional({
