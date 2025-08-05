@@ -1,6 +1,7 @@
-import { dayOfWeeks } from '@libs/common/modules/date-util/constants/day-of-week.constants';
+import { DayOfWeek } from '@libs/common/modules/date-util/constants/day-of-week.constants';
 import { applyDecorators } from '@nestjs/common';
-import { IsIn, ValidationOptions } from 'class-validator';
+import { ValidationOptions } from 'class-validator';
+import { IsEnumValue } from './is-enum-value.decorator';
 
 /**
  * 요일을 검증하는 데코레이터입니다.
@@ -8,4 +9,4 @@ import { IsIn, ValidationOptions } from 'class-validator';
  * @publicApi
  */
 export const IsDayOfWeek = (options?: ValidationOptions) =>
-  applyDecorators(IsIn(Object.values(dayOfWeeks), options));
+  applyDecorators(IsEnumValue(DayOfWeek, options));

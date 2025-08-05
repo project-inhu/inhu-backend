@@ -1,3 +1,4 @@
+import { IsEnumValue } from '@libs/common/decorator/is-enum-value.decorator';
 import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 import { PlaceWeeklyClosedDayModel } from '@libs/core/place/model/place-weekly-closed-day.model';
 import { IsNumber } from 'class-validator';
@@ -22,7 +23,7 @@ export class PlaceWeeklyClosedDayEntity {
    *
    * @example 0
    */
-  @IsNumber()
+  @IsEnumValue(WeeklyCloseType)
   public type: WeeklyCloseType;
 
   constructor(data: PlaceWeeklyClosedDayEntity) {

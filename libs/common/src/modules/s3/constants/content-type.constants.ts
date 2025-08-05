@@ -3,9 +3,7 @@
  *
  * @author 조희주
  */
-export const CONTENT_TYPE = {
-  IMAGE: 'image/',
-  VIDEO: 'video/',
-} as const;
-
-export type ContentType = (typeof CONTENT_TYPE)[keyof typeof CONTENT_TYPE];
+export enum ContentType {
+  IMAGE = 'image/',
+  VIDEO = 'video/',
+}

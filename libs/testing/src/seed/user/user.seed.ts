@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { defaultValue } from '@libs/common/utils/default-value.util';
 import { pickRandomValue } from '@libs/common/utils/random.util';
-import { AUTH_PROVIDER } from '@libs/core/user/constants/auth-provider.constant';
+import { AuthProvider } from '@libs/core/user/constants/auth-provider.constant';
 import { ISeedHelper } from '@libs/testing/interface/seed-helper.interface';
 import { UserSeedInput } from '@libs/testing/seed/user/type/user-seed.input';
 import { UserSeedOutput } from '@libs/testing/seed/user/type/user-seed.output';
@@ -57,7 +57,7 @@ export class UserSeedHelper extends ISeedHelper<UserSeedInput, UserSeedOutput> {
         {
           provider: defaultValue(
             input.social?.provider,
-            pickRandomValue(AUTH_PROVIDER),
+            pickRandomValue(AuthProvider),
           ),
           snsId: defaultValue(input.social?.snsId, faker.string.uuid()),
         },

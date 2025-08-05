@@ -1,14 +1,6 @@
-import {
-  IMAGE_EXTENSION,
-  ImageExtension,
-} from '@libs/common/modules/s3/constants/image-extension.constants';
-import {
-  IsIn,
-  IsNotEmpty,
-  IsNumber,
-  IsPositive,
-  IsString,
-} from 'class-validator';
+import { IsEnumValue } from '@libs/common/decorator/is-enum-value.decorator';
+import { ImageExtension } from '@libs/common/modules/s3/constants/image-extension.constants';
+import { IsIn, IsNotEmpty, IsString } from 'class-validator';
 
 /**
  * Profile Image의 Presigned URL 생성을 위한 입력 값
@@ -23,6 +15,6 @@ export class CreateProfileImagePresignedUrlDto {
    */
   @IsNotEmpty()
   @IsString()
-  @IsIn(Object.values(IMAGE_EXTENSION))
+  @IsEnumValue(ImageExtension)
   extension: ImageExtension;
 }

@@ -1,5 +1,5 @@
 /**
- * enum의 숫자 값만 추출하는 함수
+ * enum의 value 만 추출하는 함수
  *
  * @author 이수인
  * @publicApi

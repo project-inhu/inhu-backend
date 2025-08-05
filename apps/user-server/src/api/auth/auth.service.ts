@@ -1,7 +1,4 @@
-import {
-  AUTH_PROVIDER,
-  AuthProvider,
-} from '@libs/core/user/constants/auth-provider.constant';
+import { AuthProvider } from '@libs/core/user/constants/auth-provider.constant';
 import { UserModel } from '@libs/core/user/model/user.model';
 import { UserCoreService } from '@libs/core/user/user-core.service';
 import {
@@ -31,8 +28,8 @@ export class AuthService {
     private readonly loginTokenService: LoginTokenService,
   ) {
     this.socialAuthProviderMap = {
-      [AUTH_PROVIDER.KAKAO]: this.kakaoLoginStrategy,
-      [AUTH_PROVIDER.APPLE]: this.appleLoginStrategy,
+      [AuthProvider.KAKAO]: this.kakaoLoginStrategy,
+      [AuthProvider.APPLE]: this.appleLoginStrategy,
     };
   }
 

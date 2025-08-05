@@ -11,12 +11,10 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import {
-  PLACE_TYPE,
-  PlaceType,
-} from '@libs/core/place/constants/place-type.constant';
+import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { PlaceModel } from '@libs/core/place/model/place.model';
 import { PlaceWeeklyClosedDayEntity } from './place-weekly-closed-day.entity';
+import { IsEnumValue } from '@libs/common/decorator/is-enum-value.decorator';
 
 export class PlaceEntity {
   /**
@@ -100,7 +98,7 @@ export class PlaceEntity {
   /**
    * 특정 장소의 타입
    */
-  @IsIn(Object.values(PLACE_TYPE))
+  @IsEnumValue(PlaceType)
   public type: PlaceType;
 
   /**

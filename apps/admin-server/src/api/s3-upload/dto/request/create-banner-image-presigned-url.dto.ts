@@ -1,7 +1,5 @@
-import {
-  IMAGE_EXTENSION,
-  ImageExtension,
-} from '@libs/common/modules/s3/constants/image-extension.constants';
+import { IsEnumValue } from '@libs/common/decorator/is-enum-value.decorator';
+import { ImageExtension } from '@libs/common/modules/s3/constants/image-extension.constants';
 import { IsIn, IsNotEmpty, IsString } from 'class-validator';
 
 /**
@@ -17,6 +15,6 @@ export class CreateBannerImagePresignedUrlDto {
    */
   @IsNotEmpty()
   @IsString()
-  @IsIn(Object.values(IMAGE_EXTENSION))
+  @IsEnumValue(ImageExtension)
   extension: ImageExtension;
 }

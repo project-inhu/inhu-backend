@@ -1,7 +1,7 @@
-import { dayOfWeeks } from '@libs/common/modules/date-util/constants/day-of-week.constants';
+import { DayOfWeek } from '@libs/common/modules/date-util/constants/day-of-week.constants';
 import { DateUtilService } from '@libs/common/modules/date-util/date-util.service';
-import { PLACE_TYPE } from '@libs/core/place/constants/place-type.constant';
-import { WEEKLY_CLOSE_TYPE } from '@libs/core/place/constants/weekly-close-type.constant';
+import { PlaceType } from '@libs/core/place/constants/place-type.constant';
+import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 import { BookmarkSeedHelper } from '@libs/testing/seed/bookmark/bookmark.seed';
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { PlaceOverviewEntity } from '@user/api/place/entity/place-overview.entity';
@@ -368,7 +368,7 @@ describe('Place E2E test', () => {
           weeklyClosedDayList: [
             {
               closedDate: now.new(),
-              type: WEEKLY_CLOSE_TYPE.BIWEEKLY,
+              type: WeeklyCloseType.BIWEEKLY,
             },
           ],
         },
@@ -385,7 +385,7 @@ describe('Place E2E test', () => {
           weeklyClosedDayList: [
             {
               closedDate: now.dateAfter(1),
-              type: WEEKLY_CLOSE_TYPE.BIWEEKLY,
+              type: WeeklyCloseType.BIWEEKLY,
             },
           ],
         },
@@ -491,17 +491,17 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 카페',
-          type: PLACE_TYPE.CAFE,
+          type: PlaceType.CAFE,
         },
         {
           activatedAt: new Date(),
           name: 'place2: 음식점',
-          type: PLACE_TYPE.RESTAURANT,
+          type: PlaceType.RESTAURANT,
         },
         {
           activatedAt: new Date(),
           name: 'place3: 술집',
-          type: PLACE_TYPE.BAR,
+          type: PlaceType.BAR,
         },
       ]);
 
@@ -510,7 +510,7 @@ describe('Place E2E test', () => {
         .get('/place/all')
         .query({
           page: 1,
-          type: PLACE_TYPE.CAFE,
+          type: PlaceType.CAFE,
         })
         .expect(200);
 
@@ -767,7 +767,7 @@ describe('Place E2E test', () => {
           addressX: 123.456,
           addressY: 78.91,
         },
-        type: PLACE_TYPE.CAFE,
+        type: PlaceType.CAFE,
         reviewCount: 5,
         placeImgList: ['/place/test-image1.png', '/place/test-image2.png'],
         bookmarkCount: 1,
@@ -790,24 +790,24 @@ describe('Place E2E test', () => {
         ],
         breakTime: [
           {
-            day: dayOfWeeks.THU,
+            day: DayOfWeek.THU,
             startAt: now.new('12:00'),
             endAt: now.new('13:00'),
           },
           {
-            day: dayOfWeeks.THU,
+            day: DayOfWeek.THU,
             startAt: now.new('20:00'),
             endAt: now.new('21:00'),
           },
         ],
         operatingHourList: [
           {
-            day: dayOfWeeks.FRI,
+            day: DayOfWeek.FRI,
             startAt: now.new('10:00'),
             endAt: now.new('20:00'),
           },
           {
-            day: dayOfWeeks.SAT,
+            day: DayOfWeek.SAT,
             startAt: now.new('10:00'),
             endAt: now.new('20:00'),
           },
@@ -815,20 +815,20 @@ describe('Place E2E test', () => {
         weeklyClosedDayList: [
           {
             closedDate: now.new(),
-            type: WEEKLY_CLOSE_TYPE.BIWEEKLY,
+            type: WeeklyCloseType.BIWEEKLY,
           },
           {
             closedDate: now.dateAfter(1),
-            type: WEEKLY_CLOSE_TYPE.BIWEEKLY,
+            type: WeeklyCloseType.BIWEEKLY,
           },
         ],
         closedDayList: [
           {
-            day: dayOfWeeks.FRI,
+            day: DayOfWeek.FRI,
             week: 1,
           },
           {
-            day: dayOfWeeks.SAT,
+            day: DayOfWeek.SAT,
             week: 2,
           },
         ],
@@ -868,19 +868,15 @@ describe('Place E2E test', () => {
       expect(place.weeklyClosedDayList[0].date).toBe(
         now.new().toISOString().split('T')[0],
       );
-      expect(place.weeklyClosedDayList[0].type).toBe(
-        WEEKLY_CLOSE_TYPE.BIWEEKLY,
-      );
+      expect(place.weeklyClosedDayList[0].type).toBe(WeeklyCloseType.BIWEEKLY);
       expect(place.weeklyClosedDayList[1].date).toBe(
         now.dateAfter(1).toISOString().split('T')[0],
       );
-      expect(place.weeklyClosedDayList[1].type).toBe(
-        WEEKLY_CLOSE_TYPE.BIWEEKLY,
-      );
+      expect(place.weeklyClosedDayList[1].type).toBe(WeeklyCloseType.BIWEEKLY);
       expect(place.closedDayList.length).toBe(2);
-      expect(place.closedDayList[0].day).toBe(dayOfWeeks.FRI);
+      expect(place.closedDayList[0].day).toBe(DayOfWeek.FRI);
       expect(place.closedDayList[0].week).toBe(1);
-      expect(place.closedDayList[1].day).toBe(dayOfWeeks.SAT);
+      expect(place.closedDayList[1].day).toBe(DayOfWeek.SAT);
       expect(place.closedDayList[1].week).toBe(2);
     });
 
