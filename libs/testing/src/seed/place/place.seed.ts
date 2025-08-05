@@ -4,7 +4,7 @@ import {
   getRandomValues,
   pickRandomValue,
 } from '@libs/common/utils/random.util';
-import { PLACE_TYPE } from '@libs/core/place/constants/place-type.constant';
+import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { ISeedHelper } from '@libs/testing/interface/seed-helper.interface';
 import { PlaceSeedInput } from '@libs/testing/seed/place/type/place-seed.input';
 import { PlaceSeedOutput } from '@libs/testing/seed/place/type/place-seed.output';
@@ -38,7 +38,7 @@ export class PlaceSeedHelper extends ISeedHelper<
         input.placeImgList,
         getRandomValues(1, 5, () => `/place-image/${faker.string.uuid()}.png`),
       ),
-      type: defaultValue(input.type, pickRandomValue(PLACE_TYPE)),
+      type: defaultValue(input.type, pickRandomValue(PlaceType)),
       roadAddress: {
         name: defaultValue(
           input.roadAddress?.name,

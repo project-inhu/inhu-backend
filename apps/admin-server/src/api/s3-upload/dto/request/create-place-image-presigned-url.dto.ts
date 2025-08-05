@@ -1,12 +1,9 @@
-import {
-  IMAGE_EXTENSION,
-  ImageExtension,
-} from '@libs/common/modules/s3/constants/image-extension.constants';
+import { IsEnumValue } from '@libs/common/decorator/is-enum-value.decorator';
+import { ImageExtension } from '@libs/common/modules/s3/constants/image-extension.constants';
 import {
   ArrayMaxSize,
   ArrayNotEmpty,
   IsArray,
-  IsIn,
   IsString,
 } from 'class-validator';
 
@@ -24,7 +21,7 @@ export class CreatePlaceImagePresignedUrlsDto {
   @IsArray()
   @ArrayNotEmpty()
   @IsString({ each: true })
-  @IsIn(Object.values(IMAGE_EXTENSION), { each: true })
+  @IsEnumValue(ImageExtension, { each: true })
   @ArrayMaxSize(5)
   extensions: ImageExtension[];
 }

@@ -1,4 +1,4 @@
-import { AUTH_PROVIDER } from '@libs/core/user/constants/auth-provider.constant';
+import { AuthProvider } from '@libs/core/user/constants/auth-provider.constant';
 import { ITestHelper } from '@libs/testing/interface/test-helper.interface';
 import { TokenIssuedBy } from '@user/common/module/login-token/constants/token-issued-by.constants';
 import { LoginTokenService } from '@user/common/module/login-token/login-token.service';
@@ -27,7 +27,7 @@ export class LoginUserHelper {
           profileImagePath: null,
           userProvider: {
             create: {
-              name: AUTH_PROVIDER.KAKAO,
+              name: AuthProvider.KAKAO,
               snsId: 'user-1-sns-id-000123',
             },
           },
@@ -39,7 +39,7 @@ export class LoginUserHelper {
           profileImagePath: null,
           userProvider: {
             create: {
-              name: AUTH_PROVIDER.KAKAO,
+              name: AuthProvider.KAKAO,
               snsId: 'user-2-sns-id-000123',
             },
           },

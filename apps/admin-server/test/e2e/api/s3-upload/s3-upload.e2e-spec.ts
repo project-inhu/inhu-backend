@@ -1,11 +1,11 @@
 import { AdminServerModule } from '@admin/admin-server.module';
-import { IMAGE_EXTENSION } from '@libs/common/modules/s3/constants/image-extension.constants';
+import { ImageExtension } from '@libs/common/modules/s3/constants/image-extension.constants';
 import { TestHelper } from '../../setup/test.helper';
 import { CreatePlaceImagePresignedUrlsDto } from '@admin/api/s3-upload/dto/request/create-place-image-presigned-url.dto';
 import { CreateReviewImagePresignedUrlsDto } from '@admin/api/s3-upload/dto/request/create-review-image-presigned-url.dto';
 import { S3Service } from '@libs/common/modules/s3/s3.service';
-import { S3_FOLDER } from '@libs/common/modules/s3/constants/s3-folder.constants';
-import { CONTENT_TYPE } from '@libs/common/modules/s3/constants/content-type.constants';
+import { S3Folder } from '@libs/common/modules/s3/constants/s3-folder.constants';
+import { ContentType } from '@libs/common/modules/s3/constants/content-type.constants';
 
 describe('s3-upload E2E test', () => {
   const testHelper = TestHelper.create(AdminServerModule);
@@ -41,9 +41,9 @@ describe('s3-upload E2E test', () => {
         .test()
         .post('/s3-upload/banner-image/presigned-url')
         .send({
-          extension: IMAGE_EXTENSION.JPG,
+          extension: ImageExtension.JPG,
           maxSize: 10,
-          contentType: CONTENT_TYPE.IMAGE,
+          contentType: ContentType.IMAGE,
         })
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(201);
@@ -64,7 +64,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/banner-image/presigned-url')
-        .send({ extension: IMAGE_EXTENSION.JPG })
+        .send({ extension: ImageExtension.JPG })
         .expect(401);
     });
 
@@ -78,7 +78,7 @@ describe('s3-upload E2E test', () => {
         .expect(400);
     });
 
-    it('400 - extension is not in IMAGE_EXTENSION type', async () => {
+    it('400 - extension is not in ImageExtension type', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
       await testHelper
@@ -113,9 +113,9 @@ describe('s3-upload E2E test', () => {
         .test()
         .post('/s3-upload/menu-image/presigned-url')
         .send({
-          extension: IMAGE_EXTENSION.JPG,
+          extension: ImageExtension.JPG,
           maxSize: 10,
-          contentType: CONTENT_TYPE.IMAGE,
+          contentType: ContentType.IMAGE,
         })
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(201);
@@ -136,7 +136,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/menu-image/presigned-url')
-        .send({ extension: IMAGE_EXTENSION.JPG })
+        .send({ extension: ImageExtension.JPG })
         .expect(401);
     });
 
@@ -150,7 +150,7 @@ describe('s3-upload E2E test', () => {
         .expect(400);
     });
 
-    it('400 - extension is not in IMAGE_EXTENSION type', async () => {
+    it('400 - extension is not in ImageExtension type', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
       await testHelper
@@ -167,7 +167,11 @@ describe('s3-upload E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
       const dto: CreatePlaceImagePresignedUrlsDto = {
-        extensions: ['jpg', 'png', 'png'],
+        extensions: [
+          ImageExtension.JPG,
+          ImageExtension.PNG,
+          ImageExtension.PNG,
+        ],
       };
 
       const mockS3Response = [
@@ -211,7 +215,7 @@ describe('s3-upload E2E test', () => {
       expect(responseBody[0].url).toEqual(mockS3Response[0].url);
 
       expect(s3ServiceMock).toHaveBeenCalledWith({
-        folder: S3_FOLDER.PLACE,
+        folder: S3Folder.PLACE,
         extensions: dto.extensions,
         maxSize: 10,
         contentType: 'image/',
@@ -224,7 +228,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/place-image/presigned-urls')
-        .send({ extension: IMAGE_EXTENSION.JPG })
+        .send({ extension: ImageExtension.JPG })
         .expect(401);
     });
 
@@ -264,7 +268,7 @@ describe('s3-upload E2E test', () => {
     it('400 - extensions array exceeds max size', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
-      const tooManyExtensions = new Array(10).fill(IMAGE_EXTENSION.JPG);
+      const tooManyExtensions = new Array(10).fill(ImageExtension.JPG);
 
       await testHelper
         .test()
@@ -280,7 +284,11 @@ describe('s3-upload E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
       const dto: CreateReviewImagePresignedUrlsDto = {
-        extensions: ['png', 'jpg', 'jpeg'],
+        extensions: [
+          ImageExtension.JPG,
+          ImageExtension.PNG,
+          ImageExtension.JPEG,
+        ],
       };
 
       const mockS3Response = [
@@ -324,10 +332,10 @@ describe('s3-upload E2E test', () => {
       expect(responseBody[0].url).toEqual(mockS3Response[0].url);
 
       expect(s3ServiceMock).toHaveBeenCalledWith({
-        folder: S3_FOLDER.REVIEW,
+        folder: S3Folder.REVIEW,
         extensions: dto.extensions,
         maxSize: 10,
-        contentType: CONTENT_TYPE.IMAGE,
+        contentType: ContentType.IMAGE,
       });
 
       s3ServiceMock.mockRestore();
@@ -337,7 +345,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/review-image/presigned-urls')
-        .send({ extension: IMAGE_EXTENSION.JPG })
+        .send({ extension: ImageExtension.JPG })
         .expect(401);
     });
 
@@ -377,7 +385,7 @@ describe('s3-upload E2E test', () => {
     it('400 - extensions array exceeds max size', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
-      const tooManyExtensions = new Array(10).fill(IMAGE_EXTENSION.JPG);
+      const tooManyExtensions = new Array(10).fill(ImageExtension.JPG);
 
       await testHelper
         .test()

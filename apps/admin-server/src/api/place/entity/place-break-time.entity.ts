@@ -1,10 +1,8 @@
+import { IsEnumValue } from '@libs/common/decorator/is-enum-value.decorator';
 import { IsKoreanTime } from '@libs/common/decorator/is-korean-time.decorator';
-import {
-  DayOfWeek,
-  dayOfWeeks,
-} from '@libs/common/modules/date-util/constants/day-of-week.constants';
+import { DayOfWeek } from '@libs/common/modules/date-util/constants/day-of-week.constants';
 import { PlaceBreakTimeModel } from '@libs/core/place/model/place-break-time.model';
-import { IsIn, IsString } from 'class-validator';
+import { IsEnum, IsIn, IsString } from 'class-validator';
 
 export class PlaceBreakTimeEntity {
   /**
@@ -37,7 +35,7 @@ export class PlaceBreakTimeEntity {
    *
    * @example 0 (일요일)
    */
-  @IsIn(Object.values(dayOfWeeks))
+  @IsEnumValue(DayOfWeek)
   public day: DayOfWeek;
 
   constructor(data: PlaceBreakTimeEntity) {

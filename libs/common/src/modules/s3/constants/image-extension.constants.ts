@@ -4,11 +4,8 @@
  * @author 조희주
  * @publicApi
  */
-export const IMAGE_EXTENSION = {
-  JPG: 'jpg',
-  JPEG: 'jpeg',
-  PNG: 'png',
-} as const;
-
-export type ImageExtension =
-  (typeof IMAGE_EXTENSION)[keyof typeof IMAGE_EXTENSION];
+export enum ImageExtension {
+  JPG = 'jpg',
+  JPEG = 'jpeg',
+  PNG = 'png',
+}

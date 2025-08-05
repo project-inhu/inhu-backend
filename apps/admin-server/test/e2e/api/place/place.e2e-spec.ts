@@ -4,9 +4,9 @@ import { GetPlaceOverviewDto } from '@admin/api/place/dto/request/get-place-over
 import { UpdatePlaceDto } from '@admin/api/place/dto/request/update-place.dto';
 import { PlaceOverviewEntity } from '@admin/api/place/entity/place-overview.entity';
 import { PlaceEntity } from '@admin/api/place/entity/place.entity';
-import { dayOfWeeks } from '@libs/common/modules/date-util/constants/day-of-week.constants';
-import { PLACE_TYPE } from '@libs/core/place/constants/place-type.constant';
-import { WEEKLY_CLOSE_TYPE } from '@libs/core/place/constants/weekly-close-type.constant';
+import { DayOfWeek } from '@libs/common/modules/date-util/constants/day-of-week.constants';
+import { PlaceType } from '@libs/core/place/constants/place-type.constant';
+import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { TestHelper } from 'apps/admin-server/test/e2e/setup/test.helper';
@@ -132,7 +132,7 @@ describe('Place E2E test', () => {
           addressX: 123.456,
           addressY: 78.91,
         },
-        type: PLACE_TYPE.CAFE,
+        type: PlaceType.CAFE,
         reviewCount: 5,
         placeImgList: ['/place/test-image1.png', '/place/test-image2.png'],
         bookmarkCount: 1,
@@ -155,24 +155,24 @@ describe('Place E2E test', () => {
         ],
         breakTime: [
           {
-            day: dayOfWeeks.THU,
+            day: DayOfWeek.THU,
             startAt: now.new('12:00'),
             endAt: now.new('13:00'),
           },
           {
-            day: dayOfWeeks.THU,
+            day: DayOfWeek.THU,
             startAt: now.new('20:00'),
             endAt: now.new('21:00'),
           },
         ],
         operatingHourList: [
           {
-            day: dayOfWeeks.FRI,
+            day: DayOfWeek.FRI,
             startAt: now.new('10:00'),
             endAt: now.new('20:00'),
           },
           {
-            day: dayOfWeeks.SAT,
+            day: DayOfWeek.SAT,
             startAt: now.new('10:00'),
             endAt: now.new('20:00'),
           },
@@ -180,20 +180,20 @@ describe('Place E2E test', () => {
         weeklyClosedDayList: [
           {
             closedDate: now.new(),
-            type: WEEKLY_CLOSE_TYPE.BIWEEKLY,
+            type: WeeklyCloseType.BIWEEKLY,
           },
           {
             closedDate: now.dateAfter(1),
-            type: WEEKLY_CLOSE_TYPE.BIWEEKLY,
+            type: WeeklyCloseType.BIWEEKLY,
           },
         ],
         closedDayList: [
           {
-            day: dayOfWeeks.FRI,
+            day: DayOfWeek.FRI,
             week: 1,
           },
           {
-            day: dayOfWeeks.SAT,
+            day: DayOfWeek.SAT,
             week: 2,
           },
         ],
@@ -232,19 +232,15 @@ describe('Place E2E test', () => {
       expect(place.weeklyClosedDayList[0].date).toBe(
         now.new().toISOString().split('T')[0],
       );
-      expect(place.weeklyClosedDayList[0].type).toBe(
-        WEEKLY_CLOSE_TYPE.BIWEEKLY,
-      );
+      expect(place.weeklyClosedDayList[0].type).toBe(WeeklyCloseType.BIWEEKLY);
       expect(place.weeklyClosedDayList[1].date).toBe(
         now.dateAfter(1).toISOString().split('T')[0],
       );
-      expect(place.weeklyClosedDayList[1].type).toBe(
-        WEEKLY_CLOSE_TYPE.BIWEEKLY,
-      );
+      expect(place.weeklyClosedDayList[1].type).toBe(WeeklyCloseType.BIWEEKLY);
       expect(place.closedDayList.length).toBe(2);
-      expect(place.closedDayList[0].day).toBe(dayOfWeeks.FRI);
+      expect(place.closedDayList[0].day).toBe(DayOfWeek.FRI);
       expect(place.closedDayList[0].week).toBe(1);
-      expect(place.closedDayList[1].day).toBe(dayOfWeeks.SAT);
+      expect(place.closedDayList[1].day).toBe(DayOfWeek.SAT);
       expect(place.closedDayList[1].week).toBe(2);
     });
 
@@ -305,7 +301,7 @@ describe('Place E2E test', () => {
         tel: '032-1234-5678',
         isClosedOnHoliday: false,
         imagePathList: ['/place/image1.png', '/place/image2.png'],
-        type: PLACE_TYPE.RESTAURANT,
+        type: PlaceType.RESTAURANT,
         roadAddress: {
           name: 'New Road',
           detail: 'New Detail',
@@ -313,20 +309,20 @@ describe('Place E2E test', () => {
           addressY: 78.91,
         },
         closedDayList: [
-          { day: dayOfWeeks.MON, week: 1 },
-          { day: dayOfWeeks.TUE, week: 2 },
+          { day: DayOfWeek.MON, week: 1 },
+          { day: DayOfWeek.TUE, week: 2 },
         ],
         breakTimeList: [
-          { startAt: '12:00:00', endAt: '13:00:00', day: dayOfWeeks.WED },
-          { startAt: '14:00:00', endAt: '15:00:00', day: dayOfWeeks.FRI },
+          { startAt: '12:00:00', endAt: '13:00:00', day: DayOfWeek.WED },
+          { startAt: '14:00:00', endAt: '15:00:00', day: DayOfWeek.FRI },
         ],
         operatingHourList: [
-          { startAt: '10:00:00', endAt: '20:00:00', day: dayOfWeeks.THU },
-          { startAt: '11:00:00', endAt: '21:00:00', day: dayOfWeeks.SAT },
+          { startAt: '10:00:00', endAt: '20:00:00', day: DayOfWeek.THU },
+          { startAt: '11:00:00', endAt: '21:00:00', day: DayOfWeek.SAT },
         ],
         weeklyClosedDayList: [
-          { date: '2025-07-22', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
-          { date: '2025-07-23', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
+          { date: '2025-07-22', type: WeeklyCloseType.BIWEEKLY },
+          { date: '2025-07-23', type: WeeklyCloseType.BIWEEKLY },
         ],
       };
 
@@ -356,17 +352,17 @@ describe('Place E2E test', () => {
       expect(place.breakTimeList.length).toBe(2);
       expect(place.breakTimeList[0].startAt).toBe('12:00:00');
       expect(place.breakTimeList[0].endAt).toBe('13:00:00');
-      expect(place.breakTimeList[0].day).toBe(dayOfWeeks.WED);
+      expect(place.breakTimeList[0].day).toBe(DayOfWeek.WED);
       expect(place.breakTimeList[1].startAt).toBe('14:00:00');
       expect(place.breakTimeList[1].endAt).toBe('15:00:00');
-      expect(place.breakTimeList[1].day).toBe(dayOfWeeks.FRI);
+      expect(place.breakTimeList[1].day).toBe(DayOfWeek.FRI);
       expect(place.operatingHourList.length).toBe(2);
       expect(place.operatingHourList[0].startAt).toBe('10:00:00');
       expect(place.operatingHourList[0].endAt).toBe('20:00:00');
-      expect(place.operatingHourList[0].day).toBe(dayOfWeeks.THU);
+      expect(place.operatingHourList[0].day).toBe(DayOfWeek.THU);
       expect(place.operatingHourList[1].startAt).toBe('11:00:00');
       expect(place.operatingHourList[1].endAt).toBe('21:00:00');
-      expect(place.operatingHourList[1].day).toBe(dayOfWeeks.SAT);
+      expect(place.operatingHourList[1].day).toBe(DayOfWeek.SAT);
       expect(place.weeklyClosedDayList.length).toBe(2);
       expect(place.weeklyClosedDayList[0].date).toBe(
         createPlaceDto.weeklyClosedDayList[0].date,
@@ -381,9 +377,9 @@ describe('Place E2E test', () => {
         createPlaceDto.weeklyClosedDayList[1].type,
       );
       expect(place.closedDayList.length).toBe(2);
-      expect(place.closedDayList[0].day).toBe(dayOfWeeks.MON);
+      expect(place.closedDayList[0].day).toBe(DayOfWeek.MON);
       expect(place.closedDayList[0].week).toBe(1);
-      expect(place.closedDayList[1].day).toBe(dayOfWeeks.TUE);
+      expect(place.closedDayList[1].day).toBe(DayOfWeek.TUE);
       expect(place.closedDayList[1].week).toBe(2);
     });
 
@@ -393,7 +389,7 @@ describe('Place E2E test', () => {
         tel: '032-1234-5678',
         isClosedOnHoliday: false,
         imagePathList: ['/place/image1.png', '/place/image2.png'],
-        type: PLACE_TYPE.RESTAURANT,
+        type: PlaceType.RESTAURANT,
         roadAddress: {
           name: 'New Road',
           detail: 'New Detail',
@@ -401,20 +397,20 @@ describe('Place E2E test', () => {
           addressY: 78.91,
         },
         closedDayList: [
-          { day: dayOfWeeks.MON, week: 1 },
-          { day: dayOfWeeks.TUE, week: 2 },
+          { day: DayOfWeek.MON, week: 1 },
+          { day: DayOfWeek.TUE, week: 2 },
         ],
         breakTimeList: [
-          { startAt: '12:00:00', endAt: '13:00:00', day: dayOfWeeks.WED },
-          { startAt: '14:00:00', endAt: '15:00:00', day: dayOfWeeks.FRI },
+          { startAt: '12:00:00', endAt: '13:00:00', day: DayOfWeek.WED },
+          { startAt: '14:00:00', endAt: '15:00:00', day: DayOfWeek.FRI },
         ],
         operatingHourList: [
-          { startAt: '10:00:00', endAt: '20:00:00', day: dayOfWeeks.THU },
-          { startAt: '11:00:00', endAt: '21:00:00', day: dayOfWeeks.SAT },
+          { startAt: '10:00:00', endAt: '20:00:00', day: DayOfWeek.THU },
+          { startAt: '11:00:00', endAt: '21:00:00', day: DayOfWeek.SAT },
         ],
         weeklyClosedDayList: [
-          { date: '2025-07-22', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
-          { date: '2025-07-23', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
+          { date: '2025-07-22', type: WeeklyCloseType.BIWEEKLY },
+          { date: '2025-07-23', type: WeeklyCloseType.BIWEEKLY },
         ],
       };
 
@@ -427,7 +423,7 @@ describe('Place E2E test', () => {
         tel: '032-1234-5678',
         isClosedOnHoliday: false,
         imagePathList: ['/place/image1.png', '/place/image2.png'],
-        type: PLACE_TYPE.RESTAURANT,
+        type: PlaceType.RESTAURANT,
         roadAddress: {
           name: 'New Road',
           detail: 'New Detail',
@@ -436,7 +432,7 @@ describe('Place E2E test', () => {
         },
         closedDayList: [],
         breakTimeList: [
-          { startAt: '12:00:00.00z', endAt: '13:00:00', day: dayOfWeeks.WED },
+          { startAt: '12:00:00.00z', endAt: '13:00:00', day: DayOfWeek.WED },
         ],
         operatingHourList: [],
         weeklyClosedDayList: [],
@@ -458,7 +454,7 @@ describe('Place E2E test', () => {
         tel: '032-1234-5678',
         isClosedOnHoliday: false,
         imagePathList: ['/place/image1.png', '/place/image2.png'],
-        type: PLACE_TYPE.RESTAURANT,
+        type: PlaceType.RESTAURANT,
         roadAddress: {
           name: 'New Road',
           detail: 'New Detail',
@@ -469,7 +465,7 @@ describe('Place E2E test', () => {
         breakTimeList: [],
         operatingHourList: [],
         weeklyClosedDayList: [
-          { date: '2025/07/01', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
+          { date: '2025/07/01', type: WeeklyCloseType.BIWEEKLY },
         ],
       };
 
@@ -499,7 +495,7 @@ describe('Place E2E test', () => {
           '/place/updated-image1.png',
           '/place/updated-image2.png',
         ],
-        type: PLACE_TYPE.RESTAURANT,
+        type: PlaceType.RESTAURANT,
         roadAddress: {
           name: 'Updated Road',
           detail: 'Updated Detail',
@@ -507,20 +503,20 @@ describe('Place E2E test', () => {
           addressY: 78.91,
         },
         closedDayList: [
-          { day: dayOfWeeks.MON, week: 1 },
-          { day: dayOfWeeks.TUE, week: 2 },
+          { day: DayOfWeek.MON, week: 1 },
+          { day: DayOfWeek.TUE, week: 2 },
         ],
         breakTimeList: [
-          { startAt: '12:00:00', endAt: '13:00:00', day: dayOfWeeks.WED },
-          { startAt: '14:00:00', endAt: '15:00:00', day: dayOfWeeks.FRI },
+          { startAt: '12:00:00', endAt: '13:00:00', day: DayOfWeek.WED },
+          { startAt: '14:00:00', endAt: '15:00:00', day: DayOfWeek.FRI },
         ],
         operatingHourList: [
-          { startAt: '10:00:00', endAt: '20:00:00', day: dayOfWeeks.THU },
-          { startAt: '11:00:00', endAt: '21:00:00', day: dayOfWeeks.SAT },
+          { startAt: '10:00:00', endAt: '20:00:00', day: DayOfWeek.THU },
+          { startAt: '11:00:00', endAt: '21:00:00', day: DayOfWeek.SAT },
         ],
         weeklyClosedDayList: [
-          { date: '2025-07-22', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
-          { date: '2025-07-23', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
+          { date: '2025-07-22', type: WeeklyCloseType.BIWEEKLY },
+          { date: '2025-07-23', type: WeeklyCloseType.BIWEEKLY },
         ],
       };
 
@@ -559,24 +555,24 @@ describe('Place E2E test', () => {
         updatePlaceDto.imagePathList.sort(),
       );
       expect(placeModel.closedDayList.length).toBe(2);
-      expect(placeModel.closedDayList[0].day).toBe(dayOfWeeks.MON);
+      expect(placeModel.closedDayList[0].day).toBe(DayOfWeek.MON);
       expect(placeModel.closedDayList[0].week).toBe(1);
-      expect(placeModel.closedDayList[1].day).toBe(dayOfWeeks.TUE);
+      expect(placeModel.closedDayList[1].day).toBe(DayOfWeek.TUE);
       expect(placeModel.closedDayList[1].week).toBe(2);
       expect(placeModel.breakTimeList.length).toBe(2);
       expect(placeModel.breakTimeList[0].startAt).toBe('12:00:00');
       expect(placeModel.breakTimeList[0].endAt).toBe('13:00:00');
-      expect(placeModel.breakTimeList[0].day).toBe(dayOfWeeks.WED);
+      expect(placeModel.breakTimeList[0].day).toBe(DayOfWeek.WED);
       expect(placeModel.breakTimeList[1].startAt).toBe('14:00:00');
       expect(placeModel.breakTimeList[1].endAt).toBe('15:00:00');
-      expect(placeModel.breakTimeList[1].day).toBe(dayOfWeeks.FRI);
+      expect(placeModel.breakTimeList[1].day).toBe(DayOfWeek.FRI);
       expect(placeModel.operatingHourList.length).toBe(2);
       expect(placeModel.operatingHourList[0].startAt).toBe('10:00:00');
       expect(placeModel.operatingHourList[0].endAt).toBe('20:00:00');
-      expect(placeModel.operatingHourList[0].day).toBe(dayOfWeeks.THU);
+      expect(placeModel.operatingHourList[0].day).toBe(DayOfWeek.THU);
       expect(placeModel.operatingHourList[1].startAt).toBe('11:00:00');
       expect(placeModel.operatingHourList[1].endAt).toBe('21:00:00');
-      expect(placeModel.operatingHourList[1].day).toBe(dayOfWeeks.SAT);
+      expect(placeModel.operatingHourList[1].day).toBe(DayOfWeek.SAT);
       expect(placeModel.weeklyClosedDayList.length).toBe(2);
       expect(placeModel.weeklyClosedDayList[0].date).toBe(
         updatePlaceDto.weeklyClosedDayList[0].date,
@@ -605,7 +601,7 @@ describe('Place E2E test', () => {
           '/place/updated-image1.png',
           '/place/updated-image2.png',
         ],
-        type: PLACE_TYPE.RESTAURANT,
+        type: PlaceType.RESTAURANT,
         roadAddress: {
           name: 'Updated Road',
           detail: 'Updated Detail',
@@ -613,20 +609,20 @@ describe('Place E2E test', () => {
           addressY: 78.91,
         },
         closedDayList: [
-          { day: dayOfWeeks.MON, week: 1 },
-          { day: dayOfWeeks.TUE, week: 2 },
+          { day: DayOfWeek.MON, week: 1 },
+          { day: DayOfWeek.TUE, week: 2 },
         ],
         breakTimeList: [
-          { startAt: '12:00:00', endAt: '13:00:00', day: dayOfWeeks.WED },
-          { startAt: '14:00:00', endAt: '15:00:00', day: dayOfWeeks.FRI },
+          { startAt: '12:00:00', endAt: '13:00:00', day: DayOfWeek.WED },
+          { startAt: '14:00:00', endAt: '15:00:00', day: DayOfWeek.FRI },
         ],
         operatingHourList: [
-          { startAt: '10:00:00', endAt: '20:00:00', day: dayOfWeeks.THU },
-          { startAt: '11:00:00', endAt: '21:00:00', day: dayOfWeeks.SAT },
+          { startAt: '10:00:00', endAt: '20:00:00', day: DayOfWeek.THU },
+          { startAt: '11:00:00', endAt: '21:00:00', day: DayOfWeek.SAT },
         ],
         weeklyClosedDayList: [
-          { date: '2025-07-22', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
-          { date: '2025-07-23', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
+          { date: '2025-07-22', type: WeeklyCloseType.BIWEEKLY },
+          { date: '2025-07-23', type: WeeklyCloseType.BIWEEKLY },
         ],
       };
 
@@ -649,7 +645,7 @@ describe('Place E2E test', () => {
           '/place/updated-image1.png',
           '/place/updated-image2.png',
         ],
-        type: PLACE_TYPE.RESTAURANT,
+        type: PlaceType.RESTAURANT,
         roadAddress: {
           name: 'Updated Road',
           detail: 'Updated Detail',
@@ -657,20 +653,20 @@ describe('Place E2E test', () => {
           addressY: 78.91,
         },
         closedDayList: [
-          { day: dayOfWeeks.MON, week: 1 },
-          { day: dayOfWeeks.TUE, week: 2 },
+          { day: DayOfWeek.MON, week: 1 },
+          { day: DayOfWeek.TUE, week: 2 },
         ],
         breakTimeList: [
-          { startAt: '12:00:00', endAt: '13:00:00', day: dayOfWeeks.WED },
-          { startAt: '14:00:00', endAt: '15:00:00', day: dayOfWeeks.FRI },
+          { startAt: '12:00:00', endAt: '13:00:00', day: DayOfWeek.WED },
+          { startAt: '14:00:00', endAt: '15:00:00', day: DayOfWeek.FRI },
         ],
         operatingHourList: [
-          { startAt: '10:00:00', endAt: '20:00:00', day: dayOfWeeks.THU },
-          { startAt: '11:00:00', endAt: '21:00:00', day: dayOfWeeks.SAT },
+          { startAt: '10:00:00', endAt: '20:00:00', day: DayOfWeek.THU },
+          { startAt: '11:00:00', endAt: '21:00:00', day: DayOfWeek.SAT },
         ],
         weeklyClosedDayList: [
-          { date: '2025-07-22', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
-          { date: '2025-07-23', type: WEEKLY_CLOSE_TYPE.BIWEEKLY },
+          { date: '2025-07-22', type: WeeklyCloseType.BIWEEKLY },
+          { date: '2025-07-23', type: WeeklyCloseType.BIWEEKLY },
         ],
       };
 

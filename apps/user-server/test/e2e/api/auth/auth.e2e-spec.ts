@@ -1,5 +1,5 @@
 import { RedisService } from '@libs/common/modules/redis/redis.service';
-import { AUTH_PROVIDER } from '@libs/core/user/constants/auth-provider.constant';
+import { AuthProvider } from '@libs/core/user/constants/auth-provider.constant';
 import { UserSeedHelper } from '@libs/testing/seed/user/user.seed';
 import { extractCookieValueFromSetCookieHeader } from '@libs/testing/utils/extract-cookie-value.util';
 import { AppleLoginStrategy } from '@user/api/auth/social-login/strategy/apple/apple-login.strategy';
@@ -192,7 +192,7 @@ describe('Auth E2E test', () => {
       // mocking
       const mockingOAuthInfo = {
         snsId: 'test-sns-id',
-        provider: AUTH_PROVIDER.KAKAO,
+        provider: AuthProvider.KAKAO,
       };
 
       // 첫 로그인 시, 해당 snsId로 유저가 존재하지 않아야 함
@@ -201,7 +201,7 @@ describe('Auth E2E test', () => {
         where: {
           userProvider: {
             snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.KAKAO,
+            name: AuthProvider.KAKAO,
           },
         },
       });
@@ -237,11 +237,11 @@ describe('Auth E2E test', () => {
         where: {
           userProvider: {
             snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.KAKAO,
+            name: AuthProvider.KAKAO,
           },
         },
       });
-      expect(user.userProvider?.name).toBe(AUTH_PROVIDER.KAKAO);
+      expect(user.userProvider?.name).toBe(AuthProvider.KAKAO);
       expect(user.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
 
       // redis에 refresh token이 저장되어야 함
@@ -254,14 +254,14 @@ describe('Auth E2E test', () => {
       // mocking
       const mockingOAuthInfo = {
         snsId: 'test-sns-id',
-        provider: AUTH_PROVIDER.KAKAO,
+        provider: AuthProvider.KAKAO,
       };
 
       // 두 번째 로그인 시, 해당 snsId로 유저가 존재해야 함
       await userSeedHelper.seed({
         nickname: 'test-nickname',
         social: {
-          provider: AUTH_PROVIDER.KAKAO,
+          provider: AuthProvider.KAKAO,
           snsId: mockingOAuthInfo.snsId,
         },
       });
@@ -270,7 +270,7 @@ describe('Auth E2E test', () => {
         where: {
           userProvider: {
             snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.KAKAO,
+            name: AuthProvider.KAKAO,
           },
         },
       });
@@ -306,11 +306,11 @@ describe('Auth E2E test', () => {
         where: {
           userProvider: {
             snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.KAKAO,
+            name: AuthProvider.KAKAO,
           },
         },
       });
-      expect(user.userProvider?.name).toBe(AUTH_PROVIDER.KAKAO);
+      expect(user.userProvider?.name).toBe(AuthProvider.KAKAO);
       expect(user.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
 
       // redis에 refresh token이 저장되어야 함
@@ -323,7 +323,7 @@ describe('Auth E2E test', () => {
       // mocking
       const mockingOAuthInfo = {
         snsId: 'test-sns-id',
-        provider: AUTH_PROVIDER.KAKAO,
+        provider: AuthProvider.KAKAO,
       };
 
       // mocking kakao social login
@@ -357,7 +357,7 @@ describe('Auth E2E test', () => {
         where: {
           userProvider: {
             snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.KAKAO,
+            name: AuthProvider.KAKAO,
           },
         },
       });
@@ -395,7 +395,7 @@ describe('Auth E2E test', () => {
       // mocking
       const mockingOAuthInfo = {
         snsId: 'test-sns-id',
-        provider: AUTH_PROVIDER.KAKAO,
+        provider: AuthProvider.KAKAO,
       };
 
       // 첫 로그인 시, 해당 snsId로 유저가 존재하지 않아야 함
@@ -437,7 +437,7 @@ describe('Auth E2E test', () => {
           },
         },
       });
-      expect(user.userProvider?.name).toBe(AUTH_PROVIDER.KAKAO);
+      expect(user.userProvider?.name).toBe(AuthProvider.KAKAO);
       expect(user.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
 
       // redis에 refresh token이 저장되어야 함
@@ -450,14 +450,14 @@ describe('Auth E2E test', () => {
       // mocking
       const mockingOAuthInfo = {
         snsId: 'test-sns-id',
-        provider: AUTH_PROVIDER.KAKAO,
+        provider: AuthProvider.KAKAO,
       };
 
       // 두 번째 로그인 시, 해당 snsId로 유저가 존재해야 함
       await userSeedHelper.seed({
         nickname: 'test-nickname',
         social: {
-          provider: AUTH_PROVIDER.KAKAO,
+          provider: AuthProvider.KAKAO,
           snsId: mockingOAuthInfo.snsId,
         },
       });
@@ -466,7 +466,7 @@ describe('Auth E2E test', () => {
         where: {
           userProvider: {
             snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.KAKAO,
+            name: AuthProvider.KAKAO,
           },
         },
       });
@@ -497,11 +497,11 @@ describe('Auth E2E test', () => {
         where: {
           userProvider: {
             snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.KAKAO,
+            name: AuthProvider.KAKAO,
           },
         },
       });
-      expect(user.userProvider?.name).toBe(AUTH_PROVIDER.KAKAO);
+      expect(user.userProvider?.name).toBe(AuthProvider.KAKAO);
       expect(user.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
 
       // redis에 refresh token이 저장되어야 함
@@ -514,7 +514,7 @@ describe('Auth E2E test', () => {
       // mocking
       const mockingOAuthInfo = {
         snsId: 'test-sns-id',
-        provider: AUTH_PROVIDER.KAKAO,
+        provider: AuthProvider.KAKAO,
       };
 
       // mocking kakao social login
@@ -543,7 +543,7 @@ describe('Auth E2E test', () => {
         where: {
           userProvider: {
             snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.KAKAO,
+            name: AuthProvider.KAKAO,
           },
         },
       });
@@ -581,7 +581,7 @@ describe('Auth E2E test', () => {
       // mocking
       const mockingOAuthInfo = {
         snsId: 'test-sns-id',
-        provider: AUTH_PROVIDER.APPLE,
+        provider: AuthProvider.APPLE,
       };
 
       // 첫 로그인 시, 해당 snsId로 유저가 존재하지 않아야 함
@@ -590,7 +590,7 @@ describe('Auth E2E test', () => {
         where: {
           userProvider: {
             snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.APPLE,
+            name: AuthProvider.APPLE,
           },
         },
       });
@@ -626,11 +626,11 @@ describe('Auth E2E test', () => {
         where: {
           userProvider: {
             snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.APPLE,
+            name: AuthProvider.APPLE,
           },
         },
       });
-      expect(user.userProvider?.name).toBe(AUTH_PROVIDER.APPLE);
+      expect(user.userProvider?.name).toBe(AuthProvider.APPLE);
       expect(user.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
 
       // redis에 refresh token이 저장되어야 함
@@ -643,14 +643,14 @@ describe('Auth E2E test', () => {
       // mocking
       const mockingOAuthInfo = {
         snsId: 'test-sns-id',
-        provider: AUTH_PROVIDER.APPLE,
+        provider: AuthProvider.APPLE,
       };
 
       // 두 번째 로그인 시, 해당 snsId로 유저가 존재해야 함
       await userSeedHelper.seed({
         nickname: 'test-nickname',
         social: {
-          provider: AUTH_PROVIDER.APPLE,
+          provider: AuthProvider.APPLE,
           snsId: mockingOAuthInfo.snsId,
         },
       });
@@ -659,7 +659,7 @@ describe('Auth E2E test', () => {
         where: {
           userProvider: {
             snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.APPLE,
+            name: AuthProvider.APPLE,
           },
         },
       });
@@ -695,11 +695,11 @@ describe('Auth E2E test', () => {
         where: {
           userProvider: {
             snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.APPLE,
+            name: AuthProvider.APPLE,
           },
         },
       });
-      expect(user.userProvider?.name).toBe(AUTH_PROVIDER.APPLE);
+      expect(user.userProvider?.name).toBe(AuthProvider.APPLE);
       expect(user.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
 
       // redis에 refresh token이 저장되어야 함
@@ -712,7 +712,7 @@ describe('Auth E2E test', () => {
       // mocking
       const mockingOAuthInfo = {
         snsId: 'test-sns-id',
-        provider: AUTH_PROVIDER.APPLE,
+        provider: AuthProvider.APPLE,
       };
 
       // mocking apple social login
@@ -746,7 +746,7 @@ describe('Auth E2E test', () => {
         where: {
           userProvider: {
             snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.APPLE,
+            name: AuthProvider.APPLE,
           },
         },
       });
@@ -784,7 +784,7 @@ describe('Auth E2E test', () => {
       // mocking
       const mockingOAuthInfo = {
         snsId: 'test-sns-id',
-        provider: AUTH_PROVIDER.APPLE,
+        provider: AuthProvider.APPLE,
       };
 
       // 첫 로그인 시, 해당 snsId로 유저가 존재하지 않아야 함
@@ -793,7 +793,7 @@ describe('Auth E2E test', () => {
         where: {
           userProvider: {
             snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.APPLE,
+            name: AuthProvider.APPLE,
           },
         },
       });
@@ -824,11 +824,11 @@ describe('Auth E2E test', () => {
         where: {
           userProvider: {
             snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.APPLE,
+            name: AuthProvider.APPLE,
           },
         },
       });
-      expect(user.userProvider?.name).toBe(AUTH_PROVIDER.APPLE);
+      expect(user.userProvider?.name).toBe(AuthProvider.APPLE);
       expect(user.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
 
       // redis에 refresh token이 저장되어야 함
@@ -841,14 +841,14 @@ describe('Auth E2E test', () => {
       // mocking
       const mockingOAuthInfo = {
         snsId: 'test-sns-id',
-        provider: AUTH_PROVIDER.APPLE,
+        provider: AuthProvider.APPLE,
       };
 
       // 두 번째 로그인 시, 해당 snsId로 유저가 존재해야 함
       await userSeedHelper.seed({
         nickname: 'test-nickname',
         social: {
-          provider: AUTH_PROVIDER.APPLE,
+          provider: AuthProvider.APPLE,
           snsId: mockingOAuthInfo.snsId,
         },
       });
@@ -857,7 +857,7 @@ describe('Auth E2E test', () => {
         where: {
           userProvider: {
             snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.APPLE,
+            name: AuthProvider.APPLE,
           },
         },
       });
@@ -888,11 +888,11 @@ describe('Auth E2E test', () => {
         where: {
           userProvider: {
             snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.APPLE,
+            name: AuthProvider.APPLE,
           },
         },
       });
-      expect(user.userProvider?.name).toBe(AUTH_PROVIDER.APPLE);
+      expect(user.userProvider?.name).toBe(AuthProvider.APPLE);
       expect(user.userProvider?.snsId).toBe(mockingOAuthInfo.snsId);
 
       // redis에 refresh token이 저장되어야 함
@@ -905,7 +905,7 @@ describe('Auth E2E test', () => {
       // mocking
       const mockingOAuthInfo = {
         snsId: 'test-sns-id',
-        provider: AUTH_PROVIDER.APPLE,
+        provider: AuthProvider.APPLE,
       };
 
       // mocking apple social login
@@ -934,7 +934,7 @@ describe('Auth E2E test', () => {
         where: {
           userProvider: {
             snsId: mockingOAuthInfo.snsId,
-            name: AUTH_PROVIDER.APPLE,
+            name: AuthProvider.APPLE,
           },
         },
       });

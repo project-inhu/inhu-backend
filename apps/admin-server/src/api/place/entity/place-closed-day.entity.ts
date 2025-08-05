@@ -1,4 +1,4 @@
-import { IsDayOfWeek } from '@libs/common/decorator/is-day-of-week.decorator';
+import { IsEnumValue } from '@libs/common/decorator/is-enum-value.decorator';
 import { DayOfWeek } from '@libs/common/modules/date-util/constants/day-of-week.constants';
 import { PlaceClosedDayModel } from '@libs/core/place/model/place-closed-day.model';
 import { IsIn, IsInt, IsNumber } from 'class-validator';
@@ -19,7 +19,7 @@ export class PlaceClosedDayEntity {
    *
    * @example 0 (일요일)
    */
-  @IsDayOfWeek()
+  @IsEnumValue(DayOfWeek)
   public day: DayOfWeek;
 
   /**

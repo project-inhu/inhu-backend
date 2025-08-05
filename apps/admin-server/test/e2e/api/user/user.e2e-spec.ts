@@ -3,6 +3,7 @@ import { TestHelper } from '../../setup/test.helper';
 import { GetUserOverviewAllDto } from '@admin/api/user/dto/request/get-user-overview-all.dto';
 import { UserOverviewEntity } from '@admin/api/user/entity/user-overview.entity';
 import { UserSeedHelper } from '@libs/testing/seed/user/user.seed';
+import { AuthProvider } from '@libs/core/user/constants/auth-provider.constant';
 
 describe('User E2E test', () => {
   let testHelper = TestHelper.create(AdminServerModule);
@@ -22,8 +23,8 @@ describe('User E2E test', () => {
       const dto: GetUserOverviewAllDto = { page: 1 };
 
       const [user1, user2] = await userSeedHelper.seedAll([
-        { nickname: 'user1', social: { provider: 'kakao' } },
-        { nickname: 'user2', social: { provider: 'apple' } },
+        { nickname: 'user1', social: { provider: AuthProvider.KAKAO } },
+        { nickname: 'user2', social: { provider: AuthProvider.APPLE } },
       ]);
 
       const response = await testHelper

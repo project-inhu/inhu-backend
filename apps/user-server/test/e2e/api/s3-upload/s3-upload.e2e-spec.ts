@@ -1,5 +1,5 @@
-import { CONTENT_TYPE } from '@libs/common/modules/s3/constants/content-type.constants';
-import { IMAGE_EXTENSION } from '@libs/common/modules/s3/constants/image-extension.constants';
+import { ContentType } from '@libs/common/modules/s3/constants/content-type.constants';
+import { ImageExtension } from '@libs/common/modules/s3/constants/image-extension.constants';
 import { S3Service } from '@libs/common/modules/s3/s3.service';
 import { AppModule } from '@user/app.module';
 import { TestHelper } from 'apps/user-server/test/e2e/setup/test.helper';
@@ -38,9 +38,9 @@ describe('s3-upload E2E test', () => {
         .test()
         .post('/s3-upload/profile-image/presigned-url')
         .send({
-          extension: IMAGE_EXTENSION.JPG,
+          extension: ImageExtension.JPG,
           maxSize: 10,
-          contentType: CONTENT_TYPE.IMAGE,
+          contentType: ContentType.IMAGE,
         })
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(201);
@@ -74,7 +74,7 @@ describe('s3-upload E2E test', () => {
         .expect(400);
     });
 
-    it('400 - extension is not in IMAGE_EXTENSION type', async () => {
+    it('400 - extension is not in ImageExtension type', async () => {
       const loginUser = testHelper.loginUsers.user1;
 
       await testHelper
