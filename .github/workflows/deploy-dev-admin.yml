@@ -17,7 +17,7 @@ jobs:
       # 이 워크플로우를 계속 실행해야 하는지 (true/false)
       should_run: ${{ steps.filter.outputs.admin-server }}
       # 배포까지 필요한 변경인지 (true/false)
-      should_deploy: ${{ steps.deployment-gate.outputs.should_deploy }}
+      should_deploy: ${{ steps.deployment-result.outputs.should_deploy }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -50,7 +50,7 @@ jobs:
         with:
           # 오직 이 파일들만 배포를 유발할 수 있음
           files: |
-            .github/workflows/deploy-dev-user.yml
+            .github/workflows/deploy-dev-admin.yml
             apps/admin-server/src/**
             libs/{common, core}/**
             prisma/**
@@ -60,8 +60,14 @@ jobs:
             package-lock.json
 
       - name: Set deployment flag
-        if: steps.deployment-gate.outputs.any_changed == 'true'
-        run: echo "should_deploy=true" >> $GITHUB_OUTPUT
+        id: deployment-result
+        run: |
+          echo "Debug: any_changed = ${{ steps.deployment-gate.outputs.any_changed }}"
+          if [ "${{ steps.deployment-gate.outputs.any_changed }}" == "true" ]; then
+            echo "should_deploy=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_deploy=false" >> $GITHUB_OUTPUT
+          fi
 
   # Job 2: Admin 서버 빌드 및 테스트
   build-and-test-admin:
