@@ -9,87 +9,195 @@ on:
       - develop
 
 jobs:
-  build:
-    name: Build and Test
+  # Job 1: 변경 사항 탐지 및 배포 여부 결정
+  check-changes:
+    name: Detect Changed Services and Deploy-Readiness
+    runs-on: ubuntu-latest
+    outputs:
+      # 출력 1: 테스트/빌드가 필요한 서비스 목록 (["admin-server", "user-server"])
+      services: ${{ steps.filter.outputs.changes }}
+      # 출력 2: 배포를 실행해야 하는지 여부 (true/false)
+      should_deploy: ${{ steps.deployment-gate.outputs.should_deploy }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Step 1: 어떤 서비스가 영향을 받는지 확인 (테스트 대상 결정)
+      - name: Detect affected services
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            user-server:
+              - 'apps/user-server/**'
+              - 'libs/**'
+              - 'scripts/user-server/**'
+              - 'scripts/rdb/**'
+              - 'prisma/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'tsconfig.build.json'
+              - 'tsconfig.json'
+            admin-server:
+              - 'apps/admin-server/**'
+              - 'libs/**'
+              - 'scripts/admin-server/**'
+              - 'scripts/rdb/**'
+              - 'prisma/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'tsconfig.build.json'
+              - 'tsconfig.json'
+
+      # Step 2: 배포가 필요한 변경인지 확인 (Whitelist 방식)
+      - name: Check for deployable changes
+        id: deployment-gate
+        uses: tj-actions/changed-files@v44
+        with:
+          # "오직 이 파일들만 배포를 유발할 수 있다"는 화이트리스트를 정의
+          files: |
+            apps/{admin-server,user-server}/src/**
+            libs/{common, core}/**
+            prisma/**
+            scripts/**
+            package.json
+            package-lock.json
+
+      # Step 3: 위 스텝의 결과에 따라 배포 플래그 설정
+      - name: Set deployment flag
+        id: set-flag
+        if: steps.deployment-gate.outputs.any_changed == 'true'
+        run: echo "should_deploy=true" >> $GITHUB_OUTPUT
+
+  # Job 2: 중복 패키징을 방지하기 위해 공통 파일 패키징
+  package-common-files:
+    name: Package Common Files
+    # push 이벤트이면서, 배포가 필요한 변경일 때만 실행
+    if: github.event_name == 'push' && needs.check-changes.outputs.should_deploy == 'true'
+    needs: check-changes
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Setup nodejs
-        uses: actions/setup-node@v3
-        with:
-          node-version: 22.13.0
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests on pull request
-        if: github.event_name == 'pull_request'
-        run: |
-          npm run user-server:test:infra:up
-          npm run user-server:test:e2e
-          npm run user-server:test:infra:down
-          npm run admin-server:test:infra:up
-          npm run admin-server:test:e2e
-          npm run admin-server:test:infra:down
-
-      - name: Build for production
-        if: github.event_name == 'push'
-        run: |
-          npx prisma generate
-          npm run build user-server
-          npm run build admin-server
-
-      - name: Upload build artifacts
-        if: github.event_name == 'push'
+      - name: Upload common artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: inhu-backend-build
+          name: common-build
           path: |
             scripts/rdb
-            scripts/user-server/dev
-            scripts/admin-server/dev
-            dist
             prisma
             package.json
             package-lock.json
 
-  deploy:
-    name: Deploy to Raspberry Pi
-    needs: build
-    if: github.event_name == 'push'
+  # Job 3: 각 서비스 빌드 및 테스트
+  build-and-test:
+    name: Build & Test (${{ matrix.service }})
+    needs: check-changes
+    # 변경된 서비스가 있을 때만 실행
+    if: ${{ needs.check-changes.outputs.services != '[]' }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      # 서비스별로 매트릭스 전략을 사용하여 병렬 실행
+      matrix:
+        service: ${{ fromJson(needs.check-changes.outputs.services) }}
     steps:
-      - name: Download build artifacts
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Install dependencies
+        run: npm ci
+
+      # PR 시 테스트 실행
+      - name: Run E2E tests for ${{ matrix.service }}
+        if: github.event_name == 'pull_request'
+        run: |
+          npm run ${{ matrix.service }}:test:infra:up
+          npm run ${{ matrix.service }}:test:e2e
+          npm run ${{ matrix.service }}:test:infra:down
+
+      # push 시 빌드 실행 (배포가 필요한 경우에만)
+      - name: Build ${{ matrix.service }} for production
+        if: github.event_name == 'push' && needs.check-changes.outputs.should_deploy == 'true'
+        run: |
+          npx prisma generate
+          npm run build ${{ matrix.service }}
+
+      # push 시 아티팩트 업로드 (배포가 필요한 경우에만)
+      - name: Upload service artifact for ${{ matrix.service }}
+        if: github.event_name == 'push' && needs.check-changes.outputs.should_deploy == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.service }}-build
+          path: |
+            scripts/${{ matrix.service }}/dev
+            dist/apps/${{ matrix.service }}
+
+  # Job 4: 각 서비스 배포 (배포가 필요한 경우에만)
+  deploy:
+    name: Deploy (${{ matrix.service }}) to Raspberry Pi
+    needs: [check-changes, build-and-test, package-common-files]
+    if: github.event_name == 'push' && needs.check-changes.outputs.should_deploy == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: ${{ fromJson(needs.check-changes.outputs.services) }}
+    steps:
+      - name: Create deployment directory
+        run: mkdir ./deploy-files
+
+      - name: Download common artifacts
         uses: actions/download-artifact@v4
         with:
-          name: inhu-backend-build
+          name: common-build
+          path: ./deploy-files
+
+      - name: Download service artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.service }}-build
           path: ./deploy-files
 
       - name: Compress deployment files
-        run: |
-          tar -czf deploy.tar.gz -C ./deploy-files .
+        run: tar -czf deploy-${{ matrix.service }}.tar.gz -C ./deploy-files .
 
-      - name: Deploy to Raspberry Pi
+      - name: Set PM2 app name
+        id: pm2_name
+        run: |
+          if [ "${{ matrix.service }}" == "user-server" ]; then
+            echo "app_name=inhu-backend-user-dev" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.service }}" == "admin-server" ]; then
+            echo "app_name=inhu-backend-admin-dev" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy ${{ matrix.service }} to Raspberry Pi
         env:
           HOST: ${{ secrets.RASPBERRY_PI_HOST }}
           USER: ${{ secrets.RASPBERRY_PI_USER }}
           PASSWORD: ${{ secrets.RASPBERRY_PI_PASSWORD }}
           PORT: ${{ secrets.RASPBERRY_PI_PORT }}
+          SERVICE_NAME: ${{ matrix.service }}
+          TAR_NAME: deploy-${{ matrix.service }}.tar.gz
+          PM2_APP_NAME: ${{ steps.pm2_name.outputs.app_name }}
         run: |
           sudo apt-get update && sudo apt-get install -y sshpass
-          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no deploy.tar.gz $USER@$HOST:~/inhu-backend/
-          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
-          set -e
+          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no $TAR_NAME $USER@$HOST:~/inhu-backend/
+          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST << EOF
+            set -e
             cd ~/inhu-backend
-            tar -xzf deploy.tar.gz
-            rm deploy.tar.gz
+            tar -xzf $TAR_NAME
+            rm $TAR_NAME
             npm ci
-            npm run user-server:dev:infra:down
-            npm run user-server:dev:infra:up
-            npm run admin-server:dev:infra:down
-            npm run admin-server:dev:infra:up
-            pm2 reload inhu-backend-user-dev
-            pm2 reload inhu-backend-admin-dev
+            npm run $SERVICE_NAME:dev:infra:down
+            npm run $SERVICE_NAME:dev:infra:up
+            pm2 reload $PM2_APP_NAME
           EOF

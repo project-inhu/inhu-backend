@@ -1,0 +1,147 @@
+name: Build and Deploy User Server to Raspberry Pi (develop)
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  # Job 1: User 서버 변경 감지 및 배포 필요 여부 결정
+  check-user-changes:
+    name: Check for User Service Changes
+    runs-on: ubuntu-latest
+    outputs:
+      # 이 워크플로우를 계속 실행해야 하는지 (true/false)
+      should_run: ${{ steps.filter.outputs.user-server }}
+      # 배포까지 필요한 변경인지 (true/false)
+      should_deploy: ${{ steps.deployment-gate.outputs.should_deploy }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Step 1: User 서버와 관련된 변경이 있었는지 확인
+      - name: Detect affected services
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          # 오직 user-server 필터 하나만 정의합니다.
+          filters: |
+            user-server:
+              - 'apps/user-server/**'
+              - 'libs/**'
+              - 'scripts/app/user-server/**'
+              - 'scripts/dev-infra/**'
+              - 'scripts/rdb/**'    
+              - 'prisma/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'tsconfig.build.json'
+              - 'tsconfig.json'
+
+      # Step 2: 배포가 필요한 변경인지 확인 (Whitelist 방식)
+      - name: Check for deployable changes
+        id: deployment-gate
+        uses: tj-actions/changed-files@v44
+        with:
+          # 오직 이 파일들만 배포를 유발할 수 있음
+          files: |
+            apps/user-server/src/**
+            libs/{common, core}/**
+            prisma/**
+            scripts/dev-infra/**
+            scripts/rdb/**
+            package.json
+            package-lock.json
+
+      - name: Set deployment flag
+        if: steps.deployment-gate.outputs.any_changed == 'true'
+        run: echo "should_deploy=true" >> $GITHUB_OUTPUT
+
+  # Job 2: User 서버 빌드 및 테스트
+  build-and-test-user:
+    name: Build & Test User Server
+    needs: check-user-changes
+    if: needs.check-user-changes.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Install dependencies
+        run: npm ci
+
+      # PR 시 User 서버 테스트 실행
+      - name: Run E2E tests for User Server
+        if: github.event_name == 'pull_request'
+        run: |
+          npm run user-server:test:infra:up
+          npm run user-server:test:e2e
+          npm run user-server:test:infra:down
+
+      # push 시 User 서버 빌드 실행 (배포가 필요한 경우에만)
+      - name: Build User Server for production
+        if: github.event_name == 'push' && needs.check-user-changes.outputs.should_deploy == 'true'
+        run: |
+          npx prisma generate
+          npm run build user-server
+
+      # push 시 아티팩트 업로드 (배포가 필요한 경우에만)
+      - name: Upload User Server artifact
+        if: github.event_name == 'push' && needs.check-user-changes.outputs.should_deploy == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: user-server-build
+          path: |
+            dist/apps/user-server
+            scripts/dev-infra
+            scripts/rdb
+            prisma
+            package.json
+            package-lock.json
+
+  # Job 3: User 서버 배포
+  deploy-user:
+    name: Deploy User Server to Raspberry Pi
+    needs: [check-user-changes, build-and-test-user]
+    if: github.event_name == 'push' && needs.check-user-changes.outputs.should_deploy == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download user artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: user-server-build
+          path: ./deploy-user-files
+
+      - name: Compress deployment files
+        run: |
+          tar -czf deploy-user.tar.gz -C ./deploy-user-files .
+
+      - name: Deploy to Raspberry Pi
+        env:
+          HOST: ${{ secrets.RASPBERRY_PI_HOST }}
+          USER: ${{ secrets.RASPBERRY_PI_USER }}
+          PASSWORD: ${{ secrets.RASPBERRY_PI_PASSWORD }}
+          PORT: ${{ secrets.RASPBERRY_PI_PORT }}
+        run: |
+          sudo apt-get update && sudo apt-get install -y sshpass
+          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no deploy-user.tar.gz $USER@$HOST:~/inhu-backend/
+          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
+            set -e
+            cd ~/inhu-backend
+            tar -xzf deploy-user.tar.gz
+            rm deploy-user.tar.gz
+            npm ci
+            npm run dev-infra:down
+            npm run dev-infra:up
+            pm2 reload inhu-backend-user-dev
+          EOF
