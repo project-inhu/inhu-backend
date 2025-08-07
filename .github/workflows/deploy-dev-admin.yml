@@ -43,6 +43,12 @@ jobs:
               - 'tsconfig.build.json'
               - 'tsconfig.json'
 
+      # Debug: 필터 결과 출력
+      - name: Debug filter results
+        run: |
+          echo "Filter admin-server result: ${{ steps.filter.outputs['admin-server'] }}"
+          echo "Changes detected: ${{ steps.filter.outputs.changes }}"
+
       # Step 2: 배포가 필요한 변경인지 확인 (Whitelist 방식)
       - name: Check for deployable changes
         id: deployment-gate
@@ -59,9 +65,22 @@ jobs:
             package.json
             package-lock.json
 
+      # Debug: 배포 게이트 결과 출력
+      - name: Debug deployment gate results
+        run: |
+          echo "Deployment gate any_changed: ${{ steps.deployment-gate.outputs.any_changed }}"
+          echo "All changed files: ${{ steps.deployment-gate.outputs.all_changed_files }}"
+
       - name: Set deployment flag
         if: steps.deployment-gate.outputs.any_changed == 'true'
-        run: echo "should_deploy=true" >> $GITHUB_OUTPUT
+        run: |
+          echo "should_deploy=true" >> $GITHUB_OUTPUT
+
+      - name: Set deployment flag (if no changes)
+        if: steps.deployment-gate.outputs.any_changed != 'true'
+        run: |
+          echo "should_deploy=false" >> $GITHUB_OUTPUT  
+          echo "❌ Deployment flag set to FALSE - no deployable changes detected"
 
   # Job 2: Admin 서버 빌드 및 테스트
   build-and-test-admin:
