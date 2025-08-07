@@ -50,6 +50,7 @@ jobs:
         with:
           # 오직 이 파일들만 배포를 유발할 수 있음
           files: |
+            .github/workflows/deploy-dev-user.yml
             apps/admin-server/src/**
             libs/{common, core}/**
             prisma/**

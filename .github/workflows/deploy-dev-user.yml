@@ -34,7 +34,7 @@ jobs:
             user-server:
               - 'apps/user-server/**'
               - 'libs/**'
-              - 'scripts/app/user-server/**'
+              - 'scripts/apps/user-server/**'
               - 'scripts/dev-infra/**'
               - 'scripts/rdb/**'    
               - 'prisma/**'
@@ -50,6 +50,7 @@ jobs:
         with:
           # 오직 이 파일들만 배포를 유발할 수 있음
           files: |
+            .github/workflows/deploy-dev-user.yml
             apps/user-server/src/**
             libs/{common, core}/**
             prisma/**
