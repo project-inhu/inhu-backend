@@ -17,7 +17,7 @@ jobs:
       # 이 워크플로우를 계속 실행해야 하는지 (true/false)
       should_run: ${{ steps.filter.outputs.user-server }}
       # 배포까지 필요한 변경인지 (true/false)
-      should_deploy: ${{ steps.deployment-gate.outputs.should_deploy }}
+      should_deploy: ${{ steps.deployment-gate.outputs.any_changed }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -58,16 +58,6 @@ jobs:
             scripts/rdb/**
             package.json
             package-lock.json
-
-      # Debug: 배포 게이트 결과 출력
-      - name: Debug deployment gate results
-        run: |
-          echo "Deployment gate any_changed: ${{ steps.deployment-gate.outputs.any_changed }}"
-          echo "All changed files: ${{ steps.deployment-gate.outputs.all_changed_files }}"
-
-      - name: Set deployment flag
-        if: steps.deployment-gate.outputs.any_changed == 'true'
-        run: echo "should_deploy=true" >> $GITHUB_OUTPUT
 
   # Job 2: User 서버 빌드 및 테스트
   build-and-test-user:
