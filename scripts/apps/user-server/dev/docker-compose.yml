@@ -12,7 +12,7 @@ services:
     volumes:
       - inhu-user-server-dev-data:/var/lib/postgresql/data
       - ./init:/docker-entrypoint-initdb.d
-      - ../../rdb:/rdb
+      - ../../../rdb:/rdb
     networks:
       - inhu-user-server-dev-network
 
