@@ -108,6 +108,10 @@ jobs:
 
   # Job 3: Admin 서버 배포
   deploy-admin:
+    # 라즈베리파이 배포 시 동시 실행 방지
+    concurrency:
+      group: raspberry-pi-deploy
+      cancel-in-progress: false
     name: Deploy Admin Server to Raspberry Pi
     needs: [check-admin-changes, build-and-test-admin]
     if: github.event_name == 'push' && needs.check-admin-changes.outputs.should_deploy == 'true'

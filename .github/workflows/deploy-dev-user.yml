@@ -108,6 +108,10 @@ jobs:
 
   # Job 3: User 서버 배포
   deploy-user:
+    # 라즈베리파이 배포 시 동시 실행 방지
+    concurrency:
+      group: raspberry-pi-deploy
+      cancel-in-progress: false
     name: Deploy User Server to Raspberry Pi
     needs: [check-user-changes, build-and-test-user]
     if: github.event_name == 'push' && needs.check-user-changes.outputs.should_deploy == 'true'
