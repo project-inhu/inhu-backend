@@ -9,3 +9,4 @@ npx esbuild seed.ts \
   --external:@prisma/* \
   --external:.prisma/* \
   --minify
+  
