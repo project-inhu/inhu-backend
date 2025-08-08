@@ -10,7 +10,7 @@
     "build:seed": "./scripts/dev-infra/seed/execute.sh",
     "start": "nest start",
     "start:dev": "nest start --watch",
-    "seed": "node ./dist/scripts/dev-infra/seed/seed.js",
+    "seed": "dotenv -e .env -- node ./dist/scripts/dev-infra/seed/seed.js",
     "seed:dev": "tsx ./scripts/dev-infra/seed/seed.ts",
     "user-server:test:e2e": "dotenv -e ./scripts/apps/user-server/e2e-test/.env.e2e-test -- jest --config ./apps/user-server/test/jest-e2e.json ./apps/user-server",
     "user-server:test:infra:up": "docker compose -f ./scripts/apps/user-server/e2e-test/docker-compose.yml up -d",
