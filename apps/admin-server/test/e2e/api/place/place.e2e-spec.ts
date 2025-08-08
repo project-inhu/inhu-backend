@@ -78,6 +78,21 @@ describe('Place E2E test', () => {
         .expect(400);
     });
 
+    it('400 - page must be at least 1', async () => {
+      const dto = {
+        page: 0,
+      };
+
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(400);
+    });
+
     it('200 - check active filtering', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const dto: GetPlaceOverviewDto = {
