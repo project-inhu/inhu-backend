@@ -1,6 +1,6 @@
 import { ToBoolean } from '@libs/common/decorator/to-boolean.decorator';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsNumber, IsOptional } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, Min } from 'class-validator';
 
 export class GetPlaceOverviewDto {
   /**
@@ -10,6 +10,7 @@ export class GetPlaceOverviewDto {
    */
   @IsNumber()
   @Type(() => Number)
+  @Min(1)
   public page: number;
 
   /**

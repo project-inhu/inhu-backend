@@ -42,6 +42,7 @@ export class PlaceController {
    */
   @Get('/:idx')
   @Exception(400, 'Invalid place idx')
+  @Exception(404, 'Place not found')
   @AdminAuth()
   public async getPlaceByIdx(
     @Param('idx', ParseIntPipe) idx: number,
