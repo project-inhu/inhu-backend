@@ -15,7 +15,7 @@ export class PlaceOperatingHourEntity {
   /**
    * 운영 시작 시간
    *
-   * @example "09:00:00.000"
+   * @example "09:00:00"
    */
   @IsString()
   @IsKoreanTime()
@@ -24,7 +24,7 @@ export class PlaceOperatingHourEntity {
   /**
    * 운영 종료 시간
    *
-   * @example "18:00:00.000"
+   * @example "18:00:00"
    */
   @IsString()
   @IsKoreanTime()
