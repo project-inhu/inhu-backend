@@ -32,6 +32,21 @@ export class AuthController {
     this.MAIN_PAGE_URL = this.configService.get<string>('MAIN_PAGE_URL') || '/';
   }
 
+  @Get('test-error-log')
+  testErrorLog() {
+    console.log('Testing a non-crashing error log...');
+
+    console.error(
+      '서버 중단 없는 에러 로그 테스트입니다. 이 메시지가 디스코드에 보여야 합니다.',
+    );
+
+    return {
+      status: 'OK',
+      message:
+        'Error log has been sent, but the server is still running perfectly!',
+    };
+  }
+
   /**
    * access token을 재발급하는 엔드포인트
    */
