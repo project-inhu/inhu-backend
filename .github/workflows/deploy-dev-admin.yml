@@ -101,6 +101,7 @@ jobs:
           name: admin-server-build
           path: |
             dist/apps/admin-server
+            dist/scripts/dev-infra/seed
             scripts/dev-infra/init
             scripts/dev-infra/docker-compose.yml
             scripts/rdb
