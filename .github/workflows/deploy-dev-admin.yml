@@ -103,7 +103,6 @@ jobs:
             dist/apps/admin-server
             scripts/dev-infra/init
             scripts/dev-infra/docker-compose.yml
-            scripts/dev-infra
             scripts/rdb
             prisma
             package.json
