@@ -91,6 +91,7 @@ jobs:
         run: |
           npx prisma generate
           npm run build admin-server
+          npm run build:seed
 
       # push 시 아티팩트 업로드 (배포가 필요한 경우에만)
       - name: Upload Admin Server artifact
@@ -100,6 +101,8 @@ jobs:
           name: admin-server-build
           path: |
             dist/apps/admin-server
+            scripts/dev-infra/init
+            scripts/dev-infra/docker-compose.yml
             scripts/dev-infra
             scripts/rdb
             prisma
@@ -144,5 +147,7 @@ jobs:
             npm ci
             npm run dev-infra:down
             npm run dev-infra:up
+            until docker exec inhu-dev-postgres psql -U inhu_admin -d inhu -c "SELECT 1;" >/dev/null 2>&1; do sleep 1; done
+            npm run seed
             pm2 reload inhu-backend-admin-dev
           EOF
