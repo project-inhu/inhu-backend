@@ -18,8 +18,13 @@ scripts/
 │   └── default-seed.sql  # 기본 시드 데이터
 └── dev-infra/            # 개발 서버(라즈베리파이) 통합 배포용
     ├── docker-compose.yml # 통합 서비스 Docker Compose 설정
-    └── init/
-        └── init.sql      # 데이터베이스 초기화 스크립트
+    ├── init/             # 데이터베이스 초기화
+    │   └── init.sql      # 데이터베이스 초기화 스크립트
+    └── seed/             # 개발 서버용 시드 데이터
+        ├── constants/    # 시드 데이터 상수
+        ├── data/         # 시드 데이터 파일들
+        ├── execute.sh    # 시드 실행 스크립트
+        └── seed.ts       # 시드 데이터 주입 로직
 ```
 
 ## 환경별 구성
@@ -61,11 +66,11 @@ scripts/
 ```bash
 # Admin Server 로컬 개발 환경
 npm run admin-server:dev:infra:up
-npm run admin-server:dev
+npm run start:dev admin-server
 
 # User Server 로컬 개발 환경
 npm run user-server:dev:infra:up
-npm run user-server:dev
+npm run start:dev user-server
 
 # 로컬 E2E 테스트
 npm run admin-server:test:infra:up
@@ -75,6 +80,9 @@ npm run admin-server:test:infra:down
 npm run user-server:test:infra:up
 npm run user-server:test:e2e
 npm run user-server:test:infra:down
+
+# 로컬에서 시드 데이터 주입 (TypeScript 직접 실행)
+npm run seed:dev
 ```
 
 ### 🍓 개발 서버 통합 배포
@@ -87,6 +95,12 @@ docker-compose -f scripts/dev-infra/docker-compose.yml up -d
 
 # 또는 npm 스크립트가 있다면
 npm run dev-infra:up
+
+# 서버 배포용 시드 파일 빌드 (TypeScript → JavaScript 변환)
+npm run build:seed
+
+# 서버에서 시드 데이터 주입 (빌드된 JavaScript 파일 사용)
+npm run seed
 ```
 
 ### 🗄️ 데이터베이스 관리
