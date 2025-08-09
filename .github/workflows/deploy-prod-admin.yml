@@ -42,6 +42,7 @@ jobs:
               - 'package-lock.json'
               - 'tsconfig.build.json'
               - 'tsconfig.json'
+              - '!**/*.md'
 
       # Step 2: 배포가 필요한 변경인지 확인 (Whitelist 방식)
       - name: Check for deployable changes
@@ -141,7 +142,12 @@ jobs:
             tar -xzf deploy-admin.tar.gz
             rm deploy-admin.tar.gz
             npm ci
+            pm2 stop inhu-backend-admin-dev
+            pm2 stop inhu-backend-user-dev
             npm run dev-infra:down
             npm run dev-infra:up
-            pm2 reload inhu-backend-admin-dev
+            until docker exec inhu-dev-postgres psql -U inhu_admin -d inhu -c "SELECT 1;" >/dev/null 2>&1; do sleep 1; done
+            npm run seed
+            pm2 restart inhu-backend-admin-dev
+            pm2 restart inhu-backend-user-dev
           EOF
