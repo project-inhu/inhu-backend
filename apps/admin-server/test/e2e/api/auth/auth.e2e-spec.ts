@@ -45,20 +45,20 @@ describe('Auth E2E Tests', () => {
         .expect(400);
     });
 
-    it('401 - invalid id', async () => {
+    it('400 - invalid id', async () => {
       await testHelper
         .test()
         .post('/auth/login')
         .send({ id: 'wrong-id', pw: 'wrong-password' })
-        .expect(401);
+        .expect(400);
     });
 
-    it('401 - invalid password', async () => {
+    it('400 - invalid password', async () => {
       await testHelper
         .test()
         .post('/auth/login')
         .send({ id: 'admin-1-id', pw: 'wrong-password' })
-        .expect(401);
+        .expect(400);
     });
   });
 
