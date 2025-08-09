@@ -24,7 +24,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Step 1: Admin 서버와 관련된 변경이 있었는지 확인
+      # Step 1: Admin 서버와 관련된 변경이 있었는지 확인 (github action 테스트 유발 여부)
       - name: Detect affected services
         uses: dorny/paths-filter@v3
         id: filter
@@ -42,6 +42,7 @@ jobs:
               - 'package-lock.json'
               - 'tsconfig.build.json'
               - 'tsconfig.json'
+              - '!**/*.md'
 
       # Step 2: 배포가 필요한 변경인지 확인 (Whitelist 방식)
       - name: Check for deployable changes
