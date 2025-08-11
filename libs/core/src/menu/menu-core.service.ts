@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { MenuCoreRepository } from './menu-core.repository';
 import { GetMenuAllInput } from './inputs/get-menu-all.input';
 import { MenuModel } from './model/menu.model';
@@ -28,6 +28,10 @@ export class MenuCoreService {
       .then((menus) => menus.map(MenuModel.fromPrisma));
   }
 
+  public async getMenuCountByPlaceIdx(idx: number): Promise<number> {
+    return await this.menuCoreRepository.getMenuCountByPlaceIdx(idx);
+  }
+
   public async createMenu(
     idx: number,
     input: CreateMenuInput,
@@ -42,6 +46,18 @@ export class MenuCoreService {
     input: UpdateMenuInput,
   ): Promise<void> {
     return await this.menuCoreRepository.updateMenuByIdx(idx, input);
+  }
+
+  public async updateMenuSortOrderByIdx(
+    idx: number,
+    currentSortOrder: number,
+    newSortOrder: number,
+  ): Promise<void> {
+    return await this.menuCoreRepository.updateMenuSortOrderByIdx(
+      idx,
+      currentSortOrder,
+      newSortOrder,
+    );
   }
 
   public async deleteMenuByIdx(idx: number): Promise<void> {

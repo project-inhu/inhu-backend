@@ -24,13 +24,15 @@ export class MenuSeedHelper extends ISeedHelper<MenuSeedInput, MenuSeedOutput> {
       price: defaultValue(input.price, 0),
       imagePath: defaultValue(input.imagePath, null),
       isFlexible: defaultValue(input.isFlexible, false),
-      sortOrder: defaultValue(input.sortOrder, null),
       deletedAt: defaultValue(input.deletedAt, null),
     };
   }
 
   public async seed(input: MenuSeedInput): Promise<MenuSeedOutput> {
     const filledInput = this.generateFilledInputValue(input);
+    const menuCount = await this.prisma.menu.count({
+      where: { placeIdx: filledInput.placeIdx },
+    });
 
     const menu = await this.prisma.menu.create({
       select: { idx: true },
@@ -41,7 +43,7 @@ export class MenuSeedHelper extends ISeedHelper<MenuSeedInput, MenuSeedOutput> {
         price: filledInput.price,
         imagePath: filledInput.imagePath,
         isFlexible: filledInput.isFlexible,
-        sortOrder: filledInput.sortOrder,
+        sortOrder: menuCount + 1,
         deletedAt: filledInput.deletedAt,
       },
     });

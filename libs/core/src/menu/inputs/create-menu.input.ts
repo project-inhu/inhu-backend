@@ -9,5 +9,4 @@ export class CreateMenuInput {
   price: number | null;
   imagePath: string | null;
   isFlexible: boolean;
-  sortOrder: number | null;
 }
