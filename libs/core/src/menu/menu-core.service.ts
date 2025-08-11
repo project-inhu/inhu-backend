@@ -53,6 +53,7 @@ export class MenuCoreService {
     return await this.menuCoreRepository.updateMenuByIdx(idx, input);
   }
 
+  // TODO: race condition 해결해야 함
   @Transactional()
   public async updateMenuSortOrderByIdx(
     idx: number,
