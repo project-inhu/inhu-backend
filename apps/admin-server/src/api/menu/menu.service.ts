@@ -49,6 +49,7 @@ export class MenuService {
       content: dto.content,
       imagePath: dto.imagePath,
       isFlexible: dto.isFlexible,
+      sortOrder: dto.sortOrder,
     });
 
     return MenuEntity.fromModel(menuModel);
@@ -70,6 +71,7 @@ export class MenuService {
       content: dto.content,
       imagePath: dto.imagePath,
       isFlexible: dto.isFlexible,
+      sortOrder: dto.sortOrder,
     });
   }
 

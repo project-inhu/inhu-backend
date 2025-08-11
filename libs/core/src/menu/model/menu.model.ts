@@ -44,6 +44,13 @@ export class MenuModel {
   public isFlexible: boolean;
 
   /**
+   * 정렬 순서
+   * - null: 정렬 순서가 지정되지 않음
+   * - 숫자: 정렬 순서 (낮은 숫자가 우선)
+   */
+  sortOrder: number | null;
+
+  /**
    * 생성 시간
    */
   public createdAt: Date;
@@ -61,6 +68,7 @@ export class MenuModel {
       price: menu.price,
       imagePath: menu.imagePath,
       isFlexible: menu.isFlexible,
+      sortOrder: menu.sortOrder,
       createdAt: menu.createdAt,
     });
   }

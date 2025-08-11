@@ -19,5 +19,7 @@ export type MenuSeedInput = {
    */
   isFlexible?: boolean;
 
+  sortOrder?: number | null;
+
   deletedAt?: Date | null;
 };

@@ -5,7 +5,6 @@ import { GetMenuAllInput } from './inputs/get-menu-all.input';
 import { SELECT_MENU, SelectMenu } from './model/prisma-type/select-menu';
 import { CreateMenuInput } from './inputs/create-menu.input';
 import { UpdateMenuInput } from './inputs/update-menu.input';
-import { CreateReviewInput } from '../review/inputs/create-review.input';
 
 @Injectable()
 export class MenuCoreRepository {
@@ -33,9 +32,7 @@ export class MenuCoreRepository {
         placeIdx,
         deletedAt: null,
       },
-      orderBy: {
-        idx: order || 'asc',
-      },
+      orderBy: [{ sortOrder: 'asc' }, { idx: order || 'asc' }],
       take,
       skip,
     });

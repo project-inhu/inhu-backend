@@ -1,5 +1,11 @@
 import { ToBoolean } from '@libs/common/decorator/to-boolean.decorator';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 
 export class CreateMenuDto {
   /**
@@ -43,4 +49,16 @@ export class CreateMenuDto {
   @IsOptional()
   @ToBoolean()
   isFlexible: boolean;
+
+  /**
+   * 정렬 순서
+   * - null: 정렬 순서가 지정되지 않음
+   * - 숫자: 정렬 순서 (낮은 숫자가 우선)
+   * @example 1
+   */
+  @IsOptional()
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(1)
+  sortOrder: number | null = null;
 }
