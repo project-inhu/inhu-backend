@@ -82,28 +82,9 @@ export class MenuService {
     menuIdx: number,
     dto: UpdateMenuSortOrderDto,
   ): Promise<void> {
-    const menu = await this.menuCoreService.getMenuByIdx(menuIdx);
-    if (!menu) {
-      throw new NotFoundException('Cannot find menu with given idx');
-    }
-
-    const menuCount = await this.menuCoreService.getMenuCountByPlaceIdx(
-      menu.placeIdx,
-    );
-    const newSortOrder = dto.sortOrder;
-    if (newSortOrder > menuCount) {
-      throw new BadRequestException('Invalid sort order');
-    }
-
-    const currentSortOrder = menu.sortOrder;
-    if (currentSortOrder === newSortOrder) {
-      return;
-    }
-
     return await this.menuCoreService.updateMenuSortOrderByIdx(
       menuIdx,
-      currentSortOrder,
-      newSortOrder,
+      dto.sortOrder,
     );
   }
 

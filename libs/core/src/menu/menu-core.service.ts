@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { Transactional } from '@nestjs-cls/transactional';
 import { MenuCoreRepository } from './menu-core.repository';
 import { GetMenuAllInput } from './inputs/get-menu-all.input';
 import { MenuModel } from './model/menu.model';
@@ -48,18 +53,37 @@ export class MenuCoreService {
     return await this.menuCoreRepository.updateMenuByIdx(idx, input);
   }
 
+  @Transactional()
   public async updateMenuSortOrderByIdx(
     idx: number,
-    currentSortOrder: number,
     newSortOrder: number,
   ): Promise<void> {
+    const menu = await this.menuCoreRepository.selectMenuByIdx(idx);
+    if (!menu) {
+      throw new NotFoundException('Cannot find menu with given idx');
+    }
+
+    const menuCount = await this.menuCoreRepository.getMenuCountByPlaceIdx(
+      menu.placeIdx,
+    );
+    if (newSortOrder > menuCount) {
+      throw new BadRequestException('Invalid sort order');
+    }
+
+    const currentSortOrder = menu.sortOrder;
+    if (currentSortOrder === newSortOrder) {
+      return;
+    }
+
     return await this.menuCoreRepository.updateMenuSortOrderByIdx(
       idx,
+      menu.placeIdx,
       currentSortOrder,
       newSortOrder,
     );
   }
 
+  @Transactional()
   public async deleteMenuByIdx(idx: number): Promise<void> {
     return await this.menuCoreRepository.softDeleteMenuByIdx(idx);
   }
