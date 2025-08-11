@@ -1,5 +1,11 @@
 import { ToBoolean } from '@libs/common/decorator/to-boolean.decorator';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 
 export class CreateMenuDto {
   /**

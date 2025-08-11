@@ -1,9 +1,9 @@
 import { AdminServerModule } from '@admin/admin-server.module';
 import { TestHelper } from '../../setup/test.helper';
-import { MenuEntity } from '@user/api/menu/entity/menu.entity';
 import { GetAllMenuResponseDto } from '@admin/api/menu/dto/response/get-all-menu.response.dto';
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { MenuSeedHelper } from '@libs/testing/seed/menu/menu.seed';
+import { MenuEntity } from '@admin/api/menu/entity/menu.entity';
 
 describe('Menu e2e test', () => {
   const testHelper = TestHelper.create(AdminServerModule);
@@ -60,6 +60,7 @@ describe('Menu e2e test', () => {
       expect(menu.price).toBe(menuSeed.price);
       expect(menu.isFlexible).toBe(menuSeed.isFlexible);
       expect(menu.imagePath).toBe(menuSeed.imagePath);
+      expect(menu.sortOrder).toBe(1);
     });
 
     it('200 - hasNext check', async () => {
@@ -277,6 +278,7 @@ describe('Menu e2e test', () => {
       expect(menu.price).toBe(createMenuDto.price);
       expect(menu.isFlexible).toBe(createMenuDto.isFlexible);
       expect(menu.imagePath).toBe(createMenuDto.imagePath);
+      expect(menu.sortOrder).toBe(1);
     });
 
     it('201 - create with no optional data', async () => {
@@ -309,6 +311,7 @@ describe('Menu e2e test', () => {
       expect(resultMenu.content).toBeNull();
       expect(resultMenu.isFlexible).toBe(false);
       expect(resultMenu.imagePath).toBeNull();
+      expect(resultMenu.sortOrder).toBe(1);
     });
 
     it('400 - invalid placeIdx', async () => {
@@ -884,8 +887,173 @@ describe('Menu e2e test', () => {
     });
   });
 
+  describe('PUT /menu/:menuIdx/sort-order', () => {
+    it('200 - successfully change to medium position', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed1 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed2 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed3 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      expect(menuSeed1.sortOrder).toBe(1);
+      expect(menuSeed2.sortOrder).toBe(2);
+      expect(menuSeed3.sortOrder).toBe(3);
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed1.idx}/sort-order`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ sortOrder: 2 }) // 1번 메뉴를 2번 위치로 이동
+        .expect(200);
+
+      const prisma = testHelper.getPrisma();
+      const updatedMenu1 = await prisma.menu.findUnique({
+        where: { idx: menuSeed1.idx },
+      });
+      const updatedMenu2 = await prisma.menu.findUnique({
+        where: { idx: menuSeed2.idx },
+      });
+      const updatedMenu3 = await prisma.menu.findUnique({
+        where: { idx: menuSeed3.idx },
+      });
+      expect(updatedMenu1?.sortOrder).toBe(2);
+      expect(updatedMenu2?.sortOrder).toBe(1);
+      expect(updatedMenu3?.sortOrder).toBe(3);
+    });
+
+    it('200 - successfully change to last position', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed1 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed2 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed3 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      expect(menuSeed1.sortOrder).toBe(1);
+      expect(menuSeed2.sortOrder).toBe(2);
+      expect(menuSeed3.sortOrder).toBe(3);
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed1.idx}/sort-order`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ sortOrder: 3 }) // 1번 메뉴를 3번 위치로 이동
+        .expect(200);
+
+      const prisma = testHelper.getPrisma();
+      const updatedMenu1 = await prisma.menu.findUnique({
+        where: { idx: menuSeed1.idx },
+      });
+      const updatedMenu2 = await prisma.menu.findUnique({
+        where: { idx: menuSeed2.idx },
+      });
+      const updatedMenu3 = await prisma.menu.findUnique({
+        where: { idx: menuSeed3.idx },
+      });
+      expect(updatedMenu1?.sortOrder).toBe(3);
+      expect(updatedMenu2?.sortOrder).toBe(1);
+      expect(updatedMenu3?.sortOrder).toBe(2);
+    });
+
+    it('200 - no change to move in place', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed1 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed2 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed3 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      expect(menuSeed1.sortOrder).toBe(1);
+      expect(menuSeed2.sortOrder).toBe(2);
+      expect(menuSeed3.sortOrder).toBe(3);
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed1.idx}/sort-order`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ sortOrder: 1 }) // 1번 메뉴를 1번 위치로 이동 (변경 없음)
+        .expect(200);
+
+      const prisma = testHelper.getPrisma();
+      const updatedMenu1 = await prisma.menu.findUnique({
+        where: { idx: menuSeed1.idx },
+      });
+      const updatedMenu2 = await prisma.menu.findUnique({
+        where: { idx: menuSeed2.idx },
+      });
+      const updatedMenu3 = await prisma.menu.findUnique({
+        where: { idx: menuSeed3.idx },
+      });
+      expect(updatedMenu1?.sortOrder).toBe(1);
+      expect(updatedMenu2?.sortOrder).toBe(2);
+      expect(updatedMenu3?.sortOrder).toBe(3);
+    });
+
+    it('400 - invalid sortOrder (a value that exceeds the menu count)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed1 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed1.idx}/sort-order`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ sortOrder: 3 })
+        .expect(400);
+    });
+
+    it('404 - menu does not exist', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .put(`/menu/99999/sort-order`) // ! 존재하지 않는 메뉴
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ sortOrder: 2 })
+        .expect(404);
+    });
+  });
+
   describe('DELETE /menu/:menuIdx', () => {
-    it('200 - delete check', async () => {
+    it('200 - single menu delete check', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
       const placeSeed = await placeSeedHelper.seed({
@@ -906,8 +1074,51 @@ describe('Menu e2e test', () => {
       const deletedMenu = await testHelper.getPrisma().menu.findUnique({
         where: { idx: menuSeed.idx },
       });
-
       expect(deletedMenu?.deletedAt).not.toBeNull();
+    });
+
+    it('200 - multi menu delete check (reorder sort_order)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed1 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed2 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed3 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      expect(menuSeed1.sortOrder).toBe(1);
+      expect(menuSeed2.sortOrder).toBe(2);
+      expect(menuSeed3.sortOrder).toBe(3);
+
+      await testHelper
+        .test()
+        .delete(`/menu/${menuSeed1.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+
+      const prisma = testHelper.getPrisma();
+      const deletedMenu = await prisma.menu.findUnique({
+        where: { idx: menuSeed1.idx },
+      });
+      expect(deletedMenu?.deletedAt).not.toBeNull();
+
+      const menu2 = await prisma.menu.findUnique({
+        where: { idx: menuSeed2.idx },
+      });
+      expect(menu2?.sortOrder).toBe(1);
+
+      const menu3 = await prisma.menu.findUnique({
+        where: { idx: menuSeed3.idx },
+      });
+      expect(menu3?.sortOrder).toBe(2);
     });
 
     it('400 - invalid menuIdx', async () => {

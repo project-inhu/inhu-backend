@@ -6,4 +6,7 @@ import { MenuSeedInput } from './menu-seed.input';
  *
  * @publicApi
  */
-export type MenuSeedOutput = FilledSeedInput<MenuSeedInput> & { idx: number };
+export type MenuSeedOutput = FilledSeedInput<MenuSeedInput> & {
+  idx: number;
+  sortOrder: number;
+};

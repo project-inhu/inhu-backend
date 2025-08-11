@@ -156,6 +156,7 @@ model Menu {
   price      Int?
   imagePath  String?   @map("image_path") @db.VarChar
   isFlexible Boolean   @default(false) @map("is_flexible")
+  sortOrder  Int       @map("sort_order") @db.SmallInt
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt  DateTime? @map("deleted_at") @db.Timestamptz(6)
   place      Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_menu_tb")
@@ -264,8 +265,8 @@ model User {
 }
 
 model AdminAccount {
-  idx       Int      @id @default(autoincrement())
-  id        String   @unique @db.VarChar
+  idx       Int      @id
+  id        String   @db.VarChar
   pw        String   @db.VarChar
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   user      User     @relation(fields: [idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_admin_account_tb")

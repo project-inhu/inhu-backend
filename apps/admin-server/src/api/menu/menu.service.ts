@@ -1,10 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { GetAllMenuDto } from './dto/request/get-all-menu.dto';
 import { MenuEntity } from './entity/menu.entity';
 import { CreateMenuDto } from './dto/request/create-menu.dto';
 import { UpdateMenuDto } from './dto/request/update-menu.dto';
 import { MenuCoreService } from '@libs/core/menu/menu-core.service';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
+import { UpdateMenuSortOrderDto } from './dto/request/update-menu-sort-order.dto';
 
 @Injectable()
 export class MenuService {
@@ -71,6 +76,16 @@ export class MenuService {
       imagePath: dto.imagePath,
       isFlexible: dto.isFlexible,
     });
+  }
+
+  public async updateMenuSortOrderByPlaceIdx(
+    menuIdx: number,
+    dto: UpdateMenuSortOrderDto,
+  ): Promise<void> {
+    return await this.menuCoreService.updateMenuSortOrderByIdx(
+      menuIdx,
+      dto.sortOrder,
+    );
   }
 
   public async deleteMenuByIdx(menuIdx: number): Promise<void> {

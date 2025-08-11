@@ -17,6 +17,7 @@ import { MenuEntity } from './entity/menu.entity';
 import { CreateMenuDto } from './dto/request/create-menu.dto';
 import { UpdateMenuDto } from './dto/request/update-menu.dto';
 import { Exception } from '@libs/common/decorator/exception.decorator';
+import { UpdateMenuSortOrderDto } from './dto/request/update-menu-sort-order.dto';
 
 @Controller()
 export class MenuController {
@@ -60,6 +61,20 @@ export class MenuController {
     @Body() dto: UpdateMenuDto,
   ): Promise<void> {
     return await this.menuService.updateMenuByPlaceIdx(menuIdx, dto);
+  }
+
+  /**
+   * 메뉴 순서 수정
+   */
+  @AdminAuth()
+  @Exception(400, 'Invalid sort order')
+  @Exception(404, 'Menu does not exist')
+  @Put('/menu/:menuIdx/sort-order')
+  public async updateMenuSortOrder(
+    @Param('menuIdx', ParseIntPipe) menuIdx: number,
+    @Body() dto: UpdateMenuSortOrderDto,
+  ): Promise<void> {
+    return await this.menuService.updateMenuSortOrderByPlaceIdx(menuIdx, dto);
   }
 
   /**

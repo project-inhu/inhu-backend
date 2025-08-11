@@ -20,9 +20,6 @@ export type PlaceSeedInput = {
    */
   bookmarkCount?: number;
 
-  /**
-   * @default false
-   */
   isClosedOnHoliday?: boolean | null;
   deletedAt?: Date | null;
   permanentlyClosedAt?: Date | null;
