@@ -25,7 +25,7 @@ export class MenuCoreRepository {
 
   public async selectMenuAllByPlaceIdx(
     placeIdx: number,
-    { take, skip }: GetMenuAllInput,
+    { take, skip, order }: GetMenuAllInput,
   ): Promise<SelectMenu[]> {
     return await this.txHost.tx.menu.findMany({
       ...SELECT_MENU,
@@ -34,7 +34,7 @@ export class MenuCoreRepository {
         deletedAt: null,
       },
       orderBy: {
-        idx: 'asc',
+        idx: order || 'asc',
       },
       take,
       skip,

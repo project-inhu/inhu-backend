@@ -41,7 +41,7 @@ describe('Menu e2e test', () => {
         .test()
         .get(`/place/${placeSeed.idx}/menu`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .query({ page: 1 })
+        .query({ page: 1, row: 10 })
         .expect(200);
 
       const menuList: MenuEntity[] = response.body.menuList;
@@ -80,10 +80,7 @@ describe('Menu e2e test', () => {
       const response = await testHelper
         .test()
         .get(`/place/${placeSeed.idx}/menu`)
-        .query({
-          placeIdx: placeSeed.idx,
-          page: 1,
-        })
+        .query({ placeIdx: placeSeed.idx, page: 1, row: 10 })
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(200);
 
@@ -102,6 +99,7 @@ describe('Menu e2e test', () => {
         .query({
           placeIdx: placeSeed.idx,
           page: 1,
+          row: 10,
         })
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(200);
@@ -121,7 +119,7 @@ describe('Menu e2e test', () => {
         .test()
         .get(`/place/${placeSeed.idx}/menu`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .query({ page: 1 })
+        .query({ page: 1, row: 10 })
         .expect(200);
 
       const menuList: MenuEntity[] = response.body.menuList;
@@ -155,7 +153,7 @@ describe('Menu e2e test', () => {
         .test()
         .get(`/place/${placeSeed.idx}/menu`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .query({ page: 1 })
+        .query({ page: 1, row: 10 })
         .expect(200);
 
       const { menuList }: GetAllMenuResponseDto = response.body;
@@ -188,7 +186,7 @@ describe('Menu e2e test', () => {
         .test()
         .get(`/place/${firstPlaceSeed.idx}/menu`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .query({ page: 1 })
+        .query({ page: 1, row: 10 })
         .expect(200);
 
       const menusOfFirstPlace = (
@@ -203,7 +201,7 @@ describe('Menu e2e test', () => {
         .test()
         .get(`/place/${secondPlaceSeed.idx}/menu`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .query({ page: 1 })
+        .query({ page: 1, row: 10 })
         .expect(200);
 
       const menusOfSecondPlace = (
@@ -224,7 +222,7 @@ describe('Menu e2e test', () => {
         .test()
         .get(`/place/${invalidPlaceIdx}/menu`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .query({ page: 1 })
+        .query({ page: 1, row: 10 })
         .expect(400);
     });
 
@@ -241,7 +239,7 @@ describe('Menu e2e test', () => {
       await testHelper
         .test()
         .get(`/place/${placeSeed.idx}/menu`)
-        .query({ page: 1 })
+        .query({ page: 1, row: 10 })
         .expect(401);
     });
   });
