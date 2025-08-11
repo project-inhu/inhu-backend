@@ -162,6 +162,24 @@ describe('Menu e2e test', () => {
 
       expect(menuList[0].idx).toBe(firstMenuSeed.idx);
       expect(menuList[1].idx).toBe(secondMenuSeed.idx);
+
+      const prisma = testHelper.getPrisma();
+      await prisma.menu.update({
+        where: { idx: secondMenuSeed.idx },
+        data: { sortOrder: 1 },
+      });
+
+      const response2 = await testHelper
+        .test()
+        .get(`/place/${placeSeed.idx}/menu`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query({ page: 1, row: 10 })
+        .expect(200);
+
+      const { menuList: menuList2 }: GetAllMenuResponseDto = response2.body;
+
+      expect(menuList2[0].idx).toBe(secondMenuSeed.idx);
+      expect(menuList2[1].idx).toBe(firstMenuSeed.idx);
     });
 
     it('200 - place idx filtering check', async () => {
