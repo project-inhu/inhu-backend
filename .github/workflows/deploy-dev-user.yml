@@ -42,7 +42,8 @@ jobs:
               - 'package-lock.json'
               - 'tsconfig.build.json'
               - 'tsconfig.json'
-              - '!**/*.md'
+            ignore:
+              - '**/*.md'
 
       # Step 2: 배포가 필요한 변경인지 확인 (Whitelist 방식)
       - name: Check for deployable changes
@@ -59,6 +60,8 @@ jobs:
             scripts/rdb/**
             package.json
             package-lock.json
+          files_ignore: |
+            **/*.md
 
       - name: echo outputs
         run: |
