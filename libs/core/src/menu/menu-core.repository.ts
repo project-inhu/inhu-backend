@@ -83,6 +83,7 @@ export class MenuCoreRepository {
 
   public async updateMenuSortOrderByIdx(
     idx: number,
+    placeIdx: number,
     currentSortOrder: number,
     newSortOrder: number,
   ): Promise<void> {
@@ -94,10 +95,12 @@ export class MenuCoreRepository {
           },
         },
         where: {
+          placeIdx,
           sortOrder: {
             gt: currentSortOrder,
             lte: newSortOrder,
           },
+          deletedAt: null,
         },
       });
     } else {
@@ -108,10 +111,12 @@ export class MenuCoreRepository {
           },
         },
         where: {
+          placeIdx,
           sortOrder: {
             gte: newSortOrder,
             lt: currentSortOrder,
           },
+          deletedAt: null,
         },
       });
     }
@@ -141,9 +146,11 @@ export class MenuCoreRepository {
         },
       },
       where: {
+        placeIdx: menu.placeIdx,
         sortOrder: {
           gt: menu.sortOrder,
         },
+        deletedAt: null,
       },
     });
   }
