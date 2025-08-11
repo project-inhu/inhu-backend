@@ -40,7 +40,7 @@ export class MenuCoreRepository {
 
   public async insertMenu(
     placeIdx: number,
-    { name, price, content, imagePath, isFlexible }: CreateMenuInput,
+    { name, price, content, imagePath, isFlexible, sortOrder }: CreateMenuInput,
   ): Promise<SelectMenu> {
     return await this.txHost.tx.menu.create({
       ...SELECT_MENU,
@@ -51,13 +51,14 @@ export class MenuCoreRepository {
         content,
         imagePath,
         isFlexible,
+        sortOrder,
       },
     });
   }
 
   public async updateMenuByIdx(
     idx: number,
-    { name, price, content, imagePath, isFlexible }: UpdateMenuInput,
+    { name, price, content, imagePath, isFlexible, sortOrder }: UpdateMenuInput,
   ): Promise<void> {
     await this.txHost.tx.menu.update({
       data: {
@@ -66,6 +67,7 @@ export class MenuCoreRepository {
         content,
         imagePath,
         isFlexible,
+        sortOrder,
       },
       where: {
         idx,

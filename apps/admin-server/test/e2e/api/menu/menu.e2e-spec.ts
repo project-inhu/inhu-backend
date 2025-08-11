@@ -1,9 +1,9 @@
 import { AdminServerModule } from '@admin/admin-server.module';
 import { TestHelper } from '../../setup/test.helper';
-import { MenuEntity } from '@user/api/menu/entity/menu.entity';
 import { GetAllMenuResponseDto } from '@admin/api/menu/dto/response/get-all-menu.response.dto';
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { MenuSeedHelper } from '@libs/testing/seed/menu/menu.seed';
+import { MenuEntity } from '@admin/api/menu/entity/menu.entity';
 
 describe('Menu e2e test', () => {
   const testHelper = TestHelper.create(AdminServerModule);
@@ -34,6 +34,7 @@ describe('Menu e2e test', () => {
         price: 10000,
         isFlexible: false,
         imagePath: '/test-image.png',
+        sortOrder: 1,
         deletedAt: null,
       });
 
@@ -60,6 +61,7 @@ describe('Menu e2e test', () => {
       expect(menu.price).toBe(menuSeed.price);
       expect(menu.isFlexible).toBe(menuSeed.isFlexible);
       expect(menu.imagePath).toBe(menuSeed.imagePath);
+      expect(menu.sortOrder).toBe(menuSeed.sortOrder);
     });
 
     it('200 - hasNext check', async () => {
@@ -259,6 +261,7 @@ describe('Menu e2e test', () => {
         price: 10000,
         isFlexible: false,
         imagePath: '/test-image.png',
+        sortOrder: 1,
       };
 
       const response = await testHelper
@@ -269,6 +272,7 @@ describe('Menu e2e test', () => {
         .expect(201);
 
       const menu: MenuEntity = response.body;
+      console.log(menu);
 
       expect(menu.idx).toBeDefined();
       expect(menu.placeIdx).toBe(placeSeed.idx);
@@ -277,6 +281,7 @@ describe('Menu e2e test', () => {
       expect(menu.price).toBe(createMenuDto.price);
       expect(menu.isFlexible).toBe(createMenuDto.isFlexible);
       expect(menu.imagePath).toBe(createMenuDto.imagePath);
+      expect(menu.sortOrder).toBe(createMenuDto.sortOrder);
     });
 
     it('201 - create with no optional data', async () => {
@@ -293,6 +298,7 @@ describe('Menu e2e test', () => {
         price: null,
         imagePath: null,
         isFlexible: false,
+        sortOrder: null,
       };
 
       const response = await testHelper
@@ -309,6 +315,7 @@ describe('Menu e2e test', () => {
       expect(resultMenu.content).toBeNull();
       expect(resultMenu.isFlexible).toBe(false);
       expect(resultMenu.imagePath).toBeNull();
+      expect(resultMenu.sortOrder).toBeNull();
     });
 
     it('400 - invalid placeIdx', async () => {
@@ -381,6 +388,7 @@ describe('Menu e2e test', () => {
         price: null,
         imagePath: null,
         isFlexible: false,
+        sortOrder: null,
       };
 
       return await testHelper
@@ -399,6 +407,7 @@ describe('Menu e2e test', () => {
         price: null,
         imagePath: null,
         isFlexible: false,
+        sortOrder: null,
       };
 
       return await testHelper
@@ -426,6 +435,7 @@ describe('Menu e2e test', () => {
         price: 5000,
         isFlexible: false,
         imagePath: 'menu/old-image.png',
+        sortOrder: null,
       });
 
       const updateMenuDto = {
@@ -434,6 +444,7 @@ describe('Menu e2e test', () => {
         price: 10000,
         isFlexible: true,
         imagePath: 'menu/updated-image.png',
+        sortOrder: 1,
       };
 
       await testHelper
@@ -452,6 +463,7 @@ describe('Menu e2e test', () => {
       expect(updatedMenu.price).toBe(updateMenuDto.price);
       expect(updatedMenu.isFlexible).toBe(updateMenuDto.isFlexible);
       expect(updatedMenu.imagePath).toBe(updateMenuDto.imagePath);
+      expect(updatedMenu.sortOrder).toBe(updateMenuDto.sortOrder);
     });
 
     it('200 - all fields deleted (keep name)', async () => {
@@ -469,6 +481,7 @@ describe('Menu e2e test', () => {
         price: 5000,
         isFlexible: false,
         imagePath: 'menu/old-image.png',
+        sortOrder: 1,
       });
 
       const updateMenuDto = {
@@ -477,6 +490,7 @@ describe('Menu e2e test', () => {
         price: null,
         isFlexible: false,
         imagePath: null,
+        sortOrder: null,
       };
 
       await testHelper
@@ -495,6 +509,7 @@ describe('Menu e2e test', () => {
       expect(updatedMenu.price).toBeNull();
       expect(updatedMenu.isFlexible).toBe(updateMenuDto.isFlexible);
       expect(updatedMenu.imagePath).toBeNull();
+      expect(updatedMenu.sortOrder).toBeNull();
     });
 
     it('200 - all fields kept', async () => {
@@ -512,6 +527,7 @@ describe('Menu e2e test', () => {
         price: 5000,
         isFlexible: false,
         imagePath: 'menu/old-image.png',
+        sortOrder: 1,
       });
 
       const updateMenuDto = {
@@ -520,6 +536,7 @@ describe('Menu e2e test', () => {
         price: menuSeed.price,
         isFlexible: menuSeed.isFlexible,
         imagePath: menuSeed.imagePath,
+        sortOrder: menuSeed.sortOrder,
       };
 
       await testHelper
@@ -538,6 +555,7 @@ describe('Menu e2e test', () => {
       expect(updatedMenu.price).toBe(menuSeed.price);
       expect(updatedMenu.isFlexible).toBe(menuSeed.isFlexible);
       expect(updatedMenu.imagePath).toBe(menuSeed.imagePath);
+      expect(updatedMenu.sortOrder).toBe(menuSeed.sortOrder);
     });
 
     it('200 - name only modified', async () => {
@@ -755,6 +773,52 @@ describe('Menu e2e test', () => {
       expect(updatedMenu.imagePath).toBe(menuSeed.imagePath);
     });
 
+    it('200 - sortOrder only modified', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        name: 'Old Menu',
+        content: 'Old Content',
+        price: 5000,
+        isFlexible: false,
+        imagePath: 'menu/old-image.png',
+        sortOrder: 1,
+      });
+
+      const updateMenuDto = {
+        isFlexible: menuSeed.isFlexible,
+        name: menuSeed.name,
+        content: menuSeed.content,
+        price: menuSeed.price,
+        imagePath: menuSeed.imagePath,
+        sortOrder: 2,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMenuDto)
+        .expect(200);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu.name).toBe(menuSeed.name);
+      expect(updatedMenu.content).toBe(menuSeed.content);
+      expect(updatedMenu.price).toBe(menuSeed.price);
+      expect(updatedMenu.isFlexible).toBe(menuSeed.isFlexible);
+      expect(updatedMenu.imagePath).toBe(menuSeed.imagePath);
+      expect(updatedMenu.sortOrder).toBe(updateMenuDto.sortOrder);
+    });
+
     it('400 - invalid menuIdx', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
@@ -764,6 +828,7 @@ describe('Menu e2e test', () => {
         price: null,
         isFlexible: false,
         imagePath: null,
+        sortOrder: null,
       };
 
       await testHelper
@@ -789,6 +854,7 @@ describe('Menu e2e test', () => {
         price: 5000,
         isFlexible: false,
         imagePath: 'menu/old-image.png',
+        sortOrder: 1,
       });
 
       const updateMenuDto = {
@@ -797,6 +863,7 @@ describe('Menu e2e test', () => {
         price: null,
         isFlexible: false,
         imagePath: null,
+        sortOrder: null,
       };
 
       await testHelper
@@ -822,6 +889,7 @@ describe('Menu e2e test', () => {
         price: 5000,
         isFlexible: false,
         imagePath: 'menu/old-image.png',
+        sortOrder: 1,
       });
 
       const updateMenuDto = {
@@ -829,6 +897,7 @@ describe('Menu e2e test', () => {
         price: null,
         isFlexible: false,
         imagePath: null,
+        sortOrder: null,
       };
 
       await testHelper
@@ -855,6 +924,7 @@ describe('Menu e2e test', () => {
         price: null,
         isFlexible: false,
         imagePath: null,
+        sortOrder: null,
       };
 
       await testHelper
@@ -873,6 +943,7 @@ describe('Menu e2e test', () => {
         price: null,
         isFlexible: false,
         imagePath: null,
+        sortOrder: null,
       };
 
       await testHelper

@@ -265,8 +265,8 @@ model User {
 }
 
 model AdminAccount {
-  idx       Int      @id @default(autoincrement())
-  id        String   @unique @db.VarChar
+  idx       Int      @id
+  id        String   @db.VarChar
   pw        String   @db.VarChar
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   user      User     @relation(fields: [idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_admin_account_tb")
