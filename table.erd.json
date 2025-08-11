@@ -10,7 +10,7 @@
     "show": 511,
     "database": 16,
     "databaseName": "inhu",
-    "canvasType": "@dineug/erd-editor/builtin-schema-sql",
+    "canvasType": "ERD",
     "language": 1,
     "tableNameCase": 4,
     "columnNameCase": 2,
@@ -3568,8 +3568,8 @@
         "name": "is_closed_on_holiday",
         "comment": "",
         "dataType": "boolean",
-        "default": "false",
-        "options": 8,
+        "default": "",
+        "options": 0,
         "ui": {
           "keys": 0,
           "widthName": 123,
@@ -3578,7 +3578,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1752678122341,
+          "updateAt": 1754889567076,
           "createAt": 1752678031078
         }
       },
