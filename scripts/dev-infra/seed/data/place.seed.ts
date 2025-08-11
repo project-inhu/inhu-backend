@@ -38,14 +38,14 @@ const DUAL_BREAK_TIME_2 = createDailySchedule(18, 19);
 const defaultReview: ReviewTestCaseInput = {
   userKey: 'user1',
   content: '기본 리뷰',
-  reviewImgList: ['/review/13072567-38f9-4941-9fb1-5eddb316f38d-bakery.jpg'],
+  reviewImgList: ['/review/banana.png'],
   keywordIdxList: [1, 2],
 };
 const defaultMenu: MenuTestCaseInput = {
   name: '기본 메뉴',
   content: '메뉴 설명입니다.',
   price: 10000,
-  imagePath: '/menu/41ee298f-7745-43cd-b81b-374a0e692fc9-candies.jpg',
+  imagePath: '/menu/buns.jpg',
 };
 const defaultPickedPlace = {
   title: '에디터 추천 장소',
@@ -94,7 +94,7 @@ const place2: PlaceSeedData = {
     name: `많은메뉴${i + 1}`,
     content: '많은 메뉴입니다.',
     price: 4000,
-    imagePath: '/menu/41ee298f-7745-43cd-b81b-374a0e692fc9-candies.jpg',
+    imagePath: '/menu/buns.jpg',
   })),
   pickedPlaceList: [defaultPickedPlace],
 };
@@ -178,7 +178,7 @@ const place5: PlaceSeedData = {
       content: '싯가 메뉴입니다.',
       isFlexible: true,
       price: null,
-      imagePath: '/menu/41ee298f-7745-43cd-b81b-374a0e692fc9-candies.jpg',
+      imagePath: '/menu/cookies.jpg',
     },
   ],
   pickedPlaceList: [defaultPickedPlace],
@@ -226,77 +226,67 @@ const place7: PlaceSeedData = {
     {
       userKey: 'user1',
       content: '리뷰가 여러개',
-      reviewImgList: [
-        '/review/13072567-38f9-4941-9fb1-5eddb316f38d-bakery.jpg',
-      ],
+      reviewImgList: ['/review/banana.png'],
       keywordIdxList: [1, 4],
     },
     {
       userKey: 'user1',
       content: '리뷰가 여러개',
-      reviewImgList: [
-        '/review/13072567-38f9-4941-9fb1-5eddb316f38d-bakery.jpg',
-      ],
+      reviewImgList: ['/review/cake.png'],
       keywordIdxList: [1, 4],
     },
     {
       userKey: 'user2',
       content: '리뷰가 여러개',
-      reviewImgList: ['/review/38b902bb-38bb-41c6-b216-b9536a76088f-buns.jpg'],
+      reviewImgList: ['/review/chocolate.png'],
       keywordIdxList: [2, 5],
     },
     {
       userKey: 'user1',
       content: '리뷰가 여러개',
-      reviewImgList: ['/review/4fbfbef0-b188-4816-820e-609e838ee5da-puppy.jpg'],
+      reviewImgList: ['/review/donuts.png'],
       keywordIdxList: [3, 4],
     },
     {
       userKey: 'user2',
       content: '리뷰가 여러개',
-      reviewImgList: [
-        '/review/5525b1a6-85ea-4359-ad0d-ac54ed77ad54-cupcakes.jpg',
-      ],
+      reviewImgList: ['/review/ice-cream.png'],
       keywordIdxList: [1, 5],
     },
     {
       userKey: 'user1',
       content: '리뷰가 여러개',
-      reviewImgList: ['/review/b670f3ab-1512-49fa-9494-1e845570d300-cat.jpg'],
+      reviewImgList: ['/review/banana.png'],
       keywordIdxList: [2, 4],
     },
     {
       userKey: 'user2',
       content: '리뷰가 여러개',
-      reviewImgList: [
-        '/review/13072567-38f9-4941-9fb1-5eddb316f38d-bakery.jpg',
-      ],
+      reviewImgList: ['/review/cake.png'],
       keywordIdxList: [3, 5],
     },
     {
       userKey: 'user1',
       content: '리뷰가 여러개',
-      reviewImgList: ['/review/38b902bb-38bb-41c6-b216-b9536a76088f-buns.jpg'],
+      reviewImgList: ['/review/chocolate.png'],
       keywordIdxList: [1, 4, 5],
     },
     {
       userKey: 'user2',
       content: '리뷰가 여러개',
-      reviewImgList: ['/review/4fbfbef0-b188-4816-820e-609e838ee5da-puppy.jpg'],
+      reviewImgList: ['/review/donuts.png'],
       keywordIdxList: [2],
     },
     {
       userKey: 'user1',
       content: '리뷰가 여러개',
-      reviewImgList: [
-        '/review/5525b1a6-85ea-4359-ad0d-ac54ed77ad54-cupcakes.jpg',
-      ],
+      reviewImgList: ['/review/ice-cream.png'],
       keywordIdxList: [3],
     },
     {
       userKey: 'user2',
       content: '리뷰가 여러개',
-      reviewImgList: ['/review/b670f3ab-1512-49fa-9494-1e845570d300-cat.jpg'],
+      reviewImgList: ['/review/banana.png'],
       keywordIdxList: [1, 4, 5],
     },
   ],
@@ -353,11 +343,11 @@ const place9: PlaceSeedData = {
       userKey: 'user1',
       content: '리뷰 이미지가 많습니다.',
       reviewImgList: [
-        '/review/13072567-38f9-4941-9fb1-5eddb316f38d-bakery.jpg',
-        '/review/38b902bb-38bb-41c6-b216-b9536a76088f-buns.jpg',
-        '/review/4fbfbef0-b188-4816-820e-609e838ee5da-puppy.jpg',
-        '/review/5525b1a6-85ea-4359-ad0d-ac54ed77ad54-cupcakes.jpg',
-        '/review/b670f3ab-1512-49fa-9494-1e845570d300-cat.jpg',
+        '/review/banana.png',
+        '/review/chocolate.png',
+        '/review/donuts.png',
+        '/review/ice-cream.png',
+        '/review/cake.png',
       ],
       keywordIdxList: [1, 2],
     },
@@ -415,9 +405,7 @@ const place11: PlaceSeedData = {
     {
       userKey: 'user1',
       content: '리뷰 키워드가 없습니다.',
-      reviewImgList: [
-        '/review/13072567-38f9-4941-9fb1-5eddb316f38d-bakery.jpg',
-      ],
+      reviewImgList: ['/review/banana.png'],
       keywordIdxList: null,
     },
   ],
@@ -445,9 +433,7 @@ const place12: PlaceSeedData = {
     {
       userKey: 'user1',
       content: '리뷰 키워드가 5개 있습니다.',
-      reviewImgList: [
-        '/review/13072567-38f9-4941-9fb1-5eddb316f38d-bakery.jpg',
-      ],
+      reviewImgList: ['/review/banana.png'],
       keywordIdxList: [1, 2, 3, 4, 5],
     },
   ],
@@ -464,11 +450,11 @@ const place13: PlaceSeedData = {
   tel: '032-111-0013',
   activatedAt: new Date(),
   placeImgList: [
-    '/place/hospital.jpg',
-    '/place/soccer_field.jpg',
-    '/place/theater.jpg',
-    '/place/moscow.jpg',
     '/place/bakery.jpg',
+    '/place/bookstore.jpg',
+    '/place/cafe.jpg',
+    '/place/hospital.jpg',
+    '/place/moscow.jpg',
   ],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 13',
@@ -563,7 +549,14 @@ const place17: PlaceSeedData = {
     (h) => h.day !== DayOfWeek.SAT,
   ),
   breakTime: FULL_BREAK_TIME.filter((b) => b.day !== DayOfWeek.SAT),
-  closedDayList: [{ day: DayOfWeek.SAT, week: 0 }],
+  closedDayList: [
+    { day: DayOfWeek.SAT, week: 1 },
+    { day: DayOfWeek.SAT, week: 2 },
+    { day: DayOfWeek.SAT, week: 3 },
+    { day: DayOfWeek.SAT, week: 4 },
+    { day: DayOfWeek.SAT, week: 5 },
+    { day: DayOfWeek.SAT, week: 6 },
+  ],
   reviewList: [defaultReview],
   menuList: [defaultMenu],
   pickedPlaceList: [],
@@ -818,9 +811,7 @@ const place28: PlaceSeedData = {
     {
       userKey: 'user2',
       content: '삭제된 리뷰입니다.',
-      reviewImgList: [
-        '/review/13072567-38f9-4941-9fb1-5eddb316f38d-bakery.jpg',
-      ],
+      reviewImgList: ['/review/banana.png'],
       keywordIdxList: [1, 2],
       deletedAt: new Date(),
     },
@@ -853,7 +844,7 @@ const place29: PlaceSeedData = {
       name: '삭제된 메뉴',
       content: '삭제된 메뉴입니다.',
       price: 5000,
-      imagePath: '/menu/41ee298f-7745-43cd-b81b-374a0e692fc9-candies.jpg',
+      imagePath: '/menu/buns.jpg',
       deletedAt: new Date(),
     },
   ],
