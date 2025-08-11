@@ -17,13 +17,14 @@ export class MenuService {
     placeIdx: number,
     dto: GetAllMenuDto,
   ): Promise<{ hasNext: boolean; menuList: MenuEntity[] }> {
-    const pageSize = 10;
+    const pageSize = dto.row;
     const take = pageSize + 1;
     const skip = (dto.page - 1) * pageSize;
 
     const menuList = await this.menuCoreService.getMenuAllByPlaceIdx(placeIdx, {
       take,
       skip,
+      order: dto.order,
     });
 
     return {

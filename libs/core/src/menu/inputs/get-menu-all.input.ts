@@ -13,4 +13,9 @@ export class GetMenuAllInput {
    * 스킵할 데이터의 개수
    */
   skip: number;
+
+  /**
+   * 정렬 방향
+   */
+  order?: 'desc' | 'asc';
 }
