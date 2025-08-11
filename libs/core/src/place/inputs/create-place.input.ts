@@ -10,7 +10,7 @@ import { WeeklyCloseType } from '../constants/weekly-close-type.constant';
 export class CreatePlaceInput {
   name: string;
   tel: string | null;
-  isClosedOnHoliday: boolean;
+  isClosedOnHoliday: boolean | null;
   activatedAt: Date | null;
   imgList: string[];
   type: PlaceType;
