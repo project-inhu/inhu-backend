@@ -156,7 +156,7 @@ model Menu {
   price      Int?
   imagePath  String?   @map("image_path") @db.VarChar
   isFlexible Boolean   @default(false) @map("is_flexible")
-  sortOrder  Int?      @map("sort_order") @db.SmallInt
+  sortOrder  Int       @map("sort_order") @db.SmallInt
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt  DateTime? @map("deleted_at") @db.Timestamptz(6)
   place      Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_menu_tb")

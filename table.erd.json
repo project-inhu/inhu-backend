@@ -4291,7 +4291,7 @@
         "comment": "",
         "dataType": "smallint",
         "default": "",
-        "options": 0,
+        "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 61,
@@ -4300,7 +4300,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1754898698459,
+          "updateAt": 1754926894636,
           "createAt": 1754898644775
         }
       }
