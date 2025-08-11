@@ -35,7 +35,7 @@ export class MenuSeedHelper extends ISeedHelper<MenuSeedInput, MenuSeedOutput> {
     });
 
     const menu = await this.prisma.menu.create({
-      select: { idx: true },
+      select: { idx: true, sortOrder: true },
       data: {
         placeIdx: filledInput.placeIdx,
         name: filledInput.name,
@@ -50,6 +50,7 @@ export class MenuSeedHelper extends ISeedHelper<MenuSeedInput, MenuSeedOutput> {
 
     return {
       idx: menu.idx,
+      sortOrder: menu.sortOrder,
       ...filledInput,
     };
   }

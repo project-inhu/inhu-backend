@@ -34,7 +34,6 @@ describe('Menu e2e test', () => {
         price: 10000,
         isFlexible: false,
         imagePath: '/test-image.png',
-        sortOrder: 1,
         deletedAt: null,
       });
 
@@ -61,7 +60,7 @@ describe('Menu e2e test', () => {
       expect(menu.price).toBe(menuSeed.price);
       expect(menu.isFlexible).toBe(menuSeed.isFlexible);
       expect(menu.imagePath).toBe(menuSeed.imagePath);
-      expect(menu.sortOrder).toBe(menuSeed.sortOrder);
+      expect(menu.sortOrder).toBe(1);
     });
 
     it('200 - hasNext check', async () => {
@@ -162,24 +161,6 @@ describe('Menu e2e test', () => {
 
       expect(menuList[0].idx).toBe(firstMenuSeed.idx);
       expect(menuList[1].idx).toBe(secondMenuSeed.idx);
-
-      const prisma = testHelper.getPrisma();
-      await prisma.menu.update({
-        where: { idx: secondMenuSeed.idx },
-        data: { sortOrder: 1 },
-      });
-
-      const response2 = await testHelper
-        .test()
-        .get(`/place/${placeSeed.idx}/menu`)
-        .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .query({ page: 1, row: 10 })
-        .expect(200);
-
-      const { menuList: menuList2 }: GetAllMenuResponseDto = response2.body;
-
-      expect(menuList2[0].idx).toBe(secondMenuSeed.idx);
-      expect(menuList2[1].idx).toBe(firstMenuSeed.idx);
     });
 
     it('200 - place idx filtering check', async () => {
@@ -279,7 +260,6 @@ describe('Menu e2e test', () => {
         price: 10000,
         isFlexible: false,
         imagePath: '/test-image.png',
-        sortOrder: 1,
       };
 
       const response = await testHelper
@@ -290,7 +270,6 @@ describe('Menu e2e test', () => {
         .expect(201);
 
       const menu: MenuEntity = response.body;
-      console.log(menu);
 
       expect(menu.idx).toBeDefined();
       expect(menu.placeIdx).toBe(placeSeed.idx);
@@ -299,7 +278,7 @@ describe('Menu e2e test', () => {
       expect(menu.price).toBe(createMenuDto.price);
       expect(menu.isFlexible).toBe(createMenuDto.isFlexible);
       expect(menu.imagePath).toBe(createMenuDto.imagePath);
-      expect(menu.sortOrder).toBe(createMenuDto.sortOrder);
+      expect(menu.sortOrder).toBe(1);
     });
 
     it('201 - create with no optional data', async () => {
@@ -316,7 +295,6 @@ describe('Menu e2e test', () => {
         price: null,
         imagePath: null,
         isFlexible: false,
-        sortOrder: null,
       };
 
       const response = await testHelper
@@ -333,7 +311,7 @@ describe('Menu e2e test', () => {
       expect(resultMenu.content).toBeNull();
       expect(resultMenu.isFlexible).toBe(false);
       expect(resultMenu.imagePath).toBeNull();
-      expect(resultMenu.sortOrder).toBeNull();
+      expect(resultMenu.sortOrder).toBe(1);
     });
 
     it('400 - invalid placeIdx', async () => {
@@ -406,7 +384,6 @@ describe('Menu e2e test', () => {
         price: null,
         imagePath: null,
         isFlexible: false,
-        sortOrder: null,
       };
 
       return await testHelper
@@ -425,7 +402,6 @@ describe('Menu e2e test', () => {
         price: null,
         imagePath: null,
         isFlexible: false,
-        sortOrder: null,
       };
 
       return await testHelper
@@ -453,7 +429,6 @@ describe('Menu e2e test', () => {
         price: 5000,
         isFlexible: false,
         imagePath: 'menu/old-image.png',
-        sortOrder: null,
       });
 
       const updateMenuDto = {
@@ -462,7 +437,6 @@ describe('Menu e2e test', () => {
         price: 10000,
         isFlexible: true,
         imagePath: 'menu/updated-image.png',
-        sortOrder: 1,
       };
 
       await testHelper
@@ -481,7 +455,6 @@ describe('Menu e2e test', () => {
       expect(updatedMenu.price).toBe(updateMenuDto.price);
       expect(updatedMenu.isFlexible).toBe(updateMenuDto.isFlexible);
       expect(updatedMenu.imagePath).toBe(updateMenuDto.imagePath);
-      expect(updatedMenu.sortOrder).toBe(updateMenuDto.sortOrder);
     });
 
     it('200 - all fields deleted (keep name)', async () => {
@@ -499,7 +472,6 @@ describe('Menu e2e test', () => {
         price: 5000,
         isFlexible: false,
         imagePath: 'menu/old-image.png',
-        sortOrder: 1,
       });
 
       const updateMenuDto = {
@@ -508,7 +480,6 @@ describe('Menu e2e test', () => {
         price: null,
         isFlexible: false,
         imagePath: null,
-        sortOrder: null,
       };
 
       await testHelper
@@ -527,7 +498,6 @@ describe('Menu e2e test', () => {
       expect(updatedMenu.price).toBeNull();
       expect(updatedMenu.isFlexible).toBe(updateMenuDto.isFlexible);
       expect(updatedMenu.imagePath).toBeNull();
-      expect(updatedMenu.sortOrder).toBeNull();
     });
 
     it('200 - all fields kept', async () => {
@@ -545,7 +515,6 @@ describe('Menu e2e test', () => {
         price: 5000,
         isFlexible: false,
         imagePath: 'menu/old-image.png',
-        sortOrder: 1,
       });
 
       const updateMenuDto = {
@@ -554,7 +523,6 @@ describe('Menu e2e test', () => {
         price: menuSeed.price,
         isFlexible: menuSeed.isFlexible,
         imagePath: menuSeed.imagePath,
-        sortOrder: menuSeed.sortOrder,
       };
 
       await testHelper
@@ -573,7 +541,6 @@ describe('Menu e2e test', () => {
       expect(updatedMenu.price).toBe(menuSeed.price);
       expect(updatedMenu.isFlexible).toBe(menuSeed.isFlexible);
       expect(updatedMenu.imagePath).toBe(menuSeed.imagePath);
-      expect(updatedMenu.sortOrder).toBe(menuSeed.sortOrder);
     });
 
     it('200 - name only modified', async () => {
@@ -791,52 +758,6 @@ describe('Menu e2e test', () => {
       expect(updatedMenu.imagePath).toBe(menuSeed.imagePath);
     });
 
-    it('200 - sortOrder only modified', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-
-      const placeSeed = await placeSeedHelper.seed({
-        deletedAt: null,
-        activatedAt: new Date(),
-      });
-
-      const menuSeed = await menuSeedHelper.seed({
-        placeIdx: placeSeed.idx,
-        name: 'Old Menu',
-        content: 'Old Content',
-        price: 5000,
-        isFlexible: false,
-        imagePath: 'menu/old-image.png',
-        sortOrder: 1,
-      });
-
-      const updateMenuDto = {
-        isFlexible: menuSeed.isFlexible,
-        name: menuSeed.name,
-        content: menuSeed.content,
-        price: menuSeed.price,
-        imagePath: menuSeed.imagePath,
-        sortOrder: 2,
-      };
-
-      await testHelper
-        .test()
-        .put(`/menu/${menuSeed.idx}`)
-        .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .send(updateMenuDto)
-        .expect(200);
-
-      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
-        where: { idx: menuSeed.idx },
-      });
-
-      expect(updatedMenu.name).toBe(menuSeed.name);
-      expect(updatedMenu.content).toBe(menuSeed.content);
-      expect(updatedMenu.price).toBe(menuSeed.price);
-      expect(updatedMenu.isFlexible).toBe(menuSeed.isFlexible);
-      expect(updatedMenu.imagePath).toBe(menuSeed.imagePath);
-      expect(updatedMenu.sortOrder).toBe(updateMenuDto.sortOrder);
-    });
-
     it('400 - invalid menuIdx', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
@@ -846,7 +767,6 @@ describe('Menu e2e test', () => {
         price: null,
         isFlexible: false,
         imagePath: null,
-        sortOrder: null,
       };
 
       await testHelper
@@ -872,7 +792,6 @@ describe('Menu e2e test', () => {
         price: 5000,
         isFlexible: false,
         imagePath: 'menu/old-image.png',
-        sortOrder: 1,
       });
 
       const updateMenuDto = {
@@ -881,7 +800,6 @@ describe('Menu e2e test', () => {
         price: null,
         isFlexible: false,
         imagePath: null,
-        sortOrder: null,
       };
 
       await testHelper
@@ -907,7 +825,6 @@ describe('Menu e2e test', () => {
         price: 5000,
         isFlexible: false,
         imagePath: 'menu/old-image.png',
-        sortOrder: 1,
       });
 
       const updateMenuDto = {
@@ -915,7 +832,6 @@ describe('Menu e2e test', () => {
         price: null,
         isFlexible: false,
         imagePath: null,
-        sortOrder: null,
       };
 
       await testHelper
@@ -942,7 +858,6 @@ describe('Menu e2e test', () => {
         price: null,
         isFlexible: false,
         imagePath: null,
-        sortOrder: null,
       };
 
       await testHelper
@@ -961,7 +876,6 @@ describe('Menu e2e test', () => {
         price: null,
         isFlexible: false,
         imagePath: null,
-        sortOrder: null,
       };
 
       await testHelper
@@ -973,8 +887,173 @@ describe('Menu e2e test', () => {
     });
   });
 
+  describe('PUT /menu/:menuIdx/sort-order', () => {
+    it('200 - successfully change to medium position', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed1 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed2 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed3 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      expect(menuSeed1.sortOrder).toBe(1);
+      expect(menuSeed2.sortOrder).toBe(2);
+      expect(menuSeed3.sortOrder).toBe(3);
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed1.idx}/sort-order`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ sortOrder: 2 }) // 1번 메뉴를 2번 위치로 이동
+        .expect(200);
+
+      const prisma = testHelper.getPrisma();
+      const updatedMenu1 = await prisma.menu.findUnique({
+        where: { idx: menuSeed1.idx },
+      });
+      const updatedMenu2 = await prisma.menu.findUnique({
+        where: { idx: menuSeed2.idx },
+      });
+      const updatedMenu3 = await prisma.menu.findUnique({
+        where: { idx: menuSeed3.idx },
+      });
+      expect(updatedMenu1?.sortOrder).toBe(2);
+      expect(updatedMenu2?.sortOrder).toBe(1);
+      expect(updatedMenu3?.sortOrder).toBe(3);
+    });
+
+    it('200 - successfully change to last position', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed1 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed2 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed3 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      expect(menuSeed1.sortOrder).toBe(1);
+      expect(menuSeed2.sortOrder).toBe(2);
+      expect(menuSeed3.sortOrder).toBe(3);
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed1.idx}/sort-order`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ sortOrder: 3 }) // 1번 메뉴를 3번 위치로 이동
+        .expect(200);
+
+      const prisma = testHelper.getPrisma();
+      const updatedMenu1 = await prisma.menu.findUnique({
+        where: { idx: menuSeed1.idx },
+      });
+      const updatedMenu2 = await prisma.menu.findUnique({
+        where: { idx: menuSeed2.idx },
+      });
+      const updatedMenu3 = await prisma.menu.findUnique({
+        where: { idx: menuSeed3.idx },
+      });
+      expect(updatedMenu1?.sortOrder).toBe(3);
+      expect(updatedMenu2?.sortOrder).toBe(1);
+      expect(updatedMenu3?.sortOrder).toBe(2);
+    });
+
+    it('200 - no change to move in place', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed1 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed2 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed3 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      expect(menuSeed1.sortOrder).toBe(1);
+      expect(menuSeed2.sortOrder).toBe(2);
+      expect(menuSeed3.sortOrder).toBe(3);
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed1.idx}/sort-order`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ sortOrder: 1 }) // 1번 메뉴를 1번 위치로 이동 (변경 없음)
+        .expect(200);
+
+      const prisma = testHelper.getPrisma();
+      const updatedMenu1 = await prisma.menu.findUnique({
+        where: { idx: menuSeed1.idx },
+      });
+      const updatedMenu2 = await prisma.menu.findUnique({
+        where: { idx: menuSeed2.idx },
+      });
+      const updatedMenu3 = await prisma.menu.findUnique({
+        where: { idx: menuSeed3.idx },
+      });
+      expect(updatedMenu1?.sortOrder).toBe(1);
+      expect(updatedMenu2?.sortOrder).toBe(2);
+      expect(updatedMenu3?.sortOrder).toBe(3);
+    });
+
+    it('400 - invalid sortOrder (a value that exceeds the menu count)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed1 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed1.idx}/sort-order`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ sortOrder: 3 })
+        .expect(400);
+    });
+
+    it('404 - menu does not exist', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .put(`/menu/99999/sort-order`) // ! 존재하지 않는 메뉴
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ sortOrder: 2 })
+        .expect(404);
+    });
+  });
+
   describe('DELETE /menu/:menuIdx', () => {
-    it('200 - delete check', async () => {
+    it('200 - single menu delete check', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
       const placeSeed = await placeSeedHelper.seed({
@@ -995,8 +1074,51 @@ describe('Menu e2e test', () => {
       const deletedMenu = await testHelper.getPrisma().menu.findUnique({
         where: { idx: menuSeed.idx },
       });
-
       expect(deletedMenu?.deletedAt).not.toBeNull();
+    });
+
+    it('200 - multi menu delete check (reorder sort_order)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed1 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed2 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed3 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      expect(menuSeed1.sortOrder).toBe(1);
+      expect(menuSeed2.sortOrder).toBe(2);
+      expect(menuSeed3.sortOrder).toBe(3);
+
+      await testHelper
+        .test()
+        .delete(`/menu/${menuSeed1.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+
+      const prisma = testHelper.getPrisma();
+      const deletedMenu = await prisma.menu.findUnique({
+        where: { idx: menuSeed1.idx },
+      });
+      expect(deletedMenu?.deletedAt).not.toBeNull();
+
+      const menu2 = await prisma.menu.findUnique({
+        where: { idx: menuSeed2.idx },
+      });
+      expect(menu2?.sortOrder).toBe(1);
+
+      const menu3 = await prisma.menu.findUnique({
+        where: { idx: menuSeed3.idx },
+      });
+      expect(menu3?.sortOrder).toBe(2);
     });
 
     it('400 - invalid menuIdx', async () => {
