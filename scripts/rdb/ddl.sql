@@ -43,6 +43,7 @@ CREATE TABLE menu_tb
   price       int                     ,
   image_path  varchar                 ,
   is_flexible boolean                  NOT NULL DEFAULT false,
+  sort_order  smallint                ,
   created_at  timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at  timestamp with time zone,
   PRIMARY KEY (idx)
