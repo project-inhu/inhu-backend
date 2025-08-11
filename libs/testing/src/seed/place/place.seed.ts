@@ -30,7 +30,7 @@ export class PlaceSeedHelper extends ISeedHelper<
       tel: defaultValue(input.tel, null),
       reviewCount: defaultValue(input.reviewCount, 0),
       bookmarkCount: defaultValue(input.bookmarkCount, 0),
-      isClosedOnHoliday: defaultValue(input.isClosedOnHoliday, false),
+      isClosedOnHoliday: defaultValue(input.isClosedOnHoliday, null),
       deletedAt: defaultValue(input.deletedAt, null),
       permanentlyClosedAt: defaultValue(input.permanentlyClosedAt, null),
       activatedAt: defaultValue(input.activatedAt, null),

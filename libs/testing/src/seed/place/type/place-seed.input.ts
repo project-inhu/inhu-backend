@@ -23,7 +23,7 @@ export type PlaceSeedInput = {
   /**
    * @default false
    */
-  isClosedOnHoliday?: boolean;
+  isClosedOnHoliday?: boolean | null;
   deletedAt?: Date | null;
   permanentlyClosedAt?: Date | null;
   activatedAt?: Date | null;

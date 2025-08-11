@@ -44,7 +44,7 @@ export class PlaceModel {
    * - true: 공휴일 휴무
    * - false: 공휴일 정상 운영
    */
-  public isClosedOnHoliday: boolean;
+  public isClosedOnHoliday: boolean | null;
 
   /**
    * 생성 시간

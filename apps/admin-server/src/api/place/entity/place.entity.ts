@@ -7,7 +7,6 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   IsBoolean,
-  IsIn,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -83,7 +82,8 @@ export class PlaceEntity {
    * @example false
    */
   @IsBoolean()
-  public isClosedOnHoliday: boolean;
+  @IsOptional()
+  public isClosedOnHoliday: boolean | null;
 
   /**
    * 특정 장소 image path list

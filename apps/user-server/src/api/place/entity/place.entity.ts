@@ -56,7 +56,7 @@ export class PlaceEntity {
    *
    * @example false
    */
-  public isClosedOnHoliday: boolean;
+  public isClosedOnHoliday: boolean | null;
 
   /**
    * 현재 사용자가 특정 항목을 북마크했는지 여부
