@@ -1,10 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { GetAllMenuDto } from './dto/request/get-all-menu.dto';
 import { MenuEntity } from './entity/menu.entity';
 import { CreateMenuDto } from './dto/request/create-menu.dto';
 import { UpdateMenuDto } from './dto/request/update-menu.dto';
 import { MenuCoreService } from '@libs/core/menu/menu-core.service';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
+import { UpdateMenuSortOrderDto } from './dto/request/update-menu-sort-order.dto';
 
 @Injectable()
 export class MenuService {
@@ -49,7 +54,6 @@ export class MenuService {
       content: dto.content,
       imagePath: dto.imagePath,
       isFlexible: dto.isFlexible,
-      sortOrder: dto.sortOrder,
     });
 
     return MenuEntity.fromModel(menuModel);
@@ -71,8 +75,36 @@ export class MenuService {
       content: dto.content,
       imagePath: dto.imagePath,
       isFlexible: dto.isFlexible,
-      sortOrder: dto.sortOrder,
     });
+  }
+
+  public async updateMenuSortOrderByPlaceIdx(
+    menuIdx: number,
+    dto: UpdateMenuSortOrderDto,
+  ): Promise<void> {
+    const menu = await this.menuCoreService.getMenuByIdx(menuIdx);
+    if (!menu) {
+      throw new NotFoundException('Cannot find menu with given idx');
+    }
+
+    const menuCount = await this.menuCoreService.getMenuCountByPlaceIdx(
+      menu.placeIdx,
+    );
+    const newSortOrder = dto.sortOrder;
+    if (newSortOrder > menuCount) {
+      throw new BadRequestException('Invalid sort order');
+    }
+
+    const currentSortOrder = menu.sortOrder;
+    if (currentSortOrder === newSortOrder) {
+      return;
+    }
+
+    return await this.menuCoreService.updateMenuSortOrderByIdx(
+      menuIdx,
+      currentSortOrder,
+      newSortOrder,
+    );
   }
 
   public async deleteMenuByIdx(menuIdx: number): Promise<void> {

@@ -51,13 +51,11 @@ export class MenuEntity {
   public isFlexible: boolean;
 
   /**
-   * 정렬 순서
-   * - null: 정렬 순서가 지정되지 않음
-   * - 숫자: 정렬 순서 (낮은 숫자가 우선)
+   * 정렬 순서 (낮은 숫자가 우선)
    *
    * @example 1
    */
-  public sortOrder: number | null;
+  public sortOrder: number;
 
   /**
    * 생성 시간
