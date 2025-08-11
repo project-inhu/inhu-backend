@@ -22,7 +22,7 @@ async function main() {
    */
   const user1 = await userSeedHelper.seed({
     nickname: '맛집탐방가',
-    profileImagePath: '/profile/ddccb241-5fc2-4aca-9f6f-89a2b32edd68-puppy.jpg',
+    profileImagePath: '/profile/cat.jpg',
   });
   const user2 = await userSeedHelper.seed({ nickname: '인덕이' });
   const userList = { user1, user2 };
