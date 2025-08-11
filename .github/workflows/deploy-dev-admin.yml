@@ -60,6 +60,13 @@ jobs:
             package.json
             package-lock.json
 
+      - name: echo outputs
+        run: |
+          echo "should_run=${{ steps.filter.outputs.user-server }}"
+          echo "should_deploy=${{ steps.deployment-gate.outputs.any_changed }}"
+          echo "filter_outputs=${{ toJSON(steps.filter.outputs) }}"
+          echo "Deployment gate outputs: ${{ toJSON(steps.deployment-gate.outputs) }}"
+
   # Job 2: Admin 서버 빌드 및 테스트
   build-and-test-admin:
     name: Build & Test Admin Server
