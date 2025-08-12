@@ -16,10 +16,10 @@ export class GetAllMenuDto {
   public row: number;
 
   /**
-   * 정렬 방향
+   * 정렬 방향 (sortOrder 기준)
    *
-   * @example 'asc'
-   * @default 'asc'
+   * @example 'desc'
+   * @default 'desc'
    */
   @IsOptional()
   @IsIn(['desc', 'asc'])
