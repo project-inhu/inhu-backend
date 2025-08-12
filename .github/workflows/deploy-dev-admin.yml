@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       # 이 워크플로우를 계속 실행해야 하는지 (true/false)
-      should_run: ${{ steps.filter.outputs.admin-server }}
+      should_run: ${{ steps.filter.outputs.any_changed }}
       # 배포까지 필요한 변경인지 (true/false)
       should_deploy: ${{ steps.deployment-gate.outputs.any_changed }}
     steps:
@@ -25,25 +25,24 @@ jobs:
           fetch-depth: 0
 
       # Step 1: Admin 서버와 관련된 변경이 있었는지 확인 (github action 테스트 유발 여부)
-      - name: Detect affected services
-        uses: dorny/paths-filter@v3
+      - name: Check for Admin Service Changes
         id: filter
+        uses: tj-actions/changed-files@v44
         with:
-          # 오직 admin-server 필터 하나만 정의합니다.
-          filters: |
-            admin-server:
-              - 'apps/admin-server/**'
-              - 'libs/**'
-              - 'scripts/apps/admin-server/**'
-              - 'scripts/dev-infra/**'
-              - 'scripts/rdb/**'
-              - 'prisma/**'
-              - 'package.json'
-              - 'package-lock.json'
-              - 'tsconfig.build.json'
-              - 'tsconfig.json'
-            ignore:
-              - '**/*.md'
+          # 오직 이 파일들만 변경 감지
+          files: |
+            apps/admin-server/**
+            libs/**
+            scripts/apps/admin-server/**
+            scripts/dev-infra/**
+            scripts/rdb/**
+            prisma/**
+            package.json
+            package-lock.json
+            tsconfig.build.json
+            tsconfig.json
+          files_ignore: |
+            **/*.md
 
       # Step 2: 배포가 필요한 변경인지 확인 (Whitelist 방식)
       - name: Check for deployable changes
@@ -65,7 +64,7 @@ jobs:
 
       - name: echo outputs
         run: |
-          echo "should_run=${{ steps.filter.outputs.user-server }}"
+          echo "should_run=${{ steps.filter.outputs.any_changed }}"
           echo "should_deploy=${{ steps.deployment-gate.outputs.any_changed }}"
           echo "filter_outputs=${{ toJSON(steps.filter.outputs) }}"
           echo "Deployment gate outputs: ${{ toJSON(steps.deployment-gate.outputs) }}"
