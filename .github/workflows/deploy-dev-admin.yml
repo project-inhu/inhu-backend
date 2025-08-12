@@ -53,7 +53,8 @@ jobs:
           files: |
             .github/workflows/deploy-dev-admin.yml
             apps/admin-server/src/**
-            libs/{common, core}/**
+            libs/common/**
+            libs/core/**
             prisma/**
             scripts/dev-infra/**
             scripts/rdb/**
