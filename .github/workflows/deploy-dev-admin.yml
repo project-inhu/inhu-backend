@@ -63,24 +63,12 @@ jobs:
           files_ignore: |
             **/*.md
 
-      - name: echo outputs
+      - name: echo outputs for debugging
         run: |
           echo "should_run=${{ steps.filter.outputs.any_modified }}"
           echo "should_deploy=${{ steps.deployment-gate.outputs.any_modified }}"
           echo "filter_outputs=${{ toJSON(steps.filter.outputs) }}"
           echo "Deployment gate outputs: ${{ toJSON(steps.deployment-gate.outputs) }}"
-
-  echo-job:
-    name: Echo Job
-    runs-on: ubuntu-latest
-    needs: check-admin-changes
-    steps:
-      - name: Echo Job
-        run: |
-          echo "should_run=${{ needs.check-admin-changes.outputs.should_run }}"
-          echo "should_deploy=${{ needs.check-admin-changes.outputs.should_deploy }}"
-          echo "needs=${{ toJSON(needs.check-admin-changes) }}"
-          echo "needs_outputs=${{ toJSON(needs.check-admin-changes.outputs) }}"
 
   # Job 2: Admin 서버 빌드 및 테스트
   test-admin:
