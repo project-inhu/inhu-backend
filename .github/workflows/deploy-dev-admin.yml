@@ -188,7 +188,7 @@ jobs:
             npm run dev-infra:down
             npm run dev-infra:up
             until docker exec inhu-dev-postgres psql -U inhu_admin -d inhu -c "SELECT 1;" >/dev/null 2>&1; do sleep 1; done
-            npm run seed
             pm2 restart inhu-backend-admin-dev
             pm2 restart inhu-backend-user-dev
+            npm run seed
           EOF
