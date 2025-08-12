@@ -32,7 +32,9 @@ export class MenuCoreRepository {
         placeIdx,
         deletedAt: null,
       },
-      orderBy: [{ sortOrder: 'asc' }, { idx: order || 'asc' }],
+      orderBy: {
+        sortOrder: order || 'desc',
+      },
       take,
       skip,
     });

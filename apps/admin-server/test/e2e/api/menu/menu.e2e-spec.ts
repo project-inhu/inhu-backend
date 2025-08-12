@@ -150,17 +150,34 @@ describe('Menu e2e test', () => {
         placeIdx: placeSeed.idx,
       });
 
+      expect(firstMenuSeed.sortOrder).toBe(1);
+      expect(secondMenuSeed.sortOrder).toBe(2);
+
+      // 기본적으로 sortOrder는 내림차순으로 정렬되므로, 두 번째 메뉴가 먼저 나와야 함
       const response = await testHelper
         .test()
         .get(`/place/${placeSeed.idx}/menu`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .query({ page: 1, row: 10 })
+        .query({ page: 1, row: 10, order: 'desc' })
         .expect(200);
 
       const { menuList }: GetAllMenuResponseDto = response.body;
 
-      expect(menuList[0].idx).toBe(firstMenuSeed.idx);
-      expect(menuList[1].idx).toBe(secondMenuSeed.idx);
+      expect(menuList[0].idx).toBe(secondMenuSeed.idx);
+      expect(menuList[1].idx).toBe(firstMenuSeed.idx);
+
+      // 오름차순 정렬 확인
+      const response2 = await testHelper
+        .test()
+        .get(`/place/${placeSeed.idx}/menu`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query({ page: 1, row: 10, order: 'asc' })
+        .expect(200);
+
+      const { menuList: menuList2 }: GetAllMenuResponseDto = response2.body;
+
+      expect(menuList2[0].idx).toBe(firstMenuSeed.idx);
+      expect(menuList2[1].idx).toBe(secondMenuSeed.idx);
     });
 
     it('200 - place idx filtering check', async () => {
