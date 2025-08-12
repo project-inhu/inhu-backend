@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       # 이 워크플로우를 계속 실행해야 하는지 (true/false)
-      should_run: ${{ steps.filter.outputs.user-server }}
+      should_run: ${{ steps.filter.outputs.any_modified }}
       # 배포까지 필요한 변경인지 (true/false)
       should_deploy: ${{ steps.deployment-gate.outputs.any_changed }}
     steps:
@@ -24,26 +24,25 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Step 1: User 서버와 관련된 변경이 있었는지 확인
-      - name: Detect affected services
-        uses: dorny/paths-filter@v3
+      # Step 1: User 서버와 관련된 변경이 있었는지 확인 (github action 테스트 유발 여부)
+      - name: Check for User Service Changes
         id: filter
+        uses: tj-actions/changed-files@v44
         with:
-          # 오직 user-server 필터 하나만 정의합니다.
-          filters: |
-            user-server:
-              - 'apps/user-server/**'
-              - 'libs/**'
-              - 'scripts/apps/user-server/**'
-              - 'scripts/dev-infra/**'
-              - 'scripts/rdb/**'    
-              - 'prisma/**'
-              - 'package.json'
-              - 'package-lock.json'
-              - 'tsconfig.build.json'
-              - 'tsconfig.json'
-            ignore:
-              - '**/*.md'
+          # 오직 이 파일들만 변경 감지
+          files: |
+            apps/user-server/**
+            libs/**
+            scripts/apps/user-server/**
+            scripts/dev-infra/**
+            scripts/rdb/**
+            prisma/**
+            package.json
+            package-lock.json
+            tsconfig.build.json
+            tsconfig.json
+          files_ignore: |
+            **/*.md
 
       # Step 2: 배포가 필요한 변경인지 확인 (Whitelist 방식)
       - name: Check for deployable changes
@@ -54,7 +53,8 @@ jobs:
           files: |
             .github/workflows/deploy-dev-user.yml
             apps/user-server/src/**
-            libs/{common, core}/**
+            libs/common/**
+            libs/core/**
             prisma/**
             scripts/dev-infra/**
             scripts/rdb/**
@@ -63,16 +63,16 @@ jobs:
           files_ignore: |
             **/*.md
 
-      - name: echo outputs
+      - name: echo outputs for debugging
         run: |
-          echo "should_run=${{ steps.filter.outputs.user-server }}"
-          echo "should_deploy=${{ steps.deployment-gate.outputs.any_changed }}"
+          echo "should_run=${{ steps.filter.outputs.any_modified }}"
+          echo "should_deploy=${{ steps.deployment-gate.outputs.any_modified }}"
           echo "filter_outputs=${{ toJSON(steps.filter.outputs) }}"
           echo "Deployment gate outputs: ${{ toJSON(steps.deployment-gate.outputs) }}"
 
   # Job 2: User 서버 빌드 및 테스트
-  build-and-test-user:
-    name: Build & Test User Server
+  test-user:
+    name: Test User Server
     needs: check-user-changes
     if: needs.check-user-changes.outputs.should_run == 'true'
     runs-on: ubuntu-latest
@@ -96,9 +96,25 @@ jobs:
           npm run user-server:test:e2e
           npm run user-server:test:infra:down
 
+  build-user:
+    name: Build User Server
+    needs: check-user-changes
+    if: github.event_name == 'push' && needs.check-user-changes.outputs.should_deploy == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Install dependencies
+        run: npm ci
+
       # push 시 User 서버 빌드 실행 (배포가 필요한 경우에만)
       - name: Build User Server for production
-        if: github.event_name == 'push' && needs.check-user-changes.outputs.should_deploy == 'true'
         run: |
           npx prisma generate
           npm run build user-server
@@ -106,7 +122,6 @@ jobs:
 
       # push 시 아티팩트 업로드 (배포가 필요한 경우에만)
       - name: Upload User Server artifact
-        if: github.event_name == 'push' && needs.check-user-changes.outputs.should_deploy == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: user-server-build
@@ -127,7 +142,7 @@ jobs:
       group: raspberry-pi-deploy
       cancel-in-progress: false
     name: Deploy User Server to Raspberry Pi
-    needs: [check-user-changes, build-and-test-user]
+    needs: [check-user-changes, build-user]
     if: github.event_name == 'push' && needs.check-user-changes.outputs.should_deploy == 'true'
     runs-on: ubuntu-latest
     steps:
