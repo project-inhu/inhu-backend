@@ -5,6 +5,27 @@ import {
   ReviewTestCaseInput,
 } from '../constants/type';
 import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
+import { PlaceType } from '@libs/core/place/constants/place-type.constant';
+
+const PLACE_IMAGE = {
+  BAKERY: '/place/bakery.jpg',
+  HOSPITAL: '/place/hospital.jpg',
+  MOSCOW: '/place/moscow.jpg',
+  PARK: '/place/park.jpg',
+  POOL: '/place/pool.jpg',
+  SCHOOL: '/place/school.jpg',
+  SOCCER_FIELD: '/place/soccer_field.jpg',
+  THEATER: '/place/theater.jpg',
+  CAFE1: '/place/cafe.jpg',
+  BAR1: '/place/bar.jpg',
+  BAR2: '/place/bar2.jpg',
+  BAR3: '/place/bar3.jpg',
+  BAR4: '/place/bar4.jpg',
+  BAR5: '/place/bar5.jpg',
+  RESTAURANT1: '/place/restaurant.jpeg',
+  RESTAURANT2: '/place/restaurant2.jpg',
+  RESTAURANT3: '/place/restaurant3.jpg',
+};
 
 /**
  * 운영시간과 관련된 재사용될 함수와 상수들
@@ -60,7 +81,7 @@ const place1: PlaceSeedData = {
   name: '메뉴 없음',
   tel: '032-111-0001',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  placeImgList: [PLACE_IMAGE.HOSPITAL, PLACE_IMAGE.BAKERY],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 1',
     addressX: 127.001,
@@ -81,7 +102,7 @@ const place2: PlaceSeedData = {
   name: '메뉴 많음',
   tel: '032-111-0002',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  placeImgList: [PLACE_IMAGE.POOL],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 2',
     addressX: 127.002,
@@ -107,7 +128,7 @@ const place3: PlaceSeedData = {
   name: '메뉴 이미지 없음',
   tel: '032-111-0003',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  placeImgList: [PLACE_IMAGE.MOSCOW],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 3',
     addressX: 127.003,
@@ -135,7 +156,7 @@ const place4: PlaceSeedData = {
   name: '잘못된 메뉴 이미지',
   tel: '032-111-0004',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  placeImgList: [PLACE_IMAGE.PARK, PLACE_IMAGE.SCHOOL],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 4',
     addressX: 127.004,
@@ -163,7 +184,11 @@ const place5: PlaceSeedData = {
   name: '싯가 메뉴 있음',
   tel: '032-111-0005',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  placeImgList: [
+    PLACE_IMAGE.SCHOOL,
+    PLACE_IMAGE.SOCCER_FIELD,
+    PLACE_IMAGE.THEATER,
+  ],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 5',
     addressX: 127.005,
@@ -192,7 +217,11 @@ const place6: PlaceSeedData = {
   name: '리뷰 없음',
   tel: '032-111-0006',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  placeImgList: [
+    PLACE_IMAGE.THEATER,
+    PLACE_IMAGE.SCHOOL,
+    PLACE_IMAGE.SOCCER_FIELD,
+  ],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 6',
     addressX: 127.006,
@@ -213,7 +242,7 @@ const place7: PlaceSeedData = {
   name: '리뷰 많음',
   tel: '032-111-0007',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  placeImgList: [],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 7',
     addressX: 127.007,
@@ -302,7 +331,7 @@ const place8: PlaceSeedData = {
   name: '리뷰 이미지 없음',
   tel: '032-111-0008',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.CAFE1, PLACE_IMAGE.CAFE1],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 8',
     addressX: 127.008,
@@ -330,7 +359,7 @@ const place9: PlaceSeedData = {
   name: '리뷰 이미지 많음',
   tel: '032-111-0009',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  placeImgList: [PLACE_IMAGE.POOL, PLACE_IMAGE.SCHOOL],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 9',
     addressX: 127.009,
@@ -363,8 +392,9 @@ const place9: PlaceSeedData = {
 const place10: PlaceSeedData = {
   name: '잘못된 리뷰 이미지',
   tel: '032-111-0010',
+  type: PlaceType.BAR,
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  placeImgList: [PLACE_IMAGE.BAR1],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 10',
     addressX: 127.01,
@@ -392,7 +422,8 @@ const place11: PlaceSeedData = {
   name: '리뷰 키워드 없음',
   tel: '032-111-0011',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  type: PlaceType.RESTAURANT,
+  placeImgList: [PLACE_IMAGE.RESTAURANT1, PLACE_IMAGE.RESTAURANT2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 11',
     addressX: 127.011,
@@ -421,7 +452,8 @@ const place12: PlaceSeedData = {
   name: '리뷰 키워드 많음',
   tel: '032-111-0012',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  type: PlaceType.RESTAURANT,
+  placeImgList: [PLACE_IMAGE.RESTAURANT2, PLACE_IMAGE.RESTAURANT1],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 12',
     addressX: 127.012,
@@ -450,11 +482,11 @@ const place13: PlaceSeedData = {
   tel: '032-111-0013',
   activatedAt: new Date(),
   placeImgList: [
-    '/place/bakery.jpg',
-    '/place/bookstore.jpg',
-    '/place/cafe.jpg',
-    '/place/hospital.jpg',
-    '/place/moscow.jpg',
+    PLACE_IMAGE.BAKERY,
+    PLACE_IMAGE.BAR1,
+    PLACE_IMAGE.HOSPITAL,
+    PLACE_IMAGE.POOL,
+    PLACE_IMAGE.THEATER,
   ],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 13',
@@ -497,7 +529,8 @@ const place15: PlaceSeedData = {
   name: '운영시간 없음',
   tel: '032-111-0015',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  type: PlaceType.RESTAURANT,
+  placeImgList: [PLACE_IMAGE.RESTAURANT1],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 15',
     addressX: 127.015,
@@ -518,7 +551,8 @@ const place16: PlaceSeedData = {
   name: '브레이크 시간 없음',
   tel: '032-111-0016',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  type: PlaceType.BAR,
+  placeImgList: [PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 16',
     addressX: 127.016,
@@ -539,7 +573,8 @@ const place17: PlaceSeedData = {
   name: '정기 휴무일 있음',
   tel: '032-111-0017',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  type: PlaceType.BAR,
+  placeImgList: [PLACE_IMAGE.BAR3, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 17',
     addressX: 127.017,
@@ -570,7 +605,8 @@ const place18: PlaceSeedData = {
   name: '운영시간/브레이크 2번',
   tel: '032-111-0018',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  type: PlaceType.BAR,
+  placeImgList: [PLACE_IMAGE.BAR4, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 18',
     addressX: 127.018,
@@ -591,7 +627,8 @@ const place19: PlaceSeedData = {
   name: '매월 특정 주차의 특정 요일 휴무',
   tel: '032-111-0019',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  type: PlaceType.BAR,
+  placeImgList: [PLACE_IMAGE.BAR5, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 19',
     addressX: 127.019,
@@ -616,7 +653,8 @@ const place20: PlaceSeedData = {
   name: '격주 휴무',
   tel: '032-111-0020',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  type: PlaceType.RESTAURANT,
+  placeImgList: [PLACE_IMAGE.RESTAURANT2, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 20',
     addressX: 127.02,
@@ -643,7 +681,8 @@ const place21: PlaceSeedData = {
   name: '공휴일 휴무',
   tel: '032-111-0021',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  type: PlaceType.BAR,
+  placeImgList: [PLACE_IMAGE.BAR5, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 21',
     addressX: 127.021,
@@ -665,7 +704,8 @@ const place22: PlaceSeedData = {
   name: '전화번호 없음',
   tel: null,
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  type: PlaceType.RESTAURANT,
+  placeImgList: [PLACE_IMAGE.RESTAURANT3, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 22',
     addressX: 127.022,
@@ -687,7 +727,8 @@ const place23: PlaceSeedData = {
   name: '비활성화된 장소',
   tel: '032-111-0022',
   activatedAt: null,
-  placeImgList: ['/place/bakery.jpg'],
+  type: PlaceType.RESTAURANT,
+  placeImgList: [PLACE_IMAGE.RESTAURANT2, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 23',
     addressX: 127.023,
@@ -708,7 +749,8 @@ const place24: PlaceSeedData = {
   name: '상세 주소 존재함',
   tel: '032-111-0023',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  type: PlaceType.RESTAURANT,
+  placeImgList: [PLACE_IMAGE.RESTAURANT3, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 24',
     addressX: 127.024,
@@ -731,7 +773,8 @@ const place25: PlaceSeedData = {
   name: '미래에 활성화될 장소',
   tel: '032-111-0024',
   activatedAt: new Date(Date.now() + 1000 * 60 * 60 * 24), // 1일 후 활성화
-  placeImgList: ['/place/bakery.jpg'],
+  type: PlaceType.RESTAURANT,
+  placeImgList: [PLACE_IMAGE.RESTAURANT2, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 25',
     addressX: 127.025,
@@ -753,7 +796,8 @@ const place26: PlaceSeedData = {
   name: '삭제된 장소',
   tel: '032-111-0025',
   deletedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  type: PlaceType.RESTAURANT,
+  placeImgList: [PLACE_IMAGE.RESTAURANT2, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 26',
     addressX: 127.026,
@@ -776,7 +820,8 @@ const place27: PlaceSeedData = {
   name: '폐업한 장소',
   tel: '032-111-0026',
   permanentlyClosedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  type: PlaceType.RESTAURANT,
+  placeImgList: [PLACE_IMAGE.MOSCOW, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 27',
     addressX: 127.027,
@@ -798,7 +843,8 @@ const place28: PlaceSeedData = {
   name: '삭제된 리뷰가 포함된 장소',
   tel: '032-111-0027',
   activatedAt: new Date(),
-  placeImgList: ['/place/bakery.jpg'],
+  type: PlaceType.RESTAURANT,
+  placeImgList: [PLACE_IMAGE.BAR5, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 28',
     addressX: 127.028,
