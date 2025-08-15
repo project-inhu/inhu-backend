@@ -6,6 +6,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  InternalServerErrorException,
   Param,
   Post,
   Req,
@@ -94,13 +95,18 @@ export class AuthController {
     @Req() req: Request,
     @Param('provider') provider: AuthProvider,
   ): Promise<SocialLoginAppResponseDto> {
-    const { accessToken, refreshToken } = await this.authService.login(
-      req,
-      provider,
-      TokenIssuedBy.APP,
-    );
+    try {
+      const { accessToken, refreshToken } = await this.authService.login(
+        req,
+        provider,
+        TokenIssuedBy.APP,
+      );
 
-    return { accessToken, refreshToken };
+      return { accessToken, refreshToken };
+    } catch (err) {
+      console.error(err);
+      throw new InternalServerErrorException('소셜 로그인 실패');
+    }
   }
 
   /**
