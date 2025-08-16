@@ -16,19 +16,52 @@ services:
     networks:
       - inhu-dev-network
 
-  redis:
+  redis-1:
     image: redis:7.4.0
-    container_name: inhu-dev-redis
+    container_name: inhu-dev-redis-1
     ports:
       - '6384:6379'
     networks:
       - inhu-dev-network
     volumes:
-      - inhu-dev-redis-data:/data
+      - inhu-dev-redis-1-data:/data
+
+  redis-2:
+    image: redis:7.4.0
+    container_name: inhu-dev-redis-2
+    ports:
+      - '6385:6379'
+    networks:
+      - inhu-dev-network
+    volumes:
+      - inhu-dev-redis-2-data:/data
+
+  redis-3:
+    image: redis:7.4.0
+    container_name: inhu-dev-redis-3
+    ports:
+      - '6386:6379'
+    networks:
+      - inhu-dev-network
+    volumes:
+      - inhu-dev-redis-3-data:/data
+
+  redis-4:
+    image: redis:7.4.0
+    container_name: inhu-dev-redis-4
+    ports:
+      - '6387:6379'
+    networks:
+      - inhu-dev-network
+    volumes:
+      - inhu-dev-redis-4-data:/data
 
 volumes:
   inhu-dev-data:
-  inhu-dev-redis-data:
+  inhu-dev-redis-1-data:
+  inhu-dev-redis-2-data:
+  inhu-dev-redis-3-data:
+  inhu-dev-redis-4-data:
 
 networks:
   inhu-dev-network:

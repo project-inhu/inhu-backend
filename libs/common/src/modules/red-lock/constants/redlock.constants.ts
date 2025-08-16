@@ -1,0 +1,1 @@
+export const REDLOCK_TOKEN = 'REDLOCK_TOKEN';
