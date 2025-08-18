@@ -221,17 +221,23 @@ export class PlaceCoreRepository {
   private getOrderByClause({
     order = 'desc',
     orderBy = 'time',
-  }: Pick<
-    GetPlaceOverviewInput,
-    'order' | 'orderBy'
-  >): Prisma.PlaceOrderByWithRelationInput {
-    return {
-      [orderBy === 'time'
-        ? 'idx'
-        : orderBy === 'review'
-          ? 'reviewCount'
-          : 'bookmarkCount']: order,
-    };
+  }: Pick<GetPlaceOverviewInput, 'order' | 'orderBy'>):
+    | Prisma.PlaceOrderByWithRelationInput
+    | Prisma.PlaceOrderByWithRelationInput[] {
+    if (orderBy === 'time') {
+      return {
+        idx: order,
+      };
+    }
+
+    return [
+      {
+        [orderBy === 'review' ? 'reviewCount' : 'bookmarkCount']: order,
+      },
+      {
+        idx: 'desc',
+      },
+    ];
   }
 
   public async insertPlace(input: CreatePlaceInput): Promise<SelectPlace> {
