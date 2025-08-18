@@ -1,3 +1,4 @@
+import { DayOfWeek } from '@libs/common/modules/date-util/constants/day-of-week.constants';
 import { PlaceOperatingHourModel } from '@libs/core/place/model/place-operating-hour.model';
 
 export class PlaceOperatingHourEntity {
@@ -22,6 +23,13 @@ export class PlaceOperatingHourEntity {
    */
   public endAt: string;
 
+  /**
+   * 요일
+   *
+   * @example 3
+   */
+  public day: DayOfWeek;
+
   constructor(data: PlaceOperatingHourEntity) {
     Object.assign(this, data);
   }
@@ -31,6 +39,7 @@ export class PlaceOperatingHourEntity {
       idx: model.idx,
       startAt: model.startAt,
       endAt: model.endAt,
+      day: model.day,
     });
   }
 }

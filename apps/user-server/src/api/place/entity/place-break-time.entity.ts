@@ -1,3 +1,4 @@
+import { DayOfWeek } from '@libs/common/modules/date-util/constants/day-of-week.constants';
 import { PlaceBreakTimeModel } from '@libs/core/place/model/place-break-time.model';
 
 export class PlaceBreakTimeEntity {
@@ -22,6 +23,13 @@ export class PlaceBreakTimeEntity {
    */
   public endAt: string;
 
+  /**
+   * 요일
+   *
+   * @example 3
+   */
+  public day: DayOfWeek;
+
   constructor(data: PlaceBreakTimeEntity) {
     Object.assign(this, data);
   }
@@ -31,6 +39,7 @@ export class PlaceBreakTimeEntity {
       idx: model.idx,
       startAt: model.startAt,
       endAt: model.endAt,
+      day: model.day,
     });
   }
 }
