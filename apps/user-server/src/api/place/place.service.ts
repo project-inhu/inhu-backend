@@ -21,6 +21,7 @@ export class PlaceService {
     placeOverviewList: PlaceOverviewEntity[];
     hasNext: boolean;
   }> {
+    const pageSize = 10;
     const coordinate = {
       leftTopX: dto.leftTopX,
       rightBottomX: dto.rightBottomX,
@@ -29,8 +30,8 @@ export class PlaceService {
     };
 
     const placeOverviewModelList = await this.placeCoreService.getPlaceAll({
-      take: 11,
-      skip: (dto.page - 1) * 10,
+      take: pageSize + 1,
+      skip: (dto.page - 1) * pageSize,
       activated: true,
       permanentlyClosed: false,
       coordinate: this.isValidCoordinate(coordinate) ? coordinate : undefined,
@@ -41,25 +42,28 @@ export class PlaceService {
       bookmarkUserIdx: undefined,
     });
 
+    const paginatedList = placeOverviewModelList.slice(0, pageSize);
+    const hasNext = placeOverviewModelList.length > pageSize;
+
     if (!readUserIdx) {
       return {
-        hasNext: placeOverviewModelList.length > 10,
-        placeOverviewList: placeOverviewModelList
-          .slice(0, 10)
-          .map((place) => PlaceOverviewEntity.fromModel(place, false)),
+        hasNext: hasNext,
+        placeOverviewList: paginatedList.map((place) =>
+          PlaceOverviewEntity.fromModel(place, false),
+        ),
       };
     }
 
     const bookmarkedPlaceList = await this.bookmarkCoreService
       .getBookmarkStateByUserIdx({
         userIdx: readUserIdx,
-        placeIdxList: placeOverviewModelList.map(({ idx }) => idx),
+        placeIdxList: paginatedList.map(({ idx }) => idx),
       })
       .then((bookmarks) => bookmarks.map(({ placeIdx }) => placeIdx));
 
     return {
-      hasNext: placeOverviewModelList.length > 10,
-      placeOverviewList: placeOverviewModelList.map((place) =>
+      hasNext: hasNext,
+      placeOverviewList: paginatedList.map((place) =>
         PlaceOverviewEntity.fromModel(
           place,
           bookmarkedPlaceList.includes(place.idx),
