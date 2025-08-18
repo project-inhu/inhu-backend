@@ -22,11 +22,10 @@ export class MenuCoreRepository {
     });
   }
 
-  public async selectMenuAllByPlaceIdx({
-    placeIdx,
-    take,
-    skip,
-  }: GetMenuAllInput): Promise<SelectMenu[]> {
+  public async selectMenuAllByPlaceIdx(
+    placeIdx: number,
+    { take, skip, order }: GetMenuAllInput,
+  ): Promise<SelectMenu[]> {
     return await this.txHost.tx.menu.findMany({
       ...SELECT_MENU,
       where: {
@@ -34,39 +33,48 @@ export class MenuCoreRepository {
         deletedAt: null,
       },
       orderBy: {
-        idx: 'asc',
+        sortOrder: order || 'desc',
       },
       take,
       skip,
     });
   }
 
-  public async insertMenu(input: CreateMenuInput): Promise<SelectMenu> {
+  public async getMenuCountByPlaceIdx(placeIdx: number): Promise<number> {
+    return await this.txHost.tx.menu.count({
+      where: { placeIdx, deletedAt: null },
+    });
+  }
+
+  public async insertMenu(
+    placeIdx: number,
+    { name, price, content, imagePath, isFlexible }: CreateMenuInput,
+  ): Promise<SelectMenu> {
     return await this.txHost.tx.menu.create({
       ...SELECT_MENU,
       data: {
-        placeIdx: input.placeIdx,
-        name: input.name,
-        price: input.price,
-        content: input.content,
-        imagePath: input.imagePath,
-        isFlexible: input.isFlexible,
+        placeIdx,
+        name,
+        price,
+        content,
+        imagePath,
+        isFlexible,
+        sortOrder: (await this.getMenuCountByPlaceIdx(placeIdx)) + 1,
       },
     });
   }
 
   public async updateMenuByIdx(
     idx: number,
-    input: UpdateMenuInput,
+    { name, price, content, imagePath, isFlexible }: UpdateMenuInput,
   ): Promise<void> {
     await this.txHost.tx.menu.update({
       data: {
-        placeIdx: input.placeIdx,
-        name: input.name,
-        price: input.price,
-        content: input.content,
-        imagePath: input.imagePath,
-        isFlexible: input.isFlexible,
+        name,
+        price,
+        content,
+        imagePath,
+        isFlexible,
       },
       where: {
         idx,
@@ -75,13 +83,75 @@ export class MenuCoreRepository {
     });
   }
 
-  public async softDeleteMenuByIdx(idx: number): Promise<void> {
+  public async updateMenuSortOrderByIdx(
+    idx: number,
+    placeIdx: number,
+    currentSortOrder: number,
+    newSortOrder: number,
+  ): Promise<void> {
+    if (currentSortOrder < newSortOrder) {
+      await this.txHost.tx.menu.updateMany({
+        data: {
+          sortOrder: {
+            decrement: 1,
+          },
+        },
+        where: {
+          placeIdx,
+          sortOrder: {
+            gt: currentSortOrder,
+            lte: newSortOrder,
+          },
+          deletedAt: null,
+        },
+      });
+    } else {
+      await this.txHost.tx.menu.updateMany({
+        data: {
+          sortOrder: {
+            increment: 1,
+          },
+        },
+        where: {
+          placeIdx,
+          sortOrder: {
+            gte: newSortOrder,
+            lt: currentSortOrder,
+          },
+          deletedAt: null,
+        },
+      });
+    }
+
     await this.txHost.tx.menu.update({
+      where: { idx },
+      data: { sortOrder: newSortOrder },
+    });
+  }
+
+  // ! soft delete 해제 시, sortOrder는 맨 뒷번호를 할당해야 함.
+  public async softDeleteMenuByIdx(idx: number): Promise<void> {
+    const menu = await this.txHost.tx.menu.update({
       data: {
         deletedAt: new Date(),
       },
       where: {
         idx,
+        deletedAt: null,
+      },
+    });
+
+    await this.txHost.tx.menu.updateMany({
+      data: {
+        sortOrder: {
+          decrement: 1,
+        },
+      },
+      where: {
+        placeIdx: menu.placeIdx,
+        sortOrder: {
+          gt: menu.sortOrder,
+        },
         deletedAt: null,
       },
     });

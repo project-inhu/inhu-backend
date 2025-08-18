@@ -8,6 +8,7 @@ import { Transform } from 'class-transformer';
  * @author jochongs
  *
  * @decorator Property
+ * @publicApi
  */
 export const ToBoolean = () => {
   return Transform((value) => {

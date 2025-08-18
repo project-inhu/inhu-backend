@@ -1,6 +1,11 @@
-import { UserProviderModel } from '@app/core/user/model/user-provider.model';
+import { UserProviderModel } from './user-provider.model';
 import { SelectUser } from './prisma-type/select-user';
 
+/**
+ * 사용자 모델
+ *
+ * @publicApi
+ */
 export class UserModel {
   /**
    * 사용자 식별자

@@ -5,115 +5,91 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  Patch,
   Post,
+  Put,
+  Query,
 } from '@nestjs/common';
 import { ReviewService } from './review.service';
-import { CreateReviewDto } from './dto/create-review.dto';
-import { ReviewEntity } from './entity/review.entity';
-import { UpdateReviewDto } from './dto/update-review.dto';
+import { GetAllReviewDto } from './dto/request/get-all-review.dto';
+import { GetAllReviewResponseDto } from './dto/response/get-all-review.response.dto';
 import { User } from '@user/common/decorator/user.decorator';
-import { LoginAuth } from '@user/auth/common/decorators/login-auth.decorator';
-import { Exception } from '@app/common/decorator/exception.decorator';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { LoginUser } from '@user/common/types/LoginUser';
+import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
+import { CreateReviewDto } from '@user/api/review/dto/request/create-review.dto';
+import { ReviewEntity } from '@user/api/review/entity/review.entity';
+import { UpdateReviewDto } from './dto/request/update-review-dto';
+import { Exception } from '@libs/common/decorator/exception.decorator';
 
 @Controller('')
 export class ReviewController {
   constructor(private reviewService: ReviewService) {}
 
   /**
-   * 특정 장소에 대한 리뷰 목록 조회
+   * 리뷰 작성 API
    *
    * @author 강정연
    */
-  @Exception(400, 'Invalid placeIdx')
-  @Exception(404, 'Place not found')
-  @Get('/place/:placeIdx/review/all')
-  async getAllReviewByPlaceIdx(
-    @Param('placeIdx', ParseIntPipe) placeIdx: number,
-  ): Promise<ReviewEntity[]> {
-    return await this.reviewService.getAllReviewByPlaceIdx(placeIdx);
-  }
-
-  /**
-   * 특정 장소에 대한 리뷰 생성
-   *
-   * @author 강정연
-   */
-  @ApiBearerAuth()
-  @LoginAuth
-  @Exception(400, 'Invalid placeIdx or request body')
-  @Exception(404, 'Place, keyword, or user not found')
   @Post('/place/:placeIdx/review')
-  async createReviewByPlaceIdx(
+  @LoginAuth()
+  @Exception(400, 'Invalid placeIdx or request body')
+  @Exception(404, 'Place does not exist')
+  async createReview(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
-    @Body() createReviewDto: CreateReviewDto,
-    @User('idx') userIdx: number,
+    @Body() dto: CreateReviewDto,
+    @User() loginUser: LoginUser,
   ): Promise<ReviewEntity> {
-    return await this.reviewService.createReviewByPlaceIdx({
+    return await this.reviewService.createReviewByPlaceIdx(
       placeIdx,
-      userIdx,
-      content: createReviewDto.content,
-      imagePathList: createReviewDto.imagePathList,
-      keywordIdxList: createReviewDto.keywordIdxList,
-    });
+      dto,
+      loginUser,
+    );
   }
 
   /**
-   * 특정 리뷰 수정
+   * 리뷰 목록 가져오기 API
    *
    * @author 강정연
    */
-  @ApiBearerAuth()
-  @LoginAuth
+  @Get('/review/all')
+  @Exception(400, 'Query parameter type is invalid')
+  @Exception(403, 'Permission denied')
+  async getAllReview(
+    @Query() dto: GetAllReviewDto,
+    @User() loginUser?: LoginUser,
+  ): Promise<GetAllReviewResponseDto> {
+    return await this.reviewService.getAllReview(dto, loginUser);
+  }
+
+  /**
+   * 리뷰 수정하기 API
+   *
+   * @author 강정연
+   */
+  @Put('/review/:reviewIdx')
+  @LoginAuth()
   @Exception(400, 'Invalid reviewIdx or request body')
   @Exception(403, 'Permission denied')
-  @Exception(404, 'Review or user not found')
-  @Patch('/review/:reviewIdx')
-  async updateReviewByReviewIdx(
+  async updateReview(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
-    @Body() updateReviewDto: UpdateReviewDto,
-    @User('idx') userIdx: number,
-  ): Promise<ReviewEntity> {
-    return await this.reviewService.updateReviewByReviewIdx({
-      reviewIdx,
-      userIdx,
-      content: updateReviewDto.content,
-      imagePathList: updateReviewDto.imagePathList,
-      keywordIdxList: updateReviewDto.keywordIdxList,
-    });
+    @Body() dto: UpdateReviewDto,
+    @User() loginUser: LoginUser,
+  ): Promise<void> {
+    await this.reviewService.updateReviewByIdx(reviewIdx, dto, loginUser);
   }
 
   /**
-   * 특정 리뷰 삭제
+   * 리뷰 삭제하기 API
    *
    * @author 강정연
    */
-  @ApiBearerAuth()
-  @LoginAuth
+  @Delete('/review/:reviewIdx')
+  @LoginAuth()
   @Exception(400, 'Invalid reviewIdx')
   @Exception(403, 'Permission denied')
-  @Exception(404, 'Review or user not found')
-  @Delete('/review/:reviewIdx')
-  async deleteReviewByReviewIdx(
+  async deleteReview(
     @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
-    @User('idx') userIdx: number,
+    @User() loginUser: LoginUser,
   ): Promise<void> {
-    await this.reviewService.deleteReviewByReviewIdx(reviewIdx, userIdx);
-  }
-
-  /**
-   * 특정 사용자가 작성한 리뷰 목록 조회
-   *
-   * @author 강정연
-   */
-  @ApiBearerAuth()
-  @LoginAuth
-  @Exception(404, 'User not found')
-  @Get('/my/review/all')
-  async getAllReviewByUserIdx(
-    @User('idx') userIdx: number,
-  ): Promise<ReviewEntity[]> {
-    return await this.reviewService.getAllReviewByUserIdx(userIdx);
+    await this.reviewService.deleteReviewByIdx(reviewIdx, loginUser);
   }
 }

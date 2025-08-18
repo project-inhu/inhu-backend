@@ -3,7 +3,6 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';
 import { GetPlaceOverviewInput } from './inputs/get-place-overview.input';
-import { DateUtilService } from '@app/common';
 import { Prisma } from '@prisma/client';
 import { PlaceType } from './constants/place-type.constant';
 import {
@@ -17,6 +16,7 @@ import {
   SELECT_BOOKMARKED_PLACE_OVERVIEW,
   SelectBookmarkedPlaceOverview,
 } from './model/prisma-type/select-bookmarked-place-overview';
+import { DateUtilService } from '@libs/common/modules/date-util/date-util.service';
 
 @Injectable()
 export class PlaceCoreRepository {
@@ -66,6 +66,33 @@ export class PlaceCoreRepository {
     });
   }
 
+  public async selectPlaceCount({
+    operating,
+    bookmarkUserIdx,
+    coordinate,
+    types,
+    skip,
+    take,
+    order,
+    orderBy,
+    activated,
+    permanentlyClosed,
+  }: GetPlaceOverviewInput): Promise<number> {
+    return await this.txHost.tx.place.count({
+      where: {
+        AND: [
+          { deletedAt: null },
+          this.getOperatingFilterWhereClause(operating), // 영업중 필터링
+          this.getBookmarkFilterWhereClause(bookmarkUserIdx), // 북마크 필터링
+          this.getCoordinateFilterWhereClause(coordinate), // 좌표 필터링
+          this.getTypesFilterWhereClause(types), // 타입 필터링
+          this.getActivatedAtFilterWhereClause(activated), // 활성화 필터링
+          this.getPermanentlyClosedFilterWhereClause(permanentlyClosed), // 폐점 여부 필터링
+        ],
+      },
+    });
+  }
+
   /**
    * 폐점 여부 필터링
    */
@@ -97,6 +124,11 @@ export class PlaceCoreRepository {
 
     // 요일 (0: 일요일, 1: 월요일, ..., 6: 토요일)
     const dayOfWeek = this.dateUtilService.getTodayDayOfWeek();
+    // ! 주의: startAt과 endAt은 한국 시간으로 저장됩니다. 따라서 now를 한국 시간으로 변환하여 필터링해야 합니다.
+    const nowKoreanTime =
+      '1970-01-01T' + this.dateUtilService.transformKoreanTime(now);
+    const nowKoreanDate =
+      this.dateUtilService.transformKoreanDate(now) + 'T00:00:00Z';
 
     const mustBeOpenWhereClause: Prisma.PlaceWhereInput = {
       AND: [
@@ -107,20 +139,20 @@ export class PlaceCoreRepository {
           operatingHourList: {
             some: {
               day: dayOfWeek,
-              startAt: { lte: now },
-              endAt: { gte: now },
+              startAt: { lte: nowKoreanTime },
+              endAt: { gte: nowKoreanTime },
             },
           },
         },
         // 오늘 날짜의 휴무일이 존재하지 않아야 함.
-        { weeklyClosedDayList: { none: { closedDate: now } } },
+        { weeklyClosedDayList: { none: { closedDate: nowKoreanDate } } },
         // 오늘 요일에 해당하는 브레이크 타임에 어떤 데이터도 없어야함.
         {
           breakTimeList: {
             none: {
               day: dayOfWeek,
-              startAt: { lte: now },
-              endAt: { gte: now },
+              startAt: { lte: nowKoreanTime },
+              endAt: { gte: nowKoreanTime },
             },
           },
         },
@@ -189,17 +221,23 @@ export class PlaceCoreRepository {
   private getOrderByClause({
     order = 'desc',
     orderBy = 'time',
-  }: Pick<
-    GetPlaceOverviewInput,
-    'order' | 'orderBy'
-  >): Prisma.PlaceOrderByWithRelationInput {
-    return {
-      [orderBy === 'time'
-        ? 'idx'
-        : orderBy === 'review'
-          ? 'reviewCount'
-          : 'bookmarkCount']: order,
-    };
+  }: Pick<GetPlaceOverviewInput, 'order' | 'orderBy'>):
+    | Prisma.PlaceOrderByWithRelationInput
+    | Prisma.PlaceOrderByWithRelationInput[] {
+    if (orderBy === 'time') {
+      return {
+        idx: order,
+      };
+    }
+
+    return [
+      {
+        [orderBy === 'review' ? 'reviewCount' : 'bookmarkCount']: order,
+      },
+      {
+        idx: 'desc',
+      },
+    ];
   }
 
   public async insertPlace(input: CreatePlaceInput): Promise<SelectPlace> {
@@ -240,8 +278,9 @@ export class PlaceCoreRepository {
         operatingHourList: {
           createMany: {
             data: input.operatingHourList.map(({ startAt, endAt, day }) => ({
-              startAt,
-              endAt,
+              // ! 주의: startAt과 endAt은 한국 시간으로 저장됩니다. 따라서 1970-01-01T00:00:00Z 형태로 변환하여 저장합니다.
+              startAt: `1970-01-01T${startAt}Z`,
+              endAt: `1970-01-01T${endAt}Z`,
               day,
             })),
           },
@@ -249,7 +288,8 @@ export class PlaceCoreRepository {
         weeklyClosedDayList: {
           createMany: {
             data: input.weeklyClosedDayList.map(({ closedDate, type }) => ({
-              closedDate,
+              // ! 주의: closedDate는 한국 날짜로 저장됩니다. 따라서 2025-07-22T00:00:00Z 형태로 변환하여 저장합니다.
+              closedDate: `${closedDate}T00:00:00Z`,
               type,
             })),
           },
@@ -258,8 +298,9 @@ export class PlaceCoreRepository {
           createMany: {
             data: input.breakTimeList.map(({ day, startAt, endAt }) => ({
               day,
-              startAt,
-              endAt,
+              // ! 주의: startAt과 endAt은 한국 시간으로 저장됩니다. 따라서 1970-01-01T00:00:00Z 형태로 변환하여 저장합니다.
+              startAt: `1970-01-01T${startAt}Z`,
+              endAt: `1970-01-01T${endAt}Z`,
             })),
           },
         },
@@ -316,6 +357,8 @@ export class PlaceCoreRepository {
               create: { placeTypeIdx: input.type },
             }
           : undefined,
+
+        // ! 주의: Date 관련한 필드들은 insertPlace 메서드 주석을 참고하여 변환해야합니다.
         closedDayList: input.closedDayList
           ? {
               deleteMany: {},
@@ -333,8 +376,8 @@ export class PlaceCoreRepository {
               createMany: {
                 data: input.operatingHourList.map(
                   ({ startAt, endAt, day }) => ({
-                    startAt,
-                    endAt,
+                    startAt: `1970-01-01T${startAt}Z`,
+                    endAt: `1970-01-01T${endAt}Z`,
                     day,
                   }),
                 ),
@@ -346,7 +389,7 @@ export class PlaceCoreRepository {
               deleteMany: {},
               createMany: {
                 data: input.weeklyClosedDayList.map(({ closedDate, type }) => ({
-                  closedDate,
+                  closedDate: `${closedDate}T00:00:00Z`,
                   type,
                 })),
               },
@@ -358,8 +401,8 @@ export class PlaceCoreRepository {
               createMany: {
                 data: input.breakTimeList.map(({ day, startAt, endAt }) => ({
                   day,
-                  startAt,
-                  endAt,
+                  startAt: `1970-01-01T${startAt}Z`,
+                  endAt: `1970-01-01T${endAt}Z`,
                 })),
               },
             }

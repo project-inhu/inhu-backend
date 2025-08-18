@@ -9,6 +9,7 @@ export const SELECT_MENU = Prisma.validator<Prisma.MenuDefaultArgs>()({
     content: true,
     imagePath: true,
     isFlexible: true,
+    sortOrder: true,
     createdAt: true,
   },
 });

@@ -1,5 +1,10 @@
 import { SelectMenu } from './prisma-type/select-menu';
 
+/**
+ * Menu 모델
+ *
+ * @publicApi
+ */
 export class MenuModel {
   /**
    * 메뉴 식별자
@@ -39,6 +44,11 @@ export class MenuModel {
   public isFlexible: boolean;
 
   /**
+   * 정렬 순서 (낮은 숫자가 우선)
+   */
+  public sortOrder: number;
+
+  /**
    * 생성 시간
    */
   public createdAt: Date;
@@ -56,6 +66,7 @@ export class MenuModel {
       price: menu.price,
       imagePath: menu.imagePath,
       isFlexible: menu.isFlexible,
+      sortOrder: menu.sortOrder,
       createdAt: menu.createdAt,
     });
   }

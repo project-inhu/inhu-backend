@@ -1,5 +1,10 @@
 import { PlaceType } from '../constants/place-type.constant';
 
+/**
+ * 장소 개요 조회 입력 input
+ *
+ * @publicApi
+ */
 export class GetPlaceOverviewInput {
   /**
    * 한 번에 가져올 개수

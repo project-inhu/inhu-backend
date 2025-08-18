@@ -1,0 +1,52 @@
+/**
+ * presignedUrl 응답을 위한 entity
+ *
+ * @author 조희주
+ */
+
+import { PresignedUrlModel } from '@libs/common/modules/s3/model/presigned-url.model';
+
+export class PresignedUrlEntity {
+  /**
+   * 파일을 S3에 `multipart/form-data` 형태로 `POST` 업로드할 때 요청을 보낼 S3 버킷의 엔드포인트 URL
+   * 이 URL 자체는 서명되지 않으며, 함께 제공되는 `fields`를 통해 인증 및 정책 검증이 이루어짐
+   *
+   * @example "https://inhu.s3.ap-northeast-2.amazonaws.com/"
+   */
+  url: string;
+
+  /**
+   * 프론트엔드에서 form-data에 포함해야 하는 모든 필드와 값들의 객체
+   * 필드: `bucket`, `X-Amz-Algorithm`, `X-Amz-Credential`, `X-Amz-Date`, `Key`, `Policy`, `X-Amz-Signature`
+   *
+   * @example "PresignedUrlEntity description 참고 : content-type은 프론트엔드에서 form-data에 직접 추가해야 함"
+   */
+  fields: Record<string, string>;
+
+  /**
+   * 접근할 수 있는 경로
+   *
+   * @example "https://inhu.s3.ap-northeast-2.amazonaws.com"
+   */
+  fileHost: string;
+
+  /**
+   * S3에 업로드 된 파일의 경로
+   *
+   * @example "/place/c37409c8-11b4-4c24b2c5-3747aad1b846.png"
+   */
+  filePath: string;
+
+  constructor(data: PresignedUrlEntity) {
+    Object.assign(this, data);
+  }
+
+  public static fromModel(model: PresignedUrlModel): PresignedUrlEntity {
+    return new PresignedUrlEntity({
+      url: model.url,
+      fields: model.fields,
+      fileHost: model.fileHost,
+      filePath: model.filePath,
+    });
+  }
+}

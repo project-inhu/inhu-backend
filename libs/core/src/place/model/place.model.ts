@@ -5,8 +5,13 @@ import { PlaceBreakTimeModel } from './place-break-time.model';
 import { PlaceRoadAddressModel } from './place-road-address.model';
 import { SelectPlace } from './prisma-type/select-place';
 import { PlaceWeeklyClosedDayModel } from './place-weekly-closed-day.model';
-import { KeywordModel } from '@app/core/keyword/model/keyword.model';
+import { KeywordModel } from '@libs/core/keyword/model/keyword.model';
 
+/**
+ * 장소 모델
+ *
+ * @publicApi
+ */
 export class PlaceModel {
   /**
    * 장소 식별자
@@ -39,7 +44,7 @@ export class PlaceModel {
    * - true: 공휴일 휴무
    * - false: 공휴일 정상 운영
    */
-  public isClosedOnHoliday: boolean;
+  public isClosedOnHoliday: boolean | null;
 
   /**
    * 생성 시간

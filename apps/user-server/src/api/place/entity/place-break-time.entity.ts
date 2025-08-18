@@ -1,4 +1,5 @@
-import { PlaceBreakTimeModel } from '@app/core';
+import { DayOfWeek } from '@libs/common/modules/date-util/constants/day-of-week.constants';
+import { PlaceBreakTimeModel } from '@libs/core/place/model/place-break-time.model';
 
 export class PlaceBreakTimeEntity {
   /**
@@ -11,16 +12,23 @@ export class PlaceBreakTimeEntity {
   /**
    * 브레이크 타임 시작 시간
    *
-   * @example '2023-10-01T12:00:00.000Z'
+   * @example "12:00:00"
    */
-  public startAt: Date;
+  public startAt: string;
 
   /**
    * 브레이크 타임 종료 시간
    *
-   * @example '2023-10-01T13:00:00.000Z'
+   * @example "13:00:00"
    */
-  public endAt: Date;
+  public endAt: string;
+
+  /**
+   * 요일
+   *
+   * @example 3
+   */
+  public day: DayOfWeek;
 
   constructor(data: PlaceBreakTimeEntity) {
     Object.assign(this, data);
@@ -31,6 +39,7 @@ export class PlaceBreakTimeEntity {
       idx: model.idx,
       startAt: model.startAt,
       endAt: model.endAt,
+      day: model.day,
     });
   }
 }

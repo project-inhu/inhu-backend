@@ -1,4 +1,4 @@
-import { SELECT_USER_PROVIDER } from '@app/core/user/model/prisma-type/select-user-provider';
+import { SELECT_USER_PROVIDER } from './select-user-provider';
 import { Prisma } from '@prisma/client';
 
 export const SELECT_USER = Prisma.validator<Prisma.UserDefaultArgs>()({

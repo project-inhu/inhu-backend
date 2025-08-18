@@ -1,6 +1,6 @@
-import { CreateKeywordInput } from '@app/core/keyword/inputs/create-keyword.input';
-import { UpdateKeywordInput } from '@app/core/keyword/inputs/update-keyword.input';
-import { SelectKeyword } from '@app/core/keyword/model/prisma-type/select-keyword';
+import { CreateKeywordInput } from './inputs/create-keyword.input';
+import { UpdateKeywordInput } from './inputs/update-keyword.input';
+import { SelectKeyword } from './model/prisma-type/select-keyword';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';

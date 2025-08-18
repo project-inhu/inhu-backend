@@ -3,11 +3,12 @@ import { PlaceService } from './place.service';
 import { GetAllPlaceOverviewDto } from './dto/request/get-all-place-overview.dto';
 import { User } from '@user/common/decorator/user.decorator';
 import { PlaceEntity } from './entity/place.entity';
-import { Exception } from '@app/common/decorator/exception.decorator';
+import { Exception } from '@libs/common/decorator/exception.decorator';
 import { GetAllPlaceOverviewResponseDto } from './dto/response/get-all-place-overview-response.dto';
-import { LoginAuth } from '@user/auth/common/decorators/login-auth.decorator';
 import { GetAllBookmarkedOverviewResponseDto } from '@user/api/place/dto/response/get-all-bookmarked-overview-response.dto';
 import { GetAllBookmarkedPlaceOverviewPlaceDto } from '@user/api/place/dto/request/get-all-bookmarked-place-overview.dto';
+import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
+import { LoginUser } from '@user/common/types/LoginUser';
 
 @Controller('place')
 export class PlaceController {
@@ -20,21 +21,25 @@ export class PlaceController {
   @Exception(400, 'Invalid page number or orderBy')
   async getAllPlaceOverview(
     @Query() dto: GetAllPlaceOverviewDto,
-    @User('idx') userIdx?: number,
+    @User() loginUser?: LoginUser,
   ): Promise<GetAllPlaceOverviewResponseDto> {
-    return await this.placeService.getPlaceOverviewAll(dto, userIdx);
+    return await this.placeService.getPlaceOverviewAll(dto, loginUser?.idx);
   }
 
   /**
    * 북마크한 place 가져오기
    */
   @Get('/bookmarked/all')
-  @LoginAuth
+  @Exception(400, 'Invalid querystring')
+  @LoginAuth()
   async getBookmarkedPlaceOverview(
     @Query() dto: GetAllBookmarkedPlaceOverviewPlaceDto,
-    @User('idx') userIdx: number,
+    @User() loginUser: LoginUser,
   ): Promise<GetAllBookmarkedOverviewResponseDto> {
-    return await this.placeService.getBookmarkedPlaceOverview(dto, userIdx);
+    return await this.placeService.getBookmarkedPlaceOverview(
+      dto,
+      loginUser.idx,
+    );
   }
 
   /**
@@ -45,8 +50,8 @@ export class PlaceController {
   @Exception(404, 'Place not found')
   async getPlaceByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
-    @User('idx') userIdx?: number,
+    @User() loginUser?: LoginUser,
   ): Promise<PlaceEntity> {
-    return await this.placeService.getPlaceByIdx(placeIdx, userIdx);
+    return await this.placeService.getPlaceByIdx(placeIdx, loginUser?.idx);
   }
 }

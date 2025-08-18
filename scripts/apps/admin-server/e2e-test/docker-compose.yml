@@ -1,0 +1,34 @@
+name: inhu-admin-server-e2e-test
+
+services:
+  postgres:
+    image: postgres:15.4
+    container_name: inhu-admin-server-test-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - '5451:5432'
+    volumes:
+      - inhu-admin-server-test-data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+      - ../../../rdb:/rdb
+    networks:
+      - inhu-admin-server-test-network
+
+  redis:
+    image: redis:7.4.0
+    container_name: inhu-admin-server-test-redis
+    ports:
+      - '6381:6379'
+    networks:
+      - inhu-admin-server-test-network
+    volumes:
+      - inhu-admin-server-test-redis-data:/data
+
+volumes:
+  inhu-admin-server-test-data:
+  inhu-admin-server-test-redis-data:
+
+networks:
+  inhu-admin-server-test-network:

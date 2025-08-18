@@ -1,6 +1,11 @@
-import { GetPlaceOverviewInput } from '@app/core/place/inputs/get-place-overview.input';
+import { GetPlaceOverviewInput } from '@libs/core/place/inputs/get-place-overview.input';
 import { PickType } from '@nestjs/swagger';
 
+/**
+ * 북마크된 장소 개요 조회 입력 input
+ *
+ * @publicApi
+ */
 export class GetBookmarkedPlaceOverviewInput extends PickType(
   GetPlaceOverviewInput,
   [

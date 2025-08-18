@@ -1,8 +1,10 @@
-import { DayOfWeek } from '@app/common';
+import { DayOfWeek } from '@libs/common/modules/date-util/constants/day-of-week.constants';
 import { SelectPlaceOperatingHour } from './prisma-type/select-place-operating-hour';
 
 /**
  * 운영 시간 정보
+ *
+ * @publicApi
  */
 export class PlaceOperatingHourModel {
   /**
@@ -14,13 +16,17 @@ export class PlaceOperatingHourModel {
 
   /**
    * 시작 시간
+   *
+   * @example "09:00:00"
    */
-  public startAt: Date;
+  public startAt: string;
 
   /**
    * 종료 시간
+   *
+   * @example "09:00:00"
    */
-  public endAt: Date;
+  public endAt: string;
 
   /**
    * 요일
@@ -36,8 +42,8 @@ export class PlaceOperatingHourModel {
   ): PlaceOperatingHourModel {
     return new PlaceOperatingHourModel({
       idx: hour.idx,
-      startAt: hour.startAt,
-      endAt: hour.endAt,
+      startAt: hour.startAt.toISOString().split('T')[1].split('.')[0],
+      endAt: hour.endAt.toISOString().split('T')[1].split('.')[0],
       day: hour.day as DayOfWeek,
     });
   }

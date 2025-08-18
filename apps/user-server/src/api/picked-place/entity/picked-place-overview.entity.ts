@@ -1,53 +1,29 @@
-import { PickedPlaceOverviewSelectField } from '../type/picked-place-overview-select-field';
-import { PickedPlaceEntity } from './picked-place.entity';
 import { PickType } from '@nestjs/swagger';
+import { PickedPlaceEntity } from './picked-place.entity';
+import { PlaceOverviewEntity } from '../../place/entity/place-overview.entity';
+import { PickedPlaceOverviewModel } from '@libs/core/picked-place/model/picked-place-overview.model';
 
-/**
- * pickedPlace overview entity
- *
- * @author 강정연
- */
 export class PickedPlaceOverviewEntity extends PickType(PickedPlaceEntity, [
+  'idx',
   'title',
   'content',
-  'idx',
-  'name',
-  'addressName',
-  'detailAddress',
-  'reviewCount',
-  'keywordList',
-  'bookmark',
-  'imagePathList',
-  'typeList',
 ]) {
+  public place: PlaceOverviewEntity;
+
   constructor(data: PickedPlaceOverviewEntity) {
     super();
     Object.assign(this, data);
   }
-  static createEntityFromPrisma(
-    data: PickedPlaceOverviewSelectField,
-  ): PickedPlaceOverviewEntity {
-    const place = data.place;
-    const roadAddr = place.roadAddress;
 
+  public static fromModel(
+    model: PickedPlaceOverviewModel,
+    bookmark: boolean,
+  ): PickedPlaceOverviewEntity {
     return new PickedPlaceOverviewEntity({
-      title: data.title,
-      content: data.content,
-      idx: place.idx,
-      name: place.name,
-      addressName: roadAddr.addressName,
-      detailAddress: roadAddr.detailAddress,
-      reviewCount: place.reviewCount,
-      keywordList: place.placeKeywordCountList.map(({ keyword }) => ({
-        idx: keyword.idx,
-        content: keyword.content,
-      })),
-      bookmark: place.bookmarkList?.length ? true : false,
-      imagePathList: place.placeImageList.map((image) => image.path ?? ''),
-      typeList: place.placeTypeMappingList.map(({ placeType }) => ({
-        idx: placeType.idx,
-        content: placeType.content,
-      })),
+      idx: model.idx,
+      title: model.title,
+      content: model.content,
+      place: PlaceOverviewEntity.fromModel(model.place, bookmark),
     });
   }
 }

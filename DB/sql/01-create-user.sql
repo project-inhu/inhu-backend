@@ -1,3 +1,0 @@
-CREATE USER inhu_admin WITH PASSWORD '1234';
-
-CREATE DATABASE inhu OWNER inhu_admin;

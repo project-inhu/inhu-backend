@@ -2,8 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { UserCoreRepository } from './user-core.repository';
 import { CreateUserInput } from './inputs/create-user.input';
 import { UserModel } from './model/user.model';
-import { AuthProvider } from '@app/core/user/constants/auth-provider.constant';
+import { AuthProvider } from './constants/auth-provider.constant';
+import { UpdateUserInput } from '@libs/core/user/inputs/update-user.input';
+import { GetAllUsersInput } from './inputs/get-user-overview.input';
+import { UserForAdminModel } from './model/user-for-admin.model';
 
+/**
+ * 사용자 코어 서비스
+ *
+ * @publicApi
+ */
 @Injectable()
 export class UserCoreService {
   constructor(private readonly userCoreRepository: UserCoreRepository) {}
@@ -26,6 +34,18 @@ export class UserCoreService {
     return user && UserModel.fromPrisma(user);
   }
 
+  public async getUserAll(
+    input: GetAllUsersInput,
+  ): Promise<UserForAdminModel[]> {
+    const users = await this.userCoreRepository.selectUserAll(input);
+
+    return users.map(UserForAdminModel.fromPrisma);
+  }
+
+  public async getUserOverviewCount(): Promise<number> {
+    return this.userCoreRepository.selectUserCount();
+  }
+
   public async createUser(input: CreateUserInput): Promise<UserModel> {
     return await this.userCoreRepository
       .insertUser(input)
@@ -34,7 +54,7 @@ export class UserCoreService {
 
   public async updateUserByIdx(
     idx: number,
-    input: CreateUserInput,
+    input: UpdateUserInput,
   ): Promise<void> {
     return this.userCoreRepository.updateUserByIdx(idx, input);
   }

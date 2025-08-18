@@ -1,0 +1,34 @@
+name: inhu-user-server-e2e-test
+
+services:
+  postgres:
+    image: postgres:15.4
+    container_name: inhu-user-server-e2e-test-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - '5450:5432'
+    volumes:
+      - inhu-user-server-e2e-test-data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+      - ../../../rdb:/rdb
+    networks:
+      - inhu-user-server-test-network
+
+  redis:
+    image: redis:7.4.0
+    container_name: inhu-user-server-test-redis
+    ports:
+      - '6380:6379'
+    networks:
+      - inhu-user-server-test-network
+    volumes:
+      - inhu-user-server-test-redis-data:/data
+
+volumes:
+  inhu-user-server-e2e-test-data:
+  inhu-user-server-test-redis-data:
+
+networks:
+  inhu-user-server-test-network:

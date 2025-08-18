@@ -1,10 +1,15 @@
 import { SelectBookmarkedPlaceOverview } from './prisma-type/select-bookmarked-place-overview';
 import { PlaceOverviewModel } from './place-overview.model';
 import { PickType } from '@nestjs/swagger';
-import { KeywordModel } from '@app/core/keyword/model/keyword.model';
-import { PlaceRoadAddressModel } from '@app/core/place/model/place-road-address.model';
-import { PlaceType } from '@app/core';
+import { KeywordModel } from '@libs/core/keyword/model/keyword.model';
+import { PlaceRoadAddressModel } from './place-road-address.model';
+import { PlaceType } from '../constants/place-type.constant';
 
+/**
+ * 북마크된 장소 개요 모델
+ *
+ * @publicApi
+ */
 export class BookmarkedPlaceOverviewModel extends PickType(PlaceOverviewModel, [
   'idx',
   'name',

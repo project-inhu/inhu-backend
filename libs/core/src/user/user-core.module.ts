@@ -1,9 +1,14 @@
+import { UserCoreRepository } from '@libs/core/user/user-core.repository';
+import { UserCoreService } from '@libs/core/user/user-core.service';
 import { Module } from '@nestjs/common';
-import { UserRepository } from '@user/api/user/user.repository';
-import { UserService } from '@user/api/user/user.service';
 
+/**
+ * 사용자 코어 모듈
+ *
+ * @publicApi
+ */
 @Module({
-  providers: [UserService, UserRepository],
-  exports: [UserService],
+  providers: [UserCoreService, UserCoreRepository],
+  exports: [UserCoreService],
 })
 export class UserCoreModule {}

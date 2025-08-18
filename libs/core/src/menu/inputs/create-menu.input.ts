@@ -1,5 +1,9 @@
+/**
+ * CreateMenuInput 클래스
+ *
+ * @publicApi
+ */
 export class CreateMenuInput {
-  placeIdx: number;
   name: string;
   content: string | null;
   price: number | null;

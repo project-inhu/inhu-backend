@@ -1,9 +1,9 @@
+/**
+ * GetMenuAllInput 클래스
+ *
+ * @publicApi
+ */
 export class GetMenuAllInput {
-  /**
-   * 장소 식별자
-   */
-  placeIdx: number;
-
   /**
    * 한 번에 가져올 개수
    */
@@ -13,4 +13,9 @@ export class GetMenuAllInput {
    * 스킵할 데이터의 개수
    */
   skip: number;
+
+  /**
+   * 정렬 방향
+   */
+  order?: 'desc' | 'asc';
 }

@@ -1,28 +1,36 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { PrismaModule } from './common/module/prisma/prisma.module';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { PrismaModule } from '../../../libs/common/src/modules/prisma/prisma.module';
 import { PlaceModule } from './api/place/place.module';
-import { AuthModule } from './auth/auth.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { KeywordModule } from './api/keyword/keyword.module';
+import { ConfigModule } from '@nestjs/config';
 import { ReviewModule } from './api/review/review.module';
-import { S3Module } from './common/module/s3/s3.module';
 import { PickedPlaceModule } from './api/picked-place/picked-place.module';
 import { ClsModule } from 'nestjs-cls';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
-import { PrismaService } from '@user/common/module/prisma/prisma.service';
+import { PrismaService } from '@libs/common/modules/prisma/prisma.service';
 import { ClsPluginTransactional } from '@nestjs-cls/transactional';
+import { AuthModule } from '@user/api/auth/auth.module';
+import { LoginTokenModule } from '@user/common/module/login-token/login-token.module';
+import { AccessTokenMiddleware } from '@user/common/middleware/access-token.middleware';
+import { UserModule } from './api/user/user.module';
+import { MenuModule } from '@user/api/menu/menu.module';
+import { S3UploadModule } from './api/s3-upload/s3-upload.module';
+import { BookmarkModule } from './api/bookmark/bookmark.module';
+import { DiscordWebhookModule } from '@libs/common/modules/discord-webhook/discord-webhook.module';
 
 @Module({
   imports: [
     PrismaModule,
     PlaceModule,
-    AuthModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    UserModule,
     ReviewModule,
-    S3Module,
     PickedPlaceModule,
+    AuthModule,
+    LoginTokenModule,
+    MenuModule,
+    S3UploadModule,
+    BookmarkModule,
+    DiscordWebhookModule,
     ClsModule.forRoot({
       plugins: [
         new ClsPluginTransactional({
@@ -35,7 +43,11 @@ import { ClsPluginTransactional } from '@nestjs-cls/transactional';
       ],
     }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    return consumer.apply(AccessTokenMiddleware).forRoutes('/');
+  }
+}

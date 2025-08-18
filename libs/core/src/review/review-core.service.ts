@@ -3,18 +3,23 @@ import { ReviewModel } from './model/review.model';
 import { CreateReviewInput } from './inputs/create-review.input';
 import { UpdateReviewInput } from './inputs/update-review.input';
 import { ReviewCoreRepository } from './review-core.repository';
-import { GetReviewOverviewInput } from './inputs/get-review-overview.input';
-import { PlaceCoreRepository } from '@app/core/place/place-core.repository';
+import { GetAllReviewInput } from './inputs/get-all-review.input';
 import { Transactional } from '@nestjs-cls/transactional';
-import { ReviewNotFoundException } from '@app/core/review/exception/review-not-found.exception';
-import { isEqualArray } from '@app/core/review/util/is-equal-array.util';
-import { SelectReview } from '@app/core/review/model/prisma-type/select-review';
+import { PlaceCoreService } from '../place/place-core.service';
+import { ReviewNotFoundException } from '@libs/core/review/exception/review-not-found.exception';
+import { SelectReview } from '@libs/core/review/model/prisma-type/select-review';
+import { isEqualArray } from '@libs/core/review/util/is-equal-array.util';
 
+/**
+ * 리뷰 코어 서비스
+ *
+ * @publicApi
+ */
 @Injectable()
 export class ReviewCoreService {
   constructor(
     private readonly reviewCoreRepository: ReviewCoreRepository,
-    private readonly placeCoreRepository: PlaceCoreRepository,
+    private readonly placeCoreService: PlaceCoreService,
   ) {}
 
   public async getReviewByIdx(idx: number): Promise<ReviewModel | null> {
@@ -22,9 +27,7 @@ export class ReviewCoreService {
     return review && ReviewModel.fromPrisma(review);
   }
 
-  public async getAllReview(
-    input: GetReviewOverviewInput,
-  ): Promise<ReviewModel[]> {
+  public async getAllReview(input: GetAllReviewInput): Promise<ReviewModel[]> {
     return (await this.reviewCoreRepository.selectAllReview(input)).map(
       ReviewModel.fromPrisma,
     );
@@ -36,11 +39,11 @@ export class ReviewCoreService {
     userIdx: number,
     input: CreateReviewInput,
   ): Promise<ReviewModel> {
-    await this.placeCoreRepository.increasePlaceReviewCountByIdx(placeIdx, 1);
+    await this.placeCoreService.increasePlaceReviewCount(placeIdx);
 
     await Promise.all(
       input.keywordIdxList.map((keywordIdx) =>
-        this.placeCoreRepository.increaseKeywordCount(placeIdx, keywordIdx, 1),
+        this.placeCoreService.increaseKeywordCount(placeIdx, keywordIdx),
       ),
     );
 
@@ -56,6 +59,7 @@ export class ReviewCoreService {
   /**
    * @throws {ReviewNotFoundException} 404 - 수정하려는 리뷰가 존재하지 않을 때
    */
+  @Transactional()
   public async updateReviewByIdx(
     idx: number,
     input: UpdateReviewInput,
@@ -70,23 +74,20 @@ export class ReviewCoreService {
       input.keywordIdxList !== undefined &&
       this.isChangedReviewKeyword(input, review)
     ) {
-      // TODO: place core에서 키워드 목록을 받아서 감소/증가 시키는 로직을 추가해야 함
       await Promise.all(
         review.reviewKeywordMappingList.map(({ keyword }) =>
-          this.placeCoreRepository.decreaseKeywordCount(
+          this.placeCoreService.decreaseKeywordCount(
+            review.place.idx,
             keyword.idx,
-            keyword.idx,
-            1,
           ),
         ),
       );
 
       await Promise.all(
         input.keywordIdxList.map((keywordIdx) =>
-          this.placeCoreRepository.increaseKeywordCount(
+          this.placeCoreService.increaseKeywordCount(
             review.place.idx,
             keywordIdx,
-            1,
           ),
         ),
       );
@@ -101,7 +102,7 @@ export class ReviewCoreService {
   ) {
     return (
       input.keywordIdxList &&
-      isEqualArray(
+      !isEqualArray(
         input.keywordIdxList.sort(),
         review.reviewKeywordMappingList
           .map(({ keyword: { idx } }) => idx)
@@ -111,8 +112,9 @@ export class ReviewCoreService {
   }
 
   /**
-   * @throws {ReviewNotFoundException} 404 - 수정하려는 리뷰가 존재하지 않을 때
+   * @throws {ReviewNotFoundException} 404 - 삭제하려는 리뷰가 존재하지 않을 때
    */
+  @Transactional()
   public async deleteReviewByIdx(idx: number): Promise<void> {
     const review = await this.reviewCoreRepository.selectReviewByIdx(idx);
 
@@ -120,18 +122,13 @@ export class ReviewCoreService {
       throw new ReviewNotFoundException('Cannot find review with idx: ' + idx);
     }
 
-    await this.placeCoreRepository.decreasePlaceReviewCountByIdx(
-      review.place.idx,
-      1,
-    );
+    await this.placeCoreService.decreasePlaceReviewCount(review.place.idx);
 
-    // TODO: place core에서 키워드 목록을 받아서 감소/증가 시키는 로직을 추가해야 함
     await Promise.all(
       review.reviewKeywordMappingList.map(({ keyword }) =>
-        this.placeCoreRepository.decreaseKeywordCount(
+        this.placeCoreService.decreaseKeywordCount(
+          review.place.idx,
           keyword.idx,
-          keyword.idx,
-          1,
         ),
       ),
     );

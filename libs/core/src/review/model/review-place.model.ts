@@ -1,8 +1,13 @@
 import { PickType } from '@nestjs/swagger';
 import { SelectReviewPlace } from './prisma-type/select-review-place';
-import { PlaceModel } from '@app/core/place/model/place.model';
-import { PlaceRoadAddressModel } from '@app/core/place/model/place-road-address.model';
+import { PlaceModel } from '@libs/core/place/model/place.model';
+import { PlaceRoadAddressModel } from '@libs/core/place/model/place-road-address.model';
 
+/**
+ * 리뷰 장소 모델
+ *
+ * @publicApi
+ */
 export class ReviewPlaceModel extends PickType(PlaceModel, [
   'idx',
   'name',

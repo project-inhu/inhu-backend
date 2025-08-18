@@ -1,15 +1,16 @@
+import { IsEnumValue } from '@libs/common/decorator/is-enum-value.decorator';
+import { ToBoolean } from '@libs/common/decorator/to-boolean.decorator';
+import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
-  IsDecimal,
   IsIn,
   IsInt,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   Min,
 } from 'class-validator';
-import { ToBoolean } from '@app/common';
-import { PlaceType } from '@app/core';
 
 export class GetAllPlaceOverviewDto {
   /**
@@ -59,33 +60,39 @@ export class GetAllPlaceOverviewDto {
    * 3: 편의점
    */
   @IsOptional()
+  @IsEnumValue(PlaceType)
+  @Type(() => Number)
   type?: PlaceType;
 
   /**
    * 왼쪽 위 x좌표
    */
   @IsOptional()
-  @IsDecimal()
+  @IsNumber()
+  @Type(() => Number)
   leftTopX?: number;
 
   /**
    * 왼쪽 위 y좌표
    */
   @IsOptional()
-  @IsDecimal()
+  @IsNumber()
+  @Type(() => Number)
   leftTopY?: number;
 
   /**
    * 오른쪽 아래 x좌표
    */
   @IsOptional()
-  @IsDecimal()
+  @IsNumber()
+  @Type(() => Number)
   rightBottomX?: number;
 
   /**
    * 오른쪽 아래 y좌표
    */
   @IsOptional()
-  @IsDecimal()
+  @IsNumber()
+  @Type(() => Number)
   rightBottomY?: number;
 }

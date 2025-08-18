@@ -1,5 +1,10 @@
 import { SelectPlaceRoadAddress } from './prisma-type/select-place-road-address';
 
+/**
+ * 도로명 주소 모델
+ *
+ * @publicApi
+ */
 export class PlaceRoadAddressModel {
   /**
    * 도로명 주소 식별자

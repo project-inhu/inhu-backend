@@ -1,38 +1,65 @@
+import { BookmarkCoreService } from '@libs/core/bookmark/bookmark-core.service';
+import { PickedPlaceCoreService } from '@libs/core/picked-place/picked-place-core.service';
 import { Injectable } from '@nestjs/common';
-import { PickedPlaceRepository } from './picked-place.repository';
 import { PickedPlaceOverviewEntity } from './entity/picked-place-overview.entity';
-import { GetAllPickedPlaceOverviewResponseDto } from './dto/get-all-picked-place-overview-response.dto';
+import { GetAllPickedPlaceOverviewDto } from './dto/request/get-all-picked-place-overview.dto';
 
 @Injectable()
 export class PickedPlaceService {
-  constructor(private readonly pickedPlaceRepository: PickedPlaceRepository) {}
+  constructor(
+    private readonly pickedPlaceCoreService: PickedPlaceCoreService,
+    private readonly bookmarkCoreService: BookmarkCoreService,
+  ) {}
 
   /**
    * 선정된 장소 개요 (Picked Place) 모두 가져오기
    *
    * @author 강정연
    */
-  async getAllPickedPlaceOverview(
-    page: number,
+  public async getAllPickedPlaceOverview(
+    dto: GetAllPickedPlaceOverviewDto,
     userIdx?: number,
-  ): Promise<GetAllPickedPlaceOverviewResponseDto> {
+  ): Promise<{
+    pickedPlaceOverviewList: PickedPlaceOverviewEntity[];
+    hasNext: boolean;
+  }> {
     const pageSize = 10;
     const take = pageSize + 1;
-    const skip = (page - 1) * pageSize;
+    const skip = (dto.page - 1) * pageSize;
 
-    let placeList =
-      await this.pickedPlaceRepository.selectAllPickedPlaceOverview(
-        skip,
+    const pickedPlaceModelList =
+      await this.pickedPlaceCoreService.getPickedPlaceAll({
         take,
-        userIdx,
-      );
+        skip,
+        ...dto,
+      });
 
-    const hasNext = !!placeList[pageSize];
-    placeList = placeList.slice(0, pageSize);
+    const hasNext = pickedPlaceModelList.length > pageSize;
+    const paginatedList = pickedPlaceModelList.slice(0, pageSize);
+    if (!userIdx) {
+      return {
+        pickedPlaceOverviewList: paginatedList.map((pickedPlace) =>
+          PickedPlaceOverviewEntity.fromModel(pickedPlace, false),
+        ),
+        hasNext,
+      };
+    }
+
+    const bookmarkedPlaceIdxList = await this.bookmarkCoreService
+      .getBookmarkStateByUserIdx({
+        userIdx,
+        placeIdxList: paginatedList.map(({ place }) => place.idx),
+      })
+      .then((bookmarks) => bookmarks.map(({ placeIdx }) => placeIdx));
 
     return {
+      pickedPlaceOverviewList: paginatedList.map((pickedPlace) =>
+        PickedPlaceOverviewEntity.fromModel(
+          pickedPlace,
+          bookmarkedPlaceIdxList.includes(pickedPlace.place.idx),
+        ),
+      ),
       hasNext,
-      data: placeList.map(PickedPlaceOverviewEntity.createEntityFromPrisma),
     };
   }
 }

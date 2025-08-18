@@ -8,6 +8,11 @@ import { Injectable } from '@nestjs/common';
 import { BookmarkedPlaceOverviewModel } from './model/bookmarked-place-overview.model';
 import { GetBookmarkedPlaceOverviewInput } from './inputs/get-bookmarked-place-overview.input';
 
+/**
+ * 장소 관련 핵심 서비스
+ *
+ * @publicApi
+ */
 @Injectable()
 export class PlaceCoreService {
   constructor(private readonly placeCoreRepository: PlaceCoreRepository) {}
@@ -15,6 +20,12 @@ export class PlaceCoreService {
   public async getPlaceByIdx(idx: number): Promise<PlaceModel | null> {
     const place = await this.placeCoreRepository.selectPlaceByIdx(idx);
     return place && PlaceModel.fromPrisma(place);
+  }
+
+  public async getPlaceOverviewCount(
+    input: GetPlaceOverviewInput,
+  ): Promise<number> {
+    return await this.placeCoreRepository.selectPlaceCount(input);
   }
 
   public async getBookmarkedPlace(

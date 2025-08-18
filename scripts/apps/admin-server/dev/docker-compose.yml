@@ -1,0 +1,34 @@
+name: inhu-admin-server-dev
+
+services:
+  postgres:
+    image: postgres:15.4
+    container_name: inhu-admin-server-dev-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - '5452:5432'
+    volumes:
+      - inhu-admin-server-dev-data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+      - ../../../rdb:/rdb
+    networks:
+      - inhu-admin-server-dev-network
+
+  redis:
+    image: redis:7.4.0
+    container_name: inhu-admin-server-dev-redis
+    ports:
+      - '6382:6379'
+    networks:
+      - inhu-admin-server-dev-network
+    volumes:
+      - inhu-admin-server-dev-redis-data:/data
+
+volumes:
+  inhu-admin-server-dev-data:
+  inhu-admin-server-dev-redis-data:
+
+networks:
+  inhu-admin-server-dev-network:

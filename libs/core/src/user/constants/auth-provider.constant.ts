@@ -1,6 +1,9 @@
-export const AUTH_PROVIDER = {
-  KAKAO: 'kakao',
-  APPLE: 'apple',
-} as const;
-
-export type AuthProvider = (typeof AUTH_PROVIDER)[keyof typeof AUTH_PROVIDER];
+/**
+ * 인증 제공자 상수
+ *
+ * @publicApi
+ */
+export enum AuthProvider {
+  KAKAO = 'kakao',
+  APPLE = 'apple',
+}

@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { BookmarkController } from './bookmark.controller';
 import { BookmarkService } from './bookmark.service';
-import { BookmarkRepository } from './bookmark.repository';
-import { PlaceModule } from '../place/place.module';
-import { AuthModule } from '@user/auth/auth.module';
+import { PlaceCoreModule } from '@libs/core/place/place-core.module';
+import { BookmarkCoreModule } from '@libs/core/bookmark/bookmark-core.module';
 
 @Module({
-  imports: [AuthModule, PlaceModule],
+  imports: [PlaceCoreModule, BookmarkCoreModule],
   controllers: [BookmarkController],
-  providers: [BookmarkService, BookmarkRepository],
+  providers: [BookmarkService],
 })
 export class BookmarkModule {}

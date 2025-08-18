@@ -1,10 +1,15 @@
 import { PickType } from '@nestjs/swagger';
 import { PlaceModel } from './place.model';
 import { SelectPlaceOverview } from './prisma-type/select-place-overview';
-import { KeywordModel } from '@app/core/keyword/model/keyword.model';
+import { KeywordModel } from '@libs/core/keyword/model/keyword.model';
 import { PlaceRoadAddressModel } from './place-road-address.model';
 import { PlaceType } from '../constants/place-type.constant';
 
+/**
+ * 장소 개요 모델
+ *
+ * @publicApi
+ */
 export class PlaceOverviewModel extends PickType(PlaceModel, [
   'idx',
   'name',

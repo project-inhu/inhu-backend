@@ -1,10 +1,11 @@
-import { BookmarkCoreService, PlaceCoreService } from '@app/core';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PlaceOverviewEntity } from './entity/place-overview.entity';
 import { GetAllPlaceOverviewDto } from './dto/request/get-all-place-overview.dto';
 import { PlaceEntity } from '@user/api/place/entity/place.entity';
 import { PlaceNotFoundException } from '@user/api/place/exception/place-not-found.exception';
 import { GetAllBookmarkedPlaceOverviewPlaceDto } from '@user/api/place/dto/request/get-all-bookmarked-place-overview.dto';
+import { PlaceCoreService } from '@libs/core/place/place-core.service';
+import { BookmarkCoreService } from '@libs/core/bookmark/bookmark-core.service';
 
 @Injectable()
 export class PlaceService {
@@ -20,6 +21,7 @@ export class PlaceService {
     placeOverviewList: PlaceOverviewEntity[];
     hasNext: boolean;
   }> {
+    const pageSize = 10;
     const coordinate = {
       leftTopX: dto.leftTopX,
       rightBottomX: dto.rightBottomX,
@@ -28,8 +30,8 @@ export class PlaceService {
     };
 
     const placeOverviewModelList = await this.placeCoreService.getPlaceAll({
-      take: 11,
-      skip: (dto.page - 1) * 10,
+      take: pageSize + 1,
+      skip: (dto.page - 1) * pageSize,
       activated: true,
       permanentlyClosed: false,
       coordinate: this.isValidCoordinate(coordinate) ? coordinate : undefined,
@@ -40,25 +42,28 @@ export class PlaceService {
       bookmarkUserIdx: undefined,
     });
 
+    const paginatedList = placeOverviewModelList.slice(0, pageSize);
+    const hasNext = placeOverviewModelList.length > pageSize;
+
     if (!readUserIdx) {
       return {
-        hasNext: placeOverviewModelList.length > 10,
-        placeOverviewList: placeOverviewModelList
-          .slice(0, 10)
-          .map((place) => PlaceOverviewEntity.fromModel(place, false)),
+        hasNext: hasNext,
+        placeOverviewList: paginatedList.map((place) =>
+          PlaceOverviewEntity.fromModel(place, false),
+        ),
       };
     }
 
     const bookmarkedPlaceList = await this.bookmarkCoreService
       .getBookmarkStateByUserIdx({
         userIdx: readUserIdx,
-        placeIdxList: placeOverviewModelList.map(({ idx }) => idx),
+        placeIdxList: paginatedList.map(({ idx }) => idx),
       })
       .then((bookmarks) => bookmarks.map(({ placeIdx }) => placeIdx));
 
     return {
-      hasNext: placeOverviewModelList.length > 10,
-      placeOverviewList: placeOverviewModelList.map((place) =>
+      hasNext: hasNext,
+      placeOverviewList: paginatedList.map((place) =>
         PlaceOverviewEntity.fromModel(
           place,
           bookmarkedPlaceList.includes(place.idx),

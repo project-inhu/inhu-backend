@@ -47,7 +47,7 @@ model Place {
   reviewCount           Int                 @default(0) @map("review_count")
   bookmarkCount         Int                 @default(0) @map("bookmark_count")
   roadAddressIdx        Int                 @map("road_address_idx")
-  isClosedOnHoliday     Boolean             @default(false) @map("is_closed_on_holiday")
+  isClosedOnHoliday     Boolean?            @map("is_closed_on_holiday")
   createdAt             DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt             DateTime?           @map("deleted_at") @db.Timestamptz(6)
   permanentlyClosedAt   DateTime?           @map("permanently_closed_at") @db.Timestamptz(6)
@@ -94,7 +94,9 @@ model PickedPlace {
 model OperatingHour {
   idx      Int      @id @default(autoincrement())
   placeIdx Int      @map("place_idx")
+  // 한국 시간으로 저장합니다.
   startAt  DateTime @map("start_at") @db.Time(6)
+  // 한국 시간으로 저장합니다.
   endAt    DateTime @map("end_at") @db.Time(6)
   day      Int      @db.SmallInt
   place    Place    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_operating_hour_tb")
@@ -105,7 +107,9 @@ model OperatingHour {
 model BreakTime {
   idx      Int      @id @default(autoincrement())
   placeIdx Int      @map("place_idx")
+  // 한국 시간으로 저장합니다.
   startAt  DateTime @map("start_at") @db.Time(6)
+  // 한국 시간으로 저장합니다.
   endAt    DateTime @map("end_at") @db.Time(6)
   day      Int      @db.SmallInt
   place    Place    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_break_time_tb")
@@ -152,6 +156,7 @@ model Menu {
   price      Int?
   imagePath  String?   @map("image_path") @db.VarChar
   isFlexible Boolean   @default(false) @map("is_flexible")
+  sortOrder  Int       @map("sort_order") @db.SmallInt
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt  DateTime? @map("deleted_at") @db.Timestamptz(6)
   place      Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_menu_tb")
@@ -246,7 +251,6 @@ model User {
   idx                       Int                     @id @default(autoincrement())
   nickname                  String                  @db.VarChar
   profileImagePath          String?                 @map("profile_image_path") @db.VarChar
-  isAdmin                   Boolean                 @default(false) @map("is_admin")
   createdAt                 DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt                 DateTime?               @map("deleted_at") @db.Timestamptz(6)
   bookmarkList              Bookmark[]
@@ -255,8 +259,19 @@ model User {
   service2ResultList        Service2Result[]
   userProvider              UserProvider?
   withdrawServiceResultList WithdrawServiceResult[]
+  adminAccount              AdminAccount?
 
   @@map("user_tb")
+}
+
+model AdminAccount {
+  idx       Int      @id
+  id        String   @db.VarChar
+  pw        String   @db.VarChar
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  user      User     @relation(fields: [idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_admin_account_tb")
+
+  @@map("admin_account_tb")
 }
 
 model WithdrawServiceResult {
@@ -291,6 +306,7 @@ model ClosedDay {
 model WeeklyClosedDay {
   idx        Int      @id @default(autoincrement())
   placeIdx   Int      @map("place_idx")
+  // 한국 날짜로 저장합니다.
   closedDate DateTime @map("closed_date") @db.Date
   type       Int      @default(0) @db.SmallInt
   place      Place    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_weekly_closed_day_tb")

@@ -1,38 +1,40 @@
-import { PlaceEntity } from '@user/api/place/entity/place.entity';
-import { PickedPlaceSelectField } from '../type/picked-place-select-field';
+import { PlaceEntity } from '../../place/entity/place.entity';
+import { PickedPlaceModel } from '@libs/core/picked-place/model/picked-place.model';
 
-/**
- * picked place entity
- *
- * @author 강정연
- */
-export class PickedPlaceEntity extends PlaceEntity {
+export class PickedPlaceEntity {
   /**
-   * title
-   *
-   * @example '깔끔한 분위기'
+   * picked idx 식별자
    */
-  title: string;
+  public idx: number;
 
   /**
-   * content
-   *
-   * @example '후문 가까이에 위치해 있어 밥약하기 좋아요'
+   * 제목
    */
-  content: string;
+  public title: string;
+
+  /**
+   * 내용
+   */
+  public content: string;
+
+  /**
+   * 장소 정보
+   */
+  public place: PlaceEntity;
 
   constructor(data: PickedPlaceEntity) {
-    super(data);
-    this.title = data.title;
-    this.content = data.content;
+    Object.assign(this, data);
   }
 
-  static createEntity(data: PickedPlaceSelectField): PickedPlaceEntity {
-    const place = PlaceEntity.createEntityFromPrisma(data.place);
+  public static fromModel(
+    model: PickedPlaceModel,
+    bookmark: boolean,
+  ): PickedPlaceEntity {
     return new PickedPlaceEntity({
-      title: data.title,
-      content: data.content,
-      ...place,
+      idx: model.idx,
+      title: model.title,
+      content: model.content,
+      place: PlaceEntity.fromModel(model.place, bookmark),
     });
   }
 }

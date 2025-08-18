@@ -1,4 +1,4 @@
-import { SELECT_PLACE_OVERVIEW } from '@app/core/place/model/prisma-type/select-place-overview';
+import { SELECT_PLACE_OVERVIEW } from '@libs/core/place/model/prisma-type/select-place-overview';
 import { Prisma } from '@prisma/client';
 
 export const SELECT_PICKED_PLACE_OVERVIEW =
