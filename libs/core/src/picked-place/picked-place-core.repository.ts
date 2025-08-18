@@ -34,9 +34,10 @@ export class PickedPlaceCoreRepository {
     });
   }
 
-  public async selectPickedPlaceAll({}: GetPickedPlaceAllInput): Promise<
-    SelectPickedPlaceOverview[]
-  > {
+  public async selectPickedPlaceAll({
+    skip,
+    take,
+  }: GetPickedPlaceAllInput): Promise<SelectPickedPlaceOverview[]> {
     return await this.txHost.tx.pickedPlace.findMany({
       ...SELECT_PICKED_PLACE_OVERVIEW,
       where: {
@@ -46,8 +47,10 @@ export class PickedPlaceCoreRepository {
         },
       },
       orderBy: {
-        createdAt: 'desc', // TODO: 인덱싱 필요
+        idx: 'desc',
       },
+      take,
+      skip,
     });
   }
 
