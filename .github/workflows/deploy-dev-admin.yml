@@ -18,6 +18,8 @@ jobs:
       should_run: ${{ steps.filter.outputs.any_modified }}
       # 배포까지 필요한 변경인지 (true/false)
       should_deploy: ${{ steps.deployment-gate.outputs.any_modified }}
+      # 데이터베이스 다운이 필요한 변경인지 (true/false)
+      should_db_down: ${{ steps.db-check.outputs.any_modified }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -62,6 +64,17 @@ jobs:
             package-lock.json
           files_ignore: |
             **/*.md
+
+      # Step 3: 데이터베이스 관련 변경 감지
+      - name: Check for database
+        id: db-check
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            scripts/dev-infra/**
+            **/*.sql
+            **/docker-compose.yml
+            prisma/**
 
       - name: echo outputs for debugging
         run: |
@@ -162,21 +175,29 @@ jobs:
           USER: ${{ secrets.RASPBERRY_PI_USER }}
           PASSWORD: ${{ secrets.RASPBERRY_PI_PASSWORD }}
           PORT: ${{ secrets.RASPBERRY_PI_PORT }}
+          DB_DOWN: ${{ needs.check-admin-changes.outputs.should_db_down }}
         run: |
+          echo "[deploy] should_db_down=$DB_DOWN"
           sudo apt-get update && sudo apt-get install -y sshpass
           sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no deploy-admin.tar.gz $USER@$HOST:~/inhu-backend/
-          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
+          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST "bash -s" << 'EOF'
             set -e
+            DB_DOWN_FLAG='${DB_DOWN}'
             cd ~/inhu-backend
             tar -xzf deploy-admin.tar.gz
             rm deploy-admin.tar.gz
             npm ci
-            pm2 stop inhu-backend-admin-dev
-            pm2 stop inhu-backend-user-dev
-            npm run dev-infra:down
-            npm run dev-infra:up
-            until docker exec inhu-dev-postgres psql -U inhu_admin -d inhu -c "SELECT 1;" >/dev/null 2>&1; do sleep 1; done
-            pm2 restart inhu-backend-admin-dev
-            pm2 restart inhu-backend-user-dev
-            npm run seed
+            if [ "$DB_DOWN_FLAG" = "true" ]; then
+              pm2 stop inhu-backend-admin-dev
+              pm2 stop inhu-backend-user-dev
+              npm run dev-infra:down
+              npm run dev-infra:up
+              # DB readiness wait
+              until docker exec inhu-dev-postgres psql -U inhu_admin -d inhu -c "SELECT 1;" >/dev/null 2>&1; do sleep 1; done
+              pm2 restart inhu-backend-admin-dev
+              pm2 restart inhu-backend-user-dev
+              npm run seed
+            else
+              pm2 restart inhu-backend-admin-dev
+            fi
           EOF
