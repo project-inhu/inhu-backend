@@ -3,7 +3,7 @@ name: Build and Deploy User Server to EC2
 on:
   push:
     branches:
-      - fix/ec2-stop
+      - develop
   pull_request:
     branches:
       - fix/ec2-stop
