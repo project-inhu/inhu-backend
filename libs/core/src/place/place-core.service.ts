@@ -169,17 +169,17 @@ export class PlaceCoreService {
   }
 
   public async getPlaceIdxAllByWeeklyClosedDay(
-    startDate: Date,
-    endDate: Date,
-    nextStartDate: Date,
-    nextEndDate: Date,
+    startOfDay: Date,
+    endOfDay: Date,
+    nextStartOfDay: Date,
+    nextEndOfDay: Date,
     type: number,
   ): Promise<{ idx: number }[]> {
     return await this.placeCoreRepository.selectPlaceIdxAllByWeeklyClosedDay(
-      startDate,
-      endDate,
-      nextStartDate,
-      nextEndDate,
+      startOfDay,
+      endOfDay,
+      nextStartOfDay,
+      nextEndOfDay,
       type,
     );
   }
