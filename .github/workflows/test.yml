@@ -48,7 +48,7 @@ jobs:
         with:
           # 오직 이 파일들만 배포를 유발할 수 있음
           files: |
-            test.yml
+            .github/workflows/test.yml
             apps/user-server/src/**
             libs/common/**
             libs/core/**
