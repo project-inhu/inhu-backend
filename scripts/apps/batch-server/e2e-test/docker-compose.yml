@@ -1,0 +1,34 @@
+name: inhu-batch-server-e2e-test
+
+services:
+  postgres:
+    image: postgres:15.4
+    container_name: inhu-batch-server-test-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - '5452:5432'
+    volumes:
+      - inhu-batch-server-test-data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+      - ../../../rdb:/rdb
+    networks:
+      - inhu-batch-server-test-network
+
+  redis:
+    image: redis:7.4.0
+    container_name: inhu-batch-server-test-redis
+    ports:
+      - '6382:6379'
+    volumes:
+      - inhu-batch-server-test-redis-data:/data
+    networks:
+      - inhu-batch-server-test-network
+
+volumes:
+  inhu-batch-server-test-data:
+  inhu-batch-server-test-redis-data:
+
+networks:
+  inhu-batch-server-test-network:

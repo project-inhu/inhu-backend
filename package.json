@@ -26,7 +26,10 @@
     "admin-server:dev:infra:connect": "docker exec -it inhu-admin-server-dev-postgres psql -d inhu -U inhu_admin",
     "dev-infra:up": "docker compose -f ./scripts/dev-infra/docker-compose.yml up -d",
     "dev-infra:down": "docker compose -f ./scripts/dev-infra/docker-compose.yml down -v",
-    "dev-infra:connect": "docker exec -it inhu-dev-postgres psql -d inhu -U postgres"
+    "dev-infra:connect": "docker exec -it inhu-dev-postgres psql -d inhu -U postgres",
+    "batch-server:test:infra:up": "docker compose -f ./scripts/apps/batch-server/e2e-test/docker-compose.yml up -d",
+    "batch-server:test:infra:down": "docker compose -f ./scripts/apps/batch-server/e2e-test/docker-compose.yml down -v",
+    "batch-server:test:e2e": "dotenv -e ./scripts/apps/batch-server/e2e-test/.env.e2e-test -- jest --config ./apps/batch-server/test/jest-e2e.json ./apps/batch-server"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.848.0",
