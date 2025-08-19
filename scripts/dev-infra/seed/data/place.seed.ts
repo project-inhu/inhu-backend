@@ -30,7 +30,7 @@ const PLACE_IMAGE = {
 /**
  * 운영시간과 관련된 재사용될 함수와 상수들
  */
-function createDailySchedule(startAt: number, endAt: number) {
+function createDailySchedule(startAt: Date, endAt: Date) {
   const ALL_DAYS: DayOfWeek[] = [
     DayOfWeek.SUN,
     DayOfWeek.MON,
@@ -42,16 +42,88 @@ function createDailySchedule(startAt: number, endAt: number) {
   ];
   return ALL_DAYS.map((day) => ({
     day,
-    startAt: new Date(`1970-01-01T${String(startAt).padStart(2, '0')}:00:00Z`),
-    endAt: new Date(`1970-01-01T${String(endAt).padStart(2, '0')}:00:00Z`),
+    startAt,
+    endAt,
   }));
 }
-const FULL_OPERATING_HOURS = createDailySchedule(9, 21);
-const FULL_BREAK_TIME = createDailySchedule(12, 13);
-const DUAL_OPERATING_HOURS_1 = createDailySchedule(11, 15);
-const DUAL_BREAK_TIME_1 = createDailySchedule(13, 14);
-const DUAL_OPERATING_HOURS_2 = createDailySchedule(17, 21);
-const DUAL_BREAK_TIME_2 = createDailySchedule(18, 19);
+
+// 다양한 운영시간 패턴들
+const FULL_OPERATING_HOURS = createDailySchedule(
+  new Date('1970-01-01T09:00:00'),
+  new Date('1970-01-01T18:00:00'),
+);
+const CAFE_HOURS = createDailySchedule(
+  new Date('1970-01-01T07:00:00'),
+  new Date('1970-01-01T22:00:00'),
+);
+const BAR_HOURS = [
+  ...createDailySchedule(
+    new Date('1970-01-01T17:00:00'),
+    new Date('1970-01-01T23:59:59'),
+  ),
+  ...createDailySchedule(
+    new Date('1970-01-01T00:00:00'),
+    new Date('1970-01-01T02:00:00'),
+  ),
+];
+const RESTAURANT_HOURS = createDailySchedule(
+  new Date('1970-01-01T11:00:00'),
+  new Date('1970-01-01T23:00:00'),
+);
+const LATE_NIGHT_HOURS = [
+  ...createDailySchedule(
+    new Date('1970-01-01T18:00:00'),
+    new Date('1970-01-01T23:59:59'),
+  ),
+  ...createDailySchedule(
+    new Date('1970-01-01T00:00:00'),
+    new Date('1970-01-01T04:00:00'),
+  ),
+];
+const EARLY_MORNING_HOURS = createDailySchedule(
+  new Date('1970-01-01T06:00:00'),
+  new Date('1970-01-01T15:00:00'),
+);
+const CONVENIENCE_HOURS = createDailySchedule(
+  new Date('1970-01-01T00:00:00'),
+  new Date('1970-01-01T23:59:59'),
+);
+const BRUNCH_HOURS = createDailySchedule(
+  new Date('1970-01-01T09:00:00'),
+  new Date('1970-01-01T16:00:00'),
+);
+
+// 브레이크타임 패턴들
+const FULL_BREAK_TIME = createDailySchedule(
+  new Date('1970-01-01T12:00:00'),
+  new Date('1970-01-01T13:00:00'),
+);
+const CAFE_BREAK_TIME = createDailySchedule(
+  new Date('1970-01-01T15:00:00'),
+  new Date('1970-01-01T16:00:00'),
+);
+const NO_BREAK_TIME: any[] = [];
+
+// 듀얼 운영시간 (점심+저녁 분리 운영)
+const DUAL_OPERATING_HOURS_1 = createDailySchedule(
+  new Date('1970-01-01T11:00:00'),
+  new Date('1970-01-01T15:00:00'),
+);
+
+const DUAL_BREAK_TIME_1 = createDailySchedule(
+  new Date('1970-01-01T13:00:00'),
+  new Date('1970-01-01T14:00:00'),
+);
+
+const DUAL_OPERATING_HOURS_2 = createDailySchedule(
+  new Date('1970-01-01T17:00:00'),
+  new Date('1970-01-01T21:00:00'),
+);
+
+const DUAL_BREAK_TIME_2 = createDailySchedule(
+  new Date('1970-01-01T18:00:00'),
+  new Date('1970-01-01T19:00:00'),
+);
 
 /**
  * 반복적으로 사용될 기본 데이터들
@@ -108,7 +180,7 @@ const place2: PlaceSeedData = {
     addressX: 126.654123,
     addressY: 37.452099,
   },
-  operatingHourList: FULL_OPERATING_HOURS,
+  operatingHourList: RESTAURANT_HOURS,
   breakTime: FULL_BREAK_TIME,
   reviewList: [defaultReview],
   menuList: Array.from({ length: 12 }, (_, i) => ({
@@ -162,7 +234,7 @@ const place4: PlaceSeedData = {
     addressX: 126.658901,
     addressY: 37.452045,
   },
-  operatingHourList: FULL_OPERATING_HOURS,
+  operatingHourList: EARLY_MORNING_HOURS,
   breakTime: FULL_BREAK_TIME,
   reviewList: [defaultReview],
   menuList: [
@@ -194,8 +266,8 @@ const place5: PlaceSeedData = {
     addressX: 126.662345,
     addressY: 37.452155,
   },
-  operatingHourList: FULL_OPERATING_HOURS,
-  breakTime: FULL_BREAK_TIME,
+  operatingHourList: CONVENIENCE_HOURS,
+  breakTime: NO_BREAK_TIME,
   reviewList: [defaultReview],
   menuList: [
     {
@@ -227,8 +299,8 @@ const place6: PlaceSeedData = {
     addressX: 126.655678,
     addressY: 37.452222,
   },
-  operatingHourList: FULL_OPERATING_HOURS,
-  breakTime: FULL_BREAK_TIME,
+  operatingHourList: LATE_NIGHT_HOURS,
+  breakTime: NO_BREAK_TIME,
   reviewList: [],
   menuList: [defaultMenu],
   pickedPlaceList: [defaultPickedPlace],
@@ -248,8 +320,8 @@ const place7: PlaceSeedData = {
     addressX: 126.664098,
     addressY: 37.452101,
   },
-  operatingHourList: FULL_OPERATING_HOURS,
-  breakTime: FULL_BREAK_TIME,
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
 
   reviewList: [
     {
@@ -337,8 +409,8 @@ const place8: PlaceSeedData = {
     addressX: 126.657754,
     addressY: 37.452087,
   },
-  operatingHourList: FULL_OPERATING_HOURS,
-  breakTime: FULL_BREAK_TIME,
+  operatingHourList: BRUNCH_HOURS,
+  breakTime: NO_BREAK_TIME,
   reviewList: [
     {
       userKey: 'user1',
@@ -365,7 +437,7 @@ const place9: PlaceSeedData = {
     addressX: 126.661122,
     addressY: 37.452198,
   },
-  operatingHourList: FULL_OPERATING_HOURS,
+  operatingHourList: RESTAURANT_HOURS,
   breakTime: FULL_BREAK_TIME,
   reviewList: [
     {
@@ -400,8 +472,8 @@ const place10: PlaceSeedData = {
     addressX: 126.665432,
     addressY: 37.452033,
   },
-  operatingHourList: FULL_OPERATING_HOURS,
-  breakTime: FULL_BREAK_TIME,
+  operatingHourList: BAR_HOURS,
+  breakTime: NO_BREAK_TIME,
   reviewList: [
     {
       userKey: 'user1',
@@ -429,8 +501,8 @@ const place11: PlaceSeedData = {
     addressX: 126.65389,
     addressY: 37.452176,
   },
-  operatingHourList: FULL_OPERATING_HOURS,
-  breakTime: FULL_BREAK_TIME,
+  operatingHourList: CONVENIENCE_HOURS,
+  breakTime: NO_BREAK_TIME,
   keywordCountList: [],
   reviewList: [
     {
@@ -459,7 +531,7 @@ const place12: PlaceSeedData = {
     addressX: 126.666012,
     addressY: 37.452021,
   },
-  operatingHourList: FULL_OPERATING_HOURS,
+  operatingHourList: EARLY_MORNING_HOURS,
   breakTime: FULL_BREAK_TIME,
   reviewList: [
     {
@@ -493,8 +565,8 @@ const place13: PlaceSeedData = {
     addressX: 126.659876,
     addressY: 37.452205,
   },
-  operatingHourList: FULL_OPERATING_HOURS,
-  breakTime: FULL_BREAK_TIME,
+  operatingHourList: LATE_NIGHT_HOURS,
+  breakTime: NO_BREAK_TIME,
   reviewList: [defaultReview],
   menuList: [defaultMenu],
   pickedPlaceList: [],
@@ -558,7 +630,7 @@ const place16: PlaceSeedData = {
     addressX: 126.664876,
     addressY: 37.452143,
   },
-  operatingHourList: FULL_OPERATING_HOURS,
+  operatingHourList: BAR_HOURS,
   breakTime: [],
   reviewList: [defaultReview],
   menuList: [defaultMenu],
@@ -580,10 +652,8 @@ const place17: PlaceSeedData = {
     addressX: 126.658234,
     addressY: 37.452065,
   },
-  operatingHourList: FULL_OPERATING_HOURS.filter(
-    (h) => h.day !== DayOfWeek.SAT,
-  ),
-  breakTime: FULL_BREAK_TIME.filter((b) => b.day !== DayOfWeek.SAT),
+  operatingHourList: BAR_HOURS.filter((h) => h.day !== DayOfWeek.SAT),
+  breakTime: CAFE_BREAK_TIME.filter((b) => b.day !== DayOfWeek.SAT),
   closedDayList: [
     { day: DayOfWeek.SAT, week: 1 },
     { day: DayOfWeek.SAT, week: 2 },
@@ -638,8 +708,8 @@ const place19: PlaceSeedData = {
     { day: DayOfWeek.TUE, week: 2 },
     { day: DayOfWeek.TUE, week: 4 },
   ],
-  operatingHourList: FULL_OPERATING_HOURS,
-  breakTime: FULL_BREAK_TIME,
+  operatingHourList: BAR_HOURS,
+  breakTime: NO_BREAK_TIME,
   reviewList: [defaultReview],
   menuList: [defaultMenu],
   pickedPlaceList: [],
@@ -689,8 +759,8 @@ const place21: PlaceSeedData = {
     addressY: 37.452231,
   },
   isClosedOnHoliday: true,
-  operatingHourList: FULL_OPERATING_HOURS,
-  breakTime: FULL_BREAK_TIME,
+  operatingHourList: BAR_HOURS,
+  breakTime: NO_BREAK_TIME,
   reviewList: [defaultReview],
   menuList: [defaultMenu],
   pickedPlaceList: [],
@@ -780,8 +850,8 @@ const place25: PlaceSeedData = {
     addressX: 126.661789,
     addressY: 37.452178,
   },
-  operatingHourList: FULL_OPERATING_HOURS,
-  breakTime: FULL_BREAK_TIME,
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
   reviewList: [defaultReview],
   menuList: [defaultMenu],
   pickedPlaceList: [],
