@@ -669,4 +669,53 @@ export class PlaceCoreRepository {
       },
     });
   }
+
+  public async selectPlaceIdxAllByWeeklyClosedDay(
+    startDate: Date,
+    endDate: Date,
+    nextStartDate: Date,
+    nextEndDate: Date,
+    type: number,
+  ): Promise<{ idx: number }[]> {
+    return await this.txHost.tx.place.findMany({
+      where: {
+        AND: [
+          {
+            weeklyClosedDayList: {
+              some: {
+                closedDate: { gte: startDate, lte: endDate },
+                type,
+              },
+            },
+          },
+          {
+            NOT: {
+              weeklyClosedDayList: {
+                some: {
+                  closedDate: { gte: nextStartDate, lte: nextEndDate },
+                },
+              },
+            },
+          },
+        ],
+      },
+      select: {
+        idx: true,
+      },
+    });
+  }
+
+  public async insertWeeklyClosedDayByPlaceIdx(
+    placeIdx: number,
+    date: Date,
+    type: number,
+  ) {
+    await this.txHost.tx.weeklyClosedDay.create({
+      data: {
+        placeIdx,
+        closedDate: date,
+        type,
+      },
+    });
+  }
 }

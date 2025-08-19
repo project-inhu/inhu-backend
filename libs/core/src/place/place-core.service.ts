@@ -167,4 +167,32 @@ export class PlaceCoreService {
       1,
     );
   }
+
+  public async getPlaceIdxAllByWeeklyClosedDay(
+    startDate: Date,
+    endDate: Date,
+    nextStartDate: Date,
+    nextEndDate: Date,
+    type: number,
+  ): Promise<{ idx: number }[]> {
+    return await this.placeCoreRepository.selectPlaceIdxAllByWeeklyClosedDay(
+      startDate,
+      endDate,
+      nextStartDate,
+      nextEndDate,
+      type,
+    );
+  }
+
+  public async createWeeklyClosedDayByPlaceIdx(
+    placeIdx: number,
+    date: Date,
+    type: number,
+  ) {
+    return await this.placeCoreRepository.insertWeeklyClosedDayByPlaceIdx(
+      placeIdx,
+      date,
+      type,
+    );
+  }
 }
