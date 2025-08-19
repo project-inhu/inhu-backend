@@ -10,6 +10,11 @@ export class PlaceCronService {
     private readonly logger: Logger,
   ) {}
 
+  /**
+   * 격주 휴무일 장소에 대해 14일 뒤 다음 휴무일을 추가
+   *
+   * @author 강정연
+   */
   public async AddNextBiWeeklyClosedDay() {
     try {
       const today = new Date();
