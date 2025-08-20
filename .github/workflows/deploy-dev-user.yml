@@ -82,6 +82,7 @@ jobs:
           echo "should_deploy=${{ steps.deployment-gate.outputs.any_modified }}"
           echo "filter_outputs=${{ toJSON(steps.filter.outputs) }}"
           echo "Deployment gate outputs: ${{ toJSON(steps.deployment-gate.outputs) }}"
+          echo "Database check outputs: ${{ toJSON(steps.db-check.outputs) }}"
 
   # Job 2: User 서버 빌드 및 테스트
   test-user:
@@ -192,12 +193,11 @@ jobs:
               pm2 stop inhu-backend-user-dev
               npm run dev-infra:down
               npm run dev-infra:up
-              # DB readiness wait
               until docker exec inhu-dev-postgres psql -U inhu_admin -d inhu -c "SELECT 1;" >/dev/null 2>&1; do sleep 1; done
-              pm2 restart inhu-backend-admin-dev
-              pm2 restart inhu-backend-user-dev
+              pm2 reload inhu-backend-admin-dev
+              pm2 reload inhu-backend-user-dev
               npm run seed
             else
-              pm2 restart inhu-backend-user-dev
+              pm2 reload inhu-backend-user-dev
             fi
           EOF
