@@ -16,7 +16,7 @@ import { MenuModule } from '@user/api/menu/menu.module';
 import { S3UploadModule } from './api/s3-upload/s3-upload.module';
 import { BookmarkModule } from './api/bookmark/bookmark.module';
 import { DiscordWebhookModule } from '@libs/common/modules/discord-webhook/discord-webhook.module';
-import { RedlockModule } from '@libs/common/modules/red-lock/redlock.module';
+import { RedlockModule } from '@libs/common/modules/redlock/redlock.module';
 import { AopModule } from '@toss/nestjs-aop';
 
 @Module({

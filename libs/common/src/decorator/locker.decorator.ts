@@ -4,7 +4,7 @@ import {
   LazyDecorator,
   WrapParams,
 } from '@toss/nestjs-aop';
-import { RedlockService } from '../modules/red-lock/redlock.service';
+import { RedlockService } from '../modules/redlock/redlock.service';
 import { BadRequestException } from '@nestjs/common';
 import { Lock } from 'redlock';
 
