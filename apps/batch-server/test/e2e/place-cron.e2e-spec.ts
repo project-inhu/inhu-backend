@@ -4,6 +4,7 @@ import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { PlaceCronService } from '@batch/place-cron/place-cron.service';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { DateUtilService } from '@libs/common/modules/date-util/date-util.service';
+import { Logger } from '@nestjs/common';
 
 describe('Place cron e2e', () => {
   const testHelper = TestHelper.create(BatchServerModule);
@@ -252,5 +253,29 @@ describe('Place cron e2e', () => {
 
     mockCreatedMethod.mockRestore();
     mock.mockRestore();
+  });
+
+  it('should handle error gracefully if the initial place query fails', async () => {
+    // Logger의 error 메서드를 모킹해서, 에러가 실제로 기록되는지 확인할 수 있도록 설정
+    const logger = testHelper.get<Logger>(Logger);
+    const loggerErrorSpy = jest.spyOn(logger, 'error').mockImplementation();
+
+    // getPlaceIdxAllByWeeklyClosedDay 메서드가 실패하도록 모킹
+    const coreServiceMock = jest
+      .spyOn(placeCoreService, 'getPlaceIdxAllByWeeklyClosedDay')
+      .mockRejectedValue(new Error('Simulated DB connection error'));
+
+    // 내부에서 에러를 처리하고 정상적으로 종료되는지 확인
+    await expect(
+      placeCronService.AddNextBiWeeklyClosedDay(),
+    ).resolves.not.toThrow();
+
+    expect(loggerErrorSpy).toHaveBeenCalledWith(
+      'Error in AddNextBiWeeklyClosedDay:',
+      expect.any(Error),
+    );
+
+    coreServiceMock.mockRestore();
+    loggerErrorSpy.mockRestore();
   });
 });
