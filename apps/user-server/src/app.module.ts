@@ -16,6 +16,7 @@ import { MenuModule } from '@user/api/menu/menu.module';
 import { S3UploadModule } from './api/s3-upload/s3-upload.module';
 import { BookmarkModule } from './api/bookmark/bookmark.module';
 import { DiscordWebhookModule } from '@libs/common/modules/discord-webhook/discord-webhook.module';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 
 @Module({
   imports: [
@@ -31,6 +32,12 @@ import { DiscordWebhookModule } from '@libs/common/modules/discord-webhook/disco
     S3UploadModule,
     BookmarkModule,
     DiscordWebhookModule,
+
+    PrometheusModule.register({
+      defaultMetrics: { enabled: true },
+      defaultLabels: { service: 'user-server' },
+    }),
+
     ClsModule.forRoot({
       plugins: [
         new ClsPluginTransactional({
