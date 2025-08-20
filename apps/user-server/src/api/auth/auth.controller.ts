@@ -33,7 +33,7 @@ export class AuthController {
     this.MAIN_PAGE_URL = this.configService.get<string>('MAIN_PAGE_URL') || '/';
   }
 
-  @Get('test-error-log/:id')
+  @Get('test-error-log')
   testErrorLog() {
     console.log('Testing a non-crashing error log...');
 
