@@ -1,0 +1,68 @@
+groups:
+  - name: inhu-backend-alerts
+    rules:
+      # 서버 다운 알림
+      - alert: ServerDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: '{{ $labels.job }}'
+        annotations:
+          summary: '{{ $labels.job }} 서버가 다운되었습니다'
+          description: '{{ $labels.instance }}가 2분 이상 응답하지 않습니다.'
+
+      # API 응답 시간 지연 알림
+      - alert: HighResponseTime
+        expr: http_request_duration_seconds{quantile="0.95"} > 2
+        for: 5m
+        labels:
+          severity: warning
+          service: '{{ $labels.job }}'
+        annotations:
+          summary: 'API 응답시간이 느립니다'
+          description: '{{ $labels.job }}의 95%ile 응답시간이 2초를 넘었습니다. 현재: {{ $value }}초'
+
+      # HTTP 에러율 높음 알림
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+        for: 3m
+        labels:
+          severity: warning
+          service: '{{ $labels.job }}'
+        annotations:
+          summary: 'HTTP 에러율이 높습니다'
+          description: '{{ $labels.job }}에서 5xx 에러가 분당 0.1건 이상 발생하고 있습니다.'
+
+      # 메모리 사용량 높음 알림
+      - alert: HighMemoryUsage
+        expr: (process_resident_memory_bytes / 1024 / 1024) > 512
+        for: 5m
+        labels:
+          severity: warning
+          service: '{{ $labels.job }}'
+        annotations:
+          summary: '메모리 사용량이 높습니다'
+          description: '{{ $labels.job }}의 메모리 사용량이 512MB를 넘었습니다. 현재: {{ $value }}MB'
+
+  - name: database-alerts
+    rules:
+      # DB 연결 실패 알림
+      - alert: DatabaseConnectionFailed
+        expr: postgres_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'PostgreSQL 연결 실패'
+          description: 'PostgreSQL 데이터베이스에 연결할 수 없습니다.'
+
+      # Redis 연결 실패 알림
+      - alert: RedisConnectionFailed
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'Redis 연결 실패'
+          description: 'Redis 서버에 연결할 수 없습니다.'

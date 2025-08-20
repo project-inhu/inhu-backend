@@ -1,0 +1,55 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - 'config/rule.yml'
+
+scrape_configs:
+  # 1. 개발 환경 (로컬 Docker & 호스트) 모니터링
+  - job_name: 'dev-infra'
+    scrape_interval: 10s
+    static_configs:
+      # 로컬 Docker 컨테이너들
+      - targets:
+          - 'inhu-dev-postgres-exporter:9187'
+          - 'inhu-dev-redis-exporter:9121'
+          - 'localhost:9090'
+      # 로컬 호스트 서버들
+      - targets:
+          - 'host.docker.internal:3000'
+          - 'host.docker.internal:3001'
+          - 'host.docker.internal:9100'
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: '(.*)'
+        target_label: instance
+        replacement: '$1'
+
+  # 2. EC2 서버 모니터링
+  - job_name: 'ec2-server'
+    static_configs:
+      - targets:
+          - 'api.inhu.co.kr:3000'
+          - 'api-admin.inhu.co.kr:3001'
+          - 'api.inhu.co.kr:9100' # Node Exporter
+    metrics_path: '/metrics'
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: '([0-9.]+):.*'
+        target_label: instance
+        replacement: '$1:ec2'
+
+  # 3. 라즈베리파이 서버 모니터링
+  - job_name: 'raspberry-pi-server'
+    static_configs:
+      - targets:
+          - 'api-dev-user.inhu.co.kr:3000'
+          - 'api-dev-admin.inhu.co.kr:3001'
+          - 'api-dev-user.inhu.co.kr:9100' # Node Exporter
+    metrics_path: '/metrics'
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: '([0-9.]+):.*'
+        target_label: instance
+        replacement: '$1:rpi'
