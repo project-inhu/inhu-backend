@@ -1,1 +1,1 @@
-export const REDLOCK_TOKEN = 'REDLOCK_TOKEN';
+export const REDLOCK_TOKEN = Symbol('REDLOCK_TOKEN');
