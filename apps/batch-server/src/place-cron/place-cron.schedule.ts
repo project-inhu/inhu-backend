@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PlaceCronService } from './place-cron.service';
 import { Cron } from '@nestjs/schedule';
+import { getMode } from '@libs/common/utils/get-mode.util';
 
 @Injectable()
 export class PlaceCronSchedule {
@@ -13,6 +14,7 @@ export class PlaceCronSchedule {
    */
   @Cron('0 0-2 * * * ')
   public async placeCronJob() {
-    await this.placeCronService.AddNextBiWeeklyClosedDay();
+    if (getMode() === 'production')
+      await this.placeCronService.AddNextBiWeeklyClosedDay();
   }
 }
