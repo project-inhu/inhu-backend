@@ -16,18 +16,6 @@ services:
     networks:
       - inhu-dev-network
 
-  postgres-exporter:
-    image: prometheuscommunity/postgres-exporter
-    container_name: inhu-dev-postgres-exporter
-    environment:
-      - DATA_SOURCE_NAME=postgresql://postgres:1234@inhu-dev-postgres:5432/postgres?sslmode=disable
-    ports:
-      - '9187:9187'
-    networks:
-      - inhu-dev-network
-    depends_on:
-      - postgres
-
   redis:
     image: redis:7.4.0
     container_name: inhu-dev-redis
@@ -38,54 +26,9 @@ services:
     volumes:
       - inhu-dev-redis-data:/data
 
-  redis-exporter:
-    image: oliver006/redis_exporter
-    container_name: inhu-dev-redis-exporter
-    ports:
-      - '9121:9121'
-    networks:
-      - inhu-dev-network
-    depends_on:
-      - redis
-
-  prometheus:
-    image: prom/prometheus
-    container_name: inhu-dev-prometheus
-    ports:
-      - '9090:9090'
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./prometheus/config/rule.yml:/etc/prometheus/config/rule.yml
-      - inhu-dev-prometheus-data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=200h'
-      - '--web.enable-lifecycle'
-    networks:
-      - inhu-dev-network
-
-  grafana:
-    image: grafana/grafana
-    container_name: inhu-dev-grafana
-    ports:
-      - '3030:3000'
-    volumes:
-      - inhu-dev-grafana-data:/var/lib/grafana
-      - ./grafana/provisioning:/etc/grafana/provisioning
-      - ./grafana/dashboards:/var/lib/grafana/dashboards
-    depends_on:
-      - prometheus
-    networks:
-      - inhu-dev-network
-
 volumes:
   inhu-dev-data:
   inhu-dev-redis-data:
-  inhu-dev-prometheus-data:
-  inhu-dev-grafana-data:
 
 networks:
   inhu-dev-network:
