@@ -34,6 +34,7 @@ async function bootstrap() {
         .sendWebhookMessage(
           `🚀 ${DiscordWebhookContext.ADMIN_SERVER} 배포 알림 `,
           `서버가 성공적으로 배포 되었습니다.`,
+          DiscordWebhookContext.ADMIN_SERVER,
         );
     } catch (err) {
       // ! 주의: 에러가 발생해도 서버가 중단되지 않도록 하기 위해 console.log로 에러를 출력합니다.
