@@ -25,6 +25,7 @@ export class PlaceService {
       activated: dto.active,
       order: 'desc',
       orderBy: 'time',
+      searchKeyword: dto.search,
     };
 
     return {

@@ -1,6 +1,12 @@
 import { ToBoolean } from '@libs/common/decorator/to-boolean.decorator';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsNumber, IsOptional, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 
 export class GetPlaceOverviewDto {
   /**
@@ -24,4 +30,11 @@ export class GetPlaceOverviewDto {
   @IsBoolean()
   @IsOptional()
   public active?: boolean;
+
+  /**
+   * 검색 키워드
+   */
+  @IsString()
+  @IsOptional()
+  public search?: string;
 }
