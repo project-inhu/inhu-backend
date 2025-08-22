@@ -46,6 +46,7 @@ export class PlaceCoreRepository {
     orderBy,
     activated,
     permanentlyClosed,
+    searchKeyword,
   }: GetPlaceOverviewInput): Promise<SelectPlaceOverview[]> {
     return await this.txHost.tx.place.findMany({
       ...SELECT_PLACE_OVERVIEW,
@@ -58,6 +59,7 @@ export class PlaceCoreRepository {
           this.getTypesFilterWhereClause(types), // 타입 필터링
           this.getActivatedAtFilterWhereClause(activated), // 활성화 필터링
           this.getPermanentlyClosedFilterWhereClause(permanentlyClosed), // 폐점 여부 필터링
+          this.getSearchKeywordWhereClause(searchKeyword), // 검색 키워드 필터링
         ],
       },
       orderBy: this.getOrderByClause({ order, orderBy }),
@@ -77,6 +79,7 @@ export class PlaceCoreRepository {
     orderBy,
     activated,
     permanentlyClosed,
+    searchKeyword,
   }: GetPlaceOverviewInput): Promise<number> {
     return await this.txHost.tx.place.count({
       where: {
@@ -88,6 +91,7 @@ export class PlaceCoreRepository {
           this.getTypesFilterWhereClause(types), // 타입 필터링
           this.getActivatedAtFilterWhereClause(activated), // 활성화 필터링
           this.getPermanentlyClosedFilterWhereClause(permanentlyClosed), // 폐점 여부 필터링
+          this.getSearchKeywordWhereClause(searchKeyword), // 검색 키워드 필터링
         ],
       },
     });
@@ -108,6 +112,23 @@ export class PlaceCoreRepository {
     }
 
     return { permanentlyClosedAt: null };
+  }
+
+  /**
+   * 검색 키워드
+   */
+  private getSearchKeywordWhereClause(
+    searchKeyword?: string,
+  ): Prisma.PlaceWhereInput {
+    if (!searchKeyword) {
+      return {};
+    }
+
+    return {
+      name: {
+        contains: searchKeyword,
+      },
+    };
   }
 
   private getOperatingFilterWhereClause(

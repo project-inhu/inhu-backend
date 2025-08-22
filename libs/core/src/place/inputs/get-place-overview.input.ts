@@ -75,4 +75,9 @@ export class GetPlaceOverviewInput {
    * - undefined: 폐점된 장소와 폐점되지 않은 장소 모두 가져오기
    */
   permanentlyClosed?: boolean;
+
+  /**
+   * 검색 필터링
+   */
+  searchKeyword?: string;
 }
