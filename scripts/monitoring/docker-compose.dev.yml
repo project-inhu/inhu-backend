@@ -1,0 +1,76 @@
+name: inhu-monitoring-dev
+
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus-dev
+    restart: unless-stopped
+    ports:
+      - '${PROM_HOST}:${PROM_PORT}:9090'
+    volumes:
+      - ${PROM_CONFIG_FILE}:/etc/prometheus/prometheus.yml
+      - ./prometheus/config/rule.yml:/etc/prometheus/config/rule.yml
+      - prom-data-dev:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+      - --web.enable-lifecycle
+    networks: [monitor-net]
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana-dev
+    restart: unless-stopped
+    ports:
+      - '${GRAFANA_HOST}:${GRAFANA_PORT}:3000'
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+    volumes:
+      - grafana-data-dev:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on: [prometheus]
+    networks: [monitor-net]
+
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter-dev
+    restart: unless-stopped
+    pid: host
+    command:
+      - --path.procfs=/host/proc
+      - --path.rootfs=/rootfs
+      - --path.sysfs=/host/sys
+      - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|var/lib/docker/.+|mnt/wslg/.+)($$|/)
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    networks: [monitor-net]
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: postgres-exporter-dev
+    restart: unless-stopped
+    environment:
+      - DATA_SOURCE_NAME=${PG_DSN}
+    networks: [monitor-net]
+    depends_on: [prometheus]
+
+  redis-exporter:
+    image: oliver006/redis_exporter
+    container_name: redis-exporter-dev
+    restart: unless-stopped
+    command:
+      - --redis.addr=${REDIS_ADDR}
+    networks: [monitor-net]
+    depends_on: [prometheus]
+
+volumes:
+  prom-data-dev:
+  grafana-data-dev:
+
+networks:
+  monitor-net:

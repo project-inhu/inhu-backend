@@ -12,8 +12,8 @@ scrape_configs:
     scrape_interval: 10s
     static_configs:
       - targets:
-          - 'postgres-exporter:9187'
-          - 'redis-exporter:9121'
+          - 'localhost:9187'
+          - 'localhost:9121'
           - 'node-exporter:9100'
           - 'prometheus:9090'
     relabel_configs:
