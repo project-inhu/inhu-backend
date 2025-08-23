@@ -39,7 +39,7 @@ describe('s3-upload E2E test', () => {
         .post('/s3-upload/profile-image/presigned-url')
         .send({
           extension: ImageExtension.JPG,
-          maxSize: 10,
+          maxSize: 1,
           contentType: ContentType.IMAGE,
         })
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)

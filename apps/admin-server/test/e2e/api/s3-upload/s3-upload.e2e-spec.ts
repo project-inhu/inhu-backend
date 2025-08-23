@@ -85,7 +85,7 @@ describe('s3-upload E2E test', () => {
         .test()
         .post('/s3-upload/banner-image/presigned-url')
         .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .send({ extension: 'gif' })
+        .send({ extension: 'unknown_extension' })
         .expect(400);
     });
   });
@@ -157,7 +157,7 @@ describe('s3-upload E2E test', () => {
         .test()
         .post('/s3-upload/menu-image/presigned-url')
         .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .send({ extension: 'webp' })
+        .send({ extension: 'unknown_extension' })
         .expect(400);
     });
   });
@@ -334,7 +334,7 @@ describe('s3-upload E2E test', () => {
       expect(s3ServiceMock).toHaveBeenCalledWith({
         folder: S3Folder.REVIEW,
         extensions: dto.extensions,
-        maxSize: 10,
+        maxSize: 1,
         contentType: ContentType.IMAGE,
       });
 

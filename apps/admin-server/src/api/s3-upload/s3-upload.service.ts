@@ -50,7 +50,7 @@ export class S3UploadService {
     return this.s3Service.getPresignedUrls({
       folder: S3Folder.REVIEW,
       extensions: createReviewImagePresignedUrlsDto.extensions,
-      maxSize: 10,
+      maxSize: 1,
       contentType: ContentType.IMAGE,
     });
   }
