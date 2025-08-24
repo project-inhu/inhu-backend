@@ -20,9 +20,6 @@ jobs:
       should_deploy: ${{ steps.deployment-gate.outputs.any_modified }}
       # 데이터베이스 다운이 필요한 변경인지 (true/false)
       should_db_down: ${{ steps.db-check.outputs.any_modified }}
-      # 모니터링 스택 변경 여부 (true/false)
-      mon_changed: ${{ steps.mon-changes.outputs.any_modified }}
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -85,15 +82,6 @@ jobs:
           echo "should_deploy=${{ steps.deployment-gate.outputs.any_modified }}"
           echo "filter_outputs=${{ toJSON(steps.filter.outputs) }}"
           echo "Deployment gate outputs: ${{ toJSON(steps.deployment-gate.outputs) }}"
-          echo "Database check outputs: ${{ toJSON(steps.db-check.outputs) }}"
-
-      # Step 4: 모니터링 스택 변경 감지
-      - name: Check for monitoring changes
-        id: mon-changes
-        uses: tj-actions/changed-files@v44
-        with:
-          files: |
-            scripts/monitoring/**
 
   # Job 2: Admin 서버 빌드 및 테스트
   test-admin:
@@ -168,7 +156,7 @@ jobs:
       cancel-in-progress: false
     name: Deploy Admin Server to Raspberry Pi
     needs: [check-admin-changes, build-admin]
-    if: github.event_name == 'push' && (needs.check-admin-changes.outputs.should_deploy == 'true' || needs.check-admin-changes.outputs.mon_changed == 'true')
+    if: github.event_name == 'push' && needs.check-admin-changes.outputs.should_deploy == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Download admin artifact
@@ -204,34 +192,12 @@ jobs:
               pm2 stop inhu-backend-user-dev
               npm run dev-infra:down
               npm run dev-infra:up
+              # DB readiness wait
               until docker exec inhu-dev-postgres psql -U inhu_admin -d inhu -c "SELECT 1;" >/dev/null 2>&1; do sleep 1; done
-              pm2 reload inhu-backend-admin-dev
-              pm2 reload inhu-backend-user-dev
+              pm2 restart inhu-backend-admin-dev
+              pm2 restart inhu-backend-user-dev
               npm run seed
             else
-              pm2 reload inhu-backend-admin-dev
+              pm2 restart inhu-backend-admin-dev
             fi
-          EOF
-      # 모니터링 번들 패키징 (scripts/monitoring/** 변경시에만)
-      - name: Package monitoring bundle
-        if: needs.check-admin-changes.outputs.mon_changed == 'true'
-        run: tar -czf monitoring.tar.gz -C scripts/monitoring docker-compose.dev.yml grafana prometheus
-
-      # 라즈베리(DEV)로 배포
-      - name: Deploy monitoring to Raspberry Pi
-        if: needs.check-admin-changes.outputs.mon_changed == 'true'
-        env:
-          HOST: ${{ secrets.RASPBERRY_PI_HOST }}
-          USER: ${{ secrets.RASPBERRY_PI_USER }}
-          PASSWORD: ${{ secrets.RASPBERRY_PI_PASSWORD }}
-          PORT: ${{ secrets.RASPBERRY_PI_PORT }}
-        run: |
-          sudo apt-get update && sudo apt-get install -y sshpass
-          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST "mkdir -p ~/inhu-monitoring"
-          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no monitoring.tar.gz $USER@$HOST:~/inhu-monitoring/
-          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST "bash -s" << 'EOF'
-            set -e
-            cd ~/inhu-monitoring
-            tar -xzf monitoring.tar.gz && rm monitoring.tar.gz
-            docker compose -f docker-compose.dev.yml --env-file $HOME/inhu-backend/.env.admin up -d --pull always --remove-orphans --project-name inhu-monitoring
           EOF
