@@ -37,18 +37,8 @@ export class DiscordWebhookService {
     error: Error,
     context: DiscordWebhookContext,
   ) {
-    let targetUrl = this.ERROR_WEBHOOK_URL;
-    if (context === DiscordWebhookContext.BATCH_SERVER) {
-      targetUrl = this.BATCH_ERROR_WEBHOOK_URL;
-    }
-
-    if (!targetUrl) {
-      this.logger.warn(`Error Webhook URL for context "${context}" not found`);
-      return;
-    }
-
     await this.httpService.axiosRef.post(
-      targetUrl,
+      this.ERROR_WEBHOOK_URL,
       {
         content: `# **🚨 에러 로그 알림**`,
         embeds: [
