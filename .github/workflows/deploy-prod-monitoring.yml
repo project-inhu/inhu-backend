@@ -6,6 +6,11 @@ on:
       - master
     paths:
       - 'scripts/monitoring/**'
+    pull_request:
+      branches:
+        - develop
+      paths:
+        - 'scripts/monitoring/**'
 
 jobs:
   # Job: 모니터링 스택 배포
