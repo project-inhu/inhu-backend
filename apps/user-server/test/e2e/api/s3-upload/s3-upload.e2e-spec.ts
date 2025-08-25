@@ -128,7 +128,7 @@ describe('s3-upload E2E test', () => {
       const response = await testHelper
         .test()
         .post('/s3-upload/review-image/presigned-urls')
-        .set('Cookie', `token=Bearer ${loginUser.app.accessToken}`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send(dto)
         .expect(201);
 
@@ -164,7 +164,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/review-image/presigned-urls')
-        .set('Cookie', `token=Bearer ${loginUser.app.accessToken}`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send({})
         .expect(400);
     });
@@ -175,7 +175,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/review-image/presigned-urls')
-        .set('Cookie', `token=Bearer ${loginUser.app.accessToken}`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send({ extensions: [] })
         .expect(400);
     });
@@ -186,7 +186,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/review-image/presigned-urls')
-        .set('Cookie', `token=Bearer ${loginUser.app.accessToken}`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send({ extensions: ['abc', 'gif'] })
         .expect(400);
     });
@@ -199,7 +199,7 @@ describe('s3-upload E2E test', () => {
       await testHelper
         .test()
         .post('/s3-upload/review-image/presigned-urls')
-        .set('Cookie', `token=Bearer ${loginUser.app.accessToken}`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .send({ extensions: tooManyExtensions })
         .expect(400);
     });
