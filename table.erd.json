@@ -1091,7 +1091,7 @@
         "comment": "",
         "dataType": "int",
         "default": "",
-        "options": 11,
+        "options": 10,
         "ui": {
           "keys": 1,
           "widthName": 60,
@@ -1100,7 +1100,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1736922869553,
+          "updateAt": 1756117209418,
           "createAt": 1736921062891
         }
       },
@@ -1591,7 +1591,7 @@
         "comment": "",
         "dataType": "int",
         "default": "",
-        "options": 11,
+        "options": 10,
         "ui": {
           "keys": 1,
           "widthName": 60,
@@ -1600,7 +1600,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1736925749738,
+          "updateAt": 1756117199185,
           "createAt": 1736925739627
         }
       },
