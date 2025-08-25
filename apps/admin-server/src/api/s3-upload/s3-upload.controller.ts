@@ -5,7 +5,6 @@ import { CreateBannerImagePresignedUrlDto } from '@admin/api/s3-upload/dto/reque
 import { PresignedUrlEntity } from '@admin/api/s3-upload/entity/presigned-url.entity';
 import { CreatePlaceImagePresignedUrlsDto } from '@admin/api/s3-upload/dto/request/create-place-image-presigned-url.dto';
 import { ApiBadRequestResponse, ApiTags } from '@nestjs/swagger';
-import { Exception } from '@libs/common/decorator/exception.decorator';
 
 @Controller('s3-upload')
 @ApiTags('s3-upload')
@@ -14,7 +13,6 @@ export class S3UploadController {
 
   @Post('/banner-image/presigned-url')
   @HttpCode(201)
-  @Exception(401, 'no accessToken')
   @ApiBadRequestResponse({
     description:
       '- extension field is not provided\n' +
@@ -31,7 +29,6 @@ export class S3UploadController {
 
   @Post('/menu-image/presigned-url')
   @HttpCode(201)
-  @Exception(401, 'no accessToken')
   @ApiBadRequestResponse({
     description:
       '- extension field is not provided\n' +
@@ -48,7 +45,6 @@ export class S3UploadController {
 
   @Post('/place-image/presigned-urls')
   @HttpCode(201)
-  @Exception(401, 'no accessToken')
   @ApiBadRequestResponse({
     description:
       '- extension field is not provided\n' +
@@ -63,26 +59,6 @@ export class S3UploadController {
   ): Promise<PresignedUrlEntity[]> {
     return this.s3UploadService.createPlaceImagePresignedUrls(
       createPlaceImagePresignedUrlsDto,
-    );
-  }
-
-  @Post('/review-image/presigned-urls')
-  @HttpCode(201)
-  @Exception(401, 'no accessToken')
-  @ApiBadRequestResponse({
-    description:
-      '- extension field is not provided\n' +
-      '- extension is not in IMAGE_EXTENSION type\n' +
-      '- extensions array is empty\n' +
-      '- extensions array contains an invalid extension\n' +
-      '- extensions array exceeds max size',
-  })
-  @AdminAuth()
-  async createReviewImagePresignedUrls(
-    @Body() createReviewImagePresignedUrlsDto: CreatePlaceImagePresignedUrlsDto,
-  ): Promise<PresignedUrlEntity[]> {
-    return this.s3UploadService.createReviewImagePresignedUrls(
-      createReviewImagePresignedUrlsDto,
     );
   }
 }
