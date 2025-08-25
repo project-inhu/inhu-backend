@@ -19,7 +19,7 @@ model Bookmark {
 }
 
 model Keyword {
-  idx                      Int                    @id @default(autoincrement())
+  idx                      Int                    @id 
   content                  String                 @unique @db.VarChar
   createdAt                DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt                DateTime?              @map("deleted_at") @db.Timestamptz(6)
@@ -139,7 +139,7 @@ model PlaceTypeMapping {
 }
 
 model PlaceType {
-  idx                  Int                @id @default(autoincrement())
+  idx                  Int                @id
   content              String             @unique @db.VarChar
   createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt            DateTime?          @map("deleted_at") @db.Timestamptz(6)
