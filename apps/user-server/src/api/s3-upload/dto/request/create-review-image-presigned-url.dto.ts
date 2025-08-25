@@ -4,7 +4,6 @@ import {
   ArrayMaxSize,
   ArrayNotEmpty,
   IsArray,
-  IsIn,
   IsString,
 } from 'class-validator';
 

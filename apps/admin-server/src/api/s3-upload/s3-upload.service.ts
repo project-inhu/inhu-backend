@@ -43,15 +43,4 @@ export class S3UploadService {
       contentType: ContentType.IMAGE,
     });
   }
-
-  public async createReviewImagePresignedUrls(
-    createReviewImagePresignedUrlsDto: CreatePlaceImagePresignedUrlsDto,
-  ): Promise<PresignedUrlModel[]> {
-    return this.s3Service.getPresignedUrls({
-      folder: S3Folder.REVIEW,
-      extensions: createReviewImagePresignedUrlsDto.extensions,
-      maxSize: 1,
-      contentType: ContentType.IMAGE,
-    });
-  }
 }
