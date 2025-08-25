@@ -4,7 +4,8 @@ import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
 import { CreateProfileImagePresignedUrlDto } from './dto/request/create-profile-image-presigned-url.dto';
 import { PresignedUrlEntity } from './entity/presigned-url.entity';
 import { ApiBadRequestResponse, ApiTags } from '@nestjs/swagger';
-import { Exception } from '@libs/common/decorator/exception.decorator';
+import { CreateReviewImagePresignedUrlsDto } from './dto/request/create-review-image-presigned-url.dto';
+
 @Controller('s3-upload')
 @ApiTags('s3-upload')
 export class S3UploadController {
@@ -12,7 +13,6 @@ export class S3UploadController {
 
   @Post('/profile-image/presigned-url')
   @HttpCode(201)
-  @Exception(401, 'no accessToken')
   @ApiBadRequestResponse({
     description:
       '- extension field is not provided\n' +
@@ -25,6 +25,26 @@ export class S3UploadController {
   ): Promise<PresignedUrlEntity> {
     return this.s3UploadService.createProfileImagePresignedUrl(
       createProfileImagePresignedUrlDto,
+    );
+  }
+
+  @Post('/review-image/presigned-urls')
+  @HttpCode(201)
+  @ApiBadRequestResponse({
+    description:
+      '- extension field is not provided\n' +
+      '- extension is not in IMAGE_EXTENSION type\n' +
+      '- extensions array is empty\n' +
+      '- extensions array contains an invalid extension\n' +
+      '- extensions array exceeds max size',
+  })
+  @LoginAuth()
+  async createReviewImagePresignedUrls(
+    @Body()
+    createReviewImagePresignedUrlsDto: CreateReviewImagePresignedUrlsDto,
+  ): Promise<PresignedUrlEntity[]> {
+    return this.s3UploadService.createReviewImagePresignedUrls(
+      createReviewImagePresignedUrlsDto,
     );
   }
 }
