@@ -150,4 +150,18 @@ export class PlaceController {
   ): Promise<void> {
     return await this.placeService.cancelClosePermanentlyPlaceByIdx(idx);
   }
+
+  /**
+   * 특정 장소에 휴무일 생성
+   */
+  @Post('/:placeIdx/weekly-closed-day')
+  public async createWeeklyClosedDayByPlaceIdx(
+    @Param('placeIdx', ParseIntPipe) placeIdx: number,
+    @Body('targetDate') targetDate: Date,
+  ) {
+    return this.placeService.createWeeklyClosedDayByPlaceIdx(
+      placeIdx,
+      targetDate,
+    );
+  }
 }
