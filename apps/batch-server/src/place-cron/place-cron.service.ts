@@ -1,6 +1,4 @@
 import { DateUtilService } from '@libs/common/modules/date-util/date-util.service';
-import { DiscordWebhookContext } from '@libs/common/modules/discord-webhook/constants/discord-webhook-context.enum';
-import { DiscordWebhookService } from '@libs/common/modules/discord-webhook/discord-webhook.service';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { Injectable, Logger } from '@nestjs/common';
 
@@ -17,24 +15,26 @@ export class PlaceCronService {
    *
    * @author 강정연
    */
-  public async AddNextBiWeeklyClosedDay() {
+  public async AddNextBiWeeklyClosedDay(): Promise<void> {
     const now = this.dateUtilService.getNow();
-    const todayKSTStr = this.dateUtilService.transformKoreanDate(now);
 
-    const result = await this.placeCoreService.createAllWeeklyClosedDay(
-      new Date(todayKSTStr),
-    );
+    const result = await this.placeCoreService.createAllWeeklyClosedDay(now);
 
-    const failIds = result.errorList.map((e) => e.placeIdx).join(', ');
-
-    const curl = `curl -X POST "${process.env.BATCH_SERVER_DOMAIN}/weekly-closed-day/cron/all" -H "Content-Type: application/json" -d '{ "pw": [관리자 비밀번호 입력 필요] }'`;
+    const failIdxList = result.errorList.map((e) => e.placeIdx).join(', ');
 
     if (result.errorList.length > 0) {
+      const failLogs = result.errorList
+        .map(
+          (e) =>
+            `placeIdx=${e.placeIdx}, error=${e.error instanceof Error ? e.error.message : JSON.stringify(e.error)}`,
+        )
+        .join('\n');
+
       this.logger.error(
         `🚨 Bi-Weekly ClosedDay 배치 실패\n` +
           `성공: ${result.success}, 실패: ${result.errorList.length}\n` +
-          `실패 placeIdx: ${failIds}\n\n` +
-          `재실행:\n${curl}`,
+          `실패 placeIdx: ${failIdxList}\n` +
+          `실패 로그:\n${failLogs}`,
       );
     } else {
       this.logger.log(
