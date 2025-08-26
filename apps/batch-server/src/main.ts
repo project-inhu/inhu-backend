@@ -19,6 +19,6 @@ async function bootstrap() {
       console.log(err);
     }
   }
-  await app.listen(process.env.port ?? 3000);
+  await app.listen(process.env.BATCH_SERVER_PORT ?? 3000);
 }
 bootstrap();
