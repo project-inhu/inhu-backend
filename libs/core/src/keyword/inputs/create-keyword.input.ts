@@ -4,5 +4,6 @@
  * @publicApi
  */
 export class CreateKeywordInput {
+  idx: number;
   content: string;
 }

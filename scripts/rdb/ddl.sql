@@ -27,7 +27,7 @@ CREATE TABLE closed_day_tb
 
 CREATE TABLE keyword_tb
 (
-  idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  idx        int                      NOT NULL,
   content    varchar                  NOT NULL UNIQUE,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at timestamp with time zone,
@@ -113,7 +113,7 @@ CREATE TABLE place_type_mapping_tb
 
 CREATE TABLE place_type_tb
 (
-  idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  idx        int                      NOT NULL,
   content    varchar                  NOT NULL UNIQUE,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at timestamp with time zone,
