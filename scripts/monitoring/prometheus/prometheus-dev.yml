@@ -1,35 +1,33 @@
 global:
-  scrape_interval: 15s
+  scrape_interval: 30s
   evaluation_interval: 15s
   external_labels:
     monitor: 'dev-monitor'
 
-rule_files:
-  - 'config/rule.yml'
-
 scrape_configs:
   - job_name: 'rpi-infra'
-    scrape_interval: 10s
+    scrape_interval: 30s
     static_configs:
-      - targets:
-          - 'postgres-exporter:9187'
-          - 'redis-exporter:9121'
-          - 'node-exporter:9100'
-          - 'prometheus:9090'
-    relabel_configs:
-      - source_labels: [__address__]
-        regex: '(.*)'
-        target_label: instance
-        replacement: '$1:rpi'
+      - targets: ['prometheus-dev:9090']
+        labels:
+          instance: 'rpi-prometheus'
+      - targets: ['node-exporter-dev:9100']
+        labels:
+          instance: 'rpi-node-exporter'
+      - targets: ['postgres-exporter-dev:9187']
+        labels:
+          instance: 'rpi-postgres-exporter'
+      - targets: ['redis-exporter-dev:9121']
+        labels:
+          instance: 'rpi-redis-exporter'
 
   - job_name: 'rpi-app'
     metrics_path: '/metrics'
+    scrape_interval: 30s
     static_configs:
-      - targets:
-          - 'api-dev-user.inhu.co.kr:3000'
-          - 'api-dev-admin.inhu.co.kr:3001'
-    relabel_configs:
-      - source_labels: [__address__]
-        regex: '(.*)'
-        target_label: instance
-        replacement: '$1:rpi-app'
+      - targets: ['api-dev-user.inhu.co.kr:3000']
+        labels:
+          instance: 'rpi-user-server'
+      - targets: ['api-dev-admin.inhu.co.kr:3001']
+        labels:
+          instance: 'rpi-admin-server'

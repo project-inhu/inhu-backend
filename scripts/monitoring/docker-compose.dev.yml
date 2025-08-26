@@ -6,7 +6,7 @@ services:
     container_name: prometheus-dev
     restart: unless-stopped
     ports:
-      - '${PROM_HOST}:${PROM_PORT}:9090'
+      - '9090:9090'
     volumes:
       - ${PROM_CONFIG_FILE}:/etc/prometheus/prometheus.yml
       - ./prometheus/config/rule.yml:/etc/prometheus/config/rule.yml
@@ -23,7 +23,7 @@ services:
     container_name: grafana-dev
     restart: unless-stopped
     ports:
-      - '${GRAFANA_HOST}:${GRAFANA_PORT}:3000'
+      - '3030:3000'
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
@@ -31,7 +31,6 @@ services:
       - grafana-data-dev:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/dashboards:/var/lib/grafana/dashboards
-    depends_on: [prometheus]
     networks: [monitor-net]
 
   node-exporter:
@@ -48,25 +47,26 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
-    networks: [monitor-net]
 
   postgres-exporter:
     image: prometheuscommunity/postgres-exporter
     container_name: postgres-exporter-dev
     restart: unless-stopped
+    ports:
+      - '9187:9187'
     environment:
       - DATA_SOURCE_NAME=${PG_DSN}
     networks: [monitor-net]
-    depends_on: [prometheus]
 
   redis-exporter:
     image: oliver006/redis_exporter
     container_name: redis-exporter-dev
     restart: unless-stopped
+    ports:
+      - '9121:9121'
     command:
       - --redis.addr=${REDIS_ADDR}
     networks: [monitor-net]
-    depends_on: [prometheus]
 
 volumes:
   prom-data-dev:
