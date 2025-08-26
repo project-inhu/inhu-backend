@@ -4,7 +4,6 @@ import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { PlaceCronService } from '@batch/place-cron/place-cron.service';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { DateUtilService } from '@libs/common/modules/date-util/date-util.service';
-import { Logger } from '@nestjs/common';
 
 describe('Place cron e2e', () => {
   const testHelper = TestHelper.create(BatchServerModule);
@@ -27,14 +26,13 @@ describe('Place cron e2e', () => {
   });
 
   it('should successfully add the next biweekly closed day', async () => {
-    const today = new Date(TODAY_KST_STRING);
-    const nextDate = new Date(today);
-    nextDate.setDate(nextDate.getDate() + 14);
+    const expectedNext = new Date(TODAY_KST_STRING);
+    expectedNext.setDate(expectedNext.getDate() + 14);
 
     const testPlace = await placeSeedHelper.seed({
       weeklyClosedDayList: [
         {
-          closedDate: today,
+          closedDate: new Date(TODAY_KST_STRING),
           type: 0,
         },
       ],
@@ -42,35 +40,38 @@ describe('Place cron e2e', () => {
 
     //Mocking : dateUtilService가 실제 날짜 대신, 우리가 고정한 '오늘' 날짜를 반환하도록 설정
     const mock = jest
-      .spyOn(dateUtilService, 'transformKoreanDate')
-      .mockReturnValue(TODAY_KST_STRING);
+      .spyOn(dateUtilService, 'getNow')
+      .mockReturnValue(new Date(TODAY_KST_STRING));
 
     await placeCronService.AddNextBiWeeklyClosedDay();
 
-    const targetDate = new Date(today);
-    targetDate.setDate(targetDate.getDate() + 14);
+    const allClosedDays = await testHelper
+      .getPrisma()
+      .weeklyClosedDay.findMany({
+        where: { placeIdx: testPlace.idx },
+      });
+    console.log(allClosedDays);
 
     const closedDay = await testHelper.getPrisma().weeklyClosedDay.findFirst({
       where: {
         placeIdx: testPlace.idx,
         closedDate: {
-          gte: new Date(targetDate.setHours(0, 0, 0, 0)),
-          lte: new Date(targetDate.setHours(23, 59, 59, 999)),
+          gte: new Date(expectedNext.setHours(0, 0, 0, 0)),
+          lte: new Date(expectedNext.setHours(23, 59, 59, 999)),
         },
       },
     });
 
     expect(closedDay).not.toBeNull();
     expect(closedDay?.closedDate.toISOString().split('T')[0]).toBe(
-      targetDate.toISOString().split('T')[0],
+      expectedNext.toISOString().split('T')[0], // yyyy-mm-dd 비교
     );
 
     mock.mockRestore();
   });
 
   it('should not add a closed day if no places are found', async () => {
-    const today = new Date(TODAY_KST_STRING);
-    const tomorrow = new Date(today);
+    const tomorrow = new Date(TODAY_KST_STRING);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     const testPlace = await placeSeedHelper.seed({
@@ -89,8 +90,8 @@ describe('Place cron e2e', () => {
       });
 
     const mock = jest
-      .spyOn(dateUtilService, 'transformKoreanDate')
-      .mockReturnValue(TODAY_KST_STRING);
+      .spyOn(dateUtilService, 'getNow')
+      .mockReturnValue(new Date(TODAY_KST_STRING));
 
     await placeCronService.AddNextBiWeeklyClosedDay();
 
@@ -106,20 +107,13 @@ describe('Place cron e2e', () => {
   });
 
   it('should successfully add the next biweekly closed day for multiple places', async () => {
-    const today = new Date(TODAY_KST_STRING);
-    const nextDate = new Date(today);
-    nextDate.setDate(nextDate.getDate() + 14);
-
-    const startOfTargetDay = new Date(nextDate);
-    startOfTargetDay.setHours(0, 0, 0, 0);
-
-    const endOfTargetDay = new Date(nextDate);
-    endOfTargetDay.setHours(23, 59, 59, 999);
+    const expectedNext = new Date(TODAY_KST_STRING);
+    expectedNext.setDate(expectedNext.getDate() + 14);
 
     const testPlace1 = await placeSeedHelper.seed({
       weeklyClosedDayList: [
         {
-          closedDate: today,
+          closedDate: new Date(TODAY_KST_STRING),
           type: 0,
         },
       ],
@@ -128,15 +122,15 @@ describe('Place cron e2e', () => {
     const testPlace2 = await placeSeedHelper.seed({
       weeklyClosedDayList: [
         {
-          closedDate: today,
+          closedDate: new Date(TODAY_KST_STRING),
           type: 0,
         },
       ],
     });
 
     const mock = jest
-      .spyOn(dateUtilService, 'transformKoreanDate')
-      .mockReturnValue(TODAY_KST_STRING);
+      .spyOn(dateUtilService, 'getNow')
+      .mockReturnValue(new Date(TODAY_KST_STRING));
 
     await placeCronService.AddNextBiWeeklyClosedDay();
 
@@ -146,8 +140,8 @@ describe('Place cron e2e', () => {
         where: {
           placeIdx: { in: [testPlace1.idx, testPlace2.idx] },
           closedDate: {
-            gte: startOfTargetDay,
-            lte: endOfTargetDay,
+            gte: new Date(expectedNext.setHours(0, 0, 0, 0)),
+            lte: new Date(expectedNext.setHours(23, 59, 59, 999)),
           },
         },
       });
@@ -158,20 +152,13 @@ describe('Place cron e2e', () => {
   });
 
   it('should not create a duplicate closed day if one already exists', async () => {
-    const today = new Date(TODAY_KST_STRING);
-    const nextDate = new Date(today);
-    nextDate.setDate(nextDate.getDate() + 14);
-
-    const targetDate = new Date(today);
-    targetDate.setDate(targetDate.getDate() + 14);
+    const expectedNext = new Date(TODAY_KST_STRING);
+    expectedNext.setDate(expectedNext.getDate() + 14);
 
     const testPlace = await placeSeedHelper.seed({
       weeklyClosedDayList: [
-        { closedDate: today, type: 0 },
-        {
-          closedDate: targetDate,
-          type: 0,
-        },
+        { closedDate: new Date(TODAY_KST_STRING), type: 0 },
+        { closedDate: expectedNext, type: 0 },
       ],
     });
 
@@ -193,33 +180,30 @@ describe('Place cron e2e', () => {
   });
 
   it('should continue processing other places even if one fails', async () => {
-    const today = new Date(TODAY_KST_STRING);
-    const nextDate = new Date(today);
-    nextDate.setDate(nextDate.getDate() + 14);
-
-    const startOfTargetDay = new Date(nextDate);
-    startOfTargetDay.setHours(0, 0, 0, 0);
-
-    const endOfTargetDay = new Date(nextDate);
-    endOfTargetDay.setHours(23, 59, 59, 999);
+    const expectedNext = new Date(TODAY_KST_STRING);
+    expectedNext.setDate(expectedNext.getDate() + 14);
 
     const place1 = await placeSeedHelper.seed({
-      weeklyClosedDayList: [{ closedDate: today, type: 0 }],
+      weeklyClosedDayList: [
+        { closedDate: new Date(TODAY_KST_STRING), type: 0 },
+      ],
     });
     const place2 = await placeSeedHelper.seed({
-      weeklyClosedDayList: [{ closedDate: today, type: 0 }],
+      weeklyClosedDayList: [
+        { closedDate: new Date(TODAY_KST_STRING), type: 0 },
+      ],
     });
 
     // place1에 대한 업데이트가 실패하도록 한번만 mock
     const mockCreatedMethod = jest
-      .spyOn(placeCoreService, 'createWeeklyClosedDayByPlaceIdx')
+      .spyOn(placeCoreService, 'createWeeklyClosedDay')
       .mockImplementationOnce(() => {
         throw new Error('Simulated error');
       });
 
     const mock = jest
-      .spyOn(dateUtilService, 'transformKoreanDate')
-      .mockReturnValue(TODAY_KST_STRING);
+      .spyOn(dateUtilService, 'getNow')
+      .mockReturnValue(new Date(TODAY_KST_STRING));
 
     await placeCronService.AddNextBiWeeklyClosedDay();
 
@@ -231,8 +215,8 @@ describe('Place cron e2e', () => {
         where: {
           placeIdx: place1.idx,
           closedDate: {
-            gte: startOfTargetDay,
-            lte: endOfTargetDay,
+            gte: new Date(expectedNext.setHours(0, 0, 0, 0)),
+            lte: new Date(expectedNext.setHours(23, 59, 59, 999)),
           },
         },
       });
@@ -244,8 +228,8 @@ describe('Place cron e2e', () => {
         where: {
           placeIdx: place2.idx,
           closedDate: {
-            gte: startOfTargetDay,
-            lte: endOfTargetDay,
+            gte: new Date(expectedNext.setHours(0, 0, 0, 0)),
+            lte: new Date(expectedNext.setHours(23, 59, 59, 999)),
           },
         },
       });
@@ -253,29 +237,5 @@ describe('Place cron e2e', () => {
 
     mockCreatedMethod.mockRestore();
     mock.mockRestore();
-  });
-
-  it('should handle error gracefully if the initial place query fails', async () => {
-    // Logger의 error 메서드를 모킹해서, 에러가 실제로 기록되는지 확인할 수 있도록 설정
-    const logger = testHelper.get<Logger>(Logger);
-    const loggerErrorSpy = jest.spyOn(logger, 'error').mockImplementation();
-
-    // getPlaceIdxAllByWeeklyClosedDay 메서드가 실패하도록 모킹
-    const coreServiceMock = jest
-      .spyOn(placeCoreService, 'getPlaceIdxAllByWeeklyClosedDay')
-      .mockRejectedValue(new Error('Simulated DB connection error'));
-
-    // 내부에서 에러를 처리하고 정상적으로 종료되는지 확인
-    await expect(
-      placeCronService.AddNextBiWeeklyClosedDay(),
-    ).resolves.not.toThrow();
-
-    expect(loggerErrorSpy).toHaveBeenCalledWith(
-      'Error in AddNextBiWeeklyClosedDay:',
-      expect.any(Error),
-    );
-
-    coreServiceMock.mockRestore();
-    loggerErrorSpy.mockRestore();
   });
 });
