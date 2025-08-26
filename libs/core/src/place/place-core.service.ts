@@ -201,7 +201,7 @@ export class PlaceCoreService {
     );
   }
 
-  public async createWeeklyClosedDayForPlace(
+  public async createWeeklyClosedDayByPlaceIdx(
     placeIdx: number,
     targetDate: Date,
   ): Promise<void> {
@@ -227,10 +227,16 @@ export class PlaceCoreService {
 
   public async createAllWeeklyClosedDay(
     standardDate: Date,
-  ): Promise<{ success: number; errorList: unknown[] }> {
+  ): Promise<{
+    success: number;
+    errorList: { placeIdx: number; error: Error }[];
+  }> {
     const BIWEEKLY = 0;
 
-    const result = { success: 0, errorList: [] as unknown[] };
+    const result = {
+      success: 0,
+      errorList: [] as { placeIdx: number; error: Error }[],
+    };
 
     const {
       startOfDay,
@@ -251,11 +257,11 @@ export class PlaceCoreService {
 
     for (const place of placeToUpdateList) {
       try {
-        await this.createWeeklyClosedDayForPlace(place.idx, nextClosedDate);
+        await this.createWeeklyClosedDayByPlaceIdx(place.idx, nextClosedDate);
 
         result.success++;
       } catch (error) {
-        result.errorList.push(error);
+        result.errorList.push({ placeIdx: place.idx, error });
       }
     }
     return result;
