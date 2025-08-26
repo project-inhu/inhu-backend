@@ -4,12 +4,13 @@ import { GetPlaceOverviewInput } from './inputs/get-place-overview.input';
 import { PlaceOverviewModel } from './model/place-overview.model';
 import { PlaceModel } from './model/place.model';
 import { PlaceCoreRepository } from './place-core.repository';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { BookmarkedPlaceOverviewModel } from './model/bookmarked-place-overview.model';
 import { GetBookmarkedPlaceOverviewInput } from './inputs/get-bookmarked-place-overview.input';
 import { GetPlaceMarkerInput } from './inputs/get-place-overview-marker.input';
 import { PlaceMarkerModel } from './model/place-marker.model';
 import { Transactional } from '@nestjs-cls/transactional';
+import { DateUtilService } from '@libs/common/modules/date-util/date-util.service';
 
 /**
  * 장소 관련 핵심 서비스
@@ -18,7 +19,11 @@ import { Transactional } from '@nestjs-cls/transactional';
  */
 @Injectable()
 export class PlaceCoreService {
-  constructor(private readonly placeCoreRepository: PlaceCoreRepository) {}
+  constructor(
+    private readonly placeCoreRepository: PlaceCoreRepository,
+    private readonly dateUtilService: DateUtilService,
+    private readonly logger: Logger,
+  ) {}
 
   public async getPlaceByIdx(idx: number): Promise<PlaceModel | null> {
     const place = await this.placeCoreRepository.selectPlaceByIdx(idx);
@@ -184,15 +189,110 @@ export class PlaceCoreService {
     );
   }
 
-  public async createWeeklyClosedDayByPlaceIdx(
+  public async createWeeklyClosedDay(
     placeIdx: number,
     date: Date,
     type: number,
-  ) {
+  ): Promise<void> {
     return await this.placeCoreRepository.insertWeeklyClosedDayByPlaceIdx(
       placeIdx,
       date,
       type,
     );
+  }
+
+  public async createWeeklyClosedDayForPlace(
+    placeIdx: number,
+    targetDate: Date,
+  ): Promise<void> {
+    const BIWEEKLY = 0;
+
+    const existingClosedDay =
+      await this.placeCoreRepository.selectWeeklyClosedDay(
+        placeIdx,
+        targetDate,
+        BIWEEKLY,
+      );
+
+    if (existingClosedDay) {
+      return;
+    }
+
+    return this.placeCoreRepository.insertWeeklyClosedDayByPlaceIdx(
+      placeIdx,
+      targetDate,
+      BIWEEKLY,
+    );
+  }
+
+  public async createAllWeeklyClosedDay(
+    standardDate: Date,
+  ): Promise<{ success: number; errorList: unknown[] }> {
+    const BIWEEKLY = 0;
+
+    const result = { success: 0, errorList: [] as unknown[] };
+
+    const {
+      startOfDay,
+      endOfDay,
+      nextStartOfDay,
+      nextEndOfDay,
+      nextClosedDate,
+    } = this.getTodayAndNextTwoWeeksRange(standardDate);
+
+    // "오늘이 격주 휴무일"이지만 "14일 뒤에는 휴무일이 아직 없는" 장소 목록을 DB에서 조회
+    const placeToUpdateList = await this.getPlaceIdxAllByWeeklyClosedDay(
+      startOfDay,
+      endOfDay,
+      nextStartOfDay,
+      nextEndOfDay,
+      BIWEEKLY,
+    );
+
+    for (const place of placeToUpdateList) {
+      try {
+        await this.createWeeklyClosedDayForPlace(place.idx, nextClosedDate);
+
+        result.success++;
+      } catch (error) {
+        result.errorList.push(error);
+      }
+    }
+    return result;
+  }
+
+  private getTodayAndNextTwoWeeksRange(baseDate: Date): {
+    startOfDay: Date;
+    endOfDay: Date;
+    nextStartOfDay: Date;
+    nextEndOfDay: Date;
+    nextClosedDate: Date;
+  } {
+    // 한국 기준 오늘 날짜 문자열로 변환
+    const todayKSTStr = this.dateUtilService.transformKoreanDate(baseDate);
+
+    // 오늘 시작과 끝
+    const startOfDay = new Date(todayKSTStr);
+    const endOfDay = new Date(startOfDay);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // 14일 뒤 시작과 끝
+    const nextStartOfDay = new Date(startOfDay);
+    nextStartOfDay.setDate(nextStartOfDay.getDate() + 14);
+
+    const nextEndOfDay = new Date(nextStartOfDay);
+    nextEndOfDay.setHours(23, 59, 59, 999);
+
+    // 14일 뒤 휴무일
+    const nextClosedDate = new Date(startOfDay);
+    nextClosedDate.setDate(nextClosedDate.getDate() + 14);
+
+    return {
+      startOfDay,
+      endOfDay,
+      nextStartOfDay,
+      nextEndOfDay,
+      nextClosedDate,
+    };
   }
 }

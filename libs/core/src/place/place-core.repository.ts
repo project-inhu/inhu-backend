@@ -718,4 +718,18 @@ export class PlaceCoreRepository {
       },
     });
   }
+
+  public async selectWeeklyClosedDay(
+    placeIdx: number,
+    date: Date,
+    type: number,
+  ) {
+    return await this.txHost.tx.weeklyClosedDay.findFirst({
+      where: {
+        placeIdx,
+        closedDate: date,
+        type,
+      },
+    });
+  }
 }
