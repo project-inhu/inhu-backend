@@ -730,7 +730,7 @@ const place19: PlaceSeedData = {
 
 /**
  * place20 : 격주 휴무
- * - 특정 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
  */
 const place20: PlaceSeedData = {
   name: '격주 휴무',
@@ -745,7 +745,7 @@ const place20: PlaceSeedData = {
   },
   weeklyClosedDayList: [
     {
-      closedDate: new Date('2025-07-02T00:00:00'),
+      closedDate: new Date(),
       type: WeeklyCloseType.BIWEEKLY,
     },
   ],
@@ -1241,11 +1241,11 @@ const place36: PlaceSeedData = {
 };
 
 /**
- * place37 : 격주 화요일 휴무
- * - 특정 날짜를 기준으로 격주로 화요일에 휴무인 경우를 테스트할 때 사용됨
+ * place37 : 격주 휴무2
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
  */
 const place37: PlaceSeedData = {
-  name: '격주 화요일 휴무',
+  name: '격주 휴무2',
   tel: '032-111-0037',
   type: PlaceType.CAFE,
   activatedAt: FIXED_ACTIVATED_AT,
@@ -1257,7 +1257,35 @@ const place37: PlaceSeedData = {
   },
   weeklyClosedDayList: [
     {
-      closedDate: new Date('2025-08-05T00:00:00'),
+      closedDate: new Date(),
+      type: WeeklyCloseType.BIWEEKLY,
+    },
+  ],
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
+  reviewList: [defaultReview],
+  menuList: [defaultMenu],
+  pickedPlaceList: [],
+};
+
+/**
+ * place38 : 격주 휴무3
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ */
+const place38: PlaceSeedData = {
+  name: '격주 휴무3',
+  tel: '032-111-0038',
+  type: PlaceType.CAFE,
+  activatedAt: FIXED_ACTIVATED_AT,
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
+  roadAddress: {
+    name: '인천광역시 미추홀구 인하로 138',
+    addressX: 126.66033,
+    addressY: 37.45213,
+  },
+  weeklyClosedDayList: [
+    {
+      closedDate: new Date(),
       type: WeeklyCloseType.BIWEEKLY,
     },
   ],
@@ -1309,4 +1337,5 @@ export const PlaceSeedDataList = [
   place35,
   place36,
   place37,
+  place38,
 ];
