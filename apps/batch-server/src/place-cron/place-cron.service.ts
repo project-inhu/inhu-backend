@@ -9,7 +9,7 @@ export class PlaceCronService {
   constructor(
     private readonly placeCoreService: PlaceCoreService,
     private readonly dateUtilService: DateUtilService,
-    private readonly discordWebhookService: DiscordWebhookService,
+    private readonly logger: Logger,
   ) {}
 
   /**
@@ -25,15 +25,20 @@ export class PlaceCronService {
       new Date(todayKSTStr),
     );
 
+    const failIds = result.errorList.map((e) => e.placeIdx).join(', ');
+
+    const curl = `curl -X POST "${process.env.BATCH_SERVER_DOMAIN}/weekly-closed-day/cron/all" -H "Content-Type: application/json" -d '{ "pw": [관리자 비밀번호 입력 필요] }'`;
+
     if (result.errorList.length > 0) {
-      const curl = `curl -X POST "${process.env.BATCH_SERVER_DOMAIN}/cron/weekly-closed-day/all" -H "Content-Type: application/json" -d '{ "pw": "" }'`;
-
-      const failIds = result.errorList.map((e) => e.placeIdx).join(', ');
-
-      await this.discordWebhookService.sendWebhookMessage(
-        '🚨 Bi-Weekly ClosedDay 배치 실패',
-        `성공: ${result.success}, 실패: ${result.errorList.length}\n실패 placeIdx: ${failIds}\n\n재실행:\n\`\`\`\n${curl}\n\`\`\``,
-        DiscordWebhookContext.BATCH_SERVER,
+      this.logger.error(
+        `🚨 Bi-Weekly ClosedDay 배치 실패\n` +
+          `성공: ${result.success}, 실패: ${result.errorList.length}\n` +
+          `실패 placeIdx: ${failIds}\n\n` +
+          `재실행:\n${curl}`,
+      );
+    } else {
+      this.logger.log(
+        `✅ Bi-Weekly ClosedDay 배치 완료 (성공 ${result.success}건)`,
       );
     }
   }
