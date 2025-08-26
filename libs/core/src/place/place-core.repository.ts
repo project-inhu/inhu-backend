@@ -671,10 +671,8 @@ export class PlaceCoreRepository {
   }
 
   public async selectPlaceIdxAllByWeeklyClosedDay(
-    startOfDay: Date,
-    endOfDay: Date,
-    nextStartOfDay: Date,
-    nextEndOfDay: Date,
+    today: string,
+    afterTwoWeeks: string,
     type: number,
   ): Promise<{ idx: number }[]> {
     return await this.txHost.tx.place.findMany({
@@ -683,7 +681,10 @@ export class PlaceCoreRepository {
           {
             weeklyClosedDayList: {
               some: {
-                closedDate: { gte: startOfDay, lte: endOfDay },
+                closedDate: {
+                  gte: `${today}T00:00:00Z`,
+                  lte: `${today}T23:59:59Z`,
+                },
                 type,
               },
             },
@@ -692,7 +693,11 @@ export class PlaceCoreRepository {
             NOT: {
               weeklyClosedDayList: {
                 some: {
-                  closedDate: { gte: nextStartOfDay, lte: nextEndOfDay },
+                  closedDate: {
+                    gte: `${afterTwoWeeks}T00:00:00Z`,
+                    lte: `${afterTwoWeeks}T23:59:59Z`,
+                  },
+                  type,
                 },
               },
             },
@@ -707,13 +712,13 @@ export class PlaceCoreRepository {
 
   public async insertWeeklyClosedDayByPlaceIdx(
     placeIdx: number,
-    date: Date,
+    closedDate: string,
     type: number,
   ) {
     await this.txHost.tx.weeklyClosedDay.create({
       data: {
         placeIdx,
-        closedDate: date,
+        closedDate: `${closedDate}T00:00:00Z`,
         type,
       },
     });
@@ -721,13 +726,13 @@ export class PlaceCoreRepository {
 
   public async selectWeeklyClosedDay(
     placeIdx: number,
-    date: Date,
+    closedDate: string,
     type: number,
   ) {
     return await this.txHost.tx.weeklyClosedDay.findFirst({
       where: {
         placeIdx,
-        closedDate: date,
+        closedDate: `${closedDate}T00:00:00Z`,
         type,
       },
     });

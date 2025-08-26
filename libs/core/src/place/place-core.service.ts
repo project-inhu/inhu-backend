@@ -174,24 +174,20 @@ export class PlaceCoreService {
   }
 
   public async getPlaceIdxAllByWeeklyClosedDay(
-    startOfDay: Date,
-    endOfDay: Date,
-    nextStartOfDay: Date,
-    nextEndOfDay: Date,
+    today: string,
+    afterTwoWeeks: string,
     type: number,
   ): Promise<{ idx: number }[]> {
     return await this.placeCoreRepository.selectPlaceIdxAllByWeeklyClosedDay(
-      startOfDay,
-      endOfDay,
-      nextStartOfDay,
-      nextEndOfDay,
+      today,
+      afterTwoWeeks,
       type,
     );
   }
 
   public async createWeeklyClosedDay(
     placeIdx: number,
-    date: Date,
+    date: string,
     type: number,
   ): Promise<void> {
     return await this.placeCoreRepository.insertWeeklyClosedDayByPlaceIdx(
@@ -201,102 +197,33 @@ export class PlaceCoreService {
     );
   }
 
-  public async createWeeklyClosedDayByPlaceIdx(
-    placeIdx: number,
-    targetDate: Date,
-  ): Promise<void> {
-    const BIWEEKLY = 0;
-
-    const existingClosedDay =
-      await this.placeCoreRepository.selectWeeklyClosedDay(
-        placeIdx,
-        targetDate,
-        BIWEEKLY,
-      );
-
-    if (existingClosedDay) {
-      return;
-    }
-
-    return this.placeCoreRepository.insertWeeklyClosedDayByPlaceIdx(
-      placeIdx,
-      targetDate,
-      BIWEEKLY,
-    );
-  }
-
   public async createAllWeeklyClosedDay(standardDate: Date): Promise<{
     success: number;
     errorList: { placeIdx: number; error: Error }[];
   }> {
-    const BIWEEKLY = 0;
-
     const result = {
       success: 0,
       errorList: [] as { placeIdx: number; error: Error }[],
     };
 
-    const {
-      startOfDay,
-      endOfDay,
-      nextStartOfDay,
-      nextEndOfDay,
-      nextClosedDate,
-    } = this.getTodayAndNextTwoWeeksRange(standardDate);
+    const { today, afterTwoWeeks } =
+      this.dateUtilService.getTodayAndAfterTwoWeeks(standardDate);
 
-    // "오늘이 격주 휴무일"이지만 "14일 뒤에는 휴무일이 아직 없는" 장소 목록을 DB에서 조회
-    const placeToUpdateList = await this.getPlaceIdxAllByWeeklyClosedDay(
-      startOfDay,
-      endOfDay,
-      nextStartOfDay,
-      nextEndOfDay,
-      BIWEEKLY,
+    const placeIdxList = await this.getPlaceIdxAllByWeeklyClosedDay(
+      today,
+      afterTwoWeeks,
+      0,
     );
 
-    for (const place of placeToUpdateList) {
+    for (const place of placeIdxList) {
       try {
-        await this.createWeeklyClosedDayByPlaceIdx(place.idx, nextClosedDate);
-
+        await this.createWeeklyClosedDay(place.idx, afterTwoWeeks, 0);
         result.success++;
       } catch (error) {
         result.errorList.push({ placeIdx: place.idx, error });
       }
     }
+
     return result;
-  }
-
-  private getTodayAndNextTwoWeeksRange(baseDate: Date): {
-    startOfDay: Date;
-    endOfDay: Date;
-    nextStartOfDay: Date;
-    nextEndOfDay: Date;
-    nextClosedDate: Date;
-  } {
-    // 한국 기준 오늘 날짜 문자열로 변환
-    const todayKSTStr = this.dateUtilService.transformKoreanDate(baseDate);
-
-    // 오늘 시작과 끝
-    const startOfDay = new Date(todayKSTStr);
-    const endOfDay = new Date(startOfDay);
-    endOfDay.setHours(23, 59, 59, 999);
-
-    // 14일 뒤 시작과 끝
-    const nextStartOfDay = new Date(startOfDay);
-    nextStartOfDay.setDate(nextStartOfDay.getDate() + 14);
-
-    const nextEndOfDay = new Date(nextStartOfDay);
-    nextEndOfDay.setHours(23, 59, 59, 999);
-
-    // 14일 뒤 휴무일
-    const nextClosedDate = new Date(startOfDay);
-    nextClosedDate.setDate(nextClosedDate.getDate() + 14);
-
-    return {
-      startOfDay,
-      endOfDay,
-      nextStartOfDay,
-      nextEndOfDay,
-      nextClosedDate,
-    };
   }
 }
