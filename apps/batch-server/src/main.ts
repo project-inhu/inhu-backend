@@ -5,7 +5,8 @@ import { DiscordWebhookService } from '@libs/common/modules/discord-webhook/disc
 import { DiscordWebhookContext } from '@libs/common/modules/discord-webhook/constants/discord-webhook-context.enum';
 
 async function bootstrap() {
-  const app = await NestFactory.create(BatchServerModule);
+  // HTTP 서버 없이 DI 컨테이너만 생성
+  const app = await NestFactory.createApplicationContext(BatchServerModule);
 
   if (getMode() === 'production') {
     try {
@@ -19,6 +20,7 @@ async function bootstrap() {
       console.log(err);
     }
   }
-  await app.listen(process.env.BATCH_SERVER_PORT ?? 3000);
+
+  await app.close();
 }
 bootstrap();
