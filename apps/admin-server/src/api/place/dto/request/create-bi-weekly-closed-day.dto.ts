@@ -1,7 +1,7 @@
 import { IsKoreanDate } from '@libs/common/decorator/is-korean-date.decorator';
 import { IsString } from 'class-validator';
 
-export class CreateBiWeeklyClosedDayByPlaceIdxDto {
+export class CreateBiWeeklyClosedDayDto {
   /**
    * 날짜 (YYYY-MM-DD)
    *

@@ -19,7 +19,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { CreateBiWeeklyClosedDayByPlaceIdxDto } from './dto/request/create-bi-weekly-closed-day-by-place-idx.dto';
+import { CreateBiWeeklyClosedDayDto } from './dto/request/create-bi-weekly-closed-day.dto';
 import { RunBiWeeklyClosedDayCronJobDto } from './dto/request/run-bi-weekly-closed-day-cron-job.dto';
 
 @Controller('place')
@@ -178,9 +178,9 @@ export class PlaceController {
   @Exception(409, 'Weekly closed day already exists')
   @HttpCode(200)
   @AdminAuth()
-  public async createBiWeeklyClosedDayByPlaceIdx(
+  public async createBiWeeklyClosedDay(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
-    @Body() dto: CreateBiWeeklyClosedDayByPlaceIdxDto,
+    @Body() dto: CreateBiWeeklyClosedDayDto,
   ) {
     return this.placeService.createBiWeeklyClosedDayByPlaceIdx(
       placeIdx,
