@@ -197,7 +197,7 @@ export class PlaceCoreService {
     );
   }
 
-  public async createAllWeeklyClosedDay(date: string): Promise<{
+  public async createAllBiWeeklyClosedDay(date: string): Promise<{
     success: number;
     errorList: { placeIdx: number; error: Error }[];
   }> {

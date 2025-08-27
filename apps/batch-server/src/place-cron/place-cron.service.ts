@@ -19,7 +19,8 @@ export class PlaceCronService {
     const now = this.dateUtilService.getNow();
     const kstStr = this.dateUtilService.transformKoreanDate(now);
 
-    const result = await this.placeCoreService.createAllWeeklyClosedDay(kstStr);
+    const result =
+      await this.placeCoreService.createAllBiWeeklyClosedDay(kstStr);
 
     const failIdxList = result.errorList.map((e) => e.placeIdx).join(', ');
 
