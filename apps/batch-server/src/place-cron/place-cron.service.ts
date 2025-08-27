@@ -17,8 +17,9 @@ export class PlaceCronService {
    */
   public async AddNextBiWeeklyClosedDay(): Promise<void> {
     const now = this.dateUtilService.getNow();
+    const kstStr = this.dateUtilService.transformKoreanDate(now);
 
-    const result = await this.placeCoreService.createAllWeeklyClosedDay(now);
+    const result = await this.placeCoreService.createAllWeeklyClosedDay(kstStr);
 
     const failIdxList = result.errorList.map((e) => e.placeIdx).join(', ');
 

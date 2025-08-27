@@ -197,7 +197,7 @@ export class PlaceCoreService {
     );
   }
 
-  public async createAllWeeklyClosedDay(standardDate: Date): Promise<{
+  public async createAllWeeklyClosedDay(date: string): Promise<{
     success: number;
     errorList: { placeIdx: number; error: Error }[];
   }> {
@@ -207,7 +207,7 @@ export class PlaceCoreService {
     };
 
     const { today, afterTwoWeeks } =
-      this.dateUtilService.getTodayAndAfterTwoWeeks(standardDate);
+      this.dateUtilService.getTodayAndAfterTwoWeeks(date);
 
     const placeIdxList = await this.getPlaceIdxAllByWeeklyClosedDay(
       today,

@@ -83,13 +83,13 @@ export class DateUtilService {
   /**
    * 기준일로부터 오늘과 14일 뒤의 날짜 범위를 계산하는 메서드
    */
-  public getTodayAndAfterTwoWeeks(baseDate: Date): {
+  public getTodayAndAfterTwoWeeks(date: string): {
     today: string;
     afterTwoWeeks: string;
   } {
-    const today = this.transformKoreanDate(baseDate);
+    const today = date;
 
-    const next = new Date(baseDate);
+    const next = new Date(date);
     next.setDate(next.getDate() + 14);
     const afterTwoWeeks = this.transformKoreanDate(next);
 
