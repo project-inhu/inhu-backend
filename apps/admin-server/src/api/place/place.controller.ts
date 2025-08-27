@@ -21,6 +21,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { CreateBiWeeklyClosedDayDto } from './dto/request/create-bi-weekly-closed-day.dto';
 import { RunBiWeeklyClosedDayCronJobDto } from './dto/request/run-bi-weekly-closed-day-cron-job.dto';
+import { RunBiWeeklyClosedDayCronJobResponseDto } from './dto/response/run-bi-weekly-closed-day-cron-job.response.dto';
 
 @Controller('place')
 @ApiTags('Place')
@@ -162,10 +163,7 @@ export class PlaceController {
   @AdminAuth()
   public async runBiWeeklyClosedDayCronJob(
     @Body() dto: RunBiWeeklyClosedDayCronJobDto,
-  ): Promise<{
-    success: number;
-    errorList: { placeIdx: number; error: Error }[];
-  }> {
+  ): Promise<RunBiWeeklyClosedDayCronJobResponseDto> {
     return this.placeService.createAllBiWeeklyClosedDay(dto.date);
   }
 
@@ -181,7 +179,7 @@ export class PlaceController {
   public async createBiWeeklyClosedDay(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @Body() dto: CreateBiWeeklyClosedDayDto,
-  ) {
+  ): Promise<void> {
     return this.placeService.createBiWeeklyClosedDayByPlaceIdx(
       placeIdx,
       dto.date,

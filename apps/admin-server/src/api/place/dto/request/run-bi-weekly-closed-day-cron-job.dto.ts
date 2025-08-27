@@ -9,5 +9,5 @@ export class RunBiWeeklyClosedDayCronJobDto {
    */
   @IsString()
   @IsKoreanDate()
-  date: string;
+  public date: string;
 }

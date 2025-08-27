@@ -9,5 +9,5 @@ export class CreateBiWeeklyClosedDayDto {
    */
   @IsString()
   @IsKoreanDate()
-  date: string;
+  public date: string;
 }
