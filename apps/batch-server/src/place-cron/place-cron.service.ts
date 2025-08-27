@@ -22,25 +22,23 @@ export class PlaceCronService {
     const result =
       await this.placeCoreService.createAllBiWeeklyClosedDay(kstStr);
 
-    const failIdxList = result.errorList.map((e) => e.placeIdx).join(', ');
-
     if (result.errorList.length > 0) {
-      const failLogs = result.errorList
-        .map(
-          (e) =>
-            `placeIdx=${e.placeIdx}, error=${e.error instanceof Error ? e.error.message : JSON.stringify(e.error)}`,
-        )
+      const failLogDetails = result.errorList
+        .map((e) => `  - Place Idx: ${e.placeIdx}, Reason: ${e.errorMessage}`)
         .join('\n');
 
-      this.logger.error(
-        `🚨 Bi-Weekly ClosedDay 배치 실패\n` +
-          `성공: ${result.success}, 실패: ${result.errorList.length}\n` +
-          `실패 placeIdx: ${failIdxList}\n` +
-          `실패 로그:\n${failLogs}`,
-      );
+      const errorMessage = `
+--- 🚨 Bi-Weekly ClosedDay 배치 실패 요약 ---
+  - 성공: ${result.successCount}건
+  - 실패: ${result.failureCount}건
+  - 실패 상세:
+${failLogDetails}
+---------------------------------------------`;
+
+      this.logger.error(errorMessage);
     } else {
       this.logger.log(
-        `✅ Bi-Weekly ClosedDay 배치 완료 (성공 ${result.success}건)`,
+        `✅ Bi-Weekly ClosedDay 배치 완료 (성공 ${result.successCount}건)`,
       );
     }
   }

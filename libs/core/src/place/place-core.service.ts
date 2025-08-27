@@ -198,12 +198,14 @@ export class PlaceCoreService {
   }
 
   public async createAllBiWeeklyClosedDay(date: string): Promise<{
-    success: number;
-    errorList: { placeIdx: number; error: Error }[];
+    successCount: number;
+    failureCount: number;
+    errorList: { placeIdx: number; errorMessage: string }[];
   }> {
     const result = {
-      success: 0,
-      errorList: [] as { placeIdx: number; error: Error }[],
+      successCount: 0,
+      failureCount: 0,
+      errorList: [] as { placeIdx: number; errorMessage: string }[],
     };
 
     const { today, afterTwoWeeks } =
@@ -218,9 +220,13 @@ export class PlaceCoreService {
     for (const place of placeIdxList) {
       try {
         await this.createWeeklyClosedDay(place.idx, afterTwoWeeks, 0);
-        result.success++;
+        result.successCount++;
       } catch (error) {
-        result.errorList.push({ placeIdx: place.idx, error });
+        result.failureCount++;
+        result.errorList.push({
+          placeIdx: place.idx,
+          errorMessage: error.message,
+        });
       }
     }
 
