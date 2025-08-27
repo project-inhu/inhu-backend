@@ -19,6 +19,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { CreateBiWeeklyClosedDayByPlaceIdxDto } from './dto/request/create-bi-weekly-closed-day-by-place-idx.dto';
 
 @Controller('place')
 @ApiTags('Place')
@@ -152,16 +153,31 @@ export class PlaceController {
   }
 
   /**
-   * 특정 장소에 휴무일 생성
+   * 특정 장소에 14일 뒤 휴무일 생성
    */
-  @Post('/:placeIdx/weekly-closed-day')
-  public async createWeeklyClosedDayByPlaceIdx(
+  @Post('/:placeIdx/bi-weekly-closed-day')
+  @Exception(400, 'Invalid place idx')
+  public async createBiWeeklyClosedDayByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
-    @Body('targetDate') targetDate: Date,
+    @Body() dto: CreateBiWeeklyClosedDayByPlaceIdxDto,
   ) {
-    return this.placeService.createWeeklyClosedDayByPlaceIdx(
+    return this.placeService.createBiWeeklyClosedDayByPlaceIdx(
       placeIdx,
-      targetDate,
+      dto.date,
     );
+  }
+
+  /**
+   * 특정 날짜의 14일 뒤 휴무일 생성 cron job을 수동 실행
+   */
+  @Post('/cron/bi-weekly-closed-day')
+  @HttpCode(200)
+  public async runBiWeeklyClosedDayCronJob(@Body() dto: any): Promise<{
+    success: number;
+    errorList: { placeIdx: number; error: Error }[];
+  }> {
+    console.log('▶ raw dto:', dto);
+
+    return this.placeService.createAllBiWeeklyClosedDay(dto.date);
   }
 }
