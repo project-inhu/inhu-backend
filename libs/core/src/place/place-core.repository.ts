@@ -714,23 +714,9 @@ export class PlaceCoreRepository {
     placeIdx: number,
     closedDate: string,
     type: number,
-  ) {
+  ): Promise<void> {
     await this.txHost.tx.weeklyClosedDay.create({
       data: {
-        placeIdx,
-        closedDate: `${closedDate}T00:00:00Z`,
-        type,
-      },
-    });
-  }
-
-  public async selectWeeklyClosedDay(
-    placeIdx: number,
-    closedDate: string,
-    type: number,
-  ) {
-    return await this.txHost.tx.weeklyClosedDay.findFirst({
-      where: {
         placeIdx,
         closedDate: `${closedDate}T00:00:00Z`,
         type,
