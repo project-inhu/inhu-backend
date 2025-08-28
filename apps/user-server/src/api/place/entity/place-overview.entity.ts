@@ -13,6 +13,10 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
   'bookmark',
   'imagePathList',
   'type',
+  'closedDayList',
+  'operatingHourList',
+  'weeklyClosedDayList',
+  'breakTimeList',
 ]) {
   constructor(data: PlaceOverviewEntity) {
     super();
@@ -32,6 +36,10 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
       bookmark,
       imagePathList: model.imgPathList,
       type: model.type,
+      closedDayList: model.closedDayList,
+      operatingHourList: model.operatingHourList,
+      weeklyClosedDayList: model.weeklyClosedDayList,
+      breakTimeList: model.breakTimeList,
     });
   }
 }
