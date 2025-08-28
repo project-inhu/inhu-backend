@@ -4,6 +4,7 @@ import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { PlaceCronService } from '@batch/place-cron/place-cron.service';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { DateUtilService } from '@libs/common/modules/date-util/date-util.service';
+import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 
 describe('Place cron e2e', () => {
   const testHelper = TestHelper.create(BatchServerModule);
@@ -27,7 +28,7 @@ describe('Place cron e2e', () => {
       weeklyClosedDayList: [
         {
           closedDate: new Date(TODAY_KST_STRING),
-          type: 0,
+          type: WeeklyCloseType.BIWEEKLY,
         },
       ],
     });
@@ -69,7 +70,7 @@ describe('Place cron e2e', () => {
       weeklyClosedDayList: [
         {
           closedDate: tomorrow,
-          type: 0,
+          type: WeeklyCloseType.BIWEEKLY,
         },
       ],
     });
@@ -109,7 +110,7 @@ describe('Place cron e2e', () => {
       weeklyClosedDayList: [
         {
           closedDate: new Date(TODAY_KST_STRING),
-          type: 0,
+          type: WeeklyCloseType.BIWEEKLY,
         },
       ],
     });
@@ -118,7 +119,7 @@ describe('Place cron e2e', () => {
       weeklyClosedDayList: [
         {
           closedDate: new Date(TODAY_KST_STRING),
-          type: 0,
+          type: WeeklyCloseType.BIWEEKLY,
         },
       ],
     });
@@ -155,8 +156,11 @@ describe('Place cron e2e', () => {
 
     const testPlace = await placeSeedHelper.seed({
       weeklyClosedDayList: [
-        { closedDate: new Date(TODAY_KST_STRING), type: 0 },
-        { closedDate: expectedNext, type: 0 },
+        {
+          closedDate: new Date(TODAY_KST_STRING),
+          type: WeeklyCloseType.BIWEEKLY,
+        },
+        { closedDate: expectedNext, type: WeeklyCloseType.BIWEEKLY },
       ],
     });
 
@@ -186,12 +190,18 @@ describe('Place cron e2e', () => {
 
     const place1 = await placeSeedHelper.seed({
       weeklyClosedDayList: [
-        { closedDate: new Date(TODAY_KST_STRING), type: 0 },
+        {
+          closedDate: new Date(TODAY_KST_STRING),
+          type: WeeklyCloseType.BIWEEKLY,
+        },
       ],
     });
     const place2 = await placeSeedHelper.seed({
       weeklyClosedDayList: [
-        { closedDate: new Date(TODAY_KST_STRING), type: 0 },
+        {
+          closedDate: new Date(TODAY_KST_STRING),
+          type: WeeklyCloseType.BIWEEKLY,
+        },
       ],
     });
     const dateUtilService = testHelper.get<DateUtilService>(DateUtilService);

@@ -11,6 +11,7 @@ import { GetPlaceMarkerInput } from './inputs/get-place-overview-marker.input';
 import { PlaceMarkerModel } from './model/place-marker.model';
 import { Transactional } from '@nestjs-cls/transactional';
 import { DateUtilService } from '@libs/common/modules/date-util/date-util.service';
+import { WeeklyCloseType } from './constants/weekly-close-type.constant';
 
 /**
  * 장소 관련 핵심 서비스
@@ -214,12 +215,16 @@ export class PlaceCoreService {
     const placeIdxList = await this.getPlaceIdxAllByWeeklyClosedDay(
       today,
       afterTwoWeeks,
-      0,
+      WeeklyCloseType.BIWEEKLY,
     );
 
     for (const place of placeIdxList) {
       try {
-        await this.createWeeklyClosedDay(place.idx, afterTwoWeeks, 0);
+        await this.createWeeklyClosedDay(
+          place.idx,
+          afterTwoWeeks,
+          WeeklyCloseType.BIWEEKLY,
+        );
         result.successCount++;
       } catch (error) {
         result.failureCount++;
