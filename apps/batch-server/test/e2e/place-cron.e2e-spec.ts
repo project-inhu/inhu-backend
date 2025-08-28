@@ -8,17 +8,11 @@ import { DateUtilService } from '@libs/common/modules/date-util/date-util.servic
 describe('Place cron e2e', () => {
   const testHelper = TestHelper.create(BatchServerModule);
   const placeSeedHelper = testHelper.seedHelper(PlaceSeedHelper);
-  let placeCronService: PlaceCronService;
-  let placeCoreService: PlaceCoreService;
-  let dateUtilService: DateUtilService;
 
   const TODAY_KST_STRING = '2025-08-20';
 
   beforeEach(async () => {
     await testHelper.init();
-    placeCronService = testHelper.get<PlaceCronService>(PlaceCronService);
-    placeCoreService = testHelper.get<PlaceCoreService>(PlaceCoreService);
-    dateUtilService = testHelper.get<DateUtilService>(DateUtilService);
   });
 
   afterEach(async () => {
@@ -38,19 +32,16 @@ describe('Place cron e2e', () => {
       ],
     });
 
+    const dateUtilService = testHelper.get<DateUtilService>(DateUtilService);
+
+    const placeCronService = testHelper.get<PlaceCronService>(PlaceCronService);
+
     //Mocking : dateUtilService가 실제 날짜 대신, 우리가 고정한 '오늘' 날짜를 반환하도록 설정
     const mock = jest
       .spyOn(dateUtilService, 'getNow')
       .mockReturnValue(new Date(TODAY_KST_STRING));
 
     await placeCronService.AddNextBiWeeklyClosedDay();
-
-    const allClosedDays = await testHelper
-      .getPrisma()
-      .weeklyClosedDay.findMany({
-        where: { placeIdx: testPlace.idx },
-      });
-    console.log(allClosedDays);
 
     const closedDay = await testHelper.getPrisma().weeklyClosedDay.findFirst({
       where: {
@@ -88,6 +79,10 @@ describe('Place cron e2e', () => {
       .weeklyClosedDay.count({
         where: { placeIdx: testPlace.idx },
       });
+
+    const dateUtilService = testHelper.get<DateUtilService>(DateUtilService);
+
+    const placeCronService = testHelper.get<PlaceCronService>(PlaceCronService);
 
     const mock = jest
       .spyOn(dateUtilService, 'getNow')
@@ -128,6 +123,9 @@ describe('Place cron e2e', () => {
       ],
     });
 
+    const dateUtilService = testHelper.get<DateUtilService>(DateUtilService);
+    const placeCronService = testHelper.get<PlaceCronService>(PlaceCronService);
+
     const mock = jest
       .spyOn(dateUtilService, 'getNow')
       .mockReturnValue(new Date(TODAY_KST_STRING));
@@ -162,6 +160,9 @@ describe('Place cron e2e', () => {
       ],
     });
 
+    const dateUtilService = testHelper.get<DateUtilService>(DateUtilService);
+    const placeCronService = testHelper.get<PlaceCronService>(PlaceCronService);
+
     const mock = jest
       .spyOn(dateUtilService, 'transformKoreanDate')
       .mockReturnValue(TODAY_KST_STRING);
@@ -193,6 +194,9 @@ describe('Place cron e2e', () => {
         { closedDate: new Date(TODAY_KST_STRING), type: 0 },
       ],
     });
+    const dateUtilService = testHelper.get<DateUtilService>(DateUtilService);
+    const placeCoreService = testHelper.get<PlaceCoreService>(PlaceCoreService);
+    const placeCronService = testHelper.get<PlaceCronService>(PlaceCronService);
 
     // place1에 대한 업데이트가 실패하도록 한번만 mock
     const mockCreatedMethod = jest
