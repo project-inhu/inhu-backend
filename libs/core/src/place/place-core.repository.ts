@@ -430,34 +430,6 @@ export class PlaceCoreRepository {
       });
     }
 
-    let removedWeeklyClosedDayList: string[] = [];
-    let addedWeeklyClosedDayList: string[] = [];
-
-    if (input.weeklyClosedDayList && input.weeklyClosedDayList.length > 0) {
-      const existing = await this.txHost.tx.weeklyClosedDay.findMany({
-        where: { placeIdx: idx, type: WeeklyCloseType.BIWEEKLY },
-        orderBy: { closedDate: 'asc' },
-      });
-
-      const existingDateList = existing.map(
-        (e) => e.closedDate.toISOString().split('T')[0],
-      );
-
-      const incomingBiWeekly =
-        input.weeklyClosedDayList?.filter(
-          (d) => d.type === WeeklyCloseType.BIWEEKLY,
-        ) ?? [];
-
-      const incomingDateList = incomingBiWeekly.map((d) => d.closedDate);
-
-      removedWeeklyClosedDayList = existingDateList.filter(
-        (d) => !incomingDateList.includes(d),
-      );
-      addedWeeklyClosedDayList = incomingDateList.filter(
-        (d) => !existingDateList.includes(d),
-      );
-    }
-
     await this.txHost.tx.place.update({
       data: {
         name: input.name,
@@ -511,26 +483,28 @@ export class PlaceCoreRepository {
               },
             }
           : undefined,
-        weeklyClosedDayList:
-          removedWeeklyClosedDayList.length > 0 ||
-          addedWeeklyClosedDayList.length > 0
-            ? {
-                deleteMany: {
-                  type: WeeklyCloseType.BIWEEKLY,
-                  closedDate: {
-                    in: removedWeeklyClosedDayList.map(
-                      (d) => new Date(`${d}T00:00:00Z`),
-                    ),
-                  },
+        weeklyClosedDayList: input.weeklyClosedDayList
+          ? {
+              deleteMany: {
+                closedDate: {
+                  gte: new Date(
+                    `${this.dateUtilService.transformKoreanDate(
+                      this.dateUtilService.getNow(),
+                    )}T00:00:00Z`,
+                  ),
                 },
-                createMany: {
-                  data: addedWeeklyClosedDayList.map((d) => ({
-                    closedDate: new Date(`${d}T00:00:00Z`),
-                    type: WeeklyCloseType.BIWEEKLY,
-                  })),
+                type: {
+                  in: input.weeklyClosedDayList.map((date) => date.type),
                 },
-              }
-            : undefined,
+              },
+              createMany: {
+                data: input.weeklyClosedDayList.map(({ closedDate, type }) => ({
+                  closedDate: new Date(`${closedDate}T00:00:00Z`),
+                  type,
+                })),
+              },
+            }
+          : undefined,
         breakTimeList: input.breakTimeList
           ? {
               deleteMany: {},
