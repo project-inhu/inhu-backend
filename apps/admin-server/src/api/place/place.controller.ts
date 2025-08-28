@@ -170,19 +170,16 @@ export class PlaceController {
   /**
    * 특정 장소에 14일 뒤 휴무일 생성
    */
-  @Post('/:placeIdx/bi-weekly-closed-day')
-  @Exception(400, 'Invalid place idx')
+  @Post('/:idx/bi-weekly-closed-day')
+  @Exception(400, 'Invalid place idx or date')
   @Exception(404, 'Place not found')
   @Exception(409, 'Weekly closed day already exists')
   @HttpCode(200)
   @AdminAuth()
   public async createBiWeeklyClosedDay(
-    @Param('placeIdx', ParseIntPipe) placeIdx: number,
+    @Param('idx', ParseIntPipe) idx: number,
     @Body() dto: CreateBiWeeklyClosedDayDto,
   ): Promise<void> {
-    return this.placeService.createBiWeeklyClosedDayByPlaceIdx(
-      placeIdx,
-      dto.date,
-    );
+    return this.placeService.createBiWeeklyClosedDayByPlaceIdx(idx, dto.date);
   }
 }

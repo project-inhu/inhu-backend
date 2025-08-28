@@ -2,6 +2,7 @@ import { AdminServerModule } from '@admin/admin-server.module';
 import { CreatePlaceDto } from '@admin/api/place/dto/request/create-place.dto';
 import { GetPlaceOverviewDto } from '@admin/api/place/dto/request/get-place-overview-all.dto';
 import { UpdatePlaceDto } from '@admin/api/place/dto/request/update-place.dto';
+import { RunBiWeeklyClosedDayCronJobResponseDto } from '@admin/api/place/dto/response/run-bi-weekly-closed-day-cron-job.response.dto';
 import { PlaceOverviewEntity } from '@admin/api/place/entity/place-overview.entity';
 import { PlaceEntity } from '@admin/api/place/entity/place.entity';
 import { PlaceService } from '@admin/api/place/place.service';
@@ -1492,6 +1493,194 @@ describe('Place E2E test', () => {
         .test()
         .post(`/place/${placeSeed.idx}/cancel-close-permanently`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(409);
+    });
+  });
+
+  describe('POST /place/cron/bi-weekly-closed-day', () => {
+    it('200 - should create a next holiday for a single matching place', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const today = new Date('2025-08-20');
+      await placeSeedHelper.seed({
+        weeklyClosedDayList: [
+          { closedDate: today, type: WeeklyCloseType.BIWEEKLY },
+        ],
+      });
+      await placeSeedHelper.seed({
+        weeklyClosedDayList: [
+          { closedDate: today, type: WeeklyCloseType.BIWEEKLY },
+        ],
+      });
+
+      const response = await testHelper
+        .test()
+        .post('/place/cron/bi-weekly-closed-day')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: '2025-08-20' })
+        .expect(200);
+
+      const body: RunBiWeeklyClosedDayCronJobResponseDto = response.body;
+      expect(body.successCount).toBe(2);
+      expect(body.failureCount).toBe(0);
+      expect(body.errorList).toEqual([]);
+    });
+
+    it('200 - should return a partial success if some job fail', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const today = new Date('2025-08-20');
+      await placeSeedHelper.seed({
+        weeklyClosedDayList: [
+          { closedDate: today, type: WeeklyCloseType.BIWEEKLY },
+        ],
+      });
+      const failPlace = await placeSeedHelper.seed({
+        weeklyClosedDayList: [
+          { closedDate: today, type: WeeklyCloseType.BIWEEKLY },
+        ],
+      });
+
+      const placeCoreService =
+        testHelper.get<PlaceCoreService>(PlaceCoreService);
+
+      const mock = jest
+        .spyOn(placeCoreService, 'createWeeklyClosedDay')
+        .mockImplementation(async (placeIdx: number) => {
+          // 만약 실패하기로 약속한 placeIdx가 들어오면, 일부러 에러를 발생
+          if (placeIdx === failPlace.idx) {
+            throw new Error('Simulated DB Error');
+          }
+          // 성공한 케이스는 통과
+          return;
+        });
+
+      const response = await testHelper
+        .test()
+        .post('/place/cron/bi-weekly-closed-day')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: '2025-08-20' })
+        .expect(200);
+
+      const body: RunBiWeeklyClosedDayCronJobResponseDto = response.body;
+
+      expect(body.successCount).toBe(1);
+      expect(body.failureCount).toBe(1);
+      expect(body.errorList.length).toBe(1);
+      expect(body.errorList[0].placeIdx).toBe(failPlace.idx);
+      expect(body.errorList[0].errorMessage).toBe('Simulated DB Error');
+
+      mock.mockRestore();
+    });
+
+    it('200- should return a zero summary if no places are found', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      // 휴무일이 없는 장소 생성
+      await placeSeedHelper.seed({});
+
+      const response = await testHelper
+        .test()
+        .post('/place/cron/bi-weekly-closed-day')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: '2025-08-20' })
+        .expect(200);
+
+      const body: RunBiWeeklyClosedDayCronJobResponseDto = response.body;
+      expect(body.successCount).toBe(0);
+      expect(body.failureCount).toBe(0);
+    });
+
+    it('400 - invalid date', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .post('/place/cron/bi-weekly-closed-day')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: '2025/08/20' }) // ! invalid date format
+        .expect(400);
+    });
+
+    it('401 - no access token provided', async () => {
+      await placeSeedHelper.seed({});
+
+      await testHelper
+        .test()
+        .post('/place/cron/bi-weekly-closed-day')
+        .send({ date: '2025-08-20' })
+        .expect(401);
+    });
+  });
+
+  describe('POST /place/:idx/bi-weekly-closed-day', () => {
+    it('200 - should create a new bi-weekly closed day', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const place = await placeSeedHelper.seed({});
+
+      const closedDate = '2025-08-20';
+
+      await testHelper
+        .test()
+        .post(`/place/${place.idx}/bi-weekly-closed-day`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: closedDate })
+        .expect(200);
+
+      const closedDay = await testHelper.getPrisma().weeklyClosedDay.findFirst({
+        where: {
+          placeIdx: place.idx,
+          closedDate: new Date(closedDate),
+          type: WeeklyCloseType.BIWEEKLY,
+        },
+      });
+
+      expect(closedDay).not.toBeNull();
+    });
+
+    it('400 - invalid place idx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .post(`/place/invalid/bi-weekly-closed-day`) // ! invalid place idx
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: '2025/08/20' })
+        .expect(400);
+    });
+
+    it('401 - no access token provided', async () => {
+      const place = await placeSeedHelper.seed({});
+
+      await testHelper
+        .test()
+        .post(`/place/${place.idx}/bi-weekly-closed-day`)
+        .send({ date: '2025-08-20' })
+        .expect(401);
+    });
+
+    it('404 - place does not exist', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const nonExistentPlaceIdx = 99999;
+      await testHelper
+        .test()
+        .post(`/place/${nonExistentPlaceIdx}/bi-weekly-closed-day`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: '2025-08-20' })
+        .expect(404);
+    });
+
+    it('409 - the closed day already exists', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const date = new Date('2025-08-20');
+      const place = await placeSeedHelper.seed({
+        weeklyClosedDayList: [
+          { closedDate: date, type: WeeklyCloseType.BIWEEKLY },
+        ],
+      });
+
+      await testHelper
+        .test()
+        .post(`/place/${place.idx}/bi-weekly-closed-day`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: '2025-08-20' })
         .expect(409);
     });
   });
