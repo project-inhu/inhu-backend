@@ -198,6 +198,7 @@ export class PlaceCoreService {
     );
   }
 
+  // TODO : 순수하지 못함. 통계를 내는 로직이 표함되어 있음. 필요시 수정
   public async createAllBiWeeklyClosedDay(date: string): Promise<{
     successCount: number;
     failureCount: number;
