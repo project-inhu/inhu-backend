@@ -18,14 +18,12 @@
     "user-server:dev:infra:up": "docker compose -f ./scripts/apps/user-server/dev/docker-compose.yml up -d",
     "user-server:dev:infra:down": "docker compose -f ./scripts/apps/user-server/dev/docker-compose.yml down -v",
     "user-server:dev:infra:connect": "docker exec -it inhu-user-server-dev-postgres psql -d inhu -U inhu_admin",
-
     "admin-server:test:e2e": "dotenv -e ./scripts/apps/admin-server/e2e-test/.env.e2e-test -- jest --config ./apps/admin-server/test/jest-e2e.json ./apps/admin-server",
     "admin-server:test:infra:up": "docker compose -f ./scripts/apps/admin-server/e2e-test/docker-compose.yml up -d",
     "admin-server:test:infra:down": "docker compose -f ./scripts/apps/admin-server/e2e-test/docker-compose.yml down -v",
     "admin-server:dev:infra:up": "docker compose -f ./scripts/apps/admin-server/dev/docker-compose.yml up -d",
     "admin-server:dev:infra:down": "docker compose -f ./scripts/apps/admin-server/dev/docker-compose.yml down -v",
     "admin-server:dev:infra:connect": "docker exec -it inhu-admin-server-dev-postgres psql -d inhu -U inhu_admin",
-
     "dev-infra:up": "docker compose -f ./scripts/dev-infra/docker-compose.yml up -d",
     "dev-infra:down": "docker compose -f ./scripts/dev-infra/docker-compose.yml down -v",
     "dev-infra:connect": "docker exec -it inhu-dev-postgres psql -d inhu -U postgres"
@@ -43,6 +41,7 @@
     "@nestjs/platform-express": "^11.1.5",
     "@nestjs/swagger": "^11.2.0",
     "@prisma/client": "^6.12.0",
+    "@toss/nestjs-aop": "^2.1.7",
     "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
@@ -51,6 +50,7 @@
     "ioredis": "^5.6.1",
     "jwks-rsa": "^3.2.0",
     "nestjs-cls": "^6.0.1",
+    "redlock": "^5.0.0-beta.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
     "uuid": "^11.1.0"
