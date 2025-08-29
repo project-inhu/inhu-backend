@@ -5,6 +5,7 @@ import Redlock from 'redlock';
 import { RedlockService } from './redlock.service';
 import redlockConfig from './config/redlock.config';
 import { REDLOCK_TOKEN } from './constants/redlock.constants';
+import { LockerDecorator } from '@libs/common/decorator/locker.decorator';
 
 @Module({
   imports: [ConfigModule.forFeature(redlockConfig)],
@@ -34,6 +35,7 @@ import { REDLOCK_TOKEN } from './constants/redlock.constants';
       },
     },
     RedlockService,
+    LockerDecorator,
   ],
   exports: [RedlockService, REDLOCK_TOKEN],
 })
