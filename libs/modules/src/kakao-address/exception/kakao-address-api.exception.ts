@@ -1,8 +1,7 @@
-export class KakaoAddressAPIException extends Error {
-  response: any;
+import { NotFoundException } from '@nestjs/common';
 
-  constructor(message: string, response: any) {
+export class KakaoAddressAPIException extends NotFoundException {
+  constructor(message: string) {
     super(message);
-    this.response = response;
   }
 }

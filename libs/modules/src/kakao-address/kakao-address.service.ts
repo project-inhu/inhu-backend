@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SearchAddressResponseDto } from './dto/response/serach-address.dto';
 import { KakaoAddressAPIException } from './exception/kakao-address-api.exception';
@@ -42,16 +42,17 @@ export class KakaoAddressService {
         );
 
       if (result.data.documents.length === 0) {
-        throw new KakaoAddressAPIException('Fail to GET kakao address', {
-          requestContext: {
-            address,
-          },
-        });
+        throw new KakaoAddressAPIException(
+          `Fail to GET kakao address + ${address}`,
+        );
       }
 
       return result.data;
     } catch (err: any) {
-      throw new KakaoAddressAPIException('Fail to GET kakao address', err);
+      if (err instanceof KakaoAddressAPIException) {
+        throw err;
+      }
+      throw new InternalServerErrorException('Fail to GET kakao address');
     }
   }
 }
