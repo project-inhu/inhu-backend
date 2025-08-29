@@ -320,8 +320,6 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'New Road',
           detail: 'New Detail',
-          addressX: 123.456,
-          addressY: 78.91,
         },
         closedDayList: [
           { day: DayOfWeek.MON, week: 1 },
@@ -355,12 +353,6 @@ describe('Place E2E test', () => {
       expect(place.name).toBe(createPlaceDto.name);
       expect(place.roadAddress.name).toBe(createPlaceDto.roadAddress.name);
       expect(place.roadAddress.detail).toBe(createPlaceDto.roadAddress.detail);
-      expect(place.roadAddress.addressX).toBe(
-        createPlaceDto.roadAddress.addressX,
-      );
-      expect(place.roadAddress.addressY).toBe(
-        createPlaceDto.roadAddress.addressY,
-      );
       expect(place.imagePathList.sort()).toEqual(place.imagePathList.sort());
       expect(place.isClosedOnHoliday).toBe(createPlaceDto.isClosedOnHoliday);
       expect(place.type).toBe(createPlaceDto.type);
@@ -408,8 +400,6 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'New Road',
           detail: 'New Detail',
-          addressX: 123.456,
-          addressY: 78.91,
         },
         closedDayList: [
           { day: DayOfWeek.MON, week: 1 },
@@ -442,8 +432,6 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'New Road',
           detail: 'New Detail',
-          addressX: 123.456,
-          addressY: 78.91,
         },
         closedDayList: [],
         breakTimeList: [
@@ -473,8 +461,6 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'New Road',
           detail: 'New Detail',
-          addressX: 123.456,
-          addressY: 78.91,
         },
         closedDayList: [],
         breakTimeList: [],
@@ -514,8 +500,6 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'Updated Road',
           detail: 'Updated Detail',
-          addressX: 123.456,
-          addressY: 78.91,
         },
         closedDayList: [
           { day: DayOfWeek.MON, week: 1 },
@@ -559,12 +543,6 @@ describe('Place E2E test', () => {
       expect(placeModel.roadAddress.name).toBe(updatePlaceDto.roadAddress.name);
       expect(placeModel.roadAddress.detail).toBe(
         updatePlaceDto.roadAddress.detail,
-      );
-      expect(placeModel.roadAddress.addressX).toBe(
-        updatePlaceDto.roadAddress.addressX,
-      );
-      expect(placeModel.roadAddress.addressY).toBe(
-        updatePlaceDto.roadAddress.addressY,
       );
       expect(placeModel.imgPathList.sort()).toEqual(
         updatePlaceDto.imagePathList.sort(),
@@ -620,8 +598,6 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'Updated Road',
           detail: 'Updated Detail',
-          addressX: 123.456,
-          addressY: 78.91,
         },
         closedDayList: [
           { day: DayOfWeek.MON, week: 1 },
@@ -664,8 +640,6 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'Updated Road',
           detail: 'Updated Detail',
-          addressX: 123.456,
-          addressY: 78.91,
         },
         closedDayList: [
           { day: DayOfWeek.MON, week: 1 },
