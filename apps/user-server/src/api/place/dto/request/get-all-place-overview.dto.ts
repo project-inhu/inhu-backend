@@ -95,4 +95,14 @@ export class GetAllPlaceOverviewDto {
   @IsNumber()
   @Type(() => Number)
   rightBottomY?: number;
+
+  /**
+   * 한 번에 가져올 장소 수
+   *
+   * @example 100
+   */
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  take?: number;
 }
