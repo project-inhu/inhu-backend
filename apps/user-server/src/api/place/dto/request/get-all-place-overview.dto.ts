@@ -97,12 +97,14 @@ export class GetAllPlaceOverviewDto {
   rightBottomY?: number;
 
   /**
-   * 한 번에 가져올 장소 수
+   * 한 번에 가져올 장소 수 (기본값: 10
    *
+   * @default 10
    * @example 100
    */
   @IsOptional()
   @IsNumber()
   @Type(() => Number)
-  take?: number;
+  @IsIn([10, 100, 1000])
+  take: number = 10;
 }
