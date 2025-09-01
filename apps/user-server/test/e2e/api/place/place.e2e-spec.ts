@@ -4,6 +4,7 @@ import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 import { BookmarkSeedHelper } from '@libs/testing/seed/bookmark/bookmark.seed';
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
+import { GetAllPlaceOverviewResponseDto } from '@user/api/place/dto/response/get-all-place-overview-response.dto';
 import { PlaceOverviewEntity } from '@user/api/place/entity/place-overview.entity';
 import { PlaceEntity } from '@user/api/place/entity/place.entity';
 import { AppModule } from '@user/app.module';
@@ -628,6 +629,27 @@ describe('Place E2E test', () => {
           .map(({ idx }) => idx)
           .sort(),
       ).toStrictEqual([place1.idx, place3.idx].sort());
+    });
+
+    it('200 - take querystring test', async () => {
+      const placeCount = 101;
+
+      await placeSeedHelper.seedAll(
+        Array(placeCount)
+          .fill(0)
+          .map(() => ({ activatedAt: new Date() })),
+      );
+
+      const response = await testHelper.test().get('/place/all').query({
+        page: 1,
+        take: 100,
+      });
+
+      const { placeOverviewList, hasNext } =
+        response.body as GetAllPlaceOverviewResponseDto;
+
+      expect(placeOverviewList.length).toBe(100);
+      expect(hasNext).toBeTruthy();
     });
 
     it('400 - invalid page parameter', async () => {

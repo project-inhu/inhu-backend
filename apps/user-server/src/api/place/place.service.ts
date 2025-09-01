@@ -21,7 +21,7 @@ export class PlaceService {
     placeOverviewList: PlaceOverviewEntity[];
     hasNext: boolean;
   }> {
-    const pageSize = dto.take || 10;
+    const pageSize = dto.take;
     const coordinate = {
       leftTopX: dto.leftTopX,
       rightBottomX: dto.rightBottomX,
