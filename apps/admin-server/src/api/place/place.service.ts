@@ -11,9 +11,8 @@ import { PlaceNotFoundException } from '@admin/api/place/exception/place-not-fou
 import { GetPlaceOverviewInput } from '@libs/core/place/inputs/get-place-overview.input';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { AddressSearchDocumentEntity } from 'libs/modules/src/kakao-address/entity/address-search-document.entity';
-import { KakaoAddressEntity } from 'libs/modules/src/kakao-address/entity/kakao-address.entity';
-import { KakaoAddressService } from 'libs/modules/src/kakao-address/kakao-address.service';
+import { AddressSearchDocumentEntity } from '@libs/modules/kakao-address/entity/address-search-document.entity';
+import { KakaoAddressService } from '@libs/modules/kakao-address/kakao-address.service';
 
 @Injectable()
 export class PlaceService {
