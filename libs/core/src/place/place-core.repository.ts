@@ -124,10 +124,19 @@ export class PlaceCoreRepository {
       return {};
     }
 
+    const trimmedSearchKeyword = searchKeyword.trim();
+
     return {
-      name: {
-        contains: searchKeyword,
-      },
+      OR: [
+        { name: { contains: trimmedSearchKeyword } },
+        {
+          menuList: {
+            some: {
+              name: { contains: trimmedSearchKeyword },
+            },
+          },
+        },
+      ],
     };
   }
 
