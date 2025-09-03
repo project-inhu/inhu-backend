@@ -1,6 +1,7 @@
 import { BookmarkCoreService } from '@libs/core/bookmark/bookmark-core.service';
 import { BookmarkSeedHelper } from '@libs/testing/seed/bookmark/bookmark.seed';
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
+import { BookmarkEntity } from '@user/api/bookmark/entity/bookmark.entity';
 import { AppModule } from '@user/app.module';
 import { TestHelper } from 'apps/user-server/test/e2e/setup/test.helper';
 
@@ -15,6 +16,98 @@ describe('Bookmark E2E test', () => {
 
   afterEach(async () => {
     await testHelper.destroy();
+  });
+
+  describe('GET /bookmark/status/all', () => {
+    it('200 - bookmark filed check', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          activatedAt: new Date(),
+        },
+        {
+          activatedAt: new Date(),
+        },
+        {
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await bookmarkSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          userIdx: loginUser.idx,
+        },
+        {
+          placeIdx: place3.idx,
+          userIdx: loginUser.idx,
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/bookmark/status/all')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .expect(200);
+
+      expect(response.body[0].placeIdx).toBe(place1.idx);
+      expect(response.body[0].userIdx).toBe(loginUser.idx);
+      expect(response.body[1].placeIdx).toBe(place3.idx);
+      expect(response.body[1].userIdx).toBe(loginUser.idx);
+    });
+
+    it('200 - bookmark filed check (only me)', async () => {
+      const loginUser1 = testHelper.loginUsers.user1;
+      const loginUser2 = testHelper.loginUsers.user2;
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          activatedAt: new Date(),
+        },
+        {
+          activatedAt: new Date(),
+        },
+        {
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await bookmarkSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          userIdx: loginUser1.idx,
+        },
+        {
+          placeIdx: place2.idx,
+          userIdx: loginUser1.idx,
+        },
+        {
+          placeIdx: place3.idx,
+          userIdx: loginUser2.idx,
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/bookmark/status/all')
+        .set('Authorization', `Bearer ${loginUser1.web.accessToken}`)
+        .expect(200);
+
+      expect(response.body[0].placeIdx).toBe(place1.idx);
+      expect(response.body[0].userIdx).toBe(loginUser1.idx);
+      expect(response.body[1].placeIdx).toBe(place2.idx);
+      expect(response.body[1].userIdx).toBe(loginUser1.idx);
+    });
+
+    it('200 - no login user (return null)', async () => {
+      const response = await testHelper
+        .test()
+        .get('/bookmark/status/all')
+        .expect(200);
+
+      expect(response.body).toEqual({});
+    });
   });
 
   describe('POST /place/:placeIdx/bookmark', () => {
