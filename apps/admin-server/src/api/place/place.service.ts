@@ -13,6 +13,7 @@ import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AddressSearchDocumentEntity } from '@libs/modules/kakao-address/entity/address-search-document.entity';
 import { KakaoAddressService } from '@libs/modules/kakao-address/kakao-address.service';
+import { AddressRequiredException } from './exception/address-required.exception';
 
 @Injectable()
 export class PlaceService {
@@ -225,7 +226,7 @@ export class PlaceService {
   private async getAddressInfo(
     address: string,
   ): Promise<AddressSearchDocumentEntity> {
-    if (!address) throw new BadRequestException('Address is required');
+    if (!address) throw new AddressRequiredException('Address is required');
 
     const response = await this.kakaoAddressService.searchAddress(address);
     return response.documents[0];
