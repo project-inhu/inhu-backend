@@ -158,7 +158,16 @@ export class PlaceCoreRepository {
         {
           menuList: {
             some: {
-              name: { contains: trimmedSearchKeyword },
+              OR: [
+                {
+                  name: { contains: trimmedSearchKeyword },
+                },
+                {
+                  content: {
+                    contains: trimmedSearchKeyword,
+                  },
+                },
+              ],
             },
           },
         },
