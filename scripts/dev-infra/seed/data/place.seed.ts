@@ -147,6 +147,35 @@ const defaultPickedPlace = {
   content: '이 장소는 에디터가 특별히 추천한 곳이에요.',
 };
 
+type Coords = { lat: number; lon: number };
+
+/**
+ * 좌표 범위 안에서 다양한 좌표 뽑아줌
+ */
+function getCoords(
+  min: Coords,
+  max: Coords,
+  count: number,
+): Record<number, Coords> {
+  const coords: Record<number, Coords> = {};
+
+  for (let i = 1; i <= count; i++) {
+    const latFrac = (Math.sin(i * 12.9898) * 43758.5453) % 1;
+    const lonFrac = (Math.sin(i * 78.233) * 12345.6789) % 1;
+    coords[i] = {
+      lat: min.lat + latFrac * (max.lat - min.lat),
+      lon: min.lon + lonFrac * (max.lon - min.lon),
+    };
+  }
+
+  return coords;
+}
+
+const min = { lat: 37.4491691162411, lon: 126.653248833754 };
+const max = { lat: 37.4540730586426, lon: 126.66659976951 };
+
+const coords = getCoords(min, max, 38);
+
 /**
  * place1 : 메뉴 없음 + pickedPlace 있음
  * - 메뉴 목록이 비어있는 장소를 테스트할 때 사용됨
@@ -159,8 +188,8 @@ const place1: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.HOSPITAL, PLACE_IMAGE.BAKERY],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 101',
-    addressX: 126.660511,
-    addressY: 37.452188,
+    addressX: coords[1].lon,
+    addressY: coords[1].lat,
   },
   operatingHourList: FULL_OPERATING_HOURS,
   breakTime: FULL_BREAK_TIME,
@@ -181,8 +210,8 @@ const place2: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.POOL],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 102',
-    addressX: 126.654123,
-    addressY: 37.452099,
+    addressX: coords[2].lon,
+    addressY: coords[2].lat,
   },
   operatingHourList: RESTAURANT_HOURS,
   breakTime: FULL_BREAK_TIME,
@@ -208,8 +237,8 @@ const place3: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.MOSCOW],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 103',
-    addressX: 126.666876,
-    addressY: 37.452211,
+    addressX: coords[3].lon,
+    addressY: coords[3].lat,
   },
   operatingHourList: FULL_OPERATING_HOURS,
   breakTime: FULL_BREAK_TIME,
@@ -237,8 +266,8 @@ const place4: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.PARK, PLACE_IMAGE.SCHOOL],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 104',
-    addressX: 126.658901,
-    addressY: 37.452045,
+    addressX: coords[4].lon,
+    addressY: coords[4].lat,
   },
   operatingHourList: EARLY_MORNING_HOURS,
   breakTime: FULL_BREAK_TIME,
@@ -270,8 +299,8 @@ const place5: PlaceSeedData = {
   ],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 105',
-    addressX: 126.662345,
-    addressY: 37.452155,
+    addressX: coords[5].lon,
+    addressY: coords[5].lat,
   },
   operatingHourList: CONVENIENCE_HOURS,
   breakTime: NO_BREAK_TIME,
@@ -304,8 +333,8 @@ const place6: PlaceSeedData = {
   ],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 106',
-    addressX: 126.655678,
-    addressY: 37.452222,
+    addressX: coords[6].lon,
+    addressY: coords[6].lat,
   },
   operatingHourList: LATE_NIGHT_HOURS,
   breakTime: NO_BREAK_TIME,
@@ -326,8 +355,8 @@ const place7: PlaceSeedData = {
   placeImgList: [],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 107',
-    addressX: 126.664098,
-    addressY: 37.452101,
+    addressX: coords[7].lon,
+    addressY: coords[7].lat,
   },
   operatingHourList: CAFE_HOURS,
   breakTime: CAFE_BREAK_TIME,
@@ -416,8 +445,8 @@ const place8: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.CAFE1, PLACE_IMAGE.CAFE1],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 108',
-    addressX: 126.657754,
-    addressY: 37.452087,
+    addressX: coords[8].lon,
+    addressY: coords[8].lat,
   },
   operatingHourList: BRUNCH_HOURS,
   breakTime: NO_BREAK_TIME,
@@ -445,8 +474,8 @@ const place9: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.POOL, PLACE_IMAGE.SCHOOL],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 109',
-    addressX: 126.661122,
-    addressY: 37.452198,
+    addressX: coords[9].lon,
+    addressY: coords[9].lat,
   },
   operatingHourList: RESTAURANT_HOURS,
   breakTime: FULL_BREAK_TIME,
@@ -480,8 +509,8 @@ const place10: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.BAR1],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 110',
-    addressX: 126.665432,
-    addressY: 37.452033,
+    addressX: coords[10].lon,
+    addressY: coords[10].lat,
   },
   operatingHourList: BAR_HOURS,
   breakTime: NO_BREAK_TIME,
@@ -509,8 +538,8 @@ const place11: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.RESTAURANT1, PLACE_IMAGE.RESTAURANT2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 111',
-    addressX: 126.65389,
-    addressY: 37.452176,
+    addressX: coords[11].lon,
+    addressY: coords[11].lat,
   },
   operatingHourList: CONVENIENCE_HOURS,
   breakTime: NO_BREAK_TIME,
@@ -539,8 +568,8 @@ const place12: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.RESTAURANT2, PLACE_IMAGE.RESTAURANT1],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 112',
-    addressX: 126.666012,
-    addressY: 37.452021,
+    addressX: coords[12].lon,
+    addressY: coords[12].lat,
   },
   operatingHourList: EARLY_MORNING_HOURS,
   breakTime: FULL_BREAK_TIME,
@@ -574,8 +603,8 @@ const place13: PlaceSeedData = {
   ],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 113',
-    addressX: 126.659876,
-    addressY: 37.452205,
+    addressX: coords[13].lon,
+    addressY: coords[13].lat,
   },
   operatingHourList: LATE_NIGHT_HOURS,
   breakTime: NO_BREAK_TIME,
@@ -596,8 +625,8 @@ const place14: PlaceSeedData = {
   placeImgList: ['invalid-place-path'],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 114',
-    addressX: 126.66321,
-    addressY: 37.452112,
+    addressX: coords[14].lon,
+    addressY: coords[14].lat,
   },
   operatingHourList: FULL_OPERATING_HOURS,
   breakTime: FULL_BREAK_TIME,
@@ -618,8 +647,8 @@ const place15: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.RESTAURANT1],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 115',
-    addressX: 126.656543,
-    addressY: 37.452076,
+    addressX: coords[15].lon,
+    addressY: coords[15].lat,
   },
   operatingHourList: [],
   breakTime: [],
@@ -640,8 +669,8 @@ const place16: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 116',
-    addressX: 126.664876,
-    addressY: 37.452143,
+    addressX: coords[16].lon,
+    addressY: coords[16].lat,
   },
   operatingHourList: BAR_HOURS,
   breakTime: [],
@@ -662,8 +691,8 @@ const place17: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.BAR3, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 117',
-    addressX: 126.658234,
-    addressY: 37.452065,
+    addressX: coords[17].lon,
+    addressY: coords[17].lat,
   },
   operatingHourList: BAR_HOURS.filter((h) => h.day !== DayOfWeek.MON),
   breakTime: NO_BREAK_TIME,
@@ -692,8 +721,8 @@ const place18: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.BAR4, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 118',
-    addressX: 126.662987,
-    addressY: 37.452167,
+    addressX: coords[18].lon,
+    addressY: coords[18].lat,
   },
   operatingHourList: [...DUAL_OPERATING_HOURS_1, ...DUAL_OPERATING_HOURS_2],
   breakTime: [...DUAL_BREAK_TIME_1, ...DUAL_BREAK_TIME_2],
@@ -714,8 +743,8 @@ const place19: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.BAR5, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 119',
-    addressX: 126.654999,
-    addressY: 37.452189,
+    addressX: coords[19].lon,
+    addressY: coords[19].lat,
   },
   closedDayList: [
     { day: DayOfWeek.TUE, week: 2 },
@@ -740,8 +769,8 @@ const place20: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.RESTAURANT2, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 120',
-    addressX: 126.665111,
-    addressY: 37.452054,
+    addressX: coords[20].lon,
+    addressY: coords[20].lat,
   },
   weeklyClosedDayList: [
     {
@@ -768,8 +797,8 @@ const place21: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.BAR5, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 121',
-    addressX: 126.660001,
-    addressY: 37.452231,
+    addressX: coords[21].lon,
+    addressY: coords[21].lat,
   },
   isClosedOnHoliday: true,
   operatingHourList: BAR_HOURS,
@@ -791,8 +820,8 @@ const place22: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.RESTAURANT3, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 122',
-    addressX: 126.65701,
-    addressY: 37.452048,
+    addressX: coords[22].lon,
+    addressY: coords[22].lat,
   },
   operatingHourList: FULL_OPERATING_HOURS,
   breakTime: FULL_BREAK_TIME,
@@ -814,8 +843,8 @@ const place23: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.RESTAURANT2, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 123',
-    addressX: 126.663852,
-    addressY: 37.452132,
+    addressX: coords[23].lon,
+    addressY: coords[23].lat,
   },
   operatingHourList: FULL_OPERATING_HOURS,
   breakTime: FULL_BREAK_TIME,
@@ -836,8 +865,8 @@ const place24: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.RESTAURANT3, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 124',
-    addressX: 126.656032,
-    addressY: 37.452091,
+    addressX: coords[24].lon,
+    addressY: coords[24].lat,
     detail: '인하대학교 학생회관 1층',
   },
   operatingHourList: FULL_OPERATING_HOURS,
@@ -860,8 +889,8 @@ const place25: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.RESTAURANT2, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 125',
-    addressX: 126.661789,
-    addressY: 37.452178,
+    addressX: coords[25].lon,
+    addressY: coords[25].lat,
   },
   operatingHourList: CAFE_HOURS,
   breakTime: CAFE_BREAK_TIME,
@@ -883,8 +912,8 @@ const place26: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.RESTAURANT2, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 126',
-    addressX: 126.665902,
-    addressY: 37.452029,
+    addressX: coords[26].lon,
+    addressY: coords[26].lat,
   },
   operatingHourList: FULL_OPERATING_HOURS,
   breakTime: FULL_BREAK_TIME,
@@ -907,8 +936,8 @@ const place27: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.MOSCOW, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 127',
-    addressX: 126.659147,
-    addressY: 37.452215,
+    addressX: coords[27].lon,
+    addressY: coords[27].lat,
   },
   operatingHourList: FULL_OPERATING_HOURS,
   breakTime: FULL_BREAK_TIME,
@@ -930,8 +959,8 @@ const place28: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.BAR5, PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 128',
-    addressX: 126.662054,
-    addressY: 37.452121,
+    addressX: coords[28].lon,
+    addressY: coords[28].lat,
   },
   operatingHourList: FULL_OPERATING_HOURS,
   breakTime: FULL_BREAK_TIME,
@@ -962,8 +991,8 @@ const place29: PlaceSeedData = {
   placeImgList: ['/place/bakery.jpg'],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 129',
-    addressX: 126.655215,
-    addressY: 37.452082,
+    addressX: coords[29].lon,
+    addressY: coords[29].lat,
   },
   operatingHourList: FULL_OPERATING_HOURS,
   breakTime: FULL_BREAK_TIME,
@@ -993,8 +1022,8 @@ const place30: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.RESTAURANT1],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 130',
-    addressX: 126.654518,
-    addressY: 37.451535,
+    addressX: coords[30].lon,
+    addressY: coords[30].lat,
   },
   operatingHourList: [
     {
@@ -1072,8 +1101,8 @@ const place31: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.HOSPITAL],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 131',
-    addressX: 126.6539,
-    addressY: 37.4519,
+    addressX: coords[31].lon,
+    addressY: coords[31].lat,
   },
   operatingHourList: CAFE_HOURS.filter((h) => h.day !== DayOfWeek.TUE),
   breakTime: CAFE_BREAK_TIME.filter((b) => b.day !== DayOfWeek.TUE),
@@ -1102,8 +1131,8 @@ const place32: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.HOSPITAL],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 132',
-    addressX: 126.6542,
-    addressY: 37.4505,
+    addressX: coords[32].lon,
+    addressY: coords[32].lat,
   },
   operatingHourList: BAR_HOURS.filter((h) => h.day !== DayOfWeek.WED),
   breakTime: NO_BREAK_TIME.filter((b) => b.day !== DayOfWeek.WED),
@@ -1132,8 +1161,8 @@ const place33: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.BAKERY],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 133',
-    addressX: 126.6581,
-    addressY: 37.4531,
+    addressX: coords[33].lon,
+    addressY: coords[33].lat,
   },
   operatingHourList: BRUNCH_HOURS.filter((h) => h.day !== DayOfWeek.THU),
   breakTime: NO_BREAK_TIME,
@@ -1162,8 +1191,8 @@ const place34: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.BAR4, PLACE_IMAGE.BAR5],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 134',
-    addressX: 126.6548,
-    addressY: 37.4525,
+    addressX: coords[34].lon,
+    addressY: coords[34].lat,
   },
   operatingHourList: LATE_NIGHT_HOURS.filter((h) => h.day !== DayOfWeek.FRI),
   breakTime: NO_BREAK_TIME,
@@ -1192,8 +1221,8 @@ const place35: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.CAFE1],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 135',
-    addressX: 126.6563,
-    addressY: 37.4533,
+    addressX: coords[35].lon,
+    addressY: coords[35].lat,
   },
   operatingHourList: CAFE_HOURS.filter((h) => h.day !== DayOfWeek.SAT),
   breakTime: CAFE_BREAK_TIME.filter((b) => b.day !== DayOfWeek.SAT),
@@ -1222,8 +1251,8 @@ const place36: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.RESTAURANT3],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 136',
-    addressX: 126.6568,
-    addressY: 37.4538,
+    addressX: coords[36].lon,
+    addressY: coords[36].lat,
   },
   operatingHourList: EARLY_MORNING_HOURS.filter((h) => h.day !== DayOfWeek.SUN),
   breakTime: FULL_BREAK_TIME.filter((b) => b.day !== DayOfWeek.SUN),
@@ -1252,8 +1281,8 @@ const place37: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 137',
-    addressX: 126.6571,
-    addressY: 37.4541,
+    addressX: coords[37].lon,
+    addressY: coords[37].lat,
   },
   weeklyClosedDayList: [
     {
@@ -1280,8 +1309,8 @@ const place38: PlaceSeedData = {
   placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 138',
-    addressX: 126.66033,
-    addressY: 37.45213,
+    addressX: coords[38].lon,
+    addressY: coords[38].lat,
   },
   weeklyClosedDayList: [
     {
