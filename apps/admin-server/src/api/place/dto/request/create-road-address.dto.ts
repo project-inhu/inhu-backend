@@ -4,6 +4,4 @@ import { PickType } from '@nestjs/swagger';
 export class CreateRoadAddressDto extends PickType(PlaceRoadAddressEntity, [
   'name',
   'detail',
-  'addressX',
-  'addressY',
 ]) {}
