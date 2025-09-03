@@ -6,7 +6,7 @@ import {
 } from '../constants/type';
 import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 import { PlaceType } from '@libs/core/place/constants/place-type.constant';
-
+//
 const PLACE_IMAGE = {
   BAKERY: '/place/bakery.jpg',
   HOSPITAL: '/place/hospital.jpg',
