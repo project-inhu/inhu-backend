@@ -55,6 +55,7 @@ export class PlaceController {
    */
   @Post()
   @Exception(400, 'Invalid place data')
+  @Exception(404, 'Address not found')
   @HttpCode(200)
   @AdminAuth()
   public async createPlace(@Body() dto: CreatePlaceDto): Promise<PlaceEntity> {
@@ -66,7 +67,7 @@ export class PlaceController {
    */
   @Put('/:idx')
   @Exception(400, 'Invalid place idx or data')
-  @Exception(404, 'Place not found')
+  @Exception(404, 'Place or address not found')
   @HttpCode(200)
   @AdminAuth()
   public async updatePlace(
