@@ -181,9 +181,8 @@ jobs:
           echo "[deploy] should_db_down=$DB_DOWN"
           sudo apt-get update && sudo apt-get install -y sshpass
           sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no deploy-admin.tar.gz $USER@$HOST:~/inhu-backend/
-          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST "bash -s" << 'EOF'
+          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST "DB_DOWN_FLAG='$DB_DOWN' bash -s" << 'EOF'
             set -e
-            DB_DOWN_FLAG='${DB_DOWN}'
             cd ~/inhu-backend
             tar -xzf deploy-admin.tar.gz
             rm deploy-admin.tar.gz
