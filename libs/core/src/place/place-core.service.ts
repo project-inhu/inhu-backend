@@ -7,6 +7,7 @@ import { PlaceCoreRepository } from './place-core.repository';
 import { Injectable } from '@nestjs/common';
 import { BookmarkedPlaceOverviewModel } from './model/bookmarked-place-overview.model';
 import { GetBookmarkedPlaceOverviewInput } from './inputs/get-bookmarked-place-overview.input';
+import { GetPlaceOverviewMarkerInput } from './inputs/get-place-overview-marker.input';
 
 /**
  * 장소 관련 핵심 서비스
@@ -40,6 +41,14 @@ export class PlaceCoreService {
     input: GetPlaceOverviewInput,
   ): Promise<PlaceOverviewModel[]> {
     return (await this.placeCoreRepository.selectPlaceAll(input)).map(
+      PlaceOverviewModel.fromPrisma,
+    );
+  }
+
+  public async getPlaceAllForMarker(
+    input: GetPlaceOverviewMarkerInput,
+  ): Promise<PlaceOverviewModel[]> {
+    return (await this.placeCoreRepository.selectPlaceAllForMarker(input)).map(
       PlaceOverviewModel.fromPrisma,
     );
   }

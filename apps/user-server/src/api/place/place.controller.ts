@@ -9,6 +9,8 @@ import { GetAllBookmarkedOverviewResponseDto } from '@user/api/place/dto/respons
 import { GetAllBookmarkedPlaceOverviewPlaceDto } from '@user/api/place/dto/request/get-all-bookmarked-place-overview.dto';
 import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
 import { LoginUser } from '@user/common/types/LoginUser';
+import { GetAllPlaceOverviewMarkerDto } from './dto/request/get-all-place-overview-marker.dto';
+import { GetAllPlaceOverviewMarkerResponseDto } from './dto/response/get-all-place-overview-marker-response.dto';
 
 @Controller('place')
 export class PlaceController {
@@ -24,6 +26,14 @@ export class PlaceController {
     @User() loginUser?: LoginUser,
   ): Promise<GetAllPlaceOverviewResponseDto> {
     return await this.placeService.getPlaceOverviewAll(dto, loginUser?.idx);
+  }
+
+  @Get('/marker/all')
+  @Exception(400, 'Invalid page number or orderBy')
+  async getAllPlaceOverviewMarker(
+    @Query() dto: GetAllPlaceOverviewMarkerDto,
+  ): Promise<GetAllPlaceOverviewMarkerResponseDto> {
+    return await this.placeService.getPlaceOverviewMarkerAll(dto);
   }
 
   /**
