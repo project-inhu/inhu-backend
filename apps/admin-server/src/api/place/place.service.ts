@@ -14,6 +14,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { AddressSearchDocumentEntity } from '@libs/modules/kakao-address/entity/address-search-document.entity';
 import { KakaoAddressService } from '@libs/modules/kakao-address/kakao-address.service';
 import { AddressRequiredException } from './exception/address-required.exception';
+import { AlreadyExistWeeklyClosedDayException } from './exception/already-exist-weekly-closed-day.exception';
+import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 
 @Injectable()
 export class PlaceService {
@@ -230,5 +232,40 @@ export class PlaceService {
 
     const response = await this.kakaoAddressService.searchAddress(address);
     return response.documents[0];
+  }
+
+  public async createBiWeeklyClosedDayByPlaceIdx(
+    idx: number,
+    date: string,
+  ): Promise<void> {
+    const place = await this.placeCoreService.getPlaceByIdx(idx);
+
+    if (!place) {
+      throw new PlaceNotFoundException('Cannot find place with idx: ' + idx);
+    }
+
+    const alreadyExists = place.weeklyClosedDayList.some(
+      (day) => day.type === WeeklyCloseType.BIWEEKLY && day.date === date,
+    );
+
+    if (alreadyExists) {
+      throw new AlreadyExistWeeklyClosedDayException(
+        'Weekly closed day already exists' + idx,
+      );
+    }
+
+    return await this.placeCoreService.createWeeklyClosedDay(
+      idx,
+      date,
+      WeeklyCloseType.BIWEEKLY,
+    );
+  }
+
+  public async createAllBiWeeklyClosedDay(date: string): Promise<{
+    successCount: number;
+    failureCount: number;
+    errorList: { placeIdx: number; errorMessage: string }[];
+  }> {
+    return await this.placeCoreService.createAllBiWeeklyClosedDay(date);
   }
 }
