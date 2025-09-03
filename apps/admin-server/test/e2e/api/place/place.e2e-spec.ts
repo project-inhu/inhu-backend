@@ -1044,6 +1044,17 @@ describe('Place E2E test', () => {
         updatePlaceDto.weeklyClosedDayList[1].type,
       );
 
+      const pastWeeklyClosedDay = await testHelper
+        .getPrisma()
+        .weeklyClosedDay.findFirst({
+          where: {
+            placeIdx: place.idx,
+            closedDate: new Date('2025-08-20T00:00:00.000Z'),
+            type: WeeklyCloseType.BIWEEKLY,
+          },
+        });
+      expect(pastWeeklyClosedDay).not.toBeNull();
+
       mock.mockRestore();
     });
 
