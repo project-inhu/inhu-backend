@@ -11,6 +11,23 @@ export class BookmarkService {
     private readonly bookmarkCoreService: BookmarkCoreService,
   ) {}
 
+  public async getAllBookmarkStatus(
+    readUserIdx?: number,
+  ): Promise<BookmarkEntity[] | null> {
+    if (!readUserIdx) {
+      return null;
+    }
+
+    const bookmarkModelList =
+      await this.bookmarkCoreService.getBookmarkStateByUserIdx({
+        userIdx: readUserIdx,
+      });
+
+    return bookmarkModelList.map((bookmark) =>
+      BookmarkEntity.fromModel(bookmark),
+    );
+  }
+
   /**
    * 특정 장소에 대한 북마크 등록
    *

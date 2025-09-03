@@ -4,6 +4,6 @@
  * @publicApi
  */
 export class GetBookmarkAllInput {
-  public placeIdxList: number[];
+  public placeIdxList?: number[];
   public userIdx: number;
 }
