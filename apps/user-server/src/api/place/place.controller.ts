@@ -28,6 +28,9 @@ export class PlaceController {
     return await this.placeService.getPlaceOverviewAll(dto, loginUser?.idx);
   }
 
+  /**
+   * map marker용 모든 place 개요 가져오기
+   */
   @Get('/marker/all')
   @Exception(400, 'Invalid page number or orderBy')
   async getAllPlaceOverviewMarker(

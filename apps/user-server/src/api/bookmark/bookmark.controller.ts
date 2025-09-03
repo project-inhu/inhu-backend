@@ -19,6 +19,11 @@ import { Exception } from '@libs/common/decorator/exception.decorator';
 export class BookmarkController {
   constructor(private readonly bookmarkService: BookmarkService) {}
 
+  /**
+   * 로그인 사용자의 모든 북마크 상태 조회
+   *
+   * @author 이수인
+   */
   @Get('/bookmark/status/all')
   async getAllBookmarkStatus(
     @User() loginUser?: LoginUser,
