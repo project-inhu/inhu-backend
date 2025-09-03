@@ -6,6 +6,7 @@ import { PlaceNotFoundException } from '@user/api/place/exception/place-not-foun
 import { GetAllBookmarkedPlaceOverviewPlaceDto } from '@user/api/place/dto/request/get-all-bookmarked-place-overview.dto';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { BookmarkCoreService } from '@libs/core/bookmark/bookmark-core.service';
+import { GetAllPlaceOverviewMarkerDto } from './dto/request/get-all-place-overview-marker.dto';
 
 @Injectable()
 export class PlaceService {
@@ -89,6 +90,28 @@ export class PlaceService {
       coordinate.leftTopY !== undefined &&
       coordinate.rightBottomY !== undefined
     );
+  }
+
+  public async getPlaceOverviewMarkerAll(
+    dto: GetAllPlaceOverviewMarkerDto,
+  ): Promise<{
+    placeOverviewList: PlaceOverviewEntity[];
+  }> {
+    const placeOverviewModelList =
+      await this.placeCoreService.getPlaceAllForMarker({
+        orderBy: dto.orderby,
+        order: dto.order,
+        operating: dto.operating,
+        types: dto.type ? [dto.type] : undefined,
+        activated: true,
+        permanentlyClosed: false,
+      });
+
+    return {
+      placeOverviewList: placeOverviewModelList.map((place) =>
+        PlaceOverviewEntity.fromModel(place, false),
+      ),
+    };
   }
 
   public async getPlaceByIdx(

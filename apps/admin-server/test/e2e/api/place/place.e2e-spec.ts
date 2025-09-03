@@ -10,12 +10,14 @@ import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { KakaoAddressService } from '@libs/modules/kakao-address/kakao-address.service';
+import { MenuSeedHelper } from '@libs/testing/seed/menu/menu.seed';
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { TestHelper } from 'apps/admin-server/test/e2e/setup/test.helper';
 
 describe('Place E2E test', () => {
   const testHelper = TestHelper.create(AdminServerModule);
   const placeSeedHelper = testHelper.seedHelper(PlaceSeedHelper);
+  const menuSeedHelper = testHelper.seedHelper(MenuSeedHelper);
 
   beforeEach(async () => {
     await testHelper.init();
@@ -131,6 +133,435 @@ describe('Place E2E test', () => {
         [place3.name, place1.name].sort(),
       );
       expect(count).toBe(2);
+    });
+
+    it('200 - check searchKeyword filtering single place name', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        search: 'place 1',
+      };
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: null,
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places.map(({ name }) => name)).toStrictEqual([place1.name]);
+      expect(count).toBe(1);
+    });
+
+    it('200 - check searchKeyword filtering multiple place name', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        search: 'place',
+      };
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: null,
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places.map(({ name }) => name).sort()).toStrictEqual(
+        [place1.name, place2.name, place3.name].sort(),
+      );
+      expect(count).toBe(3);
+    });
+
+    it('200 - check searchKeyword filtering (do not exist place name)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        search: 'not exist',
+      };
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: null,
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places).toStrictEqual([]);
+      expect(count).toBe(0);
+    });
+
+    it('200 - check searchKeyword filtering single menu name', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        search: 'menu 1',
+      };
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: null,
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places.map(({ name }) => name)).toStrictEqual([place1.name]);
+      expect(count).toBe(1);
+    });
+
+    it('200 - check searchKeyword filtering multiple menu name', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        search: 'menu',
+      };
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: null,
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places.map(({ name }) => name).sort()).toStrictEqual(
+        [place1.name, place2.name, place3.name].sort(),
+      );
+      expect(count).toBe(3);
+    });
+
+    it('200 - check searchKeyword filtering (do not exist menu name)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        search: 'not exist',
+      };
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: null,
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places).toStrictEqual([]);
+      expect(count).toBe(0);
+    });
+
+    it('200 - check searchKeyword filtering single menu content', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        search: 'content 1',
+      };
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: null,
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+          content: 'content 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+          content: 'content 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+          content: 'content 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places.map(({ name }) => name)).toStrictEqual([place1.name]);
+      expect(count).toBe(1);
+    });
+
+    it('200 - check searchKeyword filtering multiple menu content', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        search: 'content',
+      };
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: null,
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+          content: 'content 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+          content: 'content 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+          content: 'content 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places.map(({ name }) => name).sort()).toStrictEqual(
+        [place1.name, place2.name, place3.name].sort(),
+      );
+      expect(count).toBe(3);
+    });
+
+    it('200 - check searchKeyword filtering (do not exist menu content)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        search: 'not exist',
+      };
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: null,
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+          content: 'content 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+          content: 'content 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+          content: 'content 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places).toStrictEqual([]);
+      expect(count).toBe(0);
     });
   });
 
