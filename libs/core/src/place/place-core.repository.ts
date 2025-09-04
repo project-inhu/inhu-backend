@@ -17,7 +17,11 @@ import {
   SelectBookmarkedPlaceOverview,
 } from './model/prisma-type/select-bookmarked-place-overview';
 import { DateUtilService } from '@libs/common/modules/date-util/date-util.service';
-import { GetPlaceOverviewMarkerInput } from './inputs/get-place-overview-marker.input';
+import {
+  SELECT_PLACE_MARKER,
+  SelectPlaceMarker,
+} from './model/prisma-type/select-place-marker';
+import { GetPlaceMarkerInput } from './inputs/get-place-overview-marker.input';
 
 @Injectable()
 export class PlaceCoreRepository {
@@ -69,7 +73,7 @@ export class PlaceCoreRepository {
     });
   }
 
-  public async selectPlaceAllForMarker({
+  public async selectPlaceMarkerAll({
     orderBy,
     order,
     operating,
@@ -77,9 +81,9 @@ export class PlaceCoreRepository {
     activated,
     permanentlyClosed,
     searchKeyword,
-  }: GetPlaceOverviewMarkerInput): Promise<SelectPlaceOverview[]> {
+  }: GetPlaceMarkerInput): Promise<SelectPlaceMarker[]> {
     return await this.txHost.tx.place.findMany({
-      ...SELECT_PLACE_OVERVIEW,
+      ...SELECT_PLACE_MARKER,
       where: {
         AND: [
           { deletedAt: null },

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PlaceOverviewEntity } from './entity/place-overview.entity';
 import { GetAllPlaceOverviewDto } from './dto/request/get-all-place-overview.dto';
 import { PlaceEntity } from '@user/api/place/entity/place.entity';
@@ -6,7 +6,8 @@ import { PlaceNotFoundException } from '@user/api/place/exception/place-not-foun
 import { GetAllBookmarkedPlaceOverviewPlaceDto } from '@user/api/place/dto/request/get-all-bookmarked-place-overview.dto';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { BookmarkCoreService } from '@libs/core/bookmark/bookmark-core.service';
-import { GetAllPlaceOverviewMarkerDto } from './dto/request/get-all-place-overview-marker.dto';
+import { GetAllPlaceMarkerDto } from './dto/request/get-all-place-marker.dto';
+import { PlaceMarkerEntity } from './entity/place-marker.entity';
 
 @Injectable()
 export class PlaceService {
@@ -92,24 +93,21 @@ export class PlaceService {
     );
   }
 
-  public async getPlaceOverviewMarkerAll(
-    dto: GetAllPlaceOverviewMarkerDto,
-  ): Promise<{
-    placeOverviewList: PlaceOverviewEntity[];
+  public async getPlaceMarkerAll(dto: GetAllPlaceMarkerDto): Promise<{
+    placeMarkerList: PlaceMarkerEntity[];
   }> {
-    const placeOverviewModelList =
-      await this.placeCoreService.getPlaceAllForMarker({
-        orderBy: dto.orderby,
-        order: dto.order,
-        operating: dto.operating,
-        types: dto.type ? [dto.type] : undefined,
-        activated: true,
-        permanentlyClosed: false,
-      });
+    const placeMarkerModelList = await this.placeCoreService.getPlaceMarkerAll({
+      orderBy: dto.orderby,
+      order: dto.order,
+      operating: dto.operating,
+      types: dto.type ? [dto.type] : undefined,
+      activated: true,
+      permanentlyClosed: false,
+    });
 
     return {
-      placeOverviewList: placeOverviewModelList.map((place) =>
-        PlaceOverviewEntity.fromModel(place, false),
+      placeMarkerList: placeMarkerModelList.map((place) =>
+        PlaceMarkerEntity.fromModel(place, false),
       ),
     };
   }
