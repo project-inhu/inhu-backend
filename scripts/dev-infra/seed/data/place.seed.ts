@@ -171,10 +171,10 @@ function getCoords(
   return coords;
 }
 
-const min = { lat: 37.4491691162411, lon: 126.653248833754 };
-const max = { lat: 37.4540730586426, lon: 126.66659976951 };
+const minCoords = { lat: 37.45201962044506, lon: 126.65361270545671 };
+const maxCoords = { lat: 37.45223331123992, lon: 126.66704008950877 };
 
-const coords = getCoords(min, max, 38);
+const coords = getCoords(minCoords, maxCoords, 38);
 
 /**
  * place1 : 메뉴 없음 + pickedPlace 있음
@@ -1326,6 +1326,73 @@ const place38: PlaceSeedData = {
 };
 
 /**
+ * 바둑판 형태로 좌표를 생성하는 함수
+ * rows × cols 개수만큼 좌표 생성
+ */
+function generateClusteredCoords(
+  min: Coords,
+  max: Coords,
+  rows: number,
+  cols: number,
+) {
+  const coordinates: Coords[] = [];
+
+  const latRange = max.lat - min.lat;
+  const lonRange = max.lon - min.lon;
+
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      // 기본 위치
+      const baseLon = min.lon + lonRange * (j / (cols - 1));
+      const baseLat = min.lat + latRange * (i / (rows - 1));
+
+      const index = i * cols + j;
+
+      // sin/cos 함수에 넣어 랜덤 값 생성 (실행 때마다 결과 동일)
+      const randomLonFrac = Math.sin(index * 1.23) * 4321.12;
+      const randomLatFrac = Math.cos(index * 1.23) * 1234.56;
+
+      //흔들기 정도 (불규칙 생성용)
+      const lonStep = lonRange / cols;
+      const latStep = latRange / rows;
+
+      const finalLon = baseLon + ((randomLonFrac % 1) - 0.5) * lonStep;
+      const finalLat = baseLat + ((randomLatFrac % 1) - 0.5) * latStep;
+
+      coordinates.push({
+        lon: finalLon,
+        lat: finalLat,
+      });
+    }
+  }
+
+  return coordinates;
+}
+
+const clustered = generateClusteredCoords(minCoords, maxCoords, 12, 12);
+
+const generatedPlaces: PlaceSeedData[] = [];
+
+for (let i = 39; i <= 138; i++) {
+  generatedPlaces.push({
+    name: `자동 생성 장소 ${i}`,
+    tel: `032-111-${1000 + i}`,
+    type: PlaceType.RESTAURANT,
+    activatedAt: FIXED_ACTIVATED_AT,
+    placeImgList: [PLACE_IMAGE.BAKERY, PLACE_IMAGE.CAFE1],
+    roadAddress: {
+      name: `인천광역시 미추홀구 인하로 ${300 + i}`,
+      addressX: clustered[i].lon,
+      addressY: clustered[i].lat,
+    },
+    operatingHourList: FULL_OPERATING_HOURS,
+    breakTime: FULL_BREAK_TIME,
+    reviewList: [defaultReview],
+    menuList: [defaultMenu],
+    pickedPlaceList: [defaultPickedPlace],
+  });
+}
+/**
  * 생성한 모든 데이터를 묶어서 하나의 배열로 export
  */
 export const PlaceSeedDataList = [
@@ -1367,4 +1434,5 @@ export const PlaceSeedDataList = [
   place36,
   place37,
   place38,
+  ...generatedPlaces,
 ];
