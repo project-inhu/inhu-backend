@@ -23,7 +23,6 @@ import {
 } from './model/prisma-type/select-place-marker';
 import { GetPlaceMarkerInput } from './inputs/get-place-overview-marker.input';
 import { GetPlaceOverviewMarkerInput } from './inputs/get-place-overview-marker.input';
-import { WeeklyCloseType } from './constants/weekly-close-type.constant';
 
 @Injectable()
 export class PlaceCoreRepository {
