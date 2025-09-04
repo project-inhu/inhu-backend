@@ -1375,13 +1375,19 @@ const clustered = generateClusteredCoords(minCoords, maxCoords, size, size); // 
 
 const generatedPlaces: PlaceSeedData[] = [];
 
+// 장소 이미지를 배열로 만듦
+const allPlaceImages = Object.values(PLACE_IMAGE);
+
 for (let i = 0; i < size * size; i++) {
+  const placeImgIdx = i % allPlaceImages.length;
+  const imgPath = allPlaceImages[placeImgIdx];
+
   generatedPlaces.push({
     name: `자동 생성 장소 ${i + 39}`,
     tel: `032-111-${1000 + i}`,
     type: PlaceType.RESTAURANT,
     activatedAt: FIXED_ACTIVATED_AT,
-    placeImgList: [PLACE_IMAGE.BAKERY, PLACE_IMAGE.CAFE1],
+    placeImgList: [imgPath],
     roadAddress: {
       name: `인천광역시 미추홀구 인하로 ${300 + i}`,
       addressX: clustered[i].lon,
@@ -1391,7 +1397,7 @@ for (let i = 0; i < size * size; i++) {
     breakTime: FULL_BREAK_TIME,
     reviewList: [defaultReview],
     menuList: [defaultMenu],
-    pickedPlaceList: [defaultPickedPlace],
+    pickedPlaceList: [],
   });
 }
 /**
