@@ -242,6 +242,21 @@ CREATE TABLE withdraw_service_tb
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE banner_tb
+(
+  idx          int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  name         varchar                  NOT NULL,
+  image_path   varchar                  NOT NULL,
+  link         varchar                 ,
+  sort_order   smallint                 NOT NULL,
+  startAt      timestamp with time zone NOT NULL,
+  endAt        timestamp with time zone,
+  activated_at timestamp with time zone,
+  created_at   timestamp with time zone NOT NULL DEFAULT now(),
+  deleted_at   timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+
 ALTER TABLE review_image_tb
   ADD CONSTRAINT FK_review_tb_TO_review_image_tb
     FOREIGN KEY (review_idx)
