@@ -171,8 +171,8 @@ function getCoords(
   return coords;
 }
 
-const minCoords = { lat: 37.45201962044506, lon: 126.65361270545671 };
-const maxCoords = { lat: 37.45223331123992, lon: 126.66704008950877 };
+const minCoords = { lat: 37.4518790203834, lon: 126.655024899331 };
+const maxCoords = { lat: 37.4521395433408, lon: 126.669189254821 };
 
 const coords = getCoords(minCoords, maxCoords, 38);
 
