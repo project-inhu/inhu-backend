@@ -17,7 +17,6 @@ const PLACE_IMAGE = {
   SOCCER_FIELD: '/place/soccer_field.jpg',
   THEATER: '/place/theater.jpg',
   CAFE1: '/place/cafe.jpg',
-  BAR1: '/place/bar.jpg',
   BAR2: '/place/bar2.jpg',
   BAR3: '/place/bar3.jpg',
   BAR4: '/place/bar4.jpg',
@@ -506,7 +505,7 @@ const place10: PlaceSeedData = {
   tel: '032-111-0010',
   type: PlaceType.BAR,
   activatedAt: FIXED_ACTIVATED_AT,
-  placeImgList: [PLACE_IMAGE.BAR1],
+  placeImgList: [PLACE_IMAGE.BAR2],
   roadAddress: {
     name: '인천광역시 미추홀구 인하로 110',
     addressX: coords[10].lon,
@@ -596,7 +595,7 @@ const place13: PlaceSeedData = {
   activatedAt: FIXED_ACTIVATED_AT,
   placeImgList: [
     PLACE_IMAGE.BAKERY,
-    PLACE_IMAGE.BAR1,
+    PLACE_IMAGE.BAR2,
     PLACE_IMAGE.HOSPITAL,
     PLACE_IMAGE.POOL,
     PLACE_IMAGE.THEATER,
