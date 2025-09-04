@@ -5,6 +5,7 @@ import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.co
 import { BookmarkSeedHelper } from '@libs/testing/seed/bookmark/bookmark.seed';
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { GetAllPlaceOverviewResponseDto } from '@user/api/place/dto/response/get-all-place-overview-response.dto';
+import { PlaceMarkerEntity } from '@user/api/place/entity/place-marker.entity';
 import { PlaceOverviewEntity } from '@user/api/place/entity/place-overview.entity';
 import { PlaceEntity } from '@user/api/place/entity/place.entity';
 import { AppModule } from '@user/app.module';
@@ -698,7 +699,7 @@ describe('Place E2E test', () => {
         .get('/place/marker/all')
         .expect(200);
 
-      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+      const placeList: PlaceMarkerEntity[] = response.body.placeMarkerList;
 
       expect(Array.isArray(placeList)).toBe(true);
 
@@ -745,7 +746,7 @@ describe('Place E2E test', () => {
         })
         .expect(200);
 
-      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+      const placeList: PlaceMarkerEntity[] = response.body.placeMarkerList;
 
       expect(placeList.map(({ idx }) => idx)).toStrictEqual([
         firstPlace.idx,
@@ -784,7 +785,7 @@ describe('Place E2E test', () => {
         })
         .expect(200);
 
-      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+      const placeList: PlaceMarkerEntity[] = response.body.placeMarkerList;
 
       expect(placeList.map(({ idx }) => idx)).toStrictEqual([
         firstPlace.idx,
@@ -866,7 +867,7 @@ describe('Place E2E test', () => {
         })
         .expect(200);
 
-      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+      const placeList: PlaceMarkerEntity[] = response.body.placeMarkerList;
 
       expect(placeList.map(({ name }) => name).sort()).toStrictEqual(
         [place1.name, place5.name].sort(),
@@ -980,7 +981,7 @@ describe('Place E2E test', () => {
         })
         .expect(200);
 
-      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+      const placeList: PlaceMarkerEntity[] = response.body.placeMarkerList;
 
       expect(placeList.map(({ name }) => name).sort()).toStrictEqual(
         [place2.name, place3.name, place4.name].sort(),
@@ -1035,7 +1036,7 @@ describe('Place E2E test', () => {
         })
         .expect(200);
 
-      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+      const placeList: PlaceMarkerEntity[] = response.body.placeMarkerList;
 
       expect(placeList.map(({ name }) => name).sort()).toStrictEqual(
         [place2.name].sort(),
@@ -1113,7 +1114,7 @@ describe('Place E2E test', () => {
         })
         .expect(200);
 
-      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+      const placeList: PlaceMarkerEntity[] = response.body.placeMarkerList;
 
       expect(placeList.map(({ name }) => name).sort()).toStrictEqual(
         [place2.name, place3.name].sort(),
@@ -1147,7 +1148,7 @@ describe('Place E2E test', () => {
         })
         .expect(200);
 
-      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+      const placeList: PlaceMarkerEntity[] = response.body.placeMarkerList;
 
       expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
         [place1.idx].sort(),

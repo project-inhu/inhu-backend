@@ -6,15 +6,12 @@ import { PickType } from '@nestjs/swagger';
  *
  * @publicApi
  */
-export class GetPlaceOverviewMarkerInput extends PickType(
-  GetPlaceOverviewInput,
-  [
-    'orderBy',
-    'order',
-    'operating',
-    'types',
-    'activated',
-    'permanentlyClosed',
-    'searchKeyword',
-  ],
-) {}
+export class GetPlaceMarkerInput extends PickType(GetPlaceOverviewInput, [
+  'orderBy',
+  'order',
+  'operating',
+  'types',
+  'activated',
+  'permanentlyClosed',
+  'searchKeyword',
+]) {}

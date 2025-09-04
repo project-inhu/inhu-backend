@@ -4,7 +4,7 @@ import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsIn, IsOptional } from 'class-validator';
 
-export class GetAllPlaceOverviewMarkerDto {
+export class GetAllPlaceMarkerDto {
   /**
    * 정렬 옵션
    *
