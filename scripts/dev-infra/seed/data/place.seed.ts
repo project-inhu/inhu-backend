@@ -171,8 +171,8 @@ function getCoords(
   return coords;
 }
 
-const minCoords = { lat: 37.4518790203834, lon: 126.655024899331 };
-const maxCoords = { lat: 37.4521395433408, lon: 126.669189254821 };
+const minCoords = { lat: 37.4508790203834, lon: 126.655024899331 };
+const maxCoords = { lat: 37.4541395433408, lon: 126.669189254821 };
 
 const coords = getCoords(minCoords, maxCoords, 38);
 
@@ -1369,13 +1369,15 @@ function generateClusteredCoords(
   return coordinates;
 }
 
-const clustered = generateClusteredCoords(minCoords, maxCoords, 12, 12);
+const size = 24;
+
+const clustered = generateClusteredCoords(minCoords, maxCoords, size, size); // 24 * 24 개의 요소
 
 const generatedPlaces: PlaceSeedData[] = [];
 
-for (let i = 39; i <= 138; i++) {
+for (let i = 0; i < size * size; i++) {
   generatedPlaces.push({
-    name: `자동 생성 장소 ${i}`,
+    name: `자동 생성 장소 ${i + 39}`,
     tel: `032-111-${1000 + i}`,
     type: PlaceType.RESTAURANT,
     activatedAt: FIXED_ACTIVATED_AT,
