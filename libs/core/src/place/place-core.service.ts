@@ -54,6 +54,10 @@ export class PlaceCoreService {
     );
   }
 
+  public async getOperatingPlaceCount(): Promise<number> {
+    return await this.placeCoreRepository.selectOperatingPlaceCount();
+  }
+
   public async createPlace(input: CreatePlaceInput): Promise<PlaceModel> {
     return PlaceModel.fromPrisma(
       await this.placeCoreRepository.insertPlace(input),
