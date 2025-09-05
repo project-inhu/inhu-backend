@@ -4472,18 +4472,18 @@
         "tableId": "QB-B9PnGPGRvorNOJWydA",
         "name": "start_at",
         "comment": "",
-        "dataType": "timestamp with time zone",
+        "dataType": "date",
         "default": "",
         "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 60,
           "widthComment": 60,
-          "widthDataType": 147,
+          "widthDataType": 60,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1756973104131,
+          "updateAt": 1757059303883,
           "createAt": 1756972566683
         }
       },
@@ -4492,18 +4492,18 @@
         "tableId": "QB-B9PnGPGRvorNOJWydA",
         "name": "end_at",
         "comment": "",
-        "dataType": "timestamp with time zone",
+        "dataType": "date",
         "default": "",
         "options": 0,
         "ui": {
           "keys": 0,
           "widthName": 60,
           "widthComment": 60,
-          "widthDataType": 147,
+          "widthDataType": 60,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1756973118597,
+          "updateAt": 1757059302368,
           "createAt": 1756973105525
         }
       },
@@ -4523,7 +4523,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1756973133057,
+          "updateAt": 1757059299940,
           "createAt": 1756973124779
         }
       },
