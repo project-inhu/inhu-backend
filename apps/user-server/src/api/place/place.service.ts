@@ -32,7 +32,11 @@ export class PlaceService {
       leftTopY: dto.leftTopY,
       rightBottomY: dto.rightBottomY,
     };
-    const baseFilter = {
+
+    const placeOverviewModelList = await this.placeCoreService.getPlaceAll({
+      take: pageSize + 1,
+      skip: skip,
+      operating: dto.operating,
       activated: true,
       permanentlyClosed: false,
       coordinate: this.isValidCoordinate(coordinate) ? coordinate : undefined,
@@ -40,48 +44,7 @@ export class PlaceService {
       types: dto.type ? [dto.type] : undefined,
       orderBy: dto.orderby,
       bookmarkUserIdx: undefined,
-    };
-    let placeOverviewModelList: PlaceOverviewModel[] = [];
-
-    if (dto.operating === undefined) {
-      const operatingPlaceCount =
-        await this.placeCoreService.getOperatingPlaceCount();
-
-      const operatingRemain = Math.max(0, operatingPlaceCount - skip);
-      const operatingTake = Math.max(0, Math.min(pageSize, operatingRemain));
-
-      const closedSkip =
-        skip <= operatingPlaceCount ? 0 : skip - operatingPlaceCount;
-      const closedTake = Math.max(0, pageSize - operatingTake);
-
-      const [operatingList, closedList] = await Promise.all([
-        operatingTake > 0
-          ? this.placeCoreService.getPlaceAll({
-              ...baseFilter,
-              take: operatingTake + 1,
-              skip: skip,
-              operating: true,
-            })
-          : Promise.resolve([]),
-        closedTake > 0
-          ? this.placeCoreService.getPlaceAll({
-              ...baseFilter,
-              take: closedTake + 1,
-              skip: closedSkip,
-              operating: false,
-            })
-          : Promise.resolve([]),
-      ]);
-
-      placeOverviewModelList = [...operatingList, ...closedList];
-    } else {
-      placeOverviewModelList = await this.placeCoreService.getPlaceAll({
-        ...baseFilter,
-        take: pageSize + 1,
-        skip: skip,
-        operating: dto.operating,
-      });
-    }
+    });
 
     const paginatedList = placeOverviewModelList.slice(0, pageSize);
     const hasNext = placeOverviewModelList.length > pageSize;
