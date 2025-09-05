@@ -5,7 +5,7 @@
  */
 export class CreateBannerInput {
   name: string;
-  imagPath: string;
+  imagePath: string;
   link: string | null;
   startAt: Date;
   endAt: Date | null;

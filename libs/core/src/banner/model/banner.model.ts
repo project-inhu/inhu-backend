@@ -29,7 +29,7 @@ export class BannerModel {
   /**
    * 배너 정렬 순서
    */
-  public sortOrder: number;
+  public sortOrder: number | null;
 
   /**
    * 배너 시작 일시
