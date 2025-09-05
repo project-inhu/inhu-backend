@@ -157,7 +157,7 @@ describe('Place E2E test', () => {
       ]);
     });
 
-    it('200 - operating filtering check', async () => {
+    it('200 - operating filtering check (operating === true)', async () => {
       const now = testHelper.mockTodayTime('10:00');
 
       const [place1, place2, place3, place4, place5] =
@@ -233,9 +233,334 @@ describe('Place E2E test', () => {
 
       const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
 
+      expect(response.body.hasNext).toBe(false);
       expect(placeList.map(({ name }) => name).sort()).toStrictEqual(
         [place1.name, place5.name].sort(),
       );
+    });
+
+    it('200 - operating filtering check (operating === false)', async () => {
+      const now = testHelper.mockTodayTime('10:00');
+
+      const [place1, place2, place3, place4, place5] =
+        await placeSeedHelper.seedAll([
+          {
+            // place1:
+            name: '오늘 시간에 운영 중인 가게',
+            activatedAt: new Date(),
+            operatingHourList: [
+              {
+                day: now.day(),
+                startAt: now.before('4h'),
+                endAt: now.after('1h'),
+              },
+            ],
+          },
+          {
+            // place2
+            name: '내일 시간에 운영 중인 가게',
+            activatedAt: new Date(),
+            operatingHourList: [
+              {
+                day: now.dayAfter(1),
+                startAt: now.after('1h'),
+                endAt: now.after('2h'),
+              },
+            ],
+          },
+          {
+            // place3
+            name: '운영 정보가 없는 가게',
+            activatedAt: new Date(),
+          },
+          {
+            // place4
+            name: '오늘 운영하지만 앞으로 두 시간 뒤에 운영할 가게',
+            activatedAt: new Date(),
+            operatingHourList: [
+              {
+                day: now.day(),
+                startAt: now.after('2h'),
+                endAt: now.after('4h'),
+              },
+            ],
+          },
+          {
+            // place5
+            name: '오늘 지금 시간에 운영하되 오늘 운영 정보가 하나 더 있는 가게',
+            activatedAt: new Date(),
+            operatingHourList: [
+              {
+                day: now.day(),
+                startAt: now.before('1h'),
+                endAt: now.after('2h'),
+              },
+              {
+                day: now.day(),
+                startAt: now.before('2h'),
+                endAt: now.before('1h'),
+              },
+            ],
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/all')
+        .query({
+          page: 1,
+          operating: false,
+        })
+        .expect(200);
+
+      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+
+      expect(response.body.hasNext).toBe(false);
+      expect(placeList.map(({ name }) => name).sort()).toStrictEqual(
+        [place2.name, place3.name, place4.name].sort(),
+      );
+    });
+
+    it('200 - operating filtering check (operating === undefined)', async () => {
+      const now = testHelper.mockTodayTime('10:00');
+
+      const [place1, place2, place3, place4, place5] =
+        await placeSeedHelper.seedAll([
+          {
+            // place1:
+            name: '오늘 시간에 운영 중인 가게',
+            activatedAt: new Date(),
+            operatingHourList: [
+              {
+                day: now.day(),
+                startAt: now.before('4h'),
+                endAt: now.after('1h'),
+              },
+            ],
+          },
+          {
+            // place2
+            name: '내일 시간에 운영 중인 가게',
+            activatedAt: new Date(),
+            operatingHourList: [
+              {
+                day: now.dayAfter(1),
+                startAt: now.after('1h'),
+                endAt: now.after('2h'),
+              },
+            ],
+          },
+          {
+            // place3
+            name: '운영 정보가 없는 가게',
+            activatedAt: new Date(),
+          },
+          {
+            // place4
+            name: '오늘 운영하지만 앞으로 두 시간 뒤에 운영할 가게',
+            activatedAt: new Date(),
+            operatingHourList: [
+              {
+                day: now.day(),
+                startAt: now.after('2h'),
+                endAt: now.after('4h'),
+              },
+            ],
+          },
+          {
+            // place5
+            name: '오늘 지금 시간에 운영하되 오늘 운영 정보가 하나 더 있는 가게',
+            activatedAt: new Date(),
+            operatingHourList: [
+              {
+                day: now.day(),
+                startAt: now.before('1h'),
+                endAt: now.after('2h'),
+              },
+              {
+                day: now.day(),
+                startAt: now.before('2h'),
+                endAt: now.before('1h'),
+              },
+            ],
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/all')
+        .query({
+          page: 1,
+        })
+        .expect(200);
+
+      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+
+      const names = placeList.map(({ name }) => name);
+      expect(response.body.hasNext).toBe(false);
+      expect(names.slice(0, 2).sort()).toStrictEqual(
+        [place1.name, place5.name].sort(),
+      );
+      expect(names.slice(2).sort()).toStrictEqual(
+        [place2.name, place3.name, place4.name].sort(),
+      );
+    });
+
+    it('200 - operating filtering and hasNext true check (operating === undefined)', async () => {
+      const now = testHelper.mockTodayTime('10:00');
+
+      const [
+        place1,
+        place2,
+        place3,
+        place4,
+        place5,
+        place6,
+        place7,
+        place8,
+        place9,
+        place10,
+        place11,
+      ] = await placeSeedHelper.seedAll([
+        {
+          // place1:
+          name: '오늘 시간에 운영 중인 가게',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.after('1h'),
+            },
+          ],
+        },
+        {
+          // place2
+          name: '내일 시간에 운영 중인 가게',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.dayAfter(1),
+              startAt: now.after('1h'),
+              endAt: now.after('2h'),
+            },
+          ],
+        },
+        {
+          // place3
+          name: '운영 정보가 없는 가게',
+          activatedAt: new Date(),
+        },
+        {
+          // place4
+          name: '오늘 운영하지만 앞으로 두 시간 뒤에 운영할 가게',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.after('2h'),
+              endAt: now.after('4h'),
+            },
+          ],
+        },
+        {
+          // place5
+          name: '오늘 지금 시간에 운영하되 오늘 운영 정보가 하나 더 있는 가게',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('1h'),
+              endAt: now.after('2h'),
+            },
+            {
+              day: now.day(),
+              startAt: now.before('2h'),
+              endAt: now.before('1h'),
+            },
+          ],
+        },
+        {
+          // place6
+          name: '6번째 가게',
+          activatedAt: new Date(),
+        },
+        {
+          // place7
+          name: '7번째 가게',
+          activatedAt: new Date(),
+        },
+        {
+          // place8
+          name: '8번째 가게',
+          activatedAt: new Date(),
+        },
+        {
+          // place9
+          name: '9번째 가게',
+          activatedAt: new Date(),
+        },
+        {
+          // place10
+          name: '10번째 가게',
+          activatedAt: new Date(),
+        },
+        {
+          // place11
+          name: '11번째 가게',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      const response1 = await testHelper
+        .test()
+        .get('/place/all')
+        .query({
+          page: 1,
+        })
+        .expect(200);
+
+      const placeList1: PlaceOverviewEntity[] =
+        response1.body.placeOverviewList;
+
+      const names1 = placeList1.map(({ name }) => name);
+      expect(response1.body.hasNext).toBe(true);
+      expect(names1.slice(0, 2).sort()).toStrictEqual(
+        [place1.name, place5.name].sort(),
+      );
+
+      const nonOperating = [
+        place2.name,
+        place3.name,
+        place4.name,
+        place6.name,
+        place7.name,
+        place8.name,
+        place9.name,
+        place10.name,
+        place11.name,
+      ];
+      expect(names1.slice(2)).toHaveLength(8);
+      expect(nonOperating).toEqual(expect.arrayContaining(names1.slice(8)));
+
+      const response2 = await testHelper
+        .test()
+        .get('/place/all')
+        .query({
+          page: 2,
+        })
+        .expect(200);
+
+      const placeList2: PlaceOverviewEntity[] =
+        response2.body.placeOverviewList;
+
+      const names2 = placeList2.map(({ name }) => name);
+      expect(response2.body.hasNext).toBe(false);
+      expect(names2).toHaveLength(1);
+      const remaining = nonOperating.filter(
+        (n) => !names1.slice(2).includes(n),
+      );
+      expect(names2.sort()).toStrictEqual(remaining.sort());
     });
 
     it('200 - break time filtering check', async () => {
