@@ -34,12 +34,12 @@ export class BannerModel {
   /**
    * 배너 시작 일시
    */
-  public startAt: Date;
+  public startAt: string;
 
   /**
    * 배너 종료 일시
    */
-  public endAt: Date | null;
+  public endAt: string | null;
 
   /**
    * 배너 활성화 일시
@@ -62,8 +62,8 @@ export class BannerModel {
       imagePath: banner.imagePath,
       link: banner.link,
       sortOrder: banner.sortOrder,
-      startAt: banner.startAt,
-      endAt: banner.endAt,
+      startAt: banner.startAt.toISOString().split('T')[0],
+      endAt: banner.endAt ? banner.endAt.toISOString().split('T')[0] : null,
       activatedAt: banner.activatedAt,
       createdAt: banner.createdAt,
     });
