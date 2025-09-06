@@ -9,4 +9,5 @@ export class CreateBannerInput {
   link: string | null;
   startAt: Date;
   endAt: Date | null;
+  activatedAt: Date | null;
 }

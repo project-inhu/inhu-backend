@@ -6,6 +6,4 @@ import { CreateBannerInput } from './create-banner.input';
  *
  * @publicApi
  */
-export class UpdateBannerInput extends PartialType(CreateBannerInput) {
-  activatedAt?: Date | null;
-}
+export class UpdateBannerInput extends PartialType(CreateBannerInput) {}
