@@ -9,6 +9,7 @@ import { BookmarkedPlaceOverviewModel } from './model/bookmarked-place-overview.
 import { GetBookmarkedPlaceOverviewInput } from './inputs/get-bookmarked-place-overview.input';
 import { GetPlaceMarkerInput } from './inputs/get-place-overview-marker.input';
 import { PlaceMarkerModel } from './model/place-marker.model';
+import { Transactional } from '@nestjs-cls/transactional';
 
 /**
  * 장소 관련 핵심 서비스
@@ -38,9 +39,58 @@ export class PlaceCoreService {
       .then((result) => result.map(BookmarkedPlaceOverviewModel.fromPrisma));
   }
 
+  @Transactional()
   public async getPlaceAll(
     input: GetPlaceOverviewInput,
   ): Promise<PlaceOverviewModel[]> {
+    if (input.operating === undefined) {
+      const pageSize = input.take;
+      const skip = input.skip;
+      const baseFilter = {
+        activated: input.activated,
+        permanentlyClosed: input.permanentlyClosed,
+        coordinate: input.coordinate,
+        order: input.order,
+        types: input.types,
+        orderBy: input.orderBy,
+        searchKeyword: input.searchKeyword,
+        bookmarkUserIdx: input.bookmarkUserIdx,
+      };
+
+      const operatingPlaceCount =
+        await this.placeCoreRepository.selectOperatingPlaceCount();
+
+      const operatingRemain = Math.max(0, operatingPlaceCount - skip); // 운영중인 장소에서 남은 수
+      const operatingTake = Math.max(0, Math.min(pageSize, operatingRemain)); // 실제로 가져올 운영중인 장소 수
+
+      const closedSkip =
+        skip <= operatingPlaceCount ? 0 : skip - operatingPlaceCount; // 폐점된 장소에서 건너뛸 수
+      const closedTake = Math.max(0, pageSize - operatingTake); // 실제로 가져올 폐점된 장소 수
+
+      const [operatingList, closedList] = await Promise.all([
+        operatingTake > 0
+          ? this.placeCoreRepository.selectPlaceAll({
+              ...baseFilter,
+              take: operatingTake + 1,
+              skip: skip,
+              operating: true,
+            })
+          : Promise.resolve([]),
+        closedTake > 0
+          ? this.placeCoreRepository.selectPlaceAll({
+              ...baseFilter,
+              take: closedTake + 1,
+              skip: closedSkip,
+              operating: false,
+            })
+          : Promise.resolve([]),
+      ]);
+
+      return [...operatingList, ...closedList].map(
+        PlaceOverviewModel.fromPrisma,
+      );
+    }
+
     return (await this.placeCoreRepository.selectPlaceAll(input)).map(
       PlaceOverviewModel.fromPrisma,
     );
@@ -52,6 +102,10 @@ export class PlaceCoreService {
     return (await this.placeCoreRepository.selectPlaceMarkerAll(input)).map(
       PlaceMarkerModel.fromPrisma,
     );
+  }
+
+  public async getOperatingPlaceCount(): Promise<number> {
+    return await this.placeCoreRepository.selectOperatingPlaceCount();
   }
 
   public async createPlace(input: CreatePlaceInput): Promise<PlaceModel> {

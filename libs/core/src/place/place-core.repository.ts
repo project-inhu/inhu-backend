@@ -127,6 +127,14 @@ export class PlaceCoreRepository {
     });
   }
 
+  public async selectOperatingPlaceCount(): Promise<number> {
+    return await this.txHost.tx.place.count({
+      where: {
+        AND: [{ deletedAt: null }, this.getOperatingFilterWhereClause(true)],
+      },
+    });
+  }
+
   /**
    * 폐점 여부 필터링
    */

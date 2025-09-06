@@ -8,6 +8,7 @@ import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { BookmarkCoreService } from '@libs/core/bookmark/bookmark-core.service';
 import { GetAllPlaceMarkerDto } from './dto/request/get-all-place-marker.dto';
 import { PlaceMarkerEntity } from './entity/place-marker.entity';
+import { PlaceOverviewModel } from '@libs/core/place/model/place-overview.model';
 
 @Injectable()
 export class PlaceService {
@@ -24,6 +25,7 @@ export class PlaceService {
     hasNext: boolean;
   }> {
     const pageSize = dto.take;
+    const skip = (dto.page - 1) * pageSize;
     const coordinate = {
       leftTopX: dto.leftTopX,
       rightBottomX: dto.rightBottomX,
@@ -33,11 +35,11 @@ export class PlaceService {
 
     const placeOverviewModelList = await this.placeCoreService.getPlaceAll({
       take: pageSize + 1,
-      skip: (dto.page - 1) * pageSize,
+      skip: skip,
+      operating: dto.operating,
       activated: true,
       permanentlyClosed: false,
       coordinate: this.isValidCoordinate(coordinate) ? coordinate : undefined,
-      operating: dto.operating,
       order: dto.order,
       types: dto.type ? [dto.type] : undefined,
       orderBy: dto.orderby,
