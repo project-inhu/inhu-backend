@@ -9,6 +9,7 @@ import { GetMenuAllInput } from './inputs/get-menu-all.input';
 import { MenuModel } from './model/menu.model';
 import { CreateMenuInput } from './inputs/create-menu.input';
 import { UpdateMenuInput } from './inputs/update-menu.input';
+import { Locker } from '@libs/common/decorator/locker.decorator';
 
 /**
  * MenuCoreService 클래스
@@ -53,8 +54,8 @@ export class MenuCoreService {
     return await this.menuCoreRepository.updateMenuByIdx(idx, input);
   }
 
-  // TODO: race condition 해결해야 함
   @Transactional()
+  @Locker({ key: 'menu_sort_order' })
   public async updateMenuSortOrderByIdx(
     idx: number,
     newSortOrder: number,
@@ -76,10 +77,28 @@ export class MenuCoreService {
       return;
     }
 
+    if (currentSortOrder < newSortOrder) {
+      await this.menuCoreRepository.incrementManyMenuSortOrderByPlaceIdx(
+        -1,
+        menu.placeIdx,
+        'gt',
+        currentSortOrder,
+        'lte',
+        newSortOrder,
+      );
+    } else {
+      await this.menuCoreRepository.incrementManyMenuSortOrderByPlaceIdx(
+        1,
+        menu.placeIdx,
+        'gte',
+        newSortOrder,
+        'lt',
+        currentSortOrder,
+      );
+    }
+
     return await this.menuCoreRepository.updateMenuSortOrderByIdx(
       idx,
-      menu.placeIdx,
-      currentSortOrder,
       newSortOrder,
     );
   }
