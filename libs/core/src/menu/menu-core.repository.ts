@@ -5,6 +5,7 @@ import { GetMenuAllInput } from './inputs/get-menu-all.input';
 import { SELECT_MENU, SelectMenu } from './model/prisma-type/select-menu';
 import { CreateMenuInput } from './inputs/create-menu.input';
 import { UpdateMenuInput } from './inputs/update-menu.input';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class MenuCoreRepository {
@@ -83,46 +84,38 @@ export class MenuCoreRepository {
     });
   }
 
+  public async incrementManyMenuSortOrderByPlaceIdx(
+    increment: number,
+    placeIdx: number,
+    compare?: 'gt' | 'gte',
+    comparisonValue?: number,
+    compare2?: 'lt' | 'lte',
+    comparisonValue2?: number,
+  ): Promise<void> {
+    const sortOrder: Record<string, number> = {};
+    if (compare && comparisonValue !== undefined)
+      sortOrder[compare] = comparisonValue;
+    if (compare2 && comparisonValue2 !== undefined)
+      sortOrder[compare2] = comparisonValue2;
+
+    await this.txHost.tx.menu.updateMany({
+      data: {
+        sortOrder: {
+          increment,
+        },
+      },
+      where: {
+        placeIdx,
+        sortOrder,
+        deletedAt: null,
+      },
+    });
+  }
+
   public async updateMenuSortOrderByIdx(
     idx: number,
-    placeIdx: number,
-    currentSortOrder: number,
     newSortOrder: number,
   ): Promise<void> {
-    if (currentSortOrder < newSortOrder) {
-      await this.txHost.tx.menu.updateMany({
-        data: {
-          sortOrder: {
-            decrement: 1,
-          },
-        },
-        where: {
-          placeIdx,
-          sortOrder: {
-            gt: currentSortOrder,
-            lte: newSortOrder,
-          },
-          deletedAt: null,
-        },
-      });
-    } else {
-      await this.txHost.tx.menu.updateMany({
-        data: {
-          sortOrder: {
-            increment: 1,
-          },
-        },
-        where: {
-          placeIdx,
-          sortOrder: {
-            gte: newSortOrder,
-            lt: currentSortOrder,
-          },
-          deletedAt: null,
-        },
-      });
-    }
-
     await this.txHost.tx.menu.update({
       where: { idx },
       data: { sortOrder: newSortOrder },
@@ -141,19 +134,11 @@ export class MenuCoreRepository {
       },
     });
 
-    await this.txHost.tx.menu.updateMany({
-      data: {
-        sortOrder: {
-          decrement: 1,
-        },
-      },
-      where: {
-        placeIdx: menu.placeIdx,
-        sortOrder: {
-          gt: menu.sortOrder,
-        },
-        deletedAt: null,
-      },
-    });
+    await this.incrementManyMenuSortOrderByPlaceIdx(
+      -1,
+      menu.placeIdx,
+      'gt',
+      menu.sortOrder,
+    );
   }
 }
