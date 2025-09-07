@@ -1384,7 +1384,7 @@ for (let i = 0; i < size * size; i++) {
   generatedPlaces.push({
     name: `자동 생성 장소 ${i + 39}`,
     tel: `032-111-${1000 + i}`,
-    type: PlaceType.RESTAURANT,
+    type: [PlaceType.RESTAURANT, PlaceType.BAR, PlaceType.CAFE][i % 3],
     activatedAt: FIXED_ACTIVATED_AT,
     placeImgList: [imgPath],
     roadAddress: {
