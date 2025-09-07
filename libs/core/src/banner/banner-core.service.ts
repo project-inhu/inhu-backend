@@ -4,6 +4,7 @@ import { BannerModel } from './model/banner.model';
 import { CreateBannerInput } from './inputs/create-banner.input';
 import { UpdateBannerInput } from './inputs/update-banner.input';
 import { Transactional } from '@nestjs-cls/transactional';
+import { UpdateBannerSortOrderInput } from './inputs/update-banner-sort-order.input';
 
 /**
  * BannerCoreService 클래스
@@ -78,5 +79,16 @@ export class BannerCoreService {
     await this.bannerRepository.updateSortOrderByIdx(idx, null);
 
     await this.bannerRepository.decrementSortOrder(sortOrder);
+  }
+
+  public async updateBannerSortOrder(
+    input: UpdateBannerSortOrderInput[],
+  ): Promise<void> {
+    for (const item of input) {
+      await this.bannerRepository.updateSortOrderByIdx(
+        item.idx,
+        item.sortOrder,
+      );
+    }
   }
 }
