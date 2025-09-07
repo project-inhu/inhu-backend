@@ -44,16 +44,6 @@ export class GetPlaceOverviewInput {
   bookmarkUserIdx?: number;
 
   /**
-   * 좌표 필터링
-   */
-  coordinate?: {
-    leftTopX: number;
-    leftTopY: number;
-    rightBottomX: number;
-    rightBottomY: number;
-  };
-
-  /**
    * type 필터링
    */
   types?: PlaceType[];

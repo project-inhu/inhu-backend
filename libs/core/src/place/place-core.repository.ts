@@ -41,14 +41,13 @@ export class PlaceCoreRepository {
   }
 
   public async selectPlaceAll({
+    take,
+    skip,
+    orderBy,
+    order,
     operating,
     bookmarkUserIdx,
-    coordinate,
     types,
-    skip,
-    take,
-    order,
-    orderBy,
     activated,
     permanentlyClosed,
     searchKeyword,
@@ -60,7 +59,6 @@ export class PlaceCoreRepository {
           { deletedAt: null },
           this.getOperatingFilterWhereClause(operating), // 영업중 필터링
           this.getBookmarkFilterWhereClause(bookmarkUserIdx), // 북마크 필터링
-          this.getCoordinateFilterWhereClause(coordinate), // 좌표 필터링
           this.getTypesFilterWhereClause(types), // 타입 필터링
           this.getActivatedAtFilterWhereClause(activated), // 활성화 필터링
           this.getPermanentlyClosedFilterWhereClause(permanentlyClosed), // 폐점 여부 필터링
@@ -81,6 +79,7 @@ export class PlaceCoreRepository {
     activated,
     permanentlyClosed,
     searchKeyword,
+    coordinate,
   }: GetPlaceMarkerInput): Promise<SelectPlaceMarker[]> {
     return await this.txHost.tx.place.findMany({
       ...SELECT_PLACE_MARKER,
@@ -92,6 +91,7 @@ export class PlaceCoreRepository {
           this.getActivatedAtFilterWhereClause(activated), // 활성화 필터링
           this.getPermanentlyClosedFilterWhereClause(permanentlyClosed), // 폐점 여부 필터링
           this.getSearchKeywordWhereClause(searchKeyword), // 검색 키워드 필터링
+          this.getCoordinateFilterWhereClause(coordinate), // 좌표 필터링
         ],
       },
       orderBy: this.getOrderByClause({ order, orderBy }),
@@ -99,14 +99,13 @@ export class PlaceCoreRepository {
   }
 
   public async selectPlaceCount({
+    take,
+    skip,
+    orderBy,
+    order,
     operating,
     bookmarkUserIdx,
-    coordinate,
     types,
-    skip,
-    take,
-    order,
-    orderBy,
     activated,
     permanentlyClosed,
     searchKeyword,
@@ -117,7 +116,6 @@ export class PlaceCoreRepository {
           { deletedAt: null },
           this.getOperatingFilterWhereClause(operating), // 영업중 필터링
           this.getBookmarkFilterWhereClause(bookmarkUserIdx), // 북마크 필터링
-          this.getCoordinateFilterWhereClause(coordinate), // 좌표 필터링
           this.getTypesFilterWhereClause(types), // 타입 필터링
           this.getActivatedAtFilterWhereClause(activated), // 활성화 필터링
           this.getPermanentlyClosedFilterWhereClause(permanentlyClosed), // 폐점 여부 필터링
