@@ -14,4 +14,14 @@ export class GetPlaceMarkerInput extends PickType(GetPlaceOverviewInput, [
   'activated',
   'permanentlyClosed',
   'searchKeyword',
-]) {}
+]) {
+  /**
+   * 좌표 필터링
+   */
+  coordinate?: {
+    leftTopX: number;
+    leftTopY: number;
+    rightBottomX: number;
+    rightBottomY: number;
+  };
+}

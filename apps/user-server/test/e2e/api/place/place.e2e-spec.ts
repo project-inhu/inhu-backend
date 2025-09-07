@@ -3,6 +3,7 @@ import { DateUtilService } from '@libs/common/modules/date-util/date-util.servic
 import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 import { BookmarkSeedHelper } from '@libs/testing/seed/bookmark/bookmark.seed';
+import { MenuSeedHelper } from '@libs/testing/seed/menu/menu.seed';
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { GetAllPlaceOverviewResponseDto } from '@user/api/place/dto/response/get-all-place-overview-response.dto';
 import { PlaceMarkerEntity } from '@user/api/place/entity/place-marker.entity';
@@ -15,6 +16,7 @@ describe('Place E2E test', () => {
   const testHelper = TestHelper.create(AppModule);
   const placeSeedHelper = testHelper.seedHelper(PlaceSeedHelper);
   const bookmarkSeedHelper = testHelper.seedHelper(BookmarkSeedHelper);
+  const menuSeedHelper = testHelper.seedHelper(MenuSeedHelper);
 
   beforeEach(async () => {
     await testHelper.init();
@@ -848,72 +850,6 @@ describe('Place E2E test', () => {
       );
     });
 
-    it('200 - coordinate filtering check', async () => {
-      const coordinate = {
-        leftTopX: 123.00001,
-        leftTopY: 78.00001,
-        rightBottomX: 124.99999,
-        rightBottomY: 76.99999,
-      };
-
-      const [place1] = await placeSeedHelper.seedAll([
-        {
-          activatedAt: new Date(),
-          name: 'place1: 좌표 범위 내의 장소',
-          roadAddress: {
-            addressX: coordinate.leftTopX + 0.1,
-            addressY: coordinate.rightBottomY + 0.1,
-          },
-        },
-        {
-          activatedAt: new Date(),
-          name: 'place2: y좌표 위로 벗어난 장소',
-          roadAddress: {
-            addressX: coordinate.leftTopX + 0.1,
-            addressY: coordinate.leftTopY + 0.1, // ! Y 좌표 위로 벗어남
-          },
-        },
-        {
-          activatedAt: new Date(),
-          name: 'place3: x좌표 왼쪽으로 벗어난 장소',
-          roadAddress: {
-            addressX: coordinate.leftTopX - 0.1, // ! X 좌표 왼쪽으로 벗어남
-            addressY: coordinate.rightBottomY + 0.1,
-          },
-        },
-        {
-          activatedAt: new Date(),
-          name: 'place4: x좌표 오른쪽으로 벗어난 장소',
-          roadAddress: {
-            addressX: coordinate.rightBottomX + 0.1, // ! X 좌표 오른쪽으로 벗어남
-            addressY: coordinate.rightBottomY + 0.1,
-          },
-        },
-        {
-          activatedAt: new Date(),
-          name: 'place5: y좌표 아래로 벗어난 장소',
-          roadAddress: {
-            addressX: coordinate.leftTopX + 0.1,
-            addressY: coordinate.rightBottomY - 0.1, // ! Y 좌표 아래로 벗어남
-          },
-        },
-      ]);
-
-      const response = await testHelper.test().get('/place/all').query({
-        page: 1,
-        leftTopX: coordinate.leftTopX,
-        leftTopY: coordinate.leftTopY,
-        rightBottomX: coordinate.rightBottomX,
-        rightBottomY: coordinate.rightBottomY,
-      });
-
-      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
-
-      expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
-        [place1.idx].sort(),
-      );
-    });
-
     it('200 - bookmark filed check', async () => {
       const loginUser = testHelper.loginUsers.user1;
 
@@ -955,27 +891,6 @@ describe('Place E2E test', () => {
           .map(({ idx }) => idx)
           .sort(),
       ).toStrictEqual([place1.idx, place3.idx].sort());
-    });
-
-    it('200 - take querystring test', async () => {
-      const placeCount = 101;
-
-      await placeSeedHelper.seedAll(
-        Array(placeCount)
-          .fill(0)
-          .map(() => ({ activatedAt: new Date() })),
-      );
-
-      const response = await testHelper.test().get('/place/all').query({
-        page: 1,
-        take: 100,
-      });
-
-      const { placeOverviewList, hasNext } =
-        response.body as GetAllPlaceOverviewResponseDto;
-
-      expect(placeOverviewList.length).toBe(100);
-      expect(hasNext).toBeTruthy();
     });
 
     it('400 - invalid page parameter', async () => {
@@ -1446,6 +1361,71 @@ describe('Place E2E test', () => {
       );
     });
 
+    it('200 - coordinate filtering check', async () => {
+      const coordinate = {
+        leftTopX: 123.00001,
+        leftTopY: 78.00001,
+        rightBottomX: 124.99999,
+        rightBottomY: 76.99999,
+      };
+
+      const [place1] = await placeSeedHelper.seedAll([
+        {
+          activatedAt: new Date(),
+          name: 'place1: 좌표 범위 내의 장소',
+          roadAddress: {
+            addressX: coordinate.leftTopX + 0.1,
+            addressY: coordinate.rightBottomY + 0.1,
+          },
+        },
+        {
+          activatedAt: new Date(),
+          name: 'place2: y좌표 위로 벗어난 장소',
+          roadAddress: {
+            addressX: coordinate.leftTopX + 0.1,
+            addressY: coordinate.leftTopY + 0.1, // ! Y 좌표 위로 벗어남
+          },
+        },
+        {
+          activatedAt: new Date(),
+          name: 'place3: x좌표 왼쪽으로 벗어난 장소',
+          roadAddress: {
+            addressX: coordinate.leftTopX - 0.1, // ! X 좌표 왼쪽으로 벗어남
+            addressY: coordinate.rightBottomY + 0.1,
+          },
+        },
+        {
+          activatedAt: new Date(),
+          name: 'place4: x좌표 오른쪽으로 벗어난 장소',
+          roadAddress: {
+            addressX: coordinate.rightBottomX + 0.1, // ! X 좌표 오른쪽으로 벗어남
+            addressY: coordinate.rightBottomY + 0.1,
+          },
+        },
+        {
+          activatedAt: new Date(),
+          name: 'place5: y좌표 아래로 벗어난 장소',
+          roadAddress: {
+            addressX: coordinate.leftTopX + 0.1,
+            addressY: coordinate.rightBottomY - 0.1, // ! Y 좌표 아래로 벗어남
+          },
+        },
+      ]);
+
+      const response = await testHelper.test().get('/place/marker/all').query({
+        leftTopX: coordinate.leftTopX,
+        leftTopY: coordinate.leftTopY,
+        rightBottomX: coordinate.rightBottomX,
+        rightBottomY: coordinate.rightBottomY,
+      });
+
+      const placeList: PlaceMarkerEntity[] = response.body.placeMarkerList;
+
+      expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
+        [place1.idx].sort(),
+      );
+    });
+
     it('200 - type filtering check', async () => {
       const [place1, place2, place3] = await placeSeedHelper.seedAll([
         {
@@ -1478,6 +1458,374 @@ describe('Place E2E test', () => {
       expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
         [place1.idx].sort(),
       );
+    });
+
+    it('200 - check searchKeyword filtering single place name', async () => {
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/marker/all')
+        .query({
+          searchKeyword: 'place 1',
+        })
+        .expect(200);
+
+      const places: PlaceMarkerEntity[] = response.body.placeMarkerList;
+
+      expect(places.map(({ idx }) => idx)).toStrictEqual([place1.idx]);
+    });
+
+    it('200 - check searchKeyword filtering multiple place name', async () => {
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/marker/all')
+        .query({
+          searchKeyword: 'place',
+        })
+        .expect(200);
+
+      const places: PlaceMarkerEntity[] = response.body.placeMarkerList;
+
+      console.log(places);
+
+      expect(places.map(({ idx }) => idx).sort()).toStrictEqual(
+        [place1.idx, place2.idx, place3.idx].sort(),
+      );
+    });
+
+    it('200 - check searchKeyword filtering (do not exist place name)', async () => {
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/marker/all')
+        .query({
+          searchKeyword: 'not exist',
+        })
+        .expect(200);
+
+      const places: PlaceMarkerEntity[] = response.body.placeMarkerList;
+
+      expect(places).toStrictEqual([]);
+    });
+
+    it('200 - check searchKeyword filtering single menu name', async () => {
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/marker/all')
+        .query({
+          searchKeyword: 'menu 1',
+        })
+        .expect(200);
+
+      const places: PlaceMarkerEntity[] = response.body.placeMarkerList;
+
+      expect(places.map(({ idx }) => idx)).toStrictEqual([place1.idx]);
+    });
+
+    it('200 - check searchKeyword filtering multiple menu name', async () => {
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/marker/all')
+        .query({
+          searchKeyword: 'menu',
+        })
+        .expect(200);
+
+      const places: PlaceMarkerEntity[] = response.body.placeMarkerList;
+
+      expect(places.map(({ idx }) => idx).sort()).toStrictEqual(
+        [place1.idx, place2.idx, place3.idx].sort(),
+      );
+    });
+
+    it('200 - check searchKeyword filtering (do not exist menu name)', async () => {
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/marker/all')
+        .query({
+          searchKeyword: 'not exist',
+        })
+        .expect(200);
+
+      const places: PlaceMarkerEntity[] = response.body.placeMarkerList;
+
+      expect(places).toStrictEqual([]);
+    });
+
+    it('200 - check searchKeyword filtering single menu content', async () => {
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+          content: 'content 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+          content: 'content 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+          content: 'content 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/marker/all')
+        .query({
+          searchKeyword: 'content 1',
+        })
+        .expect(200);
+
+      const places: PlaceMarkerEntity[] = response.body.placeMarkerList;
+
+      expect(places.map(({ idx }) => idx)).toStrictEqual([place1.idx]);
+    });
+
+    it('200 - check searchKeyword filtering multiple menu content', async () => {
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+          content: 'content 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+          content: 'content 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+          content: 'content 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/marker/all')
+        .query({
+          searchKeyword: 'content',
+        })
+        .expect(200);
+
+      const places: PlaceMarkerEntity[] = response.body.placeMarkerList;
+
+      expect(places.map(({ idx }) => idx).sort()).toStrictEqual(
+        [place1.idx, place2.idx, place3.idx].sort(),
+      );
+    });
+
+    it('200 - check searchKeyword filtering (do not exist menu content)', async () => {
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+          content: 'content 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+          content: 'content 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+          content: 'content 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/marker/all')
+        .query({
+          searchKeyword: 'not exist',
+        })
+        .expect(200);
+
+      const places: PlaceMarkerEntity[] = response.body.placeMarkerList;
+
+      expect(places).toStrictEqual([]);
     });
   });
 

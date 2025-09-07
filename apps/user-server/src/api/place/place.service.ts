@@ -24,26 +24,19 @@ export class PlaceService {
     placeOverviewList: PlaceOverviewEntity[];
     hasNext: boolean;
   }> {
-    const pageSize = dto.take;
+    const pageSize = 10;
     const skip = (dto.page - 1) * pageSize;
-    const coordinate = {
-      leftTopX: dto.leftTopX,
-      rightBottomX: dto.rightBottomX,
-      leftTopY: dto.leftTopY,
-      rightBottomY: dto.rightBottomY,
-    };
 
     const placeOverviewModelList = await this.placeCoreService.getPlaceAll({
       take: pageSize + 1,
       skip: skip,
+      orderBy: dto.orderby,
+      order: dto.order,
       operating: dto.operating,
+      bookmarkUserIdx: undefined,
+      types: dto.type ? [dto.type] : undefined,
       activated: true,
       permanentlyClosed: false,
-      coordinate: this.isValidCoordinate(coordinate) ? coordinate : undefined,
-      order: dto.order,
-      types: dto.type ? [dto.type] : undefined,
-      orderBy: dto.orderby,
-      bookmarkUserIdx: undefined,
     });
 
     const paginatedList = placeOverviewModelList.slice(0, pageSize);
@@ -78,12 +71,12 @@ export class PlaceService {
 
   private isValidCoordinate(
     coordinate: Pick<
-      GetAllPlaceOverviewDto,
+      GetAllPlaceMarkerDto,
       'leftTopX' | 'rightBottomX' | 'leftTopY' | 'rightBottomY'
     >,
   ): coordinate is Required<
     Pick<
-      GetAllPlaceOverviewDto,
+      GetAllPlaceMarkerDto,
       'leftTopX' | 'rightBottomX' | 'leftTopY' | 'rightBottomY'
     >
   > {
@@ -98,6 +91,13 @@ export class PlaceService {
   public async getPlaceMarkerAll(dto: GetAllPlaceMarkerDto): Promise<{
     placeMarkerList: PlaceMarkerEntity[];
   }> {
+    const coordinate = {
+      leftTopX: dto.leftTopX,
+      rightBottomX: dto.rightBottomX,
+      leftTopY: dto.leftTopY,
+      rightBottomY: dto.rightBottomY,
+    };
+
     const placeMarkerModelList = await this.placeCoreService.getPlaceMarkerAll({
       orderBy: dto.orderby,
       order: dto.order,
@@ -105,6 +105,8 @@ export class PlaceService {
       types: dto.type ? [dto.type] : undefined,
       activated: true,
       permanentlyClosed: false,
+      searchKeyword: dto.searchKeyword,
+      coordinate: this.isValidCoordinate(coordinate) ? coordinate : undefined,
     });
 
     return {

@@ -149,7 +149,7 @@ describe('Place E2E test', () => {
         },
         {
           name: 'place 2',
-          activatedAt: null,
+          activatedAt: new Date(),
         },
         {
           name: 'place 3',
@@ -185,7 +185,7 @@ describe('Place E2E test', () => {
         },
         {
           name: 'place 2',
-          activatedAt: null,
+          activatedAt: new Date(),
         },
         {
           name: 'place 3',
@@ -223,7 +223,7 @@ describe('Place E2E test', () => {
         },
         {
           name: 'place 2',
-          activatedAt: null,
+          activatedAt: new Date(),
         },
         {
           name: 'place 3',
@@ -259,7 +259,7 @@ describe('Place E2E test', () => {
         },
         {
           name: 'place 2',
-          activatedAt: null,
+          activatedAt: new Date(),
         },
         {
           name: 'place 3',
@@ -310,7 +310,7 @@ describe('Place E2E test', () => {
         },
         {
           name: 'place 2',
-          activatedAt: null,
+          activatedAt: new Date(),
         },
         {
           name: 'place 3',
@@ -363,7 +363,7 @@ describe('Place E2E test', () => {
         },
         {
           name: 'place 2',
-          activatedAt: null,
+          activatedAt: new Date(),
         },
         {
           name: 'place 3',
@@ -414,7 +414,7 @@ describe('Place E2E test', () => {
         },
         {
           name: 'place 2',
-          activatedAt: null,
+          activatedAt: new Date(),
         },
         {
           name: 'place 3',
@@ -468,7 +468,7 @@ describe('Place E2E test', () => {
         },
         {
           name: 'place 2',
-          activatedAt: null,
+          activatedAt: new Date(),
         },
         {
           name: 'place 3',
@@ -524,7 +524,7 @@ describe('Place E2E test', () => {
         },
         {
           name: 'place 2',
-          activatedAt: null,
+          activatedAt: new Date(),
         },
         {
           name: 'place 3',

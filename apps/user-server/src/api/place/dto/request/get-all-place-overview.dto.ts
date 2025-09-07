@@ -63,48 +63,4 @@ export class GetAllPlaceOverviewDto {
   @IsEnumValue(PlaceType)
   @Type(() => Number)
   type?: PlaceType;
-
-  /**
-   * 왼쪽 위 x좌표
-   */
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  leftTopX?: number;
-
-  /**
-   * 왼쪽 위 y좌표
-   */
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  leftTopY?: number;
-
-  /**
-   * 오른쪽 아래 x좌표
-   */
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  rightBottomX?: number;
-
-  /**
-   * 오른쪽 아래 y좌표
-   */
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  rightBottomY?: number;
-
-  /**
-   * 한 번에 가져올 장소 수 (기본값: 10
-   *
-   * @default 10
-   * @example 100
-   */
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  @IsIn([10, 100, 1000])
-  take: number = 10;
 }

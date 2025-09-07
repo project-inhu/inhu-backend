@@ -49,7 +49,6 @@ export class PlaceCoreService {
       const baseFilter = {
         activated: input.activated,
         permanentlyClosed: input.permanentlyClosed,
-        coordinate: input.coordinate,
         order: input.order,
         types: input.types,
         orderBy: input.orderBy,

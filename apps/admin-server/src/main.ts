@@ -41,19 +41,21 @@ async function bootstrap() {
     }
   }
 
-  const config = new DocumentBuilder()
-    .setTitle('Inhu Back office API')
-    .setDescription('Inhu Back office API')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  const customOptions: SwaggerCustomOptions = {
-    swaggerOptions: {
-      persistAuthorization: true,
-    },
-  };
-  const documentFactory = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory, customOptions);
+  if (getMode() === 'development') {
+    const config = new DocumentBuilder()
+      .setTitle('Inhu Back office API')
+      .setDescription('Inhu Back office API')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
+    const customOptions: SwaggerCustomOptions = {
+      swaggerOptions: {
+        persistAuthorization: true,
+      },
+    };
+    const documentFactory = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, documentFactory, customOptions);
+  }
 
   await app.listen(process.env.ADMIN_SERVER_PORT ?? 3000);
 }
