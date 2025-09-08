@@ -931,7 +931,26 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
         activatedAt: new Date(),
+        // 테스트를 위해 과거 날짜로 격주 휴무일 생성
+        weeklyClosedDayList: [
+          {
+            closedDate: new Date('2025-08-20T00:00:00Z'),
+            type: WeeklyCloseType.BIWEEKLY,
+          },
+        ],
       });
+
+      function getKstDateString(offsetDays = 0): string {
+        const now = new Date();
+        // 한국시간 보정 (+9시간)
+        now.setHours(now.getHours() + 9);
+        now.setDate(now.getDate() + offsetDays);
+
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      }
 
       const updatePlaceDto: UpdatePlaceDto = {
         name: 'Updated Place',
@@ -959,8 +978,8 @@ describe('Place E2E test', () => {
           { startAt: '11:00:00', endAt: '21:00:00', day: DayOfWeek.SAT },
         ],
         weeklyClosedDayList: [
-          { date: '2025-07-22', type: WeeklyCloseType.BIWEEKLY },
-          { date: '2025-07-23', type: WeeklyCloseType.BIWEEKLY },
+          { date: getKstDateString(), type: WeeklyCloseType.BIWEEKLY },
+          { date: getKstDateString(1), type: WeeklyCloseType.BIWEEKLY },
         ],
       };
 
@@ -1025,6 +1044,17 @@ describe('Place E2E test', () => {
         updatePlaceDto.weeklyClosedDayList[1].type,
       );
 
+      const pastWeeklyClosedDay = await testHelper
+        .getPrisma()
+        .weeklyClosedDay.findFirst({
+          where: {
+            placeIdx: place.idx,
+            closedDate: new Date('2025-08-20T00:00:00.000Z'),
+            type: WeeklyCloseType.BIWEEKLY,
+          },
+        });
+      expect(pastWeeklyClosedDay).not.toBeNull();
+
       mock.mockRestore();
     });
 
@@ -1032,6 +1062,18 @@ describe('Place E2E test', () => {
       const place = await placeSeedHelper.seed({
         activatedAt: new Date(),
       });
+
+      function getKstDateString(offsetDays = 0): string {
+        const now = new Date();
+        // 한국시간 보정 (+9시간)
+        now.setHours(now.getHours() + 9);
+        now.setDate(now.getDate() + offsetDays);
+
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      }
 
       const updatePlaceDto: UpdatePlaceDto = {
         name: 'Updated Place',
@@ -1059,8 +1101,8 @@ describe('Place E2E test', () => {
           { startAt: '11:00:00', endAt: '21:00:00', day: DayOfWeek.SAT },
         ],
         weeklyClosedDayList: [
-          { date: '2025-07-22', type: WeeklyCloseType.BIWEEKLY },
-          { date: '2025-07-23', type: WeeklyCloseType.BIWEEKLY },
+          { date: getKstDateString(), type: WeeklyCloseType.BIWEEKLY },
+          { date: getKstDateString(1), type: WeeklyCloseType.BIWEEKLY },
         ],
       };
 
@@ -1075,6 +1117,18 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const placeIdx = -1; // ! no place with this idx
 
+      function getKstDateString(offsetDays = 0): string {
+        const now = new Date();
+        // 한국시간 보정 (+9시간)
+        now.setHours(now.getHours() + 9);
+        now.setDate(now.getDate() + offsetDays);
+
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      }
+
       const updatePlaceDto: UpdatePlaceDto = {
         name: 'Updated Place',
         tel: '032-9876-5432',
@@ -1101,8 +1155,8 @@ describe('Place E2E test', () => {
           { startAt: '11:00:00', endAt: '21:00:00', day: DayOfWeek.SAT },
         ],
         weeklyClosedDayList: [
-          { date: '2025-07-22', type: WeeklyCloseType.BIWEEKLY },
-          { date: '2025-07-23', type: WeeklyCloseType.BIWEEKLY },
+          { date: getKstDateString(), type: WeeklyCloseType.BIWEEKLY },
+          { date: getKstDateString(1), type: WeeklyCloseType.BIWEEKLY },
         ],
       };
 

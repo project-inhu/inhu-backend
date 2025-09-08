@@ -41,6 +41,36 @@ export const SELECT_BOOKMARKED_PLACE_OVERVIEW =
               addressY: true,
             },
           },
+          closedDayList: {
+            select: {
+              idx: true,
+              day: true,
+              week: true,
+            },
+          },
+          operatingHourList: {
+            select: {
+              idx: true,
+              day: true,
+              startAt: true,
+              endAt: true,
+            },
+          },
+          weeklyClosedDayList: {
+            select: {
+              idx: true,
+              closedDate: true,
+              type: true,
+            },
+          },
+          breakTimeList: {
+            select: {
+              idx: true,
+              day: true,
+              startAt: true,
+              endAt: true,
+            },
+          },
         },
       },
     },

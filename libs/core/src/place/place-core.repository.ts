@@ -31,8 +31,19 @@ export class PlaceCoreRepository {
   ) {}
 
   public async selectPlaceByIdx(idx: number): Promise<SelectPlace | null> {
+    const now = this.dateUtilService.getNow();
+    const todayKst = this.dateUtilService.transformKoreanDate(now);
+    const today = new Date(`${todayKst}T00:00:00Z`);
+
     return await this.txHost.tx.place.findUnique({
       ...SELECT_PLACE,
+      select: {
+        ...SELECT_PLACE.select,
+        weeklyClosedDayList: {
+          ...SELECT_PLACE.select.weeklyClosedDayList,
+          where: { closedDate: { gte: today } },
+        },
+      },
       where: {
         idx,
         deletedAt: null,
@@ -52,8 +63,19 @@ export class PlaceCoreRepository {
     permanentlyClosed,
     searchKeyword,
   }: GetPlaceOverviewInput): Promise<SelectPlaceOverview[]> {
+    const now = this.dateUtilService.getNow();
+    const todayKst = this.dateUtilService.transformKoreanDate(now);
+    const today = new Date(`${todayKst}T00:00:00Z`);
+
     return await this.txHost.tx.place.findMany({
       ...SELECT_PLACE_OVERVIEW,
+      select: {
+        ...SELECT_PLACE_OVERVIEW.select,
+        weeklyClosedDayList: {
+          ...SELECT_PLACE_OVERVIEW.select.weeklyClosedDayList,
+          where: { closedDate: { gte: today } },
+        },
+      },
       where: {
         AND: [
           { deletedAt: null },
@@ -461,10 +483,21 @@ export class PlaceCoreRepository {
           : undefined,
         weeklyClosedDayList: input.weeklyClosedDayList
           ? {
-              deleteMany: {},
+              deleteMany: {
+                closedDate: {
+                  gte: new Date(
+                    `${this.dateUtilService.transformKoreanDate(
+                      this.dateUtilService.getNow(),
+                    )}T00:00:00Z`,
+                  ),
+                },
+                type: {
+                  in: input.weeklyClosedDayList.map((date) => date.type),
+                },
+              },
               createMany: {
                 data: input.weeklyClosedDayList.map(({ closedDate, type }) => ({
-                  closedDate: `${closedDate}T00:00:00Z`,
+                  closedDate: new Date(`${closedDate}T00:00:00Z`),
                   type,
                 })),
               },
