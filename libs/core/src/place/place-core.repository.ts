@@ -22,7 +22,6 @@ import {
   SelectPlaceMarker,
 } from './model/prisma-type/select-place-marker';
 import { GetPlaceMarkerInput } from './inputs/get-place-overview-marker.input';
-import { GetPlaceOverviewMarkerInput } from './inputs/get-place-overview-marker.input';
 
 @Injectable()
 export class PlaceCoreRepository {
