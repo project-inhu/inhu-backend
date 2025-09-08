@@ -12,6 +12,7 @@ import { PlaceMarkerModel } from './model/place-marker.model';
 import { Transactional } from '@nestjs-cls/transactional';
 import { DateUtilService } from '@libs/common/modules/date-util/date-util.service';
 import { WeeklyCloseType } from './constants/weekly-close-type.constant';
+import { PlaceWeeklyClosedDayModel } from './model/place-weekly-closed-day.model';
 
 /**
  * 장소 관련 핵심 서비스
@@ -237,5 +238,21 @@ export class PlaceCoreService {
     }
 
     return result;
+  }
+
+  public async getWeeklyClosedDayByDate(
+    placeIdx: number,
+    closedDate: string,
+    type: number,
+  ): Promise<PlaceWeeklyClosedDayModel | null> {
+    const weeklyClosedDay =
+      await this.placeCoreRepository.selectWeeklyClosedDayByDate(
+        placeIdx,
+        closedDate,
+        type,
+      );
+    return (
+      weeklyClosedDay && PlaceWeeklyClosedDayModel.fromPrisma(weeklyClosedDay)
+    );
   }
 }

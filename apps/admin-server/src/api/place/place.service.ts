@@ -244,11 +244,14 @@ export class PlaceService {
       throw new PlaceNotFoundException('Cannot find place with idx: ' + idx);
     }
 
-    const alreadyExists = place.weeklyClosedDayList.some(
-      (day) => day.type === WeeklyCloseType.BIWEEKLY && day.date === date,
-    );
+    const existingClosedDay =
+      await this.placeCoreService.getWeeklyClosedDayByDate(
+        idx,
+        date,
+        WeeklyCloseType.BIWEEKLY,
+      );
 
-    if (alreadyExists) {
+    if (existingClosedDay) {
       throw new AlreadyExistWeeklyClosedDayException(
         'Weekly closed day already exists' + idx,
       );

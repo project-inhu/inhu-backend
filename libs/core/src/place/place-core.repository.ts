@@ -22,6 +22,7 @@ import {
   SelectPlaceMarker,
 } from './model/prisma-type/select-place-marker';
 import { GetPlaceMarkerInput } from './inputs/get-place-overview-marker.input';
+import { SelectPlaceWeeklyClosedDay } from './model/prisma-type/select-place-weekly-closed-day';
 
 @Injectable()
 export class PlaceCoreRepository {
@@ -717,6 +718,20 @@ export class PlaceCoreRepository {
   ): Promise<void> {
     await this.txHost.tx.weeklyClosedDay.create({
       data: {
+        placeIdx,
+        closedDate: `${closedDate}T00:00:00Z`,
+        type,
+      },
+    });
+  }
+
+  public async selectWeeklyClosedDayByDate(
+    placeIdx: number,
+    closedDate: string,
+    type: number,
+  ): Promise<SelectPlaceWeeklyClosedDay | null> {
+    return await this.txHost.tx.weeklyClosedDay.findFirst({
+      where: {
         placeIdx,
         closedDate: `${closedDate}T00:00:00Z`,
         type,
