@@ -14,7 +14,6 @@ export class PlaceCronSchedule {
    */
   @Cron('0 0-2 * * * ')
   public async placeCronJob() {
-    if (getMode() === 'production')
-      await this.placeCronService.AddNextBiWeeklyClosedDay();
+    await this.placeCronService.AddNextBiWeeklyClosedDay();
   }
 }
