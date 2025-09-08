@@ -89,6 +89,6 @@ export class GetAllPlaceMarkerDto {
    * - 장소 이름, 메뉴 이름, 메뉴 설명으로 검색 가능
    */
   @IsOptional()
-  @MaxLength(10)
+  @MaxLength(20)
   searchKeyword?: string;
 }
