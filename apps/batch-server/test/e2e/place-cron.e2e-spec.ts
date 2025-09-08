@@ -208,12 +208,24 @@ describe('Place cron e2e', () => {
     const placeCoreService = testHelper.get<PlaceCoreService>(PlaceCoreService);
     const placeCronService = testHelper.get<PlaceCronService>(PlaceCronService);
 
+    const originalCreateMethod = placeCoreService.createWeeklyClosedDay;
+
     // place1에 대한 업데이트가 실패하도록 한번만 mock
     const mockCreatedMethod = jest
       .spyOn(placeCoreService, 'createWeeklyClosedDay')
-      .mockImplementationOnce(() => {
-        throw new Error('Simulated error');
-      });
+      .mockImplementation(
+        async (placeIdx: number, date: string, type: number) => {
+          if (placeIdx === place1.idx) {
+            throw new Error('Simulated error');
+          }
+          return originalCreateMethod.call(
+            placeCoreService,
+            placeIdx,
+            date,
+            type,
+          );
+        },
+      );
 
     const mock = jest
       .spyOn(dateUtilService, 'getNow')
@@ -223,14 +235,20 @@ describe('Place cron e2e', () => {
 
     expect(mockCreatedMethod).toHaveBeenCalledTimes(2);
 
+    const startOfDay = new Date(expectedNext);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(expectedNext);
+    endOfDay.setHours(23, 59, 59, 999);
+
     const place1ClosedDay = await testHelper
       .getPrisma()
       .weeklyClosedDay.findFirst({
         where: {
           placeIdx: place1.idx,
           closedDate: {
-            gte: new Date(expectedNext.setHours(0, 0, 0, 0)),
-            lte: new Date(expectedNext.setHours(23, 59, 59, 999)),
+            gte: startOfDay,
+            lte: endOfDay,
           },
         },
       });
@@ -242,8 +260,8 @@ describe('Place cron e2e', () => {
         where: {
           placeIdx: place2.idx,
           closedDate: {
-            gte: new Date(expectedNext.setHours(0, 0, 0, 0)),
-            lte: new Date(expectedNext.setHours(23, 59, 59, 999)),
+            gte: startOfDay,
+            lte: endOfDay,
           },
         },
       });
