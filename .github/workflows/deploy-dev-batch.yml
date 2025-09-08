@@ -35,6 +35,7 @@ jobs:
           files: |
             apps/batch-server/**
             libs/**
+            scripts/apps./batch-server/**
             scripts/dev-infra/**
             scripts/rdb/**
             prisma/**
