@@ -1,5 +1,6 @@
 import { UserProviderModel } from './user-provider.model';
 import { SelectUser } from './prisma-type/select-user';
+import { UserType } from '../constants/user-type.enum';
 
 /**
  * 사용자 모델
@@ -40,6 +41,13 @@ export class UserModel {
    */
   provider: UserProviderModel | null;
 
+  /**
+   * 사용자 유형
+   *
+   * @example "placeOwner"
+   */
+  type: UserType;
+
   constructor(data: UserModel) {
     Object.assign(this, data);
   }
@@ -53,6 +61,8 @@ export class UserModel {
       provider: user.userProvider
         ? UserProviderModel.fromPrisma(user.userProvider)
         : null,
+      type:
+        user.placeOwnerList.length > 0 ? UserType.PLACE_OWNER : UserType.USER,
     });
   }
 }
