@@ -12,14 +12,14 @@ import { LoginUser } from '@user/common/types/LoginUser';
 import { GetAllPlaceMarkerDto } from './dto/request/get-all-place-marker.dto';
 import { GetAllPlaceMarkerResponseDto } from './dto/response/get-all-place-marker-response.dto';
 
-@Controller('place')
+@Controller()
 export class PlaceController {
   constructor(private placeService: PlaceService) {}
 
   /**
    * 모든 place 개요 가져오기
    */
-  @Get('/all')
+  @Get('/place/all')
   @Exception(400, 'Invalid page number or orderBy')
   async getAllPlaceOverview(
     @Query() dto: GetAllPlaceOverviewDto,
@@ -31,7 +31,7 @@ export class PlaceController {
   /**
    * map marker용 모든 place 개요 가져오기
    */
-  @Get('/marker/all')
+  @Get('/place/marker/all')
   @Exception(400, 'Invalid page number or orderBy')
   async getAllPlaceMarker(
     @Query() dto: GetAllPlaceMarkerDto,
@@ -42,7 +42,7 @@ export class PlaceController {
   /**
    * 북마크한 place 가져오기
    */
-  @Get('/bookmarked/all')
+  @Get('/place/bookmarked/all')
   @Exception(400, 'Invalid querystring')
   @LoginAuth()
   async getBookmarkedPlaceOverview(
@@ -58,7 +58,7 @@ export class PlaceController {
   /**
    * 특정 idx의 place 관련 모든 정보 가져오기
    */
-  @Get('/:placeIdx')
+  @Get('/place/:placeIdx')
   @Exception(400, 'Invalid placeIdx')
   @Exception(404, 'Place not found')
   async getPlaceByPlaceIdx(
@@ -66,5 +66,16 @@ export class PlaceController {
     @User() loginUser?: LoginUser,
   ): Promise<PlaceEntity> {
     return await this.placeService.getPlaceByIdx(placeIdx, loginUser?.idx);
+  }
+
+  /**
+   * 내 가게 조회
+   *
+   * @author 이수인
+   */
+  @Get('/owner/place/all')
+  @LoginAuth()
+  async getAllOwnerPlace(@User() user: LoginUser): Promise<PlaceEntity[]> {
+    return await this.placeService.getOwnerPlaceAll(user.idx);
   }
 }
