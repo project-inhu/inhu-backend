@@ -19,7 +19,7 @@ model Bookmark {
 }
 
 model Keyword {
-  idx                      Int                    @id 
+  idx                      Int                    @id
   content                  String                 @unique @db.VarChar
   createdAt                DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt                DateTime?              @map("deleted_at") @db.Timestamptz(6)
@@ -60,6 +60,7 @@ model Place {
   pickedPlace           PickedPlace?
   placeImageList        PlaceImage[]
   placeKeywordCountList PlaceKeywordCount[]
+  placeOwnerList        PlaceOwner[]
   roadAddress           RoadAddress         @relation(fields: [roadAddressIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_road_address_tb_to_place_tb")
   placeTypeMappingList  PlaceTypeMapping[]
   reviewList            Review[]
@@ -94,9 +95,7 @@ model PickedPlace {
 model OperatingHour {
   idx      Int      @id @default(autoincrement())
   placeIdx Int      @map("place_idx")
-  // 한국 시간으로 저장합니다.
   startAt  DateTime @map("start_at") @db.Time(6)
-  // 한국 시간으로 저장합니다.
   endAt    DateTime @map("end_at") @db.Time(6)
   day      Int      @db.SmallInt
   place    Place    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_operating_hour_tb")
@@ -107,9 +106,7 @@ model OperatingHour {
 model BreakTime {
   idx      Int      @id @default(autoincrement())
   placeIdx Int      @map("place_idx")
-  // 한국 시간으로 저장합니다.
   startAt  DateTime @map("start_at") @db.Time(6)
-  // 한국 시간으로 저장합니다.
   endAt    DateTime @map("end_at") @db.Time(6)
   day      Int      @db.SmallInt
   place    Place    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_break_time_tb")
@@ -253,13 +250,14 @@ model User {
   profileImagePath          String?                 @map("profile_image_path") @db.VarChar
   createdAt                 DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt                 DateTime?               @map("deleted_at") @db.Timestamptz(6)
+  adminAccount              AdminAccount?
   bookmarkList              Bookmark[]
+  placeOwnerList            PlaceOwner[]
   reviewList                Review[]
   service1ResultList        Service1Result[]
   service2ResultList        Service2Result[]
   userProvider              UserProvider?
   withdrawServiceResultList WithdrawServiceResult[]
-  adminAccount              AdminAccount?
 
   @@map("user_tb")
 }
@@ -306,10 +304,21 @@ model ClosedDay {
 model WeeklyClosedDay {
   idx        Int      @id @default(autoincrement())
   placeIdx   Int      @map("place_idx")
-  // 한국 날짜로 저장합니다.
   closedDate DateTime @map("closed_date") @db.Date
   type       Int      @default(0) @db.SmallInt
   place      Place    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_weekly_closed_day_tb")
 
   @@map("weekly_closed_day_tb")
+}
+
+model PlaceOwner {
+  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  placeIdx   Int       @map("place_idx")
+  userIdx    Int       @map("user_idx")
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt  DateTime? @map("deleted_at") @db.Timestamptz(6)
+  place      Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_owner_tb")
+  user       User      @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_place_owner_tb")
+
+  @@map("place_owner_tb")
 }
