@@ -4,6 +4,7 @@ import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 import { BookmarkSeedHelper } from '@libs/testing/seed/bookmark/bookmark.seed';
 import { MenuSeedHelper } from '@libs/testing/seed/menu/menu.seed';
+import { PlaceOwnerSeedHelper } from '@libs/testing/seed/place-owner/place-owner.seed';
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { GetAllPlaceOverviewResponseDto } from '@user/api/place/dto/response/get-all-place-overview-response.dto';
 import { PlaceMarkerEntity } from '@user/api/place/entity/place-marker.entity';
@@ -17,6 +18,7 @@ describe('Place E2E test', () => {
   const placeSeedHelper = testHelper.seedHelper(PlaceSeedHelper);
   const bookmarkSeedHelper = testHelper.seedHelper(BookmarkSeedHelper);
   const menuSeedHelper = testHelper.seedHelper(MenuSeedHelper);
+  const placeOwnerSeedHelper = testHelper.seedHelper(PlaceOwnerSeedHelper);
 
   beforeEach(async () => {
     await testHelper.init();
@@ -2037,7 +2039,7 @@ describe('Place E2E test', () => {
       expect(place.reviewCount).toBe(placeSeed.reviewCount);
       expect(place.topKeywordList.map(({ idx }) => idx)).toStrictEqual([2, 1]);
       expect(place.bookmark).toBe(false);
-      expect(place.imagePathList.sort()).toEqual(place.imagePathList.sort());
+      expect(place.imagePathList.sort()).toEqual(placeSeed.placeImgList.sort());
       expect(place.isClosedOnHoliday).toBe(placeSeed.isClosedOnHoliday);
       expect(place.type).toBe(placeSeed.type);
       expect(place.breakTimeList.length).toBe(2);
@@ -2138,6 +2140,243 @@ describe('Place E2E test', () => {
       const place: PlaceEntity = response.body;
 
       expect(place.bookmark).toBe(true);
+    });
+  });
+
+  describe('GET /owner/place/all', () => {
+    it('200 - field check', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const now = testHelper.mockTodayTime('10:00');
+
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+        name: 'Test Place',
+        tel: '032-1111-2222',
+        roadAddress: {
+          name: 'Test Road',
+          detail: 'Test Detail',
+          addressX: 123.456,
+          addressY: 78.91,
+        },
+        type: PlaceType.CAFE,
+        reviewCount: 5,
+        placeImgList: ['/place/test-image1.png', '/place/test-image2.png'],
+        bookmarkCount: 1,
+        isClosedOnHoliday: false,
+        deletedAt: null,
+        permanentlyClosedAt: null,
+        keywordCountList: [
+          {
+            keywordIdx: 1,
+            count: 10,
+          },
+          {
+            keywordIdx: 2,
+            count: 12,
+          },
+          {
+            keywordIdx: 3,
+            count: 8,
+          },
+        ],
+        breakTime: [
+          {
+            day: DayOfWeek.THU,
+            startAt: now.new('12:00'),
+            endAt: now.new('13:00'),
+          },
+          {
+            day: DayOfWeek.THU,
+            startAt: now.new('20:00'),
+            endAt: now.new('21:00'),
+          },
+        ],
+        operatingHourList: [
+          {
+            day: DayOfWeek.FRI,
+            startAt: now.new('10:00'),
+            endAt: now.new('20:00'),
+          },
+          {
+            day: DayOfWeek.SAT,
+            startAt: now.new('10:00'),
+            endAt: now.new('20:00'),
+          },
+        ],
+        weeklyClosedDayList: [
+          {
+            closedDate: now.new(),
+            type: WeeklyCloseType.BIWEEKLY,
+          },
+          {
+            closedDate: now.dateAfter(1),
+            type: WeeklyCloseType.BIWEEKLY,
+          },
+        ],
+        closedDayList: [
+          {
+            day: DayOfWeek.FRI,
+            week: 1,
+          },
+          {
+            day: DayOfWeek.SAT,
+            week: 2,
+          },
+        ],
+      });
+
+      const placeOwner = await placeOwnerSeedHelper.seed({
+        userIdx: loginUser.idx,
+        placeIdx: placeSeed.idx,
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/owner/place/all`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(200);
+
+      const places: PlaceEntity[] = response.body;
+
+      expect(places[0].idx).toBe(placeSeed.idx);
+      expect(places[0].name).toBe(placeSeed.name);
+      expect(places[0].roadAddress.name).toBe(placeSeed.roadAddress.name);
+      expect(places[0].roadAddress.detail).toBe(placeSeed.roadAddress.detail);
+      expect(places[0].roadAddress.addressX).toBe(
+        placeSeed.roadAddress.addressX,
+      );
+      expect(places[0].roadAddress.addressY).toBe(
+        placeSeed.roadAddress.addressY,
+      );
+      expect(places[0].reviewCount).toBe(placeSeed.reviewCount);
+      expect(places[0].topKeywordList.map(({ idx }) => idx)).toStrictEqual([
+        2, 1,
+      ]);
+      expect(places[0].bookmark).toBe(false);
+      expect(places[0].imagePathList.sort()).toEqual(
+        placeSeed.placeImgList.sort(),
+      );
+      expect(places[0].isClosedOnHoliday).toBe(placeSeed.isClosedOnHoliday);
+      expect(places[0].type).toBe(placeSeed.type);
+      expect(places[0].breakTimeList.length).toBe(2);
+      expect(places[0].breakTimeList[0].startAt).toBe('12:00:00');
+      expect(places[0].breakTimeList[0].endAt).toBe('13:00:00');
+      expect(places[0].breakTimeList[1].startAt).toBe('20:00:00');
+      expect(places[0].breakTimeList[1].endAt).toBe('21:00:00');
+      expect(places[0].operatingHourList.length).toBe(2);
+      expect(places[0].operatingHourList[0].startAt).toBe('10:00:00');
+      expect(places[0].operatingHourList[0].endAt).toBe('20:00:00');
+      expect(places[0].operatingHourList[1].startAt).toBe('10:00:00');
+      expect(places[0].operatingHourList[1].endAt).toBe('20:00:00');
+      expect(places[0].weeklyClosedDayList.length).toBe(2);
+      expect(places[0].weeklyClosedDayList[0].date).toBe(
+        now.new().toISOString().split('T')[0],
+      );
+      expect(places[0].weeklyClosedDayList[0].type).toBe(
+        WeeklyCloseType.BIWEEKLY,
+      );
+      expect(places[0].weeklyClosedDayList[1].date).toBe(
+        now.dateAfter(1).toISOString().split('T')[0],
+      );
+      expect(places[0].weeklyClosedDayList[1].type).toBe(
+        WeeklyCloseType.BIWEEKLY,
+      );
+      expect(places[0].closedDayList.length).toBe(2);
+      expect(places[0].closedDayList[0].day).toBe(DayOfWeek.FRI);
+      expect(places[0].closedDayList[0].week).toBe(1);
+      expect(places[0].closedDayList[1].day).toBe(DayOfWeek.SAT);
+      expect(places[0].closedDayList[1].week).toBe(2);
+    });
+
+    it('200 - no place owned by user', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      const response = await testHelper
+        .test()
+        .get(`/owner/place/all`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(200);
+
+      const places: PlaceEntity[] = response.body;
+
+      expect(places).toStrictEqual([]);
+    });
+
+    it('200 - do not get places of which user is not the owner', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const anotherUser = testHelper.loginUsers.user2;
+
+      const [place1, place2] = await placeSeedHelper.seedAll([
+        {
+          name: 'Test Place',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'Another Place',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await placeOwnerSeedHelper.seedAll([
+        {
+          userIdx: anotherUser.idx,
+          placeIdx: place1.idx,
+        },
+        {
+          userIdx: loginUser.idx,
+          placeIdx: place2.idx,
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get(`/owner/place/all`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(200);
+
+      const places: PlaceEntity[] = response.body;
+
+      expect(places.length).toBe(1);
+      expect(places[0].idx).toBe(place2.idx);
+    });
+
+    it('200 - get multiple places owned by user', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      const [place1, place2] = await placeSeedHelper.seedAll([
+        {
+          name: 'Test Place',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'Another Place',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await placeOwnerSeedHelper.seedAll([
+        {
+          userIdx: loginUser.idx,
+          placeIdx: place1.idx,
+        },
+        {
+          userIdx: loginUser.idx,
+          placeIdx: place2.idx,
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get(`/owner/place/all`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(200);
+
+      const places: PlaceEntity[] = response.body;
+
+      expect(places.length).toBe(2);
+      expect(places.map(({ idx }) => idx).sort()).toStrictEqual(
+        [place1.idx, place2.idx].sort(),
+      );
     });
   });
 });

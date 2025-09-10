@@ -155,6 +155,18 @@ export class PlaceCoreRepository {
     });
   }
 
+  public async selectOwnerPlaceAllByUserIdx(
+    userIdx: number,
+  ): Promise<SelectPlace[]> {
+    return await this.txHost.tx.place.findMany({
+      ...SELECT_PLACE,
+      where: {
+        AND: [{ deletedAt: null }, { placeOwnerList: { some: { userIdx } } }],
+      },
+      orderBy: { idx: 'asc' },
+    });
+  }
+
   /**
    * 폐점 여부 필터링
    */
