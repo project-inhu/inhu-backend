@@ -20,7 +20,5 @@ async function bootstrap() {
       console.log(err);
     }
   }
-
-  await app.close();
 }
 bootstrap();
