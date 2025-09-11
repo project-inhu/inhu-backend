@@ -1,0 +1,203 @@
+name: Build and Deploy Dev Batch Server to Raspberry Pi (develop)
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  # Job 1: Batch 서버 변경 감지 및 배포 필요 여부 결정
+  check-batch-changes:
+    name: Check for Batch Service Changes
+    runs-on: ubuntu-latest
+    outputs:
+      # 이 워크플로우를 계속 실행해야 하는지 (true/false)
+      should_run: ${{ steps.filter.outputs.any_modified }}
+      # 배포까지 필요한 변경인지 (true/false)
+      should_deploy: ${{ steps.deployment-gate.outputs.any_modified }}
+      # 데이터베이스 다운이 필요한 변경인지 (true/false)
+      should_db_down: ${{ steps.db-check.outputs.any_modified }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Step 1: Batch 서버와 관련된 변경이 있었는지 확인 (github action 테스트 유발 여부)
+      - name: Check for Batch Service Changes
+        id: filter
+        uses: tj-actions/changed-files@v44
+        with:
+          # 오직 이 파일들만 변경 감지
+          files: |
+            apps/batch-server/**
+            libs/**
+            scripts/apps/batch-server/**
+            scripts/dev-infra/**
+            scripts/rdb/**
+            prisma/**
+            package.json
+            package-lock.json
+            tsconfig.build.json
+            tsconfig.json
+          files_ignore: |
+            **/*.md
+
+      # Step 2: 배포가 필요한 변경인지 확인 (Whitelist 방식)
+      - name: Check for deployable changes
+        id: deployment-gate
+        uses: tj-actions/changed-files@v44
+        with:
+          # 오직 이 파일들만 배포를 유발할 수 있음
+          files: |
+            .github/workflows/deploy-dev-batch.yml
+            apps/batch-server/src/**
+            libs/common/**
+            libs/core/**
+            prisma/**
+            scripts/dev-infra/**
+            scripts/rdb/**
+            package.json
+            package-lock.json
+          files_ignore: |
+            **/*.md
+
+      # Step 3: 데이터베이스 관련 변경 감지
+      - name: Check for database
+        id: db-check
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            scripts/dev-infra/**
+            **/*.sql
+            **/docker-compose.yml
+            prisma/**
+
+      - name: echo outputs for debugging
+        run: |
+          echo "should_run=${{ steps.filter.outputs.any_modified }}"
+          echo "should_deploy=${{ steps.deployment-gate.outputs.any_modified }}"
+          echo "filter_outputs=${{ toJSON(steps.filter.outputs) }}"
+          echo "Deployment gate outputs: ${{ toJSON(steps.deployment-gate.outputs) }}"
+          echo "Database check outputs: ${{ toJSON(steps.db-check.outputs) }}"
+
+  # Job 2: Batch 서버 빌드 및 테스트
+  test-batch:
+    name: Test Batch Server
+    needs: check-batch-changes
+    if: needs.check-batch-changes.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Install dependencies
+        run: npm ci
+
+      # PR 시 Batch 서버 테스트 실행
+      - name: Run E2E tests for Batch Server
+        if: github.event_name == 'pull_request'
+        run: |
+          npm run batch-server:test:infra:up
+          npm run batch-server:test:e2e
+          npm run batch-server:test:infra:down
+
+  build-batch:
+    name: Build Batch Server
+    needs: check-batch-changes
+    if: github.event_name == 'push' && needs.check-batch-changes.outputs.should_deploy == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Install dependencies
+        run: npm ci
+
+      # push 시 Batch 서버 빌드 실행 (배포가 필요한 경우에만)
+      - name: Build Batch Server for production
+        run: |
+          npx prisma generate
+          npm run build batch-server
+          npm run build:seed
+
+      # push 시 아티팩트 업로드 (배포가 필요한 경우에만)
+      - name: Upload Batch Server artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: batch-server-build
+          path: |
+            dist/apps/batch-server
+            dist/scripts/dev-infra/seed
+            scripts/dev-infra/init
+            scripts/dev-infra/docker-compose.yml
+            scripts/rdb
+            prisma
+            package.json
+            package-lock.json
+
+  # Job 3: Batch 서버 배포
+  deploy-batch:
+    # 라즈베리파이 배포 시 동시 실행 방지
+    concurrency:
+      group: raspberry-pi-deploy
+      cancel-in-progress: false
+    name: Deploy Batch Server to Raspberry Pi
+    needs: [check-batch-changes, build-batch]
+    if: github.event_name == 'push' && needs.check-batch-changes.outputs.should_deploy == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download batch artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: batch-server-build
+          path: ./deploy-batch-files
+
+      - name: Compress deployment files
+        run: |
+          tar -czf deploy-batch.tar.gz -C ./deploy-batch-files .
+
+      - name: Deploy to Raspberry Pi
+        env:
+          HOST: ${{ secrets.RASPBERRY_PI_HOST }}
+          USER: ${{ secrets.RASPBERRY_PI_USER }}
+          PASSWORD: ${{ secrets.RASPBERRY_PI_PASSWORD }}
+          PORT: ${{ secrets.RASPBERRY_PI_PORT }}
+          DB_DOWN: ${{ needs.check-batch-changes.outputs.should_db_down }}
+        run: |
+          echo "[deploy] should_db_down=$DB_DOWN"
+          sudo apt-get update && sudo apt-get install -y sshpass
+          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no deploy-batch.tar.gz $USER@$HOST:~/inhu-backend/
+          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST "DB_DOWN_FLAG='$DB_DOWN' bash -s" << 'EOF'
+            set -e
+            cd ~/inhu-backend
+            tar -xzf deploy-batch.tar.gz
+            rm deploy-batch.tar.gz
+            npm ci
+            if [ "$DB_DOWN_FLAG" = "true" ]; then
+              pm2 stop inhu-backend-admin-dev
+              pm2 stop inhu-backend-user-dev
+              npm run dev-infra:down
+              npm run dev-infra:up
+              until docker exec inhu-dev-postgres psql -U inhu_admin -d inhu -c "SELECT 1;" >/dev/null 2>&1; do sleep 1; done
+              pm2 reload inhu-backend-admin-dev
+              pm2 reload inhu-backend-user-dev
+              pm2 reload inhu-backend-batch-dev
+              npm run seed
+            else
+              pm2 reload inhu-backend-batch-dev
+            fi
+          EOF

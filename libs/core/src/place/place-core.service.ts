@@ -4,12 +4,15 @@ import { GetPlaceOverviewInput } from './inputs/get-place-overview.input';
 import { PlaceOverviewModel } from './model/place-overview.model';
 import { PlaceModel } from './model/place.model';
 import { PlaceCoreRepository } from './place-core.repository';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { BookmarkedPlaceOverviewModel } from './model/bookmarked-place-overview.model';
 import { GetBookmarkedPlaceOverviewInput } from './inputs/get-bookmarked-place-overview.input';
 import { GetPlaceMarkerInput } from './inputs/get-place-overview-marker.input';
 import { PlaceMarkerModel } from './model/place-marker.model';
 import { Transactional } from '@nestjs-cls/transactional';
+import { DateUtilService } from '@libs/common/modules/date-util/date-util.service';
+import { WeeklyCloseType } from './constants/weekly-close-type.constant';
+import { PlaceWeeklyClosedDayModel } from './model/place-weekly-closed-day.model';
 
 /**
  * 장소 관련 핵심 서비스
@@ -18,7 +21,11 @@ import { Transactional } from '@nestjs-cls/transactional';
  */
 @Injectable()
 export class PlaceCoreService {
-  constructor(private readonly placeCoreRepository: PlaceCoreRepository) {}
+  constructor(
+    private readonly placeCoreRepository: PlaceCoreRepository,
+    private readonly dateUtilService: DateUtilService,
+    private readonly logger: Logger,
+  ) {}
 
   public async getPlaceByIdx(idx: number): Promise<PlaceModel | null> {
     const place = await this.placeCoreRepository.selectPlaceByIdx(idx);
@@ -173,6 +180,87 @@ export class PlaceCoreService {
       placeIdx,
       keywordIdx,
       1,
+    );
+  }
+
+  public async getPlaceIdxAllByWeeklyClosedDay(
+    today: string,
+    afterTwoWeeks: string,
+    type: number,
+  ): Promise<{ idx: number }[]> {
+    return await this.placeCoreRepository.selectPlaceIdxAllByWeeklyClosedDay(
+      today,
+      afterTwoWeeks,
+      type,
+    );
+  }
+
+  public async createWeeklyClosedDay(
+    placeIdx: number,
+    date: string,
+    type: number,
+  ): Promise<void> {
+    return await this.placeCoreRepository.insertWeeklyClosedDayByPlaceIdx(
+      placeIdx,
+      date,
+      type,
+    );
+  }
+
+  // TODO : 순수하지 못함. 통계를 내는 로직이 표함되어 있음. 필요시 수정
+  public async createAllBiWeeklyClosedDay(date: string): Promise<{
+    successCount: number;
+    failureCount: number;
+    errorList: { placeIdx: number; errorMessage: string }[];
+  }> {
+    const result = {
+      successCount: 0,
+      failureCount: 0,
+      errorList: [] as { placeIdx: number; errorMessage: string }[],
+    };
+
+    const { today, afterTwoWeeks } =
+      this.dateUtilService.getTodayAndAfterTwoWeeks(date);
+
+    const placeIdxList = await this.getPlaceIdxAllByWeeklyClosedDay(
+      today,
+      afterTwoWeeks,
+      WeeklyCloseType.BIWEEKLY,
+    );
+
+    for (const place of placeIdxList) {
+      try {
+        await this.createWeeklyClosedDay(
+          place.idx,
+          afterTwoWeeks,
+          WeeklyCloseType.BIWEEKLY,
+        );
+        result.successCount++;
+      } catch (error) {
+        result.failureCount++;
+        result.errorList.push({
+          placeIdx: place.idx,
+          errorMessage: error.message,
+        });
+      }
+    }
+
+    return result;
+  }
+
+  public async getWeeklyClosedDayByDate(
+    placeIdx: number,
+    closedDate: string,
+    type: number,
+  ): Promise<PlaceWeeklyClosedDayModel | null> {
+    const weeklyClosedDay =
+      await this.placeCoreRepository.selectWeeklyClosedDayByDate(
+        placeIdx,
+        closedDate,
+        type,
+      );
+    return (
+      weeklyClosedDay && PlaceWeeklyClosedDayModel.fromPrisma(weeklyClosedDay)
     );
   }
 }

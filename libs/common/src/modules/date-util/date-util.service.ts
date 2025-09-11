@@ -79,4 +79,20 @@ export class DateUtilService {
     }
     return count;
   }
+
+  /**
+   * 기준일로부터 오늘과 14일 뒤의 날짜 범위를 계산하는 메서드
+   */
+  public getTodayAndAfterTwoWeeks(date: string): {
+    today: string;
+    afterTwoWeeks: string;
+  } {
+    const today = date;
+
+    const next = new Date(date);
+    next.setDate(next.getDate() + 14);
+    const afterTwoWeeks = this.transformKoreanDate(next);
+
+    return { today, afterTwoWeeks };
+  }
 }

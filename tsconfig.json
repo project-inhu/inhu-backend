@@ -26,7 +26,8 @@
       "@libs/testing/*": ["libs/testing/src/*"],
       "@libs/modules/*": ["libs/modules/src/*"],
       "@user/*": ["apps/user-server/src/*"],
-      "@admin/*": ["apps/admin-server/src/*"]
+      "@admin/*": ["apps/admin-server/src/*"],
+      "@batch/*": ["apps/batch-server/src/*"]
     }
   }
 }

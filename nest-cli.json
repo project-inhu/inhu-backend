@@ -33,6 +33,15 @@
         "tsConfigPath": "apps/admin-server/tsconfig.app.json"
       }
     },
+    "batch-server": {
+      "type": "application",
+      "root": "apps/batch-server",
+      "entryFile": "main",
+      "sourceRoot": "apps/batch-server/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/batch-server/tsconfig.app.json"
+      }
+    },
     "common": {
       "type": "library",
       "root": "libs/common",

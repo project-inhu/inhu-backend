@@ -1,6 +1,6 @@
 import { DiscordWebhookContext } from '@libs/common/modules/discord-webhook/constants/discord-webhook-context.enum';
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AxiosError } from 'axios';
 import { inspect } from 'util';
@@ -12,6 +12,9 @@ import { inspect } from 'util';
 export class DiscordWebhookService {
   private readonly WEBHOOK_URL: string;
   private readonly ERROR_WEBHOOK_URL: string;
+  private readonly BATCH_WEBHOOK_URL: string;
+  private readonly BATCH_ERROR_WEBHOOK_URL: string;
+  private readonly logger = new Logger(DiscordWebhookService.name);
 
   constructor(
     private readonly configService: ConfigService,
@@ -21,6 +24,11 @@ export class DiscordWebhookService {
       this.configService.get<string>('discordWebhook.url') || '';
     this.ERROR_WEBHOOK_URL =
       this.configService.get<string>('discordWebhook.errorWebhookUrl') || '';
+    this.BATCH_WEBHOOK_URL =
+      this.configService.get<string>('discordWebhook.batchUrl') || '';
+    this.BATCH_ERROR_WEBHOOK_URL =
+      this.configService.get<string>('discordWebhook.batchErrorWebhookUrl') ||
+      '';
   }
 
   public async sendErrorMessage(
@@ -85,9 +93,20 @@ export class DiscordWebhookService {
   public async sendWebhookMessage(
     title: string,
     message: string,
+    context: DiscordWebhookContext,
   ): Promise<void> {
+    let targetUrl = this.WEBHOOK_URL;
+    if (context === DiscordWebhookContext.BATCH_SERVER) {
+      targetUrl = this.BATCH_WEBHOOK_URL;
+    }
+
+    if (!targetUrl) {
+      this.logger.warn(`Webhook URL for context "${context}" not found.`);
+      return;
+    }
+
     await this.httpService.axiosRef.post(
-      this.WEBHOOK_URL,
+      targetUrl,
       {
         content: `# ${title}`,
         embeds: [

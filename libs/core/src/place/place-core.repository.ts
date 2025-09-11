@@ -22,6 +22,7 @@ import {
   SelectPlaceMarker,
 } from './model/prisma-type/select-place-marker';
 import { GetPlaceMarkerInput } from './inputs/get-place-overview-marker.input';
+import { SelectPlaceWeeklyClosedDay } from './model/prisma-type/select-place-weekly-closed-day';
 
 @Injectable()
 export class PlaceCoreRepository {
@@ -678,6 +679,74 @@ export class PlaceCoreRepository {
           placeIdx,
           keywordIdx,
         },
+      },
+    });
+  }
+
+  public async selectPlaceIdxAllByWeeklyClosedDay(
+    today: string,
+    afterTwoWeeks: string,
+    type: number,
+  ): Promise<{ idx: number }[]> {
+    return await this.txHost.tx.place.findMany({
+      where: {
+        AND: [
+          {
+            weeklyClosedDayList: {
+              some: {
+                closedDate: {
+                  gte: `${today}T00:00:00Z`,
+                  lte: `${today}T23:59:59Z`,
+                },
+                type,
+              },
+            },
+          },
+          {
+            NOT: {
+              weeklyClosedDayList: {
+                some: {
+                  closedDate: {
+                    gte: `${afterTwoWeeks}T00:00:00Z`,
+                    lte: `${afterTwoWeeks}T23:59:59Z`,
+                  },
+                  type,
+                },
+              },
+            },
+          },
+        ],
+      },
+      select: {
+        idx: true,
+      },
+    });
+  }
+
+  public async insertWeeklyClosedDayByPlaceIdx(
+    placeIdx: number,
+    closedDate: string,
+    type: number,
+  ): Promise<void> {
+    await this.txHost.tx.weeklyClosedDay.create({
+      data: {
+        placeIdx,
+        closedDate: `${closedDate}T00:00:00Z`,
+        type,
+      },
+    });
+  }
+
+  public async selectWeeklyClosedDayByDate(
+    placeIdx: number,
+    closedDate: string,
+    type: number,
+  ): Promise<SelectPlaceWeeklyClosedDay | null> {
+    return await this.txHost.tx.weeklyClosedDay.findFirst({
+      where: {
+        placeIdx,
+        closedDate: `${closedDate}T00:00:00Z`,
+        type,
       },
     });
   }
