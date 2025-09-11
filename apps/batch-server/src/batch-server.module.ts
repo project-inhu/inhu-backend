@@ -7,6 +7,7 @@ import { PrismaModule } from '@libs/common/modules/prisma/prisma.module';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { PrismaService } from '@libs/common/modules/prisma/prisma.service';
 import { DiscordWebhookModule } from '@libs/common/modules/discord-webhook/discord-webhook.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { DiscordWebhookModule } from '@libs/common/modules/discord-webhook/disco
       ],
     }),
     DiscordWebhookModule,
+    ScheduleModule.forRoot(),
   ],
 })
 export class BatchServerModule {}
