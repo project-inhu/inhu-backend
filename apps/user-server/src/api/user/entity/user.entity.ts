@@ -4,7 +4,6 @@
  * @author 조희주
  */
 
-import { UserType } from '@libs/core/user/constants/user-type.enum';
 import { UserModel } from '@libs/core/user/model/user.model';
 
 export class UserEntity {
@@ -43,13 +42,6 @@ export class UserEntity {
    */
   provider?: string;
 
-  /**
-   * 사용자 유형
-   *
-   * @example "placeOwner"
-   */
-  type: UserType;
-
   constructor(data: UserEntity) {
     Object.assign(this, data);
   }
@@ -61,7 +53,6 @@ export class UserEntity {
       profileImagePath: model.profileImagePath,
       createdAt: model.createdAt,
       provider: model.provider?.provider,
-      type: model.type,
     });
   }
 }

@@ -171,10 +171,4 @@ export class PlaceService {
         .map((place) => PlaceOverviewEntity.fromModel(place, true)),
     };
   }
-
-  public async getOwnerPlaceAll(userIdx: number): Promise<PlaceEntity[]> {
-    return (await this.placeCoreService.getOwnerPlaceAllByUserIdx(userIdx)).map(
-      (place) => PlaceEntity.fromModel(place, false),
-    );
-  }
 }
