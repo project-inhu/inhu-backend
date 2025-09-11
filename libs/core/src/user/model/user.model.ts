@@ -62,7 +62,9 @@ export class UserModel {
         ? UserProviderModel.fromPrisma(user.userProvider)
         : null,
       type:
-        user.placeOwnerList.length > 0 ? UserType.PLACE_OWNER : UserType.USER,
+        user.placeOwnerList.length > 0
+          ? UserType.PLACE_OWNER
+          : UserType.GENERAL,
     });
   }
 }

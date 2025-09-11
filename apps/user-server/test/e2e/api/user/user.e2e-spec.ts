@@ -54,7 +54,7 @@ describe('User E2E test', () => {
       expect(responseBody.profileImagePath).toEqual(user.profileImagePath);
       expect(responseBody.provider).toEqual(user.userProvider?.name);
       expect(new Date(responseBody.createdAt)).toEqual(user.createdAt);
-      expect(responseBody.type).toEqual(UserType.USER);
+      expect(responseBody.type).toEqual(UserType.GENERAL);
     });
 
     it('200 - successfully retrieves user info', async () => {
