@@ -8,7 +8,6 @@ import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { BookmarkCoreService } from '@libs/core/bookmark/bookmark-core.service';
 import { GetAllPlaceMarkerDto } from './dto/request/get-all-place-marker.dto';
 import { PlaceMarkerEntity } from './entity/place-marker.entity';
-import { PlaceOverviewModel } from '@libs/core/place/model/place-overview.model';
 
 @Injectable()
 export class PlaceService {
@@ -170,11 +169,5 @@ export class PlaceService {
         .slice(0, 10)
         .map((place) => PlaceOverviewEntity.fromModel(place, true)),
     };
-  }
-
-  public async getOwnerPlaceAll(userIdx: number): Promise<PlaceEntity[]> {
-    return (await this.placeCoreService.getOwnerPlaceAllByUserIdx(userIdx)).map(
-      (place) => PlaceEntity.fromModel(place, false),
-    );
   }
 }

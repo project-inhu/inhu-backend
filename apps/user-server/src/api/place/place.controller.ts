@@ -67,15 +67,4 @@ export class PlaceController {
   ): Promise<PlaceEntity> {
     return await this.placeService.getPlaceByIdx(placeIdx, loginUser?.idx);
   }
-
-  /**
-   * 내 가게 조회
-   *
-   * @author 이수인
-   */
-  @Get('/owner/place/all')
-  @LoginAuth()
-  async getAllOwnerPlace(@User() user: LoginUser): Promise<PlaceEntity[]> {
-    return await this.placeService.getOwnerPlaceAll(user.idx);
-  }
 }
