@@ -973,7 +973,7 @@
       },
       "29W6lND4UT5OEtRa4Cdv2": {
         "id": "29W6lND4UT5OEtRa4Cdv2",
-        "name": "coupon_templete_tb",
+        "name": "coupon_template_tb",
         "comment": "",
         "columnIds": [
           "HwyTaVewUZ1oHDh0aQpcZ",
@@ -995,18 +995,18 @@
           "x": 1891,
           "y": 2157,
           "zIndex": 537,
-          "widthName": 120,
+          "widthName": 119,
           "widthComment": 60,
           "color": "#009688"
         },
         "meta": {
-          "updateAt": 1757673977482,
+          "updateAt": 1757678369086,
           "createAt": 1757653841736
         }
       },
       "wDGizzafqr39M_kCgD0ss": {
         "id": "wDGizzafqr39M_kCgD0ss",
-        "name": "coupon_templete_won_tb",
+        "name": "coupon_template_won_tb",
         "comment": "",
         "columnIds": [
           "KMOEB6kwUV3Kr8aVe77lr",
@@ -1027,7 +1027,7 @@
           "color": "#009688"
         },
         "meta": {
-          "updateAt": 1757673975144,
+          "updateAt": 1757678364513,
           "createAt": 1757655162657
         }
       },
@@ -1083,7 +1083,7 @@
       },
       "AWNHoI8vNN8Q4SuHFXAAM": {
         "id": "AWNHoI8vNN8Q4SuHFXAAM",
-        "name": "coupon_templete_percent_tb",
+        "name": "coupon_template_percent_tb",
         "comment": "",
         "columnIds": [
           "3-zVxcUZOekV3uZKVT-Ap",
@@ -1104,7 +1104,7 @@
           "color": "#009688"
         },
         "meta": {
-          "updateAt": 1757673972811,
+          "updateAt": 1757678347655,
           "createAt": 1757673489940
         }
       },
@@ -4894,7 +4894,7 @@
       "KMOEB6kwUV3Kr8aVe77lr": {
         "id": "KMOEB6kwUV3Kr8aVe77lr",
         "tableId": "wDGizzafqr39M_kCgD0ss",
-        "name": "coupon_templete_id",
+        "name": "coupon_template_id",
         "comment": "",
         "dataType": "uuid",
         "default": "",
@@ -4907,7 +4907,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1757673556824,
+          "updateAt": 1757678371723,
           "createAt": 1757656042748
         }
       },
@@ -5194,7 +5194,7 @@
       "3-zVxcUZOekV3uZKVT-Ap": {
         "id": "3-zVxcUZOekV3uZKVT-Ap",
         "tableId": "AWNHoI8vNN8Q4SuHFXAAM",
-        "name": "coupon_templete_id",
+        "name": "coupon_template_id",
         "comment": "",
         "dataType": "uuid",
         "default": "",
@@ -5207,7 +5207,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1757673606034,
+          "updateAt": 1757678375137,
           "createAt": 1757673566198
         }
       },
@@ -5338,7 +5338,7 @@
         "comment": "",
         "dataType": "int",
         "default": "",
-        "options": 10,
+        "options": 11,
         "ui": {
           "keys": 1,
           "widthName": 60,
@@ -5347,7 +5347,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1757673862939,
+          "updateAt": 1757677976893,
           "createAt": 1757673854092
         }
       },
@@ -5378,7 +5378,7 @@
         "comment": "",
         "dataType": "int",
         "default": "",
-        "options": 10,
+        "options": 11,
         "ui": {
           "keys": 1,
           "widthName": 60,
@@ -5387,7 +5387,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1757673888762,
+          "updateAt": 1757677978211,
           "createAt": 1757673885226
         }
       },
