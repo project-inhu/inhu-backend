@@ -30,12 +30,12 @@ model Keyword {
 }
 
 model PlaceImage {
-  idx       Int       @id @default(autoincrement())
-  placeIdx  Int       @map("place_idx")
-  path      String    @map("image_path") @db.VarChar
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
-  place     Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_image_tb")
+  idx        Int       @id @default(autoincrement())
+  placeIdx   Int       @map("place_idx")
+  image_path String    @db.VarChar
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt  DateTime? @map("deleted_at") @db.Timestamptz(6)
+  place      Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_image_tb")
 
   @@map("place_image_tb")
 }
@@ -55,6 +55,8 @@ model Place {
   bookmarkList          Bookmark[]
   breakTimeList         BreakTime[]
   closedDayList         ClosedDay[]
+  couponList            Coupon[]
+  couponTemplateList    CouponTemplate[]
   menuList              Menu[]
   operatingHourList     OperatingHour[]
   pickedPlace           PickedPlace?
@@ -162,10 +164,10 @@ model Menu {
 }
 
 model ReviewImage {
-  idx       Int    @id @default(autoincrement())
-  reviewIdx Int    @map("review_idx")
-  path      String @map("image_path") @db.VarChar
-  review    Review @relation(fields: [reviewIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_review_tb_to_review_image_tb")
+  idx        Int    @id @default(autoincrement())
+  reviewIdx  Int    @map("review_idx")
+  image_path String @db.VarChar
+  review     Review @relation(fields: [reviewIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_review_tb_to_review_image_tb")
 
   @@map("review_image_tb")
 }
@@ -252,6 +254,7 @@ model User {
   deletedAt                 DateTime?               @map("deleted_at") @db.Timestamptz(6)
   adminAccount              AdminAccount?
   bookmarkList              Bookmark[]
+  couponOwnList             CouponOwn[]
   placeOwnerList            PlaceOwner[]
   reviewList                Review[]
   service1ResultList        Service1Result[]
@@ -312,13 +315,93 @@ model WeeklyClosedDay {
 }
 
 model PlaceOwner {
-  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  placeIdx   Int       @map("place_idx")
-  userIdx    Int       @map("user_idx")
-  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt  DateTime? @map("deleted_at") @db.Timestamptz(6)
-  place      Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_owner_tb")
-  user       User      @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_place_owner_tb")
+  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  placeIdx  Int       @map("place_idx")
+  userIdx   Int       @map("user_idx")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+  place     Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_owner_tb")
+  user      User      @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_place_owner_tb")
 
   @@map("place_owner_tb")
+}
+
+model CouponOwn {
+  couponId  String    @map("coupon_id") @db.Uuid
+  userIdx   Int       @map("user_idx")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+  coupon    Coupon    @relation(fields: [couponId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_coupon_tb_to_coupon_own_tb")
+  user      User      @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_coupon_own_tb")
+
+  @@id([couponId, userIdx])
+  @@map("coupon_own_tb")
+}
+
+model CouponPercent {
+  idx        Int        @id @default(autoincrement())
+  percent    Int
+  maxPrice   Int?       @map("max_price")
+  couponList Coupon[]
+
+  @@map("coupon_percent_tb")
+}
+
+model Coupon {
+  id               String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  placeIdx         Int             @map("place_idx")
+  couponWonIdx     Int             @map("coupon_won_idx")
+  couponPercentIdx Int             @map("coupon_percent_idx")
+  bundleId         String          @map("bundle_id") @db.VarChar
+  name             String          @db.VarChar
+  description      String?         @db.VarChar
+  imagePath        String?         @map("image_path") @db.VarChar
+  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  activatedAt      DateTime        @map("activated_at") @db.Timestamptz(6)
+  expiredAt        DateTime        @map("expired_at") @db.Timestamptz(6)
+  usedAt           DateTime?       @map("used_at") @db.Timestamptz(6)
+  couponOwnList    CouponOwn[]
+  couponPercent    CouponPercent   @relation(fields: [couponPercentIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_coupon_percent_tb_to_coupon_tb")
+  couponWon        CouponWon       @relation(fields: [couponWonIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_coupon_won_tb_to_coupon_tb")
+  place            Place           @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_coupon_tb")
+
+  @@map("coupon_tb")
+}
+
+model CouponTemplatePercent {
+  couponTemplateId String           @id @map("coupon_template_id") @db.Uuid
+  percent          Int
+  maxPrice         Int?             @map("max_price")
+  couponTemplate   CouponTemplate   @relation(fields: [couponTemplateId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_coupon_template_tb_to_coupon_template_percent_tb")
+
+  @@map("coupon_template_percent_tb")
+}
+
+model CouponTemplate {
+  id                      String                   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  placeIdx                Int                      @map("place_idx")
+  name                    String                   @db.VarChar
+  description             String?                  @db.VarChar
+  imagePath               String?                  @map("image_path") @db.VarChar
+  couponTemplatePercent   CouponTemplatePercent?
+  place                   Place                    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_coupon_template_tb")
+  couponTemplateWon       CouponTemplateWon?
+
+  @@map("coupon_template_tb")
+}
+
+model CouponTemplateWon {
+  couponTemplateId String           @id @map("coupon_template_id") @db.Uuid
+  won              Int
+  couponTemplate   CouponTemplate   @relation(fields: [couponTemplateId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_coupon_template_tb_to_coupon_template_won_tb")
+
+  @@map("coupon_template_won_tb")
+}
+
+model CouponWon {
+  idx        Int        @id @default(autoincrement())
+  won        Int
+  couponList Coupon[]
+
+  @@map("coupon_won_tb")
 }

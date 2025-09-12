@@ -27,6 +27,72 @@ CREATE TABLE closed_day_tb
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE coupon_own_tb
+(
+  coupon_id  uuid                     NOT NULL,
+  user_idx   int                      NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at timestamp with time zone,
+  PRIMARY KEY (coupon_id, user_idx)
+);
+
+CREATE TABLE coupon_percent_tb
+(
+  idx       int NOT NULL GENERATED ALWAYS AS IDENTITY,
+  percent   int NOT NULL,
+  max_price int,
+  PRIMARY KEY (idx)
+);
+
+CREATE TABLE coupon_tb
+(
+  id                 uuid                     NOT NULL DEFAULT uuid_generate_v4(),
+  place_idx          int                      NOT NULL,
+  coupon_won_idx     int                      NOT NULL,
+  coupon_percent_idx int                      NOT NULL,
+  bundle_id          varchar                  NOT NULL,
+  name               varchar                  NOT NULL,
+  description        varchar                 ,
+  image_path         varchar                 ,
+  created_at         timestamp with time zone NOT NULL DEFAULT NOW(),
+  activated_at       timestamp with time zone NOT NULL,
+  expired_at         timestamp with time zone NOT NULL,
+  used_at            timestamp with time zone,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE coupon_template_percent_tb
+(
+  coupon_template_id uuid NOT NULL,
+  percent            int  NOT NULL,
+  max_price          int ,
+  PRIMARY KEY (coupon_template_id)
+);
+
+CREATE TABLE coupon_template_tb
+(
+  id          uuid    NOT NULL DEFAULT uuid_generate_v4(),
+  place_idx   int     NOT NULL,
+  name        varchar NOT NULL,
+  description varchar,
+  image_path  varchar,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE coupon_template_won_tb
+(
+  coupon_template_id uuid NOT NULL,
+  won                int  NOT NULL,
+  PRIMARY KEY (coupon_template_id)
+);
+
+CREATE TABLE coupon_won_tb
+(
+  idx int NOT NULL GENERATED ALWAYS AS IDENTITY,
+  won int NOT NULL,
+  PRIMARY KEY (idx)
+);
+
 CREATE TABLE keyword_tb
 (
   idx        int                      NOT NULL,
@@ -396,5 +462,45 @@ ALTER TABLE place_owner_tb
 
 ALTER TABLE place_owner_tb
   ADD CONSTRAINT FK_user_tb_TO_place_owner_tb
+    FOREIGN KEY (user_idx)
+    REFERENCES user_tb (idx);
+
+ALTER TABLE coupon_template_tb
+  ADD CONSTRAINT FK_place_tb_TO_coupon_template_tb
+    FOREIGN KEY (place_idx)
+    REFERENCES place_tb (idx);
+
+ALTER TABLE coupon_template_won_tb
+  ADD CONSTRAINT FK_coupon_template_tb_TO_coupon_template_won_tb
+    FOREIGN KEY (coupon_template_id)
+    REFERENCES coupon_template_tb (id);
+
+ALTER TABLE coupon_tb
+  ADD CONSTRAINT FK_place_tb_TO_coupon_tb
+    FOREIGN KEY (place_idx)
+    REFERENCES place_tb (idx);
+
+ALTER TABLE coupon_template_percent_tb
+  ADD CONSTRAINT FK_coupon_template_tb_TO_coupon_template_percent_tb
+    FOREIGN KEY (coupon_template_id)
+    REFERENCES coupon_template_tb (id);
+
+ALTER TABLE coupon_own_tb
+  ADD CONSTRAINT FK_coupon_tb_TO_coupon_own_tb
+    FOREIGN KEY (coupon_id)
+    REFERENCES coupon_tb (id);
+
+ALTER TABLE coupon_tb
+  ADD CONSTRAINT FK_coupon_won_tb_TO_coupon_tb
+    FOREIGN KEY (coupon_won_idx)
+    REFERENCES coupon_won_tb (idx);
+
+ALTER TABLE coupon_tb
+  ADD CONSTRAINT FK_coupon_percent_tb_TO_coupon_tb
+    FOREIGN KEY (coupon_percent_idx)
+    REFERENCES coupon_percent_tb (idx);
+
+ALTER TABLE coupon_own_tb
+  ADD CONSTRAINT FK_user_tb_TO_coupon_own_tb
     FOREIGN KEY (user_idx)
     REFERENCES user_tb (idx);
