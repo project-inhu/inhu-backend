@@ -58,4 +58,4 @@ jobs:
             tar -xzf deploy-batch.tar.gz
             rm deploy-batch.tar.gz
             pm2 reload inhu-backend-batch-dev
-EOF
+          EOF
