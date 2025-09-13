@@ -52,10 +52,6 @@ jobs:
           PORT: ${{ secrets.RASPBERRY_PI_PORT }}
         run: |
           sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no deploy-user.tar.gz $USER@$HOST:~/inhu-backend/
-          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST <<'EOF'
-            set -e
-            cd ~/inhu-backend
-            tar -xzf deploy-user.tar.gz
-            rm deploy-user.tar.gz
-            pm2 reload inhu-backend-user-dev
-          EOF
+
+          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST \
+            "bash ~/inhu-backend/deploy-service.sh user"
