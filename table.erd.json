@@ -1006,7 +1006,7 @@
       },
       "wDGizzafqr39M_kCgD0ss": {
         "id": "wDGizzafqr39M_kCgD0ss",
-        "name": "coupon_template_won_tb",
+        "name": "coupon_template_price_discount_tb",
         "comment": "",
         "columnIds": [
           "KMOEB6kwUV3Kr8aVe77lr",
@@ -1022,12 +1022,12 @@
           "x": 1839,
           "y": 1978,
           "zIndex": 548,
-          "widthName": 149,
+          "widthName": 210,
           "widthComment": 60,
           "color": "#009688"
         },
         "meta": {
-          "updateAt": 1757678364513,
+          "updateAt": 1757741215528,
           "createAt": 1757655162657
         }
       },
@@ -1139,7 +1139,7 @@
       },
       "YMr3vbvWX-OD6gpoYHvHL": {
         "id": "YMr3vbvWX-OD6gpoYHvHL",
-        "name": "coupon_won_tb",
+        "name": "coupon_price_discount_tb",
         "comment": "",
         "columnIds": [
           "ivv2mpF18Z6ZYcafMlHA9",
@@ -1153,18 +1153,18 @@
           "x": 1237,
           "y": 2500,
           "zIndex": 615,
-          "widthName": 92,
+          "widthName": 154,
           "widthComment": 60,
           "color": "#673AB7"
         },
         "meta": {
-          "updateAt": 1757673990810,
+          "updateAt": 1757741602992,
           "createAt": 1757673845577
         }
       },
       "xIzEmTDO6r-CUA8E5I2Uc": {
         "id": "xIzEmTDO6r-CUA8E5I2Uc",
-        "name": "coupon_percent_tb",
+        "name": "coupon_percent_discount_tb",
         "comment": "",
         "columnIds": [
           "O7vD-wEnXvClNZ2LT1Xvs",
@@ -1180,12 +1180,12 @@
           "x": 1224,
           "y": 2696,
           "zIndex": 617,
-          "widthName": 114,
+          "widthName": 169,
           "widthComment": 60,
           "color": "#673AB7"
         },
         "meta": {
-          "updateAt": 1757673994597,
+          "updateAt": 1757741609408,
           "createAt": 1757673873227
         }
       }
@@ -4854,7 +4854,7 @@
       "pH6RoSqbiitTjKQ-f6AYM": {
         "id": "pH6RoSqbiitTjKQ-f6AYM",
         "tableId": "wDGizzafqr39M_kCgD0ss",
-        "name": "won",
+        "name": "price",
         "comment": "",
         "dataType": "int",
         "default": "",
@@ -4867,7 +4867,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1757673522085,
+          "updateAt": 1757741203376,
           "createAt": 1757655209223
         }
       },
@@ -5354,7 +5354,7 @@
       "19rdT6YReVahx_C3XfBdu": {
         "id": "19rdT6YReVahx_C3XfBdu",
         "tableId": "YMr3vbvWX-OD6gpoYHvHL",
-        "name": "won",
+        "name": "price",
         "comment": "",
         "dataType": "int",
         "default": "",
@@ -5367,7 +5367,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1757673868468,
+          "updateAt": 1757741141462,
           "createAt": 1757673863597
         }
       },
@@ -5434,40 +5434,40 @@
       "p4YVIWSVludhxvc_7EmJO": {
         "id": "p4YVIWSVludhxvc_7EmJO",
         "tableId": "aR-1pj4vRyRnQCnquhbjR",
-        "name": "coupon_won_idx",
+        "name": "coupon_price_discount_idx",
         "comment": "",
         "dataType": "int",
         "default": "",
         "options": 8,
         "ui": {
           "keys": 2,
-          "widthName": 97,
+          "widthName": 159,
           "widthComment": 60,
           "widthDataType": 60,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1757673922765,
+          "updateAt": 1757741631634,
           "createAt": 1757673915291
         }
       },
       "TO1Ul1Q4m7G6uymFkuu4O": {
         "id": "TO1Ul1Q4m7G6uymFkuu4O",
         "tableId": "aR-1pj4vRyRnQCnquhbjR",
-        "name": "coupon_percent_idx",
+        "name": "coupon_percent_discount_idx",
         "comment": "",
         "dataType": "int",
         "default": "",
         "options": 8,
         "ui": {
           "keys": 2,
-          "widthName": 118,
+          "widthName": 174,
           "widthComment": 60,
           "widthDataType": 60,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1757673938961,
+          "updateAt": 1757741641708,
           "createAt": 1757673927218
         }
       },
@@ -6436,7 +6436,7 @@
           "columnIds": [
             "DZYfIypkxkQt3wjYqUDHz"
           ],
-          "x": 2410,
+          "x": 2466,
           "y": 2543,
           "direction": 2
         },
