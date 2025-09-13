@@ -113,7 +113,7 @@ export class PlaceModel {
       createdAt: place.createdAt,
       activatedAt: place.activatedAt,
       permanentlyClosedAt: place.permanentlyClosedAt,
-      imgPathList: place.placeImageList.map(({ path }) => path),
+      imgPathList: place.placeImageList.map(({ imagePath }) => imagePath),
       breakTimeList: place.breakTimeList.map(PlaceBreakTimeModel.fromPrisma),
       type: place.placeTypeMappingList.map(
         ({ placeTypeIdx }) => placeTypeIdx,

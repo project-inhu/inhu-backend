@@ -66,7 +66,9 @@ export class ReviewCoreRepository {
         reviewImageList:
           imagePathList.length > 0
             ? {
-                create: imagePathList.map((path: string) => ({ path })),
+                create: imagePathList.map((imagePath: string) => ({
+                  imagePath,
+                })),
               }
             : undefined,
         reviewKeywordMappingList:
@@ -97,7 +99,7 @@ export class ReviewCoreRepository {
                 deleteMany: {},
                 create:
                   imagePathList.length > 0
-                    ? imagePathList.map((path: string) => ({ path }))
+                    ? imagePathList.map((imagePath: string) => ({ imagePath }))
                     : undefined,
               }
             : undefined,

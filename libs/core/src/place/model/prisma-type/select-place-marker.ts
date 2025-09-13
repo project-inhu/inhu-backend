@@ -12,7 +12,7 @@ export const SELECT_PLACE_MARKER = Prisma.validator<Prisma.PlaceDefaultArgs>()({
     createdAt: true,
     permanentlyClosedAt: true,
     placeImageList: {
-      select: { path: true },
+      select: { imagePath: true },
       where: { deletedAt: null },
       orderBy: { idx: 'asc' },
     },

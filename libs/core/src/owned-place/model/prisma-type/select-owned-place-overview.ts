@@ -13,7 +13,7 @@ export const SELECT_OWNED_PLACE_OVERVIEW =
       createdAt: true,
       permanentlyClosedAt: true,
       placeImageList: {
-        select: { path: true },
+        select: { imagePath: true },
         where: { deletedAt: null },
         orderBy: { idx: 'asc' },
       },

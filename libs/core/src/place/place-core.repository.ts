@@ -358,7 +358,7 @@ export class PlaceCoreRepository {
         activatedAt: input.activatedAt,
         placeImageList: {
           createMany: {
-            data: input.imgList.map((path) => ({ path })),
+            data: input.imgList.map((imagePath) => ({ imagePath })),
           },
         },
         roadAddressIdx: createdRoadAddress.idx,
@@ -445,7 +445,7 @@ export class PlaceCoreRepository {
                 },
               },
               createMany: {
-                data: input.imgList.map((path) => ({ path })),
+                data: input.imgList.map((imagePath) => ({ imagePath })),
               },
             }
           : undefined,

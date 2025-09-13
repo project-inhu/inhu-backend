@@ -30,7 +30,7 @@ export const SELECT_PLACE = Prisma.validator<Prisma.PlaceDefaultArgs>()({
       },
     },
     placeImageList: {
-      select: { path: true },
+      select: { imagePath: true },
       where: { deletedAt: null },
       orderBy: { idx: 'asc' },
     },

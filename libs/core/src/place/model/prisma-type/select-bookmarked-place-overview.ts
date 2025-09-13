@@ -16,7 +16,7 @@ export const SELECT_BOOKMARKED_PLACE_OVERVIEW =
           createdAt: true,
           permanentlyClosedAt: true,
           placeImageList: {
-            select: { path: true },
+            select: { imagePath: true },
             where: { deletedAt: null },
             orderBy: { idx: 'asc' },
           },

@@ -46,7 +46,7 @@ export class OwnedPlaceOverviewModel extends PickType(OwnedPlaceModel, [
       createdAt: place.createdAt,
       activatedAt: place.activatedAt,
       permanentlyClosedAt: place.permanentlyClosedAt,
-      imgPathList: place.placeImageList.map((image) => image.path),
+      imgPathList: place.placeImageList.map((image) => image.imagePath),
       type: place.placeTypeMappingList.map(
         ({ placeTypeIdx }) => placeTypeIdx,
       )[0] as PlaceType,

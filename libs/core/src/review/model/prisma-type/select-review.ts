@@ -9,7 +9,7 @@ export const SELECT_REVIEW = Prisma.validator<Prisma.ReviewDefaultArgs>()({
     createdAt: true,
     reviewImageList: {
       select: {
-        path: true,
+        imagePath: true,
       },
     },
     reviewKeywordMappingList: {
