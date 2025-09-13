@@ -41,6 +41,9 @@ jobs:
       - name: Compress files
         run: tar -czf deploy-batch.tar.gz -C ./deploy-batch-files .
 
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
       - name: Deploy to Raspberry Pi (reload batch service)
         env:
           HOST: ${{ secrets.RASPBERRY_PI_HOST }}
