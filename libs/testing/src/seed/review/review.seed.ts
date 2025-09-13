@@ -37,7 +37,9 @@ export class ReviewSeedHelper extends ISeedHelper<
         reviewImageList: filledInput.reviewImgList
           ? {
               createMany: {
-                data: filledInput.reviewImgList.map((path) => ({ path })),
+                data: filledInput.reviewImgList.map((imagePath) => ({
+                  imagePath,
+                })),
               },
             }
           : undefined,

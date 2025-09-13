@@ -87,8 +87,8 @@ export class PlaceSeedHelper extends ISeedHelper<
         deletedAt: filledInput.deletedAt,
         placeImageList: {
           createMany: {
-            data: filledInput.placeImgList.map((path) => ({
-              path,
+            data: filledInput.placeImgList.map((imagePath) => ({
+              imagePath,
             })),
           },
         },
