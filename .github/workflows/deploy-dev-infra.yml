@@ -105,7 +105,7 @@ jobs:
   run-common-tasks:
     name: Run Common tasks
     needs: check-changes
-    if: github.event_name == 'push' && needs.check-user-changes.outputs.should_deploy == 'true'
+    if: github.event_name == 'push' && needs.check-changes.outputs.should_deploy == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Execute common tasks on server
@@ -152,15 +152,15 @@ jobs:
     secrets: inherit
 
   call-admin-workflow:
-  name: Trigger Admin workflow
-  needs: [check-changes, run-common-tasks]
-  if: needs.check-changes.outputs.admin_changed == 'true'
-  uses: ./.github/workflows/deploy-dev-admin.yml
-  secrets: inherit
+    name: Trigger Admin workflow
+    needs: [check-changes, run-common-tasks]
+    if: needs.check-changes.outputs.admin_changed == 'true'
+    uses: ./.github/workflows/deploy-dev-admin.yml
+    secrets: inherit
 
   call-batch-workflow:
-  name: Trigger Batch workflow
-  needs: [check-changes, run-common-tasks]
-  if: needs.check-changes.outputs.batch_changed == 'true'
-  uses: ./.github/workflows/deploy-dev-batch.yml
-  secrets: inherit
+    name: Trigger Batch workflow
+    needs: [check-changes, run-common-tasks]
+    if: needs.check-changes.outputs.batch_changed == 'true'
+    uses: ./.github/workflows/deploy-dev-batch.yml
+    secrets: inherit
