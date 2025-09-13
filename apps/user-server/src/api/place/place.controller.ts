@@ -11,8 +11,10 @@ import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
 import { LoginUser } from '@user/common/types/LoginUser';
 import { GetAllPlaceMarkerDto } from './dto/request/get-all-place-marker.dto';
 import { GetAllPlaceMarkerResponseDto } from './dto/response/get-all-place-marker-response.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller()
+@ApiTags('Place')
 export class PlaceController {
   constructor(private placeService: PlaceService) {}
 
