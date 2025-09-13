@@ -1083,7 +1083,7 @@
       },
       "AWNHoI8vNN8Q4SuHFXAAM": {
         "id": "AWNHoI8vNN8Q4SuHFXAAM",
-        "name": "coupon_template_percent_tb",
+        "name": "coupon_template_percent_discount_tb",
         "comment": "",
         "columnIds": [
           "3-zVxcUZOekV3uZKVT-Ap",
@@ -1099,12 +1099,12 @@
           "x": 1280,
           "y": 1979,
           "zIndex": 573,
-          "widthName": 170,
+          "widthName": 225,
           "widthComment": 60,
           "color": "#009688"
         },
         "meta": {
-          "updateAt": 1757678347655,
+          "updateAt": 1757745240689,
           "createAt": 1757673489940
         }
       },
