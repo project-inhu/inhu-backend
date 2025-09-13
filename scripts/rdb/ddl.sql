@@ -68,7 +68,7 @@ CREATE TABLE coupon_tb
   PRIMARY KEY (id)
 );
 
-CREATE TABLE coupon_template_percent_tb
+CREATE TABLE coupon_template_percent_discount_tb
 (
   coupon_template_id uuid NOT NULL,
   percent            int  NOT NULL,
@@ -480,8 +480,8 @@ ALTER TABLE coupon_tb
     FOREIGN KEY (place_idx)
     REFERENCES place_tb (idx);
 
-ALTER TABLE coupon_template_percent_tb
-  ADD CONSTRAINT FK_coupon_template_tb_TO_coupon_template_percent_tb
+ALTER TABLE coupon_template_percent_discount_tb
+  ADD CONSTRAINT FK_coupon_template_tb_TO_coupon_template_percent_discount_tb
     FOREIGN KEY (coupon_template_id)
     REFERENCES coupon_template_tb (id);
 

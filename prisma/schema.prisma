@@ -339,44 +339,35 @@ model CouponOwn {
 }
 
 model Coupon {
-  id                       String                  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  placeIdx                 Int                     @map("place_idx")
-  couponPriceDiscountIdx   Int                     @map("coupon_price_discount_idx")
-  couponPercentDiscountIdx Int                     @map("coupon_percent_discount_idx")
-  bundleId                 String                  @map("bundle_id") @db.VarChar
-  name                     String                  @db.VarChar
-  description              String?                 @db.VarChar
-  imagePath                String?                 @map("image_path") @db.VarChar
-  createdAt                DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
-  activatedAt              DateTime                @map("activated_at") @db.Timestamptz(6)
-  expiredAt                DateTime                @map("expired_at") @db.Timestamptz(6)
-  usedAt                   DateTime?               @map("used_at") @db.Timestamptz(6)
+  id                       String                @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  placeIdx                 Int                   @map("place_idx")
+  couponPriceDiscountIdx   Int                   @map("coupon_price_discount_idx")
+  couponPercentDiscountIdx Int                   @map("coupon_percent_discount_idx")
+  bundleId                 String                @map("bundle_id") @db.VarChar
+  name                     String                @db.VarChar
+  description              String?               @db.VarChar
+  imagePath                String?               @map("image_path") @db.VarChar
+  createdAt                DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  activatedAt              DateTime              @map("activated_at") @db.Timestamptz(6)
+  expiredAt                DateTime              @map("expired_at") @db.Timestamptz(6)
+  usedAt                   DateTime?             @map("used_at") @db.Timestamptz(6)
   couponOwnList            CouponOwn[]
   couponPercentDiscount    CouponPercentDiscount @relation(fields: [couponPercentDiscountIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_coupon_percent_discount_tb_to_coupon_tb")
   couponPriceDiscount      CouponPriceDiscount   @relation(fields: [couponPriceDiscountIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_coupon_price_discount_tb_to_coupon_tb")
-  place                    Place                   @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_coupon_tb")
+  place                    Place                 @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_coupon_tb")
 
   @@map("coupon_tb")
 }
 
-model CouponTemplatePercent {
-  couponTemplateId String         @id @map("coupon_template_id") @db.Uuid
-  percent          Int
-  maxPrice         Int?           @map("max_price")
-  couponTemplate   CouponTemplate @relation(fields: [couponTemplateId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_coupon_template_tb_to_coupon_template_percent_tb")
-
-  @@map("coupon_template_percent_tb")
-}
-
 model CouponTemplate {
-  id                            String                         @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  placeIdx                      Int                            @map("place_idx")
-  name                          String                         @db.VarChar
-  description                   String?                        @db.VarChar
-  imagePath                     String?                        @map("image_path") @db.VarChar
-  couponTemplatePercent         CouponTemplatePercent?
-  couponTemplatePriceDiscount   CouponTemplatePriceDiscount?
-  place                         Place                          @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_coupon_template_tb")
+  id                              String                           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  placeIdx                        Int                              @map("place_idx")
+  name                            String                           @db.VarChar
+  description                     String?                          @db.VarChar
+  imagePath                       String?                          @map("image_path") @db.VarChar
+  couponTemplatePercentDiscount   CouponTemplatePercentDiscount?
+  couponTemplatePriceDiscount     CouponTemplatePriceDiscount?
+  place                           Place                            @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_coupon_template_tb")
 
   @@map("coupon_template_tb")
 }
@@ -404,4 +395,13 @@ model CouponTemplatePriceDiscount {
   couponTemplate   CouponTemplate @relation(fields: [couponTemplateId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_coupon_template_tb_to_coupon_template_price_discount_tb")
 
   @@map("coupon_template_price_discount_tb")
+}
+
+model CouponTemplatePercentDiscount {
+  couponTemplateId String         @id @map("coupon_template_id") @db.Uuid
+  percent          Int
+  maxPrice         Int?           @map("max_price")
+  couponTemplate   CouponTemplate @relation(fields: [couponTemplateId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_coupon_template_tb_to_coupon_template_percent_discount_tb")
+
+  @@map("coupon_template_percent_discount_tb")
 }
