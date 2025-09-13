@@ -58,4 +58,4 @@ jobs:
             tar -xzf deploy-user.tar.gz
             rm deploy-user.tar.gz
             pm2 reload inhu-backend-user-dev
-EOF
+          EOF
