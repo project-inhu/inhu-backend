@@ -58,4 +58,4 @@ jobs:
             tar -xzf deploy-admin.tar.gz
             rm deploy-admin.tar.gz
             pm2 reload inhu-backend-admin-dev
-          EOF
+EOF
