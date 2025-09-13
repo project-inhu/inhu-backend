@@ -1,0 +1,166 @@
+name: Deploy to Development
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  # Job 1: 변경된 파일 감지 및 실행할 작업 결정
+  check-changes:
+    name: Check for Changes
+    runs-on: ubuntu-latest
+    outputs:
+      # 배포까지 필요한 변경인지 (true/false)
+      should_deploy: ${{ steps.deployment-gate.outputs.any_modified }}
+      # 데이터베이스 다운이 필요한 변경인지 (true/false)
+      should_db_down: ${{ steps.db-check.outputs.any_modified }}
+      # User 서버에 변경이 있었는지 (true/false)
+      user_changed: ${{ steps.user-filter.outputs.any_modified }}
+      # Admin 서버에 변경이 있었는지 (true/false)
+      admin_changed: ${{ steps.admin-filter.outputs.any_modified }}
+      # Batch 서버에 변경이 있었는지 (true/false)
+      batch_changed: ${{ steps.batch-filter.outputs.any_modified }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 각 서비스별 변경 감지
+      - name: Check for User Service Changes
+        id: user-filter
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            apps/user-server/**
+            libs/**
+          files_ignore: |
+            **/*.md
+            libs/testing/**
+      - name: Check for Admin Service Changes
+        id: admin-filter
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            apps/admin-server/**
+            libs/**
+          files_ignore: |
+            **/*.md
+            libs/testing/**
+      - name: Check for Batch Service Changes
+        id: batch-filter
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            apps/batch-server/**
+            libs/**
+          files_ignore: |
+            **/*.md
+            libs/testing/**
+
+      # 실제 배포를 실행할지 결정
+      - name: Check for deployable Changes
+        id: deployment-gate
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            .github/workflows/deploy-dev.yml
+            apps/**/src/**
+            libs/**
+            prisma/**
+            package.json
+            package-lock.json
+            scripts/dev-infra/**
+            scripts/rdb/**
+          files_ignore: |
+            libs/testing/**
+            **/*.md
+
+      # DB 인프라 전체 리셋이 필요한 변경 감지
+      - name: Check for database infrastructure Changes
+        id: db-check
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            scripts/dev-infra/**
+            scripts/rdb/**
+            prisma/**
+
+      - name: echo outputs for debugging
+        run: |
+          echo "user_changed: ${{ steps.user-filter.outputs.any_modified }}"
+          echo "admin_changed: ${{ steps.admin-filter.outputs.any_modified }}"
+          echo "batch_changed: ${{ steps.batch-filter.outputs.any_modified }}"
+          echo "should_deploy: ${{ steps.deployment-gate.outputs.any_modified }}"
+          echo "should_db_down: ${{ steps.db-check.outputs.any_modified }}"
+          echo "should_seed: ${{ steps.seed-check.outputs.any_modified }}"
+          echo "Deployment gate outputs: ${{ toJSON(steps.deployment-gate.outputs) }}"
+          echo "DB check outputs: ${{ toJSON(steps.db-check.outputs) }}"
+
+  run-common-tasks:
+    name: Run Common tasks
+    needs: check-changes
+    if: github.event_name == 'push' && needs.check-user-changes.outputs.should_deploy == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute common tasks on server
+        env:
+          HOST: ${{ secrets.RASPBERRY_PI_HOST }}
+          USER: ${{ secrets.RASPBERRY_PI_USER }}
+          PASSWORD: ${{ secrets.RASPBERRY_PI_PASSWORD }}
+          PORT: ${{ secrets.RASPBERRY_PI_PORT }}
+          DB_DOWN: ${{ needs.check-changes.outputs.should_db_down }}
+          USER_CHANGED: ${{ needs.check-changes.outputs.user_changed }}
+          ADMIN_CHANGED: ${{ needs.check-changes.outputs.admin_changed }}
+          BATCH_CHANGED: ${{ needs.check-changes.outputs.batch_changed }}
+
+        run: |
+          echo "[deploy] should_db_down=$DB_DOWN"
+          sudo apt-get update && sudo apt-get install -y sshpass
+          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST \
+            "DB_DOWN_FLAG='$DB_DOWN' USER_CHANGED='$USER_CHANGED' ADMIN_CHANGED='$ADMIN_CHANGED' BATCH_CHANGED='$BATCH_CHANGED' bash -s" <<'EOF'
+              set -e
+              cd ~/inhu-backend
+              npm ci
+
+              if [ "$DB_DOWN_FLAG" = "true" ]; then
+              npm run dev-infra:down
+              npm run dev-infra:up
+              until docker exec inhu-dev-postgres psql -U inhu_admin -d inhu -c "SELECT 1;" >/dev/null 2>&1; do
+                sleep 1
+              done
+              npm run seed
+
+              if [ "$USER_CHANGED" != "true" ] && [ "$ADMIN_CHANGED" != "true" ] && [ "$BATCH_CHANGED" != "true" ]; then
+                pm2 reload inhu-backend-user-dev
+                pm2 reload inhu-backend-admin-dev
+                pm2 reload inhu-backend-batch-dev
+              fi
+              fi
+            EOF
+
+  call-user-workflow:
+    name: Trigger User workflow
+    needs: [check-changes, run-common-tasks]
+    if: needs.check-changes.outputs.user_changed == 'true'
+    uses: ./.github/workflows/deploy-dev-user.yml
+    secrets: inherit
+
+  call-admin-workflow:
+  name: Trigger Admin workflow
+  needs: [check-changes, run-common-tasks]
+  if: needs.check-changes.outputs.admin_changed == 'true'
+  uses: ./.github/workflows/deploy-dev-admin.yml
+  secrets: inherit
+
+  call-batch-workflow:
+  name: Trigger Batch workflow
+  needs: [check-changes, run-common-tasks]
+  if: needs.check-changes.outputs.batch_changed == 'true'
+  uses: ./.github/workflows/deploy-dev-batch.yml
+  secrets: inherit
