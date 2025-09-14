@@ -20,6 +20,8 @@ export class PlaceController {
 
   /**
    * 모든 place 개요 가져오기
+   *
+   * 운영 중인 장소와 운영 중이지 않은 장소를 가지고 올 경우 운영 중인 장소를 먼저 가지고 옴
    */
   @Get('/place/all')
   @Exception(400, 'Invalid page number or orderBy')
