@@ -3,7 +3,7 @@ set -e
 
 SERVICE_NAME=$1
 TAR_FILE=deploy-$SERVICE_NAME.tar.gz
-TARGET_DIR="dist/apps/$SERVICE_NAME"
+TARGET_DIR="dist/apps/$SERVICE_NAME-server"
 
 
 cd ~/inhu-backend
