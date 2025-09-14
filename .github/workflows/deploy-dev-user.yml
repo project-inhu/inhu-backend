@@ -56,7 +56,7 @@ jobs:
         run: |
           sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no deploy-user.tar.gz $USER@$HOST:~/inhu-backend/
 
-          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no ./.github/workflows/scripts/deploy-service.sh $USER@$HOST:~/inhu-backend/
+          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no ./.github/workflows/scripts/deploy-dev-service-script.sh $USER@$HOST:~/inhu-backend/
 
           sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST \
-            "bash ~/inhu-backend/deploy-service.sh user"
+            "bash ~/inhu-backend/deploy-dev-service-script.sh user"
