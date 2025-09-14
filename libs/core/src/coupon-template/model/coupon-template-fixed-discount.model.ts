@@ -13,7 +13,7 @@ export class CouponTemplateFixedDiscountModel {
     Object.assign(this, data);
   }
 
-  public static fromData(
+  public static fromPrisma(
     couponTemplateFixedDiscount: SelectCouponTemplateFixedDiscount,
   ): CouponTemplateFixedDiscountModel {
     return new CouponTemplateFixedDiscountModel({
