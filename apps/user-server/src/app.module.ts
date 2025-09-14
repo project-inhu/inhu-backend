@@ -19,6 +19,8 @@ import { DiscordWebhookModule } from '@libs/common/modules/discord-webhook/disco
 import { RedlockModule } from '@libs/common/modules/redlock/redlock.module';
 import { AopModule } from '@toss/nestjs-aop';
 import { OwnedPlaceModule } from './api/owned-place/owned-place.module';
+import { CouponTemplateModule } from './api/coupon-template/coupon-template.module';
+import { CouponModule } from './api/coupon/coupon.module';
 
 @Module({
   imports: [
@@ -48,6 +50,8 @@ import { OwnedPlaceModule } from './api/owned-place/owned-place.module';
     }),
     AopModule,
     OwnedPlaceModule,
+    CouponModule,
+    CouponTemplateModule,
   ],
   controllers: [],
   providers: [],
