@@ -105,10 +105,52 @@ jobs:
           echo "Deployment gate outputs: ${{ toJSON(steps.deployment-gate.outputs) }}"
           echo "DB check outputs: ${{ toJSON(steps.db-check.outputs) }}"
 
-  # 2. 공통 작업 실행 (DB reset, seed, npm ci)
+  # 2. 테스트
+  test-services:
+    name: Run E2E Tests
+    needs: check-changes
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run E2E tests for User Server
+        if: needs.check-changes.outputs.user_changed == 'true'
+        run: |
+          echo "User service changes detected, running tests..."
+          npm run user-server:test:infra:up
+          npm run user-server:test:e2e
+          npm run user-server:test:infra:down
+
+      - name: Run E2E tests for Admin Server
+        if: needs.check-changes.outputs.admin_changed == 'true'
+        run: |
+          echo "Admin service changes detected, running tests..."
+          npm run admin-server:test:infra:up
+          npm run admin-server:test:e2e
+          npm run admin-server:test:infra:down
+
+      - name: Run E2E tests for Batch Server
+        if: needs.check-changes.outputs.batch_changed == 'true'
+        run: |
+          echo "Batch service changes detected, running tests..."
+          npm run batch-server:test:infra:up
+          npm run batch-server:test:e2e
+          npm run batch-server:test:infra:down
+
+  # 3. 공통 작업 실행 (DB reset, seed, npm ci)
   run-common-tasks:
     name: Run Common tasks
-    needs: check-changes
+    needs: [check-changes, test-services]
     if: github.event_name == 'push' && needs.check-changes.outputs.should_deploy == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -139,20 +181,20 @@ jobs:
   call-user-workflow:
     name: Trigger User workflow
     needs: [check-changes, run-common-tasks]
-    if: needs.check-changes.outputs.user_changed == 'true'
+    if: github.event_name == 'push' && needs.check-changes.outputs.user_changed == 'true'
     uses: ./.github/workflows/deploy-dev-user.yml
     secrets: inherit
 
   call-admin-workflow:
     name: Trigger Admin workflow
     needs: [check-changes, run-common-tasks]
-    if: needs.check-changes.outputs.admin_changed == 'true'
+    if: github.event_name == 'push' && needs.check-changes.outputs.admin_changed == 'true'
     uses: ./.github/workflows/deploy-dev-admin.yml
     secrets: inherit
 
   call-batch-workflow:
     name: Trigger Batch workflow
     needs: [check-changes, run-common-tasks]
-    if: needs.check-changes.outputs.batch_changed == 'true'
+    if: github.event_name == 'push' && needs.check-changes.outputs.batch_changed == 'true'
     uses: ./.github/workflows/deploy-dev-batch.yml
     secrets: inherit
