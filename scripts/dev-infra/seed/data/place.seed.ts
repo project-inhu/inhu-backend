@@ -1399,8 +1399,9 @@ for (let i = 0; i < size * size; i++) {
     pickedPlaceList: [],
   });
 }
+
 /**
- * 생성한 모든 데이터를 묶어서 하나의 배열로 export
+ * 생성한 모든 데이터를 묶어서 하나의 배열로 export해줌
  */
 export const PlaceSeedDataList = [
   place1,
