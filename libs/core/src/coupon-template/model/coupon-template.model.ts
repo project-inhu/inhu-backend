@@ -1,12 +1,16 @@
-import { CouponPlaceModel } from './coupon-place.model';
+import { CouponPlaceModel } from '../../coupon/model/coupon-place.model';
 import { SelectCouponTemplate } from './prisma-type/select-coupon-template';
 
+/**
+ * 쿠폰 템플릿 모델 클래스
+ *
+ * @publicApi
+ */
 export class CouponTemplateModel {
   public id: string;
-  public name: string;
   public description: string | null;
   public imagePath: string | null;
-  public couponPlace: CouponPlaceModel;
+  public place: CouponPlaceModel;
 
   constructor(data: CouponTemplateModel) {
     Object.assign(this, data);
@@ -17,10 +21,9 @@ export class CouponTemplateModel {
   ): CouponTemplateModel {
     return new CouponTemplateModel({
       id: couponTemplate.id,
-      name: couponTemplate.name,
       description: couponTemplate.description,
       imagePath: couponTemplate.imagePath,
-      couponPlace: CouponPlaceModel.fromPrisma(couponTemplate.place),
+      place: CouponPlaceModel.fromPrisma(couponTemplate.place),
     });
   }
 }
