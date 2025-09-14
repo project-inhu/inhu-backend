@@ -126,7 +126,7 @@ jobs:
         run: |
           echo "[deploy] should_db_down=$DB_DOWN"
           sudo apt-get update && sudo apt-get install -y sshpass
-          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no scripts/deploy-dev-infra-script.sh $USER@$HOST:~/inhu-backend/
+          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no .github/workflows/scripts/deploy-dev-infra-script.sh $USER@$HOST:~/inhu-backend/
           sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST \
             "chmod +x ~/inhu-backend/deploy-dev-infra-script.sh"
           sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST \
