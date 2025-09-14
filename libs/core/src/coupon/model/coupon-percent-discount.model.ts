@@ -1,15 +1,16 @@
-import { PickType } from '@nestjs/swagger';
-import { CouponTemplatePercentDiscountModel } from './coupon-template-percent-discount.model';
 import { SelectCouponPercentDiscount } from './prisma-type/select-coupon-percent-discount';
 
-export class CouponPercentDiscountModel extends PickType(
-  CouponTemplatePercentDiscountModel,
-  ['percent', 'maxPrice'],
-) {
-  public idx: number;
+/**
+ * 퍼센트 할인 쿠폰 모델
+ *
+ * @publicApi
+ */
+export class CouponPercentDiscountModel {
+  public menuName: string;
+  public percent: number;
+  public maxPrice: number | null;
 
   constructor(data: CouponPercentDiscountModel) {
-    super();
     Object.assign(this, data);
   }
 
@@ -17,7 +18,7 @@ export class CouponPercentDiscountModel extends PickType(
     couponPercentDiscount: SelectCouponPercentDiscount,
   ): CouponPercentDiscountModel {
     return new CouponPercentDiscountModel({
-      idx: couponPercentDiscount.idx,
+      menuName: couponPercentDiscount.menuName,
       percent: couponPercentDiscount.percent,
       maxPrice: couponPercentDiscount.maxPrice,
     });

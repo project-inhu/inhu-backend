@@ -1,58 +1,52 @@
-import { PickType } from '@nestjs/swagger';
-import { CouponOwnModel } from './coupon-own.model';
 import { CouponPercentDiscountModel } from './coupon-percent-discount.model';
-import { CouponPriceDiscountModel } from './coupon-price-discount.model';
-import { CouponTemplateModel } from './coupon-template.model';
+import { CouponFixedDiscountModel } from './coupon-fixed-discount.model';
 import { SelectCoupon } from './prisma-type/select-coupon';
 import { CouponPlaceModel } from './coupon-place.model';
+import { CouponVariantModel } from './coupon-variant.model';
 
 /**
  * 쿠폰 모델
  *
  * @publicApi
  */
-export class CouponModel extends PickType(CouponTemplateModel, [
-  'id',
-  'name',
-  'description',
-  'imagePath',
-  'couponPlace',
-]) {
+export class CouponModel {
+  public id: string;
   public bundleId: string;
+  public description: string | null;
+  public imagePath: string | null;
   public createdAt: Date;
   public activatedAt: Date;
   public expiredAt: Date;
   public usedAt: Date | null;
-  public couponPriceDiscount: CouponPriceDiscountModel | null;
-  public couponPercentDiscount: CouponPercentDiscountModel | null;
-  public couponOwnList: CouponOwnModel[];
+  public fixedDiscount: CouponFixedDiscountModel | null;
+  public percentDiscount: CouponPercentDiscountModel | null;
+  public variant: CouponVariantModel | null;
+  public place: CouponPlaceModel;
 
   constructor(data: CouponModel) {
-    super();
     Object.assign(this, data);
   }
 
   public static fromPrisma(coupon: SelectCoupon): CouponModel {
     return new CouponModel({
       id: coupon.id,
-      name: coupon.name,
+      bundleId: coupon.bundleId,
       description: coupon.description,
       imagePath: coupon.imagePath,
-      couponPlace: CouponPlaceModel.fromPrisma(coupon.place),
-      bundleId: coupon.bundleId,
       createdAt: coupon.createdAt,
       activatedAt: coupon.activatedAt,
       expiredAt: coupon.expiredAt,
       usedAt: coupon.usedAt,
-      couponPriceDiscount: CouponPriceDiscountModel.fromPrisma(
-        coupon.couponPriceDiscount,
-      ),
-      couponPercentDiscount: CouponPercentDiscountModel.fromPrisma(
-        coupon.couponPercentDiscount,
-      ),
-      couponOwnList: coupon.couponOwnList.map((own) =>
-        CouponOwnModel.fromPrisma(own),
-      ),
+      fixedDiscount: coupon.fixedDiscount
+        ? CouponFixedDiscountModel.fromPrisma(coupon.fixedDiscount)
+        : null,
+      percentDiscount: coupon.percentDiscount
+        ? CouponPercentDiscountModel.fromPrisma(coupon.percentDiscount)
+        : null,
+      variant: coupon.variant
+        ? CouponVariantModel.fromPrisma(coupon.variant)
+        : null,
+      place: CouponPlaceModel.fromPrisma(coupon.place),
     });
   }
 }
