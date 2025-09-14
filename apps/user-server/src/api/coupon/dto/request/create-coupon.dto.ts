@@ -1,13 +1,7 @@
-/**
- * 쿠폰 생성 input
- *
- * @publicApi
- */
-export class CreateCouponInput {
+export class CreateCouponDto {
   description: string | null;
   imagePath: string | null;
   expiredAt: Date;
-  usablePlaceIdx: number;
   fixedDiscount?: {
     menuName: string;
     price: number;
@@ -20,4 +14,5 @@ export class CreateCouponInput {
   variant?: {
     name: string;
   };
+  count: number;
 }
