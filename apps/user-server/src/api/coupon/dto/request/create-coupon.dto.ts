@@ -36,7 +36,7 @@ export class CreateCouponDto {
   /**
    * 쿠폰 만료일
    *
-   * @example '2024-12-31T23:59:59.000Z'
+   * @example '2023-10-01T15:00:00Z'
    */
   @Type(() => Date)
   @IsNotEmpty()
@@ -45,8 +45,6 @@ export class CreateCouponDto {
 
   /**
    * 고정 할인 쿠폰 정보
-   *
-   * @example 'null'
    */
   @IsOptional()
   @ValidateNested()
@@ -55,8 +53,6 @@ export class CreateCouponDto {
 
   /**
    * 퍼센트 할인 쿠폰 정보
-   *
-   * @example 'null'
    */
   @IsOptional()
   @ValidateNested()
@@ -65,8 +61,6 @@ export class CreateCouponDto {
 
   /**
    * 기타 쿠폰 정보
-   *
-   * @example { name: '토핑 무료 쿠폰' }
    */
   @IsOptional()
   @ValidateNested()
@@ -76,7 +70,7 @@ export class CreateCouponDto {
   /**
    * 발급 수량
    *
-   * @example 100
+   * @example 1
    */
   @Type(() => Number)
   @IsNotEmpty()

@@ -32,6 +32,8 @@ export class CouponController {
 
   /**
    * 특정 장소에 쿠폰 생성
+   *
+   * - fixedDiscount, percentDiscount, variant 중 한 개의 타입만 포함해야 함
    */
   @Post('place/:placeIdx/coupon')
   public async createCoupon(

@@ -21,6 +21,9 @@ import { CouponTemplateEntity } from './entity/coupon-template.entity';
 export class CouponTemplateController {
   constructor(private readonly couponTemplateService: CouponTemplateService) {}
 
+  /**
+   * 특정 장소의 모든 쿠폰 템플릿 조회
+   */
   @Get('place/:placeIdx/coupon-template/all')
   @LoginAuth()
   public async getCouponTemplateAllByPlaceIdx(
@@ -33,6 +36,10 @@ export class CouponTemplateController {
     );
   }
 
+  /**
+   * 특정 장소에 쿠폰 템플릿 생성
+   * - fixedDiscount, percentDiscount, variant 중 한 개의 타입만 포함해야 함
+   */
   @Post('place/:placeIdx/coupon-template')
   @LoginAuth()
   public async createCouponTemplate(
@@ -42,6 +49,11 @@ export class CouponTemplateController {
     return await this.couponTemplateService.createCouponTemplate(dto, placeIdx);
   }
 
+  /**
+   * 특정 쿠폰 템플릿 수정
+   *
+   * - fixedDiscount, percentDiscount, variant 중 한 개의 타입만 포함해야 함
+   */
   @Put('coupon-template/:id')
   @LoginAuth()
   public async updateCouponTemplateById(

@@ -14,7 +14,7 @@ export class CreateCouponPercentDiscountDto {
   /**
    * 할인 퍼센트
    *
-   * @example 20
+   * @example 10
    */
   @Type(() => Number)
   @IsNotEmpty()
@@ -25,7 +25,7 @@ export class CreateCouponPercentDiscountDto {
   /**
    * 최대 할인 금액
    *
-   * @example 5000
+   * @example 2000
    */
   @Type(() => Number)
   @IsOptional()

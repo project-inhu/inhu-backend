@@ -9,7 +9,7 @@ export class CreateCouponTemplateDto {
   /**
    * 쿠폰 추가 설명
    *
-   * @example "3명 이상 방문 시 사용 가능"
+   * @example "2명 이상 방문 시 사용 가능"
    */
   @Trim()
   @IsOptional()
