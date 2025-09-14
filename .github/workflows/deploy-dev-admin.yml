@@ -32,6 +32,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-admin
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Download Admin artifact
         uses: actions/download-artifact@v4
         with:
@@ -52,6 +55,8 @@ jobs:
           PORT: ${{ secrets.RASPBERRY_PI_PORT }}
         run: |
           sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no deploy-admin.tar.gz $USER@$HOST:~/inhu-backend/
+
+          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no ./.github/workflows/scripts/deploy-service.sh $USER@$HOST:~/inhu-backend/
 
           sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST \
             "bash ~/inhu-backend/deploy-service.sh admin"
