@@ -24,14 +24,18 @@ export class CouponCoreRepository {
     });
   }
 
-  public async insertCoupon(input: CreateCouponInput): Promise<SelectCoupon> {
+  public async insertCoupon(
+    input: CreateCouponInput,
+    bundleId: string,
+    activatedAt: Date,
+  ): Promise<SelectCoupon> {
     return this.txHost.tx.coupon.create({
       ...SELECT_COUPON,
       data: {
-        bundleId: input.bundleId,
+        bundleId,
         description: input.description,
         imagePath: input.imagePath,
-        activatedAt: input.activatedAt,
+        activatedAt,
         expiredAt: input.expiredAt,
         usablePlaceIdx: input.usablePlaceIdx,
         fixedDiscount: input.fixedDiscount

@@ -10,11 +10,11 @@ export class CouponTemplateCoreService {
     private readonly couponTemplateCoreRepository: CouponTemplateCoreRepository,
   ) {}
 
-  public async getCouponTemplateByPlaceIdx(
+  public async getCouponTemplateAllByPlaceIdx(
     placeIdx: number,
   ): Promise<CouponTemplateModel[]> {
     return await this.couponTemplateCoreRepository
-      .getCouponTemplateByPlaceIdx(placeIdx)
+      .getCouponTemplateAllByPlaceIdx(placeIdx)
       .then((templates) => templates.map(CouponTemplateModel.fromPrisma));
   }
 

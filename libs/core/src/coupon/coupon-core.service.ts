@@ -3,10 +3,15 @@ import { CouponCoreRepository } from './coupon-core.repository';
 import { CouponModel } from './model/coupon.model';
 import { CreateCouponInput } from './inputs/create-coupon.input';
 import { SelectCoupon } from './model/prisma-type/select-coupon';
+import { DateUtilService } from '@libs/common/modules/date-util/date-util.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class CouponCoreService {
-  constructor(private readonly couponCoreRepository: CouponCoreRepository) {}
+  constructor(
+    private readonly couponCoreRepository: CouponCoreRepository,
+    private readonly dateUtilService: DateUtilService,
+  ) {}
 
   public async getCouponAllByPlaceIdx(
     placeIdx: number,
@@ -20,12 +25,20 @@ export class CouponCoreService {
     input: CreateCouponInput,
     count: number,
   ): Promise<CouponModel[]> {
-    const createCouponPromises: Promise<SelectCoupon>[] = [];
+    const now = this.dateUtilService.getNow();
+    const activatedAt = new Date(now.getTime() + 1000 * 60);
+    const bundleId = uuidv4();
+    const createCouponPromises: SelectCoupon[] = [];
     for (let i = 0; i < count; i++) {
-      createCouponPromises.push(this.couponCoreRepository.insertCoupon(input));
+      createCouponPromises.push(
+        await this.couponCoreRepository.insertCoupon(
+          input,
+          bundleId,
+          activatedAt,
+        ),
+      );
     }
-    return (await Promise.all(createCouponPromises)).map(
-      CouponModel.fromPrisma,
-    );
+
+    return createCouponPromises.map(CouponModel.fromPrisma);
   }
 }

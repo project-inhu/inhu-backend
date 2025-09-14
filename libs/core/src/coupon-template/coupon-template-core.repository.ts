@@ -14,7 +14,7 @@ export class CouponTemplateCoreRepository {
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
   ) {}
 
-  public async getCouponTemplateByPlaceIdx(
+  public async getCouponTemplateAllByPlaceIdx(
     placeIdx: number,
   ): Promise<SelectCouponTemplate[]> {
     return this.txHost.tx.couponTemplate.findMany({
