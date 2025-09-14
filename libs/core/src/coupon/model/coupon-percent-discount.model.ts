@@ -6,8 +6,19 @@ import { SelectCouponPercentDiscount } from './prisma-type/select-coupon-percent
  * @publicApi
  */
 export class CouponPercentDiscountModel {
+  /**
+   * 메뉴명
+   */
   public menuName: string;
+
+  /**
+   * 할인 퍼센트
+   */
   public percent: number;
+
+  /**
+   * 최대 할인 금액
+   */
   public maxPrice: number | null;
 
   constructor(data: CouponPercentDiscountModel) {

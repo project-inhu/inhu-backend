@@ -6,6 +6,9 @@ import { SelectCouponVariant } from './prisma-type/select-coupon-variant';
  * @publicApi
  */
 export class CouponVariantModel {
+  /**
+   * 쿠폰명
+   */
   public name: string;
 
   constructor(data: CouponVariantModel) {

@@ -1,6 +1,11 @@
 import { CouponTemplateVariantModel } from '@libs/core/coupon-template/model/coupon-template-variant.model';
 
 export class CouponTemplateVariantEntity {
+  /**
+   * 쿠폰명
+   *
+   * @example '토핑 무료 쿠폰'
+   */
   public name: string;
 
   constructor(data: CouponTemplateVariantEntity) {

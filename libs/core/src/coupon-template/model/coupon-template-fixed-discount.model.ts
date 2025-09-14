@@ -6,7 +6,14 @@ import { SelectCouponTemplateFixedDiscount } from './prisma-type/select-coupon-t
  * @publicApi
  */
 export class CouponTemplateFixedDiscountModel {
+  /**
+   * 메뉴명
+   */
   public menuName: string;
+
+  /**
+   * 할인 금액
+   */
   public price: number;
 
   constructor(data: CouponTemplateFixedDiscountModel) {

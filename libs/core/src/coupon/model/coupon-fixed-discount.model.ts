@@ -6,7 +6,14 @@ import { SelectCouponFixedDiscount } from './prisma-type/select-coupon-fixed-dis
  * @publicApi
  */
 export class CouponFixedDiscountModel {
+  /**
+   * 메뉴명
+   */
   public menuName: string;
+
+  /**
+   * 할인 금액
+   */
   public price: number;
 
   constructor(data: CouponFixedDiscountModel) {

@@ -10,12 +10,39 @@ import { SelectCouponTemplate } from './prisma-type/select-coupon-template';
  * @publicApi
  */
 export class CouponTemplateModel {
+  /**
+   * 쿠폰 템플릿 ID
+   */
   public id: string;
+
+  /**
+   * 쿠폰 추가 설명
+   */
   public description: string | null;
+
+  /**
+   * 쿠폰 이미지 경로
+   */
   public imagePath: string | null;
+
+  /**
+   * 고정 할인 쿠폰 정보
+   */
   public fixedDiscount: CouponTemplateFixedDiscountModel | null;
+
+  /**
+   * 퍼센트 할인 쿠폰 정보
+   */
   public percentDiscount: CouponTemplatePercentDiscountModel | null;
+
+  /**
+   * 기타 쿠폰 정보
+   */
   public variant: CouponTemplateVariantModel | null;
+
+  /**
+   * 쿠폰 사용처 정보
+   */
   public place: CouponPlaceModel;
 
   constructor(data: CouponTemplateModel) {
