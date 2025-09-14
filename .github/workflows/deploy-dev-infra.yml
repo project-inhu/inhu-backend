@@ -68,7 +68,12 @@ jobs:
         uses: tj-actions/changed-files@v44
         with:
           files: |
-            .github/workflows/deploy-dev.yml
+            .github/workflows/deploy-dev-infra.yml
+            .github/workflows/deploy-dev-user.yml
+            .github/workflows/deploy-dev-admin.yml
+            .github/workflows/deploy-dev-batch.yml
+            .github/workflows/scripts/deploy-dev-infra-script.sh
+            .github/workflows/scripts/deploy-dev-service-script.sh
             apps/**/src/**
             libs/**
             prisma/**
