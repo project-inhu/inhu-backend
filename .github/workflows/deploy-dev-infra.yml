@@ -112,6 +112,9 @@ jobs:
     if: github.event_name == 'push' && needs.check-changes.outputs.should_deploy == 'true'
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Execute common tasks on server
         env:
           HOST: ${{ secrets.RASPBERRY_PI_HOST }}
