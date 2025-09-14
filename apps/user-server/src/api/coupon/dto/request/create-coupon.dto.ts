@@ -38,6 +38,7 @@ export class CreateCouponDto {
    *
    * @example '2024-12-31T23:59:59.000Z'
    */
+  @Type(() => Date)
   @IsNotEmpty()
   @IsDate()
   expiredAt: Date;
