@@ -7,11 +7,15 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { CouponTemplateService } from './coupon-template.service';
 import { CreateCouponTemplateDto } from './dto/request/create-coupon-template.dto';
 import { UpdateCouponTemplateDto } from './dto/request/update-coupon-template.dto';
 import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
+import { GetCouponTemplateAllByPlaceIdxDto } from './dto/request/get-coupon-template-all-by-place-idx.dto';
+import { GetCouponTemplateAllByPlaceIdxResponseDto } from './dto/response/get-coupon-template-all-by-place-idx-response.dto';
+import { CouponTemplateEntity } from './entity/coupon-template.entity';
 
 @Controller()
 export class CouponTemplateController {
@@ -21,8 +25,10 @@ export class CouponTemplateController {
   @LoginAuth()
   public async getCouponTemplateAllByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
-  ) {
+    @Query() dto: GetCouponTemplateAllByPlaceIdxDto,
+  ): Promise<GetCouponTemplateAllByPlaceIdxResponseDto> {
     return await this.couponTemplateService.getCouponTemplateAllByPlaceIdx(
+      dto,
       placeIdx,
     );
   }
@@ -32,14 +38,13 @@ export class CouponTemplateController {
   public async createCouponTemplate(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @Body() dto: CreateCouponTemplateDto,
-  ) {
+  ): Promise<CouponTemplateEntity> {
     return await this.couponTemplateService.createCouponTemplate(dto, placeIdx);
   }
 
-  @Put('place/:placeIdx/coupon-template/:id')
+  @Put('coupon-template/:id')
   @LoginAuth()
   public async updateCouponTemplateById(
-    @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateCouponTemplateDto,
   ): Promise<void> {

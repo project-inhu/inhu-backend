@@ -3,6 +3,7 @@ import { CouponTemplateModel } from './model/coupon-template.model';
 import { CreateCouponTemplateInput } from './inputs/create-coupon-template.input';
 import { UpdateCouponTemplateInput } from './inputs/update-coupon-template.input';
 import { CouponTemplateCoreRepository } from './coupon-template-core.repository';
+import { GetCouponTemplateAllByPlaceIdxInput } from './inputs/get-coupon-template-all-by-place-idx.input';
 
 @Injectable()
 export class CouponTemplateCoreService {
@@ -12,9 +13,10 @@ export class CouponTemplateCoreService {
 
   public async getCouponTemplateAllByPlaceIdx(
     placeIdx: number,
+    input: GetCouponTemplateAllByPlaceIdxInput,
   ): Promise<CouponTemplateModel[]> {
     return await this.couponTemplateCoreRepository
-      .getCouponTemplateAllByPlaceIdx(placeIdx)
+      .getCouponTemplateAllByPlaceIdx(placeIdx, input)
       .then((templates) => templates.map(CouponTemplateModel.fromPrisma));
   }
 

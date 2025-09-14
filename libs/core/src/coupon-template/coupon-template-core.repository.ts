@@ -7,6 +7,7 @@ import {
 } from './model/prisma-type/select-coupon-template';
 import { CreateCouponTemplateInput } from './inputs/create-coupon-template.input';
 import { UpdateCouponTemplateInput } from './inputs/update-coupon-template.input';
+import { GetCouponTemplateAllByPlaceIdxInput } from './inputs/get-coupon-template-all-by-place-idx.input';
 
 @Injectable()
 export class CouponTemplateCoreRepository {
@@ -16,10 +17,13 @@ export class CouponTemplateCoreRepository {
 
   public async getCouponTemplateAllByPlaceIdx(
     placeIdx: number,
+    input: GetCouponTemplateAllByPlaceIdxInput,
   ): Promise<SelectCouponTemplate[]> {
     return this.txHost.tx.couponTemplate.findMany({
       ...SELECT_COUPON_TEMPLATE,
       where: { placeIdx, deletedAt: null },
+      take: input.take,
+      skip: input.skip,
     });
   }
 

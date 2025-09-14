@@ -3,6 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { CouponTemplateEntity } from './entity/coupon-template.entity';
 import { CreateCouponTemplateDto } from './dto/request/create-coupon-template.dto';
 import { UpdateCouponTemplateDto } from './dto/request/update-coupon-template.dto';
+import { GetCouponTemplateAllByPlaceIdxDto } from './dto/request/get-coupon-template-all-by-place-idx.dto';
+import { GetCouponTemplateAllByPlaceIdxResponseDto } from './dto/response/get-coupon-template-all-by-place-idx-response.dto';
 
 @Injectable()
 export class CouponTemplateService {
@@ -11,13 +13,30 @@ export class CouponTemplateService {
   ) {}
 
   public async getCouponTemplateAllByPlaceIdx(
+    dto: GetCouponTemplateAllByPlaceIdxDto,
     placeIdx: number,
-  ): Promise<CouponTemplateEntity[]> {
-    return (
+  ): Promise<GetCouponTemplateAllByPlaceIdxResponseDto> {
+    const pageSize = 10;
+    const skip = (dto.page - 1) * pageSize;
+
+    const couponTemplateModelList =
       await this.couponTemplateCoreService.getCouponTemplateAllByPlaceIdx(
         placeIdx,
-      )
-    ).map((couponTemplate) => CouponTemplateEntity.fromModel(couponTemplate));
+        {
+          take: pageSize + 1,
+          skip: skip,
+        },
+      );
+
+    const paginatedList = couponTemplateModelList.slice(0, pageSize);
+    const hasNext = couponTemplateModelList.length > pageSize;
+
+    return {
+      hasNext: hasNext,
+      couponTemplateList: paginatedList.map((couponTemplate) =>
+        CouponTemplateEntity.fromModel(couponTemplate),
+      ),
+    };
   }
 
   public async createCouponTemplate(
