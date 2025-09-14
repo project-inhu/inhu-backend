@@ -11,7 +11,7 @@ export class PlaceCronService {
   ) {}
 
   /**
-   * 격주 휴무일 장소에 대해 14일 뒤 다음 휴무일을 추가
+   * 격주 휴무일 장소에 대해 14일 뒤 다음 휴뮤일 추가
    *
    * @author 강정연
    */
@@ -31,7 +31,7 @@ export class PlaceCronService {
 --- 🚨 Bi-Weekly ClosedDay 배치 실패 요약 ---
   - 성공: ${result.successCount}건
   - 실패: ${result.failureCount}건
-  - 실패 상세:
+  - 실패 상세기록:
 ${failLogDetails}
 ---------------------------------------------`;
 
