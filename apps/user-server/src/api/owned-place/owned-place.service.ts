@@ -1,7 +1,7 @@
 import { OwnedPlaceCoreService } from '@libs/core/owned-place/owned-place-core.service';
 import { Injectable } from '@nestjs/common';
 import { OwnedPlaceOverviewEntity } from './entity/owned-place-overview.entity';
-import { GetAllOwnerPlaceOverviewDto } from './dto/response/get-all-owner-place-overview-response.dto';
+import { GetAllOwnerPlaceOverviewDto } from './dto/request/get-all-owner-place-overview.dto';
 
 @Injectable()
 export class OwnedPlaceService {

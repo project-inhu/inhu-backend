@@ -1,15 +1,15 @@
-import { OwnedPlaceOverviewEntity } from '../../entity/owned-place-overview.entity';
+import { Type } from 'class-transformer';
+import { IsInt, IsNotEmpty, Min } from 'class-validator';
 
-export class GetAllOwnerPlaceOverviewResponseDto {
+export class GetAllOwnerPlaceOverviewDto {
   /**
-   * 다음 페이지 존재 여부
+   * page number
    *
-   * @example true
+   * @example 1
    */
-  hasNext: boolean;
-
-  /**
-   * 장소 목록 data
-   */
-  ownedPlaceOverviewList: OwnedPlaceOverviewEntity[];
+  @Type(() => Number)
+  @IsNotEmpty()
+  @IsInt()
+  @Min(1)
+  page: number;
 }
