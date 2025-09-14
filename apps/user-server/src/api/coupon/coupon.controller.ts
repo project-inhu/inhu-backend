@@ -5,11 +5,14 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
 } from '@nestjs/common';
 import { CouponService } from './coupon.service';
 import { CouponEntity } from './entity/coupon.entity';
 import { CreateCouponDto } from './dto/request/create-coupon.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { GetCouponAllByPlaceIdxDto } from './dto/request/get-coupon-all-by-place-idx.dto';
+import { GetCouponAllByPlaceIdxResponseDto } from './dto/response/get-coupon-all-by-place-idx-response.dto';
 
 @Controller()
 @ApiTags('Coupon')
@@ -22,8 +25,9 @@ export class CouponController {
   @Get('place/:placeIdx/coupon/all')
   public async getCouponAllByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
-  ): Promise<CouponEntity[]> {
-    return this.couponService.getCouponAllByPlaceIdx(placeIdx);
+    @Query() dto: GetCouponAllByPlaceIdxDto,
+  ): Promise<GetCouponAllByPlaceIdxResponseDto> {
+    return this.couponService.getCouponAllByPlaceIdx(placeIdx, dto);
   }
 
   /**

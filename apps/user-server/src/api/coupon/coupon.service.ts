@@ -2,6 +2,8 @@ import { CouponCoreService } from '@libs/core/coupon/coupon-core.service';
 import { Injectable } from '@nestjs/common';
 import { CouponEntity } from './entity/coupon.entity';
 import { CreateCouponDto } from './dto/request/create-coupon.dto';
+import { GetCouponAllByPlaceIdxDto } from './dto/request/get-coupon-all-by-place-idx.dto';
+import { GetCouponAllByPlaceIdxResponseDto } from './dto/response/get-coupon-all-by-place-idx-response.dto';
 
 @Injectable()
 export class CouponService {
@@ -9,10 +11,26 @@ export class CouponService {
 
   public async getCouponAllByPlaceIdx(
     placeIdx: number,
-  ): Promise<CouponEntity[]> {
-    return (await this.couponCoreService.getCouponAllByPlaceIdx(placeIdx)).map(
-      (coupon) => CouponEntity.fromModel(coupon),
+    dto: GetCouponAllByPlaceIdxDto,
+  ): Promise<GetCouponAllByPlaceIdxResponseDto> {
+    const pageSize = 10;
+    const skip = (dto.page - 1) * pageSize;
+
+    const couponModelList = await this.couponCoreService.getCouponAllByPlaceIdx(
+      placeIdx,
+      {
+        take: pageSize + 1,
+        skip: skip,
+      },
     );
+
+    const paginatedList = couponModelList.slice(0, pageSize);
+    const hasNext = couponModelList.length > pageSize;
+
+    return {
+      hasNext: hasNext,
+      couponList: paginatedList.map((coupon) => CouponEntity.fromModel(coupon)),
+    };
   }
 
   public async createCoupon(

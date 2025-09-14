@@ -3,6 +3,7 @@ import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-pr
 import { Injectable } from '@nestjs/common';
 import { SELECT_COUPON, SelectCoupon } from './model/prisma-type/select-coupon';
 import { CreateCouponInput } from './inputs/create-coupon.input';
+import { GetCouponAllByPlaceIdxInput } from './inputs/get-coupon-all-by-place-idx.input';
 
 @Injectable()
 export class CouponCoreRepository {
@@ -12,6 +13,7 @@ export class CouponCoreRepository {
 
   public async getCouponAllByPlaceIdx(
     placeIdx: number,
+    input: GetCouponAllByPlaceIdxInput,
   ): Promise<SelectCoupon[]> {
     return this.txHost.tx.coupon.findMany({
       ...SELECT_COUPON,
@@ -21,6 +23,8 @@ export class CouponCoreRepository {
         deletedAt: null,
       },
       orderBy: [{ bundleId: 'asc' }, { id: 'asc' }],
+      take: input.take,
+      skip: input.skip,
     });
   }
 

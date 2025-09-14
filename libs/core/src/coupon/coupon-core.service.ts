@@ -5,6 +5,7 @@ import { CreateCouponInput } from './inputs/create-coupon.input';
 import { SelectCoupon } from './model/prisma-type/select-coupon';
 import { DateUtilService } from '@libs/common/modules/date-util/date-util.service';
 import { v4 as uuidv4 } from 'uuid';
+import { GetCouponAllByPlaceIdxInput } from './inputs/get-coupon-all-by-place-idx.input';
 
 @Injectable()
 export class CouponCoreService {
@@ -15,9 +16,10 @@ export class CouponCoreService {
 
   public async getCouponAllByPlaceIdx(
     placeIdx: number,
+    input: GetCouponAllByPlaceIdxInput,
   ): Promise<CouponModel[]> {
     return await this.couponCoreRepository
-      .getCouponAllByPlaceIdx(placeIdx)
+      .getCouponAllByPlaceIdx(placeIdx, input)
       .then((coupons) => coupons.map(CouponModel.fromPrisma));
   }
 
