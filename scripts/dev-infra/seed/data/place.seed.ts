@@ -773,7 +773,7 @@ const place20: PlaceSeedData = {
   },
   weeklyClosedDayList: [
     {
-      closedDate: new Date('2025-09-16'), // 시간은 의미 없음
+      closedDate: new Date('2025-09-13'), // 시간은 의미 없음
       type: WeeklyCloseType.BIWEEKLY,
     },
   ],
@@ -1285,7 +1285,7 @@ const place37: PlaceSeedData = {
   },
   weeklyClosedDayList: [
     {
-      closedDate: new Date('2025-09-16'),
+      closedDate: new Date('2025-09-13'),
       type: WeeklyCloseType.BIWEEKLY,
     },
   ],
@@ -1313,7 +1313,7 @@ const place38: PlaceSeedData = {
   },
   weeklyClosedDayList: [
     {
-      closedDate: new Date('2025-09-17'),
+      closedDate: new Date('2025-09-14'),
       type: WeeklyCloseType.BIWEEKLY,
     },
   ],
