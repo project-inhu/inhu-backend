@@ -1,8 +1,9 @@
 import { CouponModel } from '@libs/core/coupon/model/coupon.model';
 import { CouponFixedDiscountEntity } from './coupon-fixed-discount.entity';
 import { CouponPercentDiscountEntity } from './coupon-percent-discount.entity';
-import { CouponVariantEntity } from './coupon-variant.entity';
+import { CouponEtcEntity } from './coupon-etc.entity';
 import { CouponPlaceEntity } from './coupon-place.entity';
+import { CouponType } from '@libs/core/coupon/constants/coupon-type.enum';
 
 export class CouponEntity {
   /**
@@ -78,12 +79,23 @@ export class CouponEntity {
    *
    * @example 'null'
    */
-  public variant: CouponVariantEntity | null;
+  public etc: CouponEtcEntity | null;
 
   /**
    * 쿠폰 사용처 정보
    */
   public place: CouponPlaceEntity;
+
+  /**
+   * 쿠폰 타입
+   *
+   * - 1: 고정 할인
+   * - 2: 퍼센트 할인
+   * - 3: 기타
+   *
+   * @example 1
+   */
+  public type: CouponType;
 
   constructor(data: CouponEntity) {
     Object.assign(this, data);
@@ -105,10 +117,9 @@ export class CouponEntity {
       percentDiscount: model.percentDiscount
         ? CouponPercentDiscountEntity.fromModel(model.percentDiscount)
         : null,
-      variant: model.variant
-        ? CouponVariantEntity.fromModel(model.variant)
-        : null,
+      etc: model.etc ? CouponEtcEntity.fromModel(model.etc) : null,
       place: CouponPlaceEntity.fromModel(model.place),
+      type: model.type,
     });
   }
 }

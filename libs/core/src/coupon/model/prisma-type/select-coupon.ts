@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client';
 import { SELECT_COUPON_PLACE } from './select-coupon-place';
 import { SELECT_COUPON_FIXED_DISCOUNT } from './select-coupon-fixed-discount';
 import { SELECT_COUPON_PERCENT_DISCOUNT } from './select-coupon-percent-discount';
-import { SELECT_COUPON_VARIANT } from './select-coupon-variant';
+import { SELECT_COUPON_ETC } from './select-coupon-etc';
 
 export const SELECT_COUPON = Prisma.validator<Prisma.CouponDefaultArgs>()({
   select: {
@@ -16,7 +16,7 @@ export const SELECT_COUPON = Prisma.validator<Prisma.CouponDefaultArgs>()({
     usedAt: true,
     fixedDiscount: SELECT_COUPON_FIXED_DISCOUNT,
     percentDiscount: SELECT_COUPON_PERCENT_DISCOUNT,
-    variant: SELECT_COUPON_VARIANT,
+    etc: SELECT_COUPON_ETC,
     place: SELECT_COUPON_PLACE,
   },
 });

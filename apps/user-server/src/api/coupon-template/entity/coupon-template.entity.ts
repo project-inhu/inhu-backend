@@ -2,7 +2,8 @@ import { CouponTemplateModel } from '@libs/core/coupon-template/model/coupon-tem
 import { CouponTemplatePlaceEntity } from './coupon-template-place.entity';
 import { CouponTemplateFixedDiscountEntity } from './coupon-template-fixed-discount.entity';
 import { CouponTemplatePercentDiscountEntity } from './coupon-template-percent-discount.entity';
-import { CouponTemplateVariantEntity } from './coupon-template-variant.entity';
+import { CouponTemplateEtcEntity } from './coupon-template-etc.entity';
+import { CouponTemplateType } from '@libs/core/coupon-template/constants/coupon-template-type.enum';
 
 export class CouponTemplateEntity {
   /**
@@ -43,12 +44,23 @@ export class CouponTemplateEntity {
    *
    * @example 'null'
    */
-  public variant: CouponTemplateVariantEntity | null;
+  public etc: CouponTemplateEtcEntity | null;
 
   /**
    * 쿠폰 사용처 정보
    */
   public place: CouponTemplatePlaceEntity;
+
+  /**
+   * 쿠폰 템플릿 타입
+   *
+   * - 1: 고정 할인
+   * - 2: 퍼센트 할인
+   * - 3: 기타
+   *
+   * @example 2
+   */
+  public type: CouponTemplateType;
 
   constructor(data: CouponTemplateEntity) {
     Object.assign(this, data);
@@ -71,10 +83,11 @@ export class CouponTemplateEntity {
             couponTemplate.percentDiscount,
           )
         : null,
-      variant: couponTemplate.variant
-        ? CouponTemplateVariantEntity.fromModel(couponTemplate.variant)
+      etc: couponTemplate.etc
+        ? CouponTemplateEtcEntity.fromModel(couponTemplate.etc)
         : null,
       place: CouponTemplatePlaceEntity.fromModel(couponTemplate.place),
+      type: couponTemplate.type,
     });
   }
 }

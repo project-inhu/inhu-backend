@@ -50,7 +50,7 @@ export class CouponTemplateService {
         imagePath: dto.imagePath,
         fixedDiscount: dto.fixedDiscount ?? undefined,
         percentDiscount: dto.percentDiscount ?? undefined,
-        variant: dto.variant ?? undefined,
+        etc: dto.etc ?? undefined,
       })
       .then(CouponTemplateEntity.fromModel);
   }

@@ -10,7 +10,7 @@
     "show": 511,
     "database": 16,
     "databaseName": "inhu",
-    "canvasType": "ERD",
+    "canvasType": "@dineug/erd-editor/builtin-schema-sql",
     "language": 1,
     "tableNameCase": 4,
     "columnNameCase": 2,
@@ -1209,7 +1209,7 @@
       },
       "b-nCzIyXg7zGV7dld1aUP": {
         "id": "b-nCzIyXg7zGV7dld1aUP",
-        "name": "coupon_template_variant_tb",
+        "name": "coupon_template_etc_tb",
         "comment": "",
         "columnIds": [
           "zrCup-BP_bFaMdowKGvIR",
@@ -1225,18 +1225,18 @@
           "x": 1845,
           "y": 1857,
           "zIndex": 682,
-          "widthName": 165,
+          "widthName": 144,
           "widthComment": 60,
           "color": "#009688"
         },
         "meta": {
-          "updateAt": 1757787307934,
+          "updateAt": 1757933367974,
           "createAt": 1757784604021
         }
       },
       "xUtryPFvXbhWjnSc1BqWP": {
         "id": "xUtryPFvXbhWjnSc1BqWP",
-        "name": "coupon_variant_tb",
+        "name": "coupon_etc_tb",
         "comment": "",
         "columnIds": [
           "_J7QdLKgBOZ8w0kDVb0Xq",
@@ -1251,12 +1251,12 @@
           "x": 1217,
           "y": 2859,
           "zIndex": 697,
-          "widthName": 108,
+          "widthName": 87,
           "widthComment": 60,
           "color": "#673AB7"
         },
         "meta": {
-          "updateAt": 1757825179275,
+          "updateAt": 1757933394235,
           "createAt": 1757786244510
         }
       },

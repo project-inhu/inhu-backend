@@ -2,7 +2,8 @@ import { CouponPercentDiscountModel } from './coupon-percent-discount.model';
 import { CouponFixedDiscountModel } from './coupon-fixed-discount.model';
 import { SelectCoupon } from './prisma-type/select-coupon';
 import { CouponPlaceModel } from './coupon-place.model';
-import { CouponVariantModel } from './coupon-variant.model';
+import { CouponEtcModel } from './coupon-etc.model';
+import { CouponType } from '../constants/coupon-type.enum';
 
 /**
  * 쿠폰 모델
@@ -63,12 +64,17 @@ export class CouponModel {
   /**
    * 기타 쿠폰 정보
    */
-  public variant: CouponVariantModel | null;
+  public etc: CouponEtcModel | null;
 
   /**
    * 쿠폰 사용처 정보
    */
   public place: CouponPlaceModel;
+
+  /**
+   * 쿠폰 타입
+   */
+  public type: CouponType;
 
   constructor(data: CouponModel) {
     Object.assign(this, data);
@@ -90,10 +96,13 @@ export class CouponModel {
       percentDiscount: coupon.percentDiscount
         ? CouponPercentDiscountModel.fromPrisma(coupon.percentDiscount)
         : null,
-      variant: coupon.variant
-        ? CouponVariantModel.fromPrisma(coupon.variant)
-        : null,
+      etc: coupon.etc ? CouponEtcModel.fromPrisma(coupon.etc) : null,
       place: CouponPlaceModel.fromPrisma(coupon.place),
+      type: coupon.fixedDiscount
+        ? CouponType.FIXED_DISCOUNT
+        : coupon.percentDiscount
+          ? CouponType.PERCENT_DISCOUNT
+          : CouponType.ETC,
     });
   }
 }

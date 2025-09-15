@@ -1,7 +1,7 @@
 import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { CreateCouponTemplateFixedDiscountDto } from './create-coupon-template-fixed-discount.dto';
 import { CreateCouponTemplatePercentDiscountDto } from './create-coupon-template-percent.dto';
-import { CreateCouponTemplateVariantDto } from './create-coupon-template-variant.dto';
+import { CreateCouponTemplateEtcDto } from './create-coupon-template-etc.dto';
 import { Trim } from '@user/common/decorator/trim.decorator';
 import { Type } from 'class-transformer';
 
@@ -46,6 +46,6 @@ export class CreateCouponTemplateDto {
    */
   @IsOptional()
   @ValidateNested()
-  @Type(() => CreateCouponTemplateVariantDto)
-  variant?: CreateCouponTemplateVariantDto;
+  @Type(() => CreateCouponTemplateEtcDto)
+  etc?: CreateCouponTemplateEtcDto;
 }

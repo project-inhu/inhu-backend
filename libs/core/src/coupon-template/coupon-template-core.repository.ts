@@ -53,10 +53,10 @@ export class CouponTemplateCoreRepository {
               },
             }
           : undefined,
-        variant: input.variant
+        etc: input.etc
           ? {
               create: {
-                name: input.variant.name,
+                name: input.etc.name,
               },
             }
           : undefined,
@@ -90,10 +90,10 @@ export class CouponTemplateCoreRepository {
               },
             }
           : undefined,
-        variant: input.variant
+        etc: input.etc
           ? {
               update: {
-                name: input.variant.name,
+                name: input.etc.name,
               },
             }
           : undefined,

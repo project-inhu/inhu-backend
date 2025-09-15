@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateCouponVariantDto {
+export class CreateCouponEtcDto {
   /**
    * 쿠폰 이름
    *

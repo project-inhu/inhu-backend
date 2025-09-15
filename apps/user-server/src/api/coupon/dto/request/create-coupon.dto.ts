@@ -11,7 +11,7 @@ import {
 import { CreateCouponFixedDiscountDto } from './create-coupon-fixed-discount.dto';
 import { Type } from 'class-transformer';
 import { CreateCouponPercentDiscountDto } from './create-coupon-percent-discount.dto';
-import { CreateCouponVariantDto } from './create-coupon-variant.dto';
+import { CreateCouponEtcDto } from './create-coupon-etc.dto';
 
 export class CreateCouponDto {
   /**
@@ -64,8 +64,8 @@ export class CreateCouponDto {
    */
   @IsOptional()
   @ValidateNested()
-  @Type(() => CreateCouponVariantDto)
-  variant?: CreateCouponVariantDto;
+  @Type(() => CreateCouponEtcDto)
+  etc?: CreateCouponEtcDto;
 
   /**
    * 발급 수량

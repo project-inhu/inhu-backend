@@ -16,7 +16,7 @@ export class CreateCouponTemplateInput {
     percent: number;
     maxPrice: number | null;
   };
-  variant?: {
+  etc?: {
     name: string;
   };
 }

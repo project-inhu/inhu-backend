@@ -27,6 +27,13 @@ CREATE TABLE closed_day_tb
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE coupon_etc_tb
+(
+  coupon_id uuid    NOT NULL,
+  name      varchar NOT NULL,
+  PRIMARY KEY (coupon_id)
+);
+
 CREATE TABLE coupon_fixed_discount_tb
 (
   coupon_id uuid    NOT NULL,
@@ -69,6 +76,13 @@ CREATE TABLE coupon_tb
   PRIMARY KEY (id)
 );
 
+CREATE TABLE coupon_template_etc_tb
+(
+  coupon_template_id uuid    NOT NULL,
+  name               varchar NOT NULL,
+  PRIMARY KEY (coupon_template_id)
+);
+
 CREATE TABLE coupon_template_fixed_discount_tb
 (
   coupon_template_id uuid    NOT NULL,
@@ -94,20 +108,6 @@ CREATE TABLE coupon_template_tb
   image_path  varchar                 ,
   deleted_at  timestamp with time zone,
   PRIMARY KEY (id)
-);
-
-CREATE TABLE coupon_template_variant_tb
-(
-  coupon_template_id uuid    NOT NULL,
-  name               varchar NOT NULL,
-  PRIMARY KEY (coupon_template_id)
-);
-
-CREATE TABLE coupon_variant_tb
-(
-  coupon_id uuid    NOT NULL,
-  name      varchar NOT NULL,
-  PRIMARY KEY (coupon_id)
 );
 
 CREATE TABLE keyword_tb
@@ -512,8 +512,8 @@ ALTER TABLE coupon_owner_tb
     FOREIGN KEY (user_idx)
     REFERENCES user_tb (idx);
 
-ALTER TABLE coupon_template_variant_tb
-  ADD CONSTRAINT FK_coupon_template_tb_TO_coupon_template_variant_tb
+ALTER TABLE coupon_template_etc_tb
+  ADD CONSTRAINT FK_coupon_template_tb_TO_coupon_template_etc_tb
     FOREIGN KEY (coupon_template_id)
     REFERENCES coupon_template_tb (id);
 
@@ -527,7 +527,7 @@ ALTER TABLE coupon_percent_discount_tb
     FOREIGN KEY (coupon_id)
     REFERENCES coupon_tb (id);
 
-ALTER TABLE coupon_variant_tb
-  ADD CONSTRAINT FK_coupon_tb_TO_coupon_variant_tb
+ALTER TABLE coupon_etc_tb
+  ADD CONSTRAINT FK_coupon_tb_TO_coupon_etc_tb
     FOREIGN KEY (coupon_id)
     REFERENCES coupon_tb (id);
