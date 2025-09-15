@@ -8,7 +8,6 @@ import {
   Query,
 } from '@nestjs/common';
 import { CouponService } from './coupon.service';
-import { CouponEntity } from './entity/coupon.entity';
 import { CreateCouponDto } from './dto/request/create-coupon.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { GetCouponAllByPlaceIdxDto } from './dto/request/get-coupon-all-by-place-idx.dto';
@@ -39,7 +38,7 @@ export class CouponController {
   public async createCoupon(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @Body() dto: CreateCouponDto,
-  ): Promise<CouponEntity[]> {
-    return this.couponService.createCoupon(dto, placeIdx);
+  ): Promise<void> {
+    return await this.couponService.createCoupon(dto, placeIdx);
   }
 }

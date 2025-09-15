@@ -26,21 +26,16 @@ export class CouponCoreService {
   public async createCoupon(
     input: CreateCouponInput,
     count: number,
-  ): Promise<CouponModel[]> {
+  ): Promise<void> {
     const now = this.dateUtilService.getNow();
     const activatedAt = new Date(now.getTime() + 1000 * 60);
     const bundleId = uuidv4();
-    const createCouponPromises: SelectCoupon[] = [];
     for (let i = 0; i < count; i++) {
-      createCouponPromises.push(
-        await this.couponCoreRepository.insertCoupon(
-          input,
-          bundleId,
-          activatedAt,
-        ),
+      await this.couponCoreRepository.insertCoupon(
+        input,
+        bundleId,
+        activatedAt,
       );
     }
-
-    return createCouponPromises.map(CouponModel.fromPrisma);
   }
 }

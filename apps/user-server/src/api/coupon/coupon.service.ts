@@ -36,20 +36,18 @@ export class CouponService {
   public async createCoupon(
     dto: CreateCouponDto,
     placeIdx: number,
-  ): Promise<CouponEntity[]> {
-    return (
-      await this.couponCoreService.createCoupon(
-        {
-          description: dto.description,
-          imagePath: dto.imagePath,
-          expiredAt: dto.expiredAt,
-          usablePlaceIdx: placeIdx,
-          fixedDiscount: dto.fixedDiscount ?? undefined,
-          percentDiscount: dto.percentDiscount ?? undefined,
-          variant: dto.variant ?? undefined,
-        },
-        dto.count,
-      )
-    ).map((coupon) => CouponEntity.fromModel(coupon));
+  ): Promise<void> {
+    return await this.couponCoreService.createCoupon(
+      {
+        description: dto.description,
+        imagePath: dto.imagePath,
+        expiredAt: dto.expiredAt,
+        usablePlaceIdx: placeIdx,
+        fixedDiscount: dto.fixedDiscount ?? undefined,
+        percentDiscount: dto.percentDiscount ?? undefined,
+        etc: dto.etc ?? undefined,
+      },
+      dto.count,
+    );
   }
 }

@@ -32,9 +32,8 @@ export class CouponCoreRepository {
     input: CreateCouponInput,
     bundleId: string,
     activatedAt: Date,
-  ): Promise<SelectCoupon> {
-    return this.txHost.tx.coupon.create({
-      ...SELECT_COUPON,
+  ): Promise<void> {
+    await this.txHost.tx.coupon.create({
       data: {
         bundleId,
         description: input.description,
@@ -59,10 +58,10 @@ export class CouponCoreRepository {
               },
             }
           : undefined,
-        variant: input.variant
+        etc: input.etc
           ? {
               create: {
-                name: input.variant.name,
+                name: input.etc.name,
               },
             }
           : undefined,
