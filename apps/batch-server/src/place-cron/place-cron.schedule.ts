@@ -12,7 +12,9 @@ export class PlaceCronSchedule {
    *
    * @author 강정연
    */
-  @Cron('0 0-2 * * * ')
+  @Cron('0 0-2 * * * ', {
+    timeZone: 'Asia/Seoul',
+  })
   public async placeCronJob() {
     await this.placeCronService.AddNextBiWeeklyClosedDay();
   }
