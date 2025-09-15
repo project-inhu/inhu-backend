@@ -12,6 +12,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  Logger,
   Param,
   ParseIntPipe,
   Post,
@@ -26,7 +27,10 @@ import { RunBiWeeklyClosedDayCronJobResponseDto } from './dto/response/run-bi-we
 @Controller('place')
 @ApiTags('Place')
 export class PlaceController {
-  constructor(private readonly placeService: PlaceService) {}
+  constructor(
+    private readonly placeService: PlaceService,
+    private readonly logger: Logger,
+  ) {}
 
   /**
    * 장소 목록 조회 Endpoint
@@ -164,7 +168,29 @@ export class PlaceController {
   public async runBiWeeklyClosedDayCronJob(
     @Body() dto: RunBiWeeklyClosedDayCronJobDto,
   ): Promise<RunBiWeeklyClosedDayCronJobResponseDto> {
-    return this.placeService.createAllBiWeeklyClosedDay(dto.date);
+    const result = await this.placeService.createAllBiWeeklyClosedDay(dto.date);
+    if (result.failureCount > 0) {
+      const failLogDetails = result.errorList
+        .map((e) => `  - Place Idx: ${e.placeIdx}, Reason: ${e.errorMessage}`)
+        .join('\n');
+
+      const errorMessage = `
+--- 🚨 [수동 실행] Bi-Weekly ClosedDay 배치 실패 ---
+  - 성공: ${result.successCount}건
+  - 실패: ${result.failureCount}건
+  - 실패 상세기록:
+${failLogDetails}
+-------------------------------------------------`;
+      this.logger.error(errorMessage);
+    } else {
+      const successMessage = `
+--- ✅ [수동 실행] Bi-Weekly ClosedDay 배치 완료 ---
+  - 성공: ${result.successCount}건
+-------------------------------------------------`;
+      this.logger.error(successMessage);
+    }
+
+    return result;
   }
 
   /**

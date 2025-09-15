@@ -2,7 +2,6 @@
 set -e
 cd ~/inhu-backend
 npm ci
-npx prisma generate
 
 if [ "$DB_DOWN_FLAG" = "true" ]; then
     npm run dev-infra:down

@@ -37,7 +37,7 @@ ${failLogDetails}
 
       this.logger.error(errorMessage);
     } else {
-      this.logger.error(
+      this.logger.log(
         `✅ Bi-Weekly ClosedDay 배치 완료 (성공 ${result.successCount}건)`,
       );
     }
