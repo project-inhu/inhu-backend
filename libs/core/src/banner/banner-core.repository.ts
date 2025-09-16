@@ -110,13 +110,14 @@ export class BannerCoreRepository {
   }
 
   /**
-   * 현재 활성화된 배너들 중 가장 큰 sortOrder를 가져옴
-   * - 신규 활성화 시, 그 뒤에 붙이기 위해 사용
+   * 현재 활성화된 배너 개수 조회
    */
-  public async selectLastActive(): Promise<SelectBanner | null> {
-    return await this.txHost.tx.banner.findFirst({
-      where: { deletedAt: null, sortOrder: { not: null } },
-      orderBy: { sortOrder: 'desc' },
+  public async getActiveBannerCount(): Promise<number> {
+    return await this.txHost.tx.banner.count({
+      where: {
+        deletedAt: null,
+        activatedAt: { not: null },
+      },
     });
   }
 
@@ -134,16 +135,33 @@ export class BannerCoreRepository {
   }
 
   /**
-   * 특정 sortOrder보다 뒤에 있는 순서를 앞으로 당김
+   * 활성 배너 sortOrder 이동
+   * +1 : 뒤로 밀기
+   * -1 : 앞으로 당기기
    */
-  public async decrementSortOrder(sortOrder: number): Promise<void> {
+  public async updateManyBannerSortOrder(
+    increment: number,
+    compare?: 'gt' | 'gte',
+    comparisonValue?: number,
+    compare2?: 'lt' | 'lte',
+    comparisonValue2?: number,
+  ): Promise<void> {
+    const sortOrder: Record<string, number> = {};
+    if (compare && comparisonValue !== undefined)
+      sortOrder[compare] = comparisonValue;
+    if (compare2 && comparisonValue2 !== undefined)
+      sortOrder[compare2] = comparisonValue2;
+
     await this.txHost.tx.banner.updateMany({
-      where: {
-        deletedAt: null,
-        sortOrder: { gt: sortOrder },
-      },
       data: {
-        sortOrder: { decrement: 1 },
+        sortOrder: {
+          increment,
+        },
+      },
+      where: {
+        sortOrder,
+        deletedAt: null,
+        activatedAt: { not: null },
       },
     });
   }
