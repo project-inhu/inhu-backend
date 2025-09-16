@@ -1,4 +1,4 @@
-import { SelectBanner } from './prisma-type/select-baner';
+import { SelectBanner } from './prisma-type/select-banner';
 
 /**
  * Banner 모델
