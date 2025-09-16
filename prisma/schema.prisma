@@ -322,3 +322,15 @@ model PlaceOwner {
 
   @@map("place_owner_tb")
 }
+
+model Banner {
+  idx          Int        @id @default(autoincrement())
+  name         String     @db.VarChar
+  imagePath    String     @map("image_path") @db.VarChar
+  link         String?    @db.VarChar
+  sortOrder    Int?        @db.SmallInt
+  activatedAt  DateTime?  @map("activated_at") @db.Timestamptz(6)
+  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt    DateTime?  @map("deleted_at") @db.Timestamptz(6)
+  @@map("banner_tb")
+}
