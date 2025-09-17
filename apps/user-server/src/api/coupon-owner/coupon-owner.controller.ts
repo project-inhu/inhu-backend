@@ -12,6 +12,9 @@ import { LoginUser } from '@user/common/types/LoginUser';
 export class CouponOwnerController {
   constructor(private readonly couponOwnerService: CouponOwnerService) {}
 
+  /**
+   * 특정 사용자가 보유한 모든 쿠폰 조회 endpoint
+   */
   @Get('/user/:userIdx/owned-coupon/all')
   @LoginAuth()
   public async getOwnedCouponAllByUserIdx(
@@ -24,6 +27,9 @@ export class CouponOwnerController {
     );
   }
 
+  /**
+   * 사용자가 쿠폰 발급하는 endpoint
+   */
   @Post('coupon-owner')
   @LoginAuth()
   async createCouponOwner(
