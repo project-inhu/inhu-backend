@@ -38,4 +38,8 @@ export class CouponCoreService {
       );
     }
   }
+
+  public async deleteCouponAllByBundleId(bundleId: string): Promise<void> {
+    await this.couponCoreRepository.deleteCouponAllByBundleId(bundleId);
+  }
 }

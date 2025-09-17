@@ -50,4 +50,8 @@ export class CouponService {
       dto.count,
     );
   }
+
+  public async deleteCouponAllByBundleId(bundleId: string): Promise<void> {
+    await this.couponCoreService.deleteCouponAllByBundleId(bundleId);
+  }
 }

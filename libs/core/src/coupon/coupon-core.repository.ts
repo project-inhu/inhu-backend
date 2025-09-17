@@ -68,4 +68,10 @@ export class CouponCoreRepository {
       },
     });
   }
+
+  public async deleteCouponAllByBundleId(bundleId: string): Promise<void> {
+    await this.txHost.tx.coupon.deleteMany({
+      where: { bundleId },
+    });
+  }
 }
