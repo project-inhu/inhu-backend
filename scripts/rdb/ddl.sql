@@ -254,6 +254,19 @@ CREATE TABLE place_owner_tb
   PRIMARY KEY (id)
 );
 
+CREATE TABLE banner_tb
+(
+  idx          int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  name         varchar                  NOT NULL,
+  image_path   varchar                  NOT NULL,
+  link         varchar                 ,
+  sort_order   smallint                ,
+  activated_at timestamp with time zone,
+  created_at   timestamp with time zone NOT NULL DEFAULT now(),
+  deleted_at   timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+
 ALTER TABLE review_image_tb
   ADD CONSTRAINT FK_review_tb_TO_review_image_tb
     FOREIGN KEY (review_idx)
