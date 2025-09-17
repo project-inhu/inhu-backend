@@ -66,6 +66,8 @@ export class AuthService {
     );
   }
 
+  // TODO: 랜덤 닉네임 생성 로직이 추가돼서 테스트 코드 수정해야 됨
+  // ! 꼭 누군가 수정하면 이 주석을 지워야 됨.
   private async upsertUserByOauthInfo(
     oauthInfo: OAuthInfo,
   ): Promise<UserModel> {
@@ -79,7 +81,7 @@ export class AuthService {
     }
 
     return await this.userCoreService.createUser({
-      nickname: '새로운 인후러',
+      nickname: await this.userCoreService.generateRandomUniqueNickname(),
       profileImagePath: null,
       social: {
         provider: oauthInfo.provider,
