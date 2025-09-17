@@ -17,6 +17,7 @@ import { UpdateBannerSortOrderDto } from './dto/request/update-banner-sort-order
 import { GetAllBannerDto } from './dto/request/get-all-banner.dto';
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { Exception } from '@libs/common/decorator/exception.decorator';
+import { GetAllBannerResponseDto } from './dto/response/get-all-banner.response.dto';
 
 @Controller()
 export class BannerController {
@@ -28,7 +29,9 @@ export class BannerController {
   @AdminAuth()
   @Exception(400, 'Invalid query parameters')
   @Get('/banner')
-  public async getAllBanner(@Query() dto: GetAllBannerDto) {
+  public async getAllBanner(
+    @Query() dto: GetAllBannerDto,
+  ): Promise<GetAllBannerResponseDto> {
     return await this.bannerService.getAllBanner(dto);
   }
 
