@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -40,6 +41,7 @@ export class CouponTemplateController {
    * 특정 장소에 쿠폰 템플릿 생성
    * - fixedDiscount, percentDiscount, variant 중 한 개의 타입만 포함해야 함
    */
+  // TODO: 사장님만 가능해야 함.
   @Post('place/:placeIdx/coupon-template')
   @LoginAuth()
   public async createCouponTemplate(
@@ -54,6 +56,7 @@ export class CouponTemplateController {
    *
    * - fixedDiscount, percentDiscount, variant 중 한 개의 타입만 포함해야 함
    */
+  // TODO: 사장님만 가능해야 함.
   @Put('coupon-template/:id')
   @LoginAuth()
   public async updateCouponTemplateById(
@@ -61,5 +64,16 @@ export class CouponTemplateController {
     @Body() dto: UpdateCouponTemplateDto,
   ): Promise<void> {
     return await this.couponTemplateService.updateCouponTemplateById(id, dto);
+  }
+
+  /**
+   * 쿠폰 템플릿 삭제
+   */
+  @Delete('coupon-template/:id')
+  @LoginAuth()
+  public async deleteCouponTemplateById(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<void> {
+    return await this.couponTemplateService.deleteCouponTemplateById(id);
   }
 }

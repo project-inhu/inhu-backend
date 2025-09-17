@@ -100,4 +100,10 @@ export class CouponTemplateCoreRepository {
       },
     });
   }
+
+  public async deleteCouponTemplateById(id: string): Promise<void> {
+    await this.txHost.tx.couponTemplate.delete({
+      where: { id },
+    });
+  }
 }

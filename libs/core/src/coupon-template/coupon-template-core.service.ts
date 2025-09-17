@@ -34,4 +34,8 @@ export class CouponTemplateCoreService {
   ): Promise<void> {
     await this.couponTemplateCoreRepository.updateCouponTemplateById(id, input);
   }
+
+  public async deleteCouponTemplateById(id: string): Promise<void> {
+    await this.couponTemplateCoreRepository.deleteCouponTemplateById(id);
+  }
 }
