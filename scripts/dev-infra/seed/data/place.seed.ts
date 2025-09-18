@@ -173,7 +173,7 @@ function getCoords(
 const minCoords = { lat: 37.4508790203834, lon: 126.655024899331 };
 const maxCoords = { lat: 37.4541395433408, lon: 126.669189254821 };
 
-const coords = getCoords(minCoords, maxCoords, 38);
+const coords = getCoords(minCoords, maxCoords, 56);
 
 /**
  * place1 : 메뉴 없음 + pickedPlace 있음
@@ -1325,6 +1325,509 @@ const place38: PlaceSeedData = {
 };
 
 /**
+ * place39 : 격주 휴무4
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ */
+const place39: PlaceSeedData = {
+  name: '격주 휴무4',
+  tel: '032-111-0039',
+  type: PlaceType.CAFE,
+  activatedAt: FIXED_ACTIVATED_AT,
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
+  roadAddress: {
+    name: '인천광역시 미추홀구 인하로 139',
+    addressX: coords[39].lon,
+    addressY: coords[39].lat,
+  },
+  weeklyClosedDayList: [
+    {
+      closedDate: new Date('2025-09-14'),
+      type: WeeklyCloseType.BIWEEKLY,
+    },
+  ],
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
+  reviewList: [defaultReview],
+  menuList: [defaultMenu],
+  pickedPlaceList: [],
+};
+
+/**
+ * place40 : 격주 휴무5
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ */
+const place40: PlaceSeedData = {
+  name: '격주 휴무5',
+  tel: '032-111-0040',
+  type: PlaceType.CAFE,
+  activatedAt: FIXED_ACTIVATED_AT,
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
+  roadAddress: {
+    name: '인천광역시 미추홀구 인하로 140',
+    addressX: coords[40].lon,
+    addressY: coords[40].lat,
+  },
+  weeklyClosedDayList: [
+    {
+      closedDate: new Date('2025-09-15'),
+      type: WeeklyCloseType.BIWEEKLY,
+    },
+  ],
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
+  reviewList: [defaultReview],
+  menuList: [defaultMenu],
+  pickedPlaceList: [],
+};
+
+/**
+ * place41 : 격주 휴무6
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ */
+const place41: PlaceSeedData = {
+  name: '격주 휴무6',
+  tel: '032-111-0041',
+  type: PlaceType.CAFE,
+  activatedAt: FIXED_ACTIVATED_AT,
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
+  roadAddress: {
+    name: '인천광역시 미추홀구 인하로 141',
+    addressX: coords[41].lon,
+    addressY: coords[41].lat,
+  },
+  weeklyClosedDayList: [
+    {
+      closedDate: new Date('2025-09-15'),
+      type: WeeklyCloseType.BIWEEKLY,
+    },
+  ],
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
+  reviewList: [defaultReview],
+  menuList: [defaultMenu],
+  pickedPlaceList: [],
+};
+
+/**
+ * place42 : 격주 휴무7
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ */
+const place42: PlaceSeedData = {
+  name: '격주 휴무7',
+  tel: '032-111-0042',
+  type: PlaceType.CAFE,
+  activatedAt: FIXED_ACTIVATED_AT,
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
+  roadAddress: {
+    name: '인천광역시 미추홀구 인하로 142',
+    addressX: coords[42].lon,
+    addressY: coords[42].lat,
+  },
+  weeklyClosedDayList: [
+    {
+      closedDate: new Date('2025-09-16'),
+      type: WeeklyCloseType.BIWEEKLY,
+    },
+  ],
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
+  reviewList: [defaultReview],
+  menuList: [defaultMenu],
+  pickedPlaceList: [],
+};
+
+/**
+ * place43 : 격주 휴무8
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ */
+const place43: PlaceSeedData = {
+  name: '격주 휴무8',
+  tel: '032-111-0043',
+  type: PlaceType.CAFE,
+  activatedAt: FIXED_ACTIVATED_AT,
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
+  roadAddress: {
+    name: '인천광역시 미추홀구 인하로 143',
+    addressX: coords[43].lon,
+    addressY: coords[43].lat,
+  },
+  weeklyClosedDayList: [
+    {
+      closedDate: new Date('2025-09-16'),
+      type: WeeklyCloseType.BIWEEKLY,
+    },
+  ],
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
+  reviewList: [defaultReview],
+  menuList: [defaultMenu],
+  pickedPlaceList: [],
+};
+
+/**
+ * place44 : 격주 휴무9
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ */
+const place44: PlaceSeedData = {
+  name: '격주 휴무9',
+  tel: '032-111-0044',
+  type: PlaceType.CAFE,
+  activatedAt: FIXED_ACTIVATED_AT,
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
+  roadAddress: {
+    name: '인천광역시 미추홀구 인하로 144',
+    addressX: coords[44].lon,
+    addressY: coords[44].lat,
+  },
+  weeklyClosedDayList: [
+    {
+      closedDate: new Date('2025-09-17'),
+      type: WeeklyCloseType.BIWEEKLY,
+    },
+  ],
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
+  reviewList: [defaultReview],
+  menuList: [defaultMenu],
+  pickedPlaceList: [],
+};
+
+/**
+ * place45 : 격주 휴무10
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ */
+const place45: PlaceSeedData = {
+  name: '격주 휴무10',
+  tel: '032-111-0045',
+  type: PlaceType.CAFE,
+  activatedAt: FIXED_ACTIVATED_AT,
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
+  roadAddress: {
+    name: '인천광역시 미추홀구 인하로 145',
+    addressX: coords[45].lon,
+    addressY: coords[45].lat,
+  },
+  weeklyClosedDayList: [
+    {
+      closedDate: new Date('2025-09-17'),
+      type: WeeklyCloseType.BIWEEKLY,
+    },
+  ],
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
+  reviewList: [defaultReview],
+  menuList: [defaultMenu],
+  pickedPlaceList: [],
+};
+
+/**
+ * place46 : 격주 휴무11
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ */
+const place46: PlaceSeedData = {
+  name: '격주 휴무11',
+  tel: '032-111-0046',
+  type: PlaceType.CAFE,
+  activatedAt: FIXED_ACTIVATED_AT,
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
+  roadAddress: {
+    name: '인천광역시 미추홀구 인하로 146',
+    addressX: coords[46].lon,
+    addressY: coords[46].lat,
+  },
+  weeklyClosedDayList: [
+    {
+      closedDate: new Date('2025-09-18'),
+      type: WeeklyCloseType.BIWEEKLY,
+    },
+  ],
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
+  reviewList: [defaultReview],
+  menuList: [defaultMenu],
+  pickedPlaceList: [],
+};
+
+/**
+ * place47 : 격주 휴무12
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ */
+const place47: PlaceSeedData = {
+  name: '격주 휴무12',
+  tel: '032-111-0047',
+  type: PlaceType.CAFE,
+  activatedAt: FIXED_ACTIVATED_AT,
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
+  roadAddress: {
+    name: '인천광역시 미추홀구 인하로 147',
+    addressX: coords[47].lon,
+    addressY: coords[47].lat,
+  },
+  weeklyClosedDayList: [
+    {
+      closedDate: new Date('2025-09-18'),
+      type: WeeklyCloseType.BIWEEKLY,
+    },
+  ],
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
+  reviewList: [defaultReview],
+  menuList: [defaultMenu],
+  pickedPlaceList: [],
+};
+
+/**
+ * place48 : 격주 휴무13
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ */
+const place48: PlaceSeedData = {
+  name: '격주 휴무13',
+  tel: '032-111-0048',
+  type: PlaceType.CAFE,
+  activatedAt: FIXED_ACTIVATED_AT,
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
+  roadAddress: {
+    name: '인천광역시 미추홀구 인하로 148',
+    addressX: coords[48].lon,
+    addressY: coords[48].lat,
+  },
+  weeklyClosedDayList: [
+    {
+      closedDate: new Date('2025-09-19'),
+      type: WeeklyCloseType.BIWEEKLY,
+    },
+  ],
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
+  reviewList: [defaultReview],
+  menuList: [defaultMenu],
+  pickedPlaceList: [],
+};
+
+/**
+ * place49 : 격주 휴무14
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ */
+const place49: PlaceSeedData = {
+  name: '격주 휴무14',
+  tel: '032-111-0049',
+  type: PlaceType.CAFE,
+  activatedAt: FIXED_ACTIVATED_AT,
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
+  roadAddress: {
+    name: '인천광역시 미추홀구 인하로 149',
+    addressX: coords[49].lon,
+    addressY: coords[49].lat,
+  },
+  weeklyClosedDayList: [
+    {
+      closedDate: new Date('2025-09-19'),
+      type: WeeklyCloseType.BIWEEKLY,
+    },
+  ],
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
+  reviewList: [defaultReview],
+  menuList: [defaultMenu],
+  pickedPlaceList: [],
+};
+
+/**
+ * place50 : 격주 휴무15
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ */
+const place50: PlaceSeedData = {
+  name: '격주 휴무15',
+  tel: '032-111-0050',
+  type: PlaceType.CAFE,
+  activatedAt: FIXED_ACTIVATED_AT,
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
+  roadAddress: {
+    name: '인천광역시 미추홀구 인하로 150',
+    addressX: coords[50].lon,
+    addressY: coords[50].lat,
+  },
+  weeklyClosedDayList: [
+    {
+      closedDate: new Date('2025-09-20'),
+      type: WeeklyCloseType.BIWEEKLY,
+    },
+  ],
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
+  reviewList: [defaultReview],
+  menuList: [defaultMenu],
+  pickedPlaceList: [],
+};
+
+/**
+ * place51 : 격주 휴무16
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ */
+const place51: PlaceSeedData = {
+  name: '격주 휴무16',
+  tel: '032-111-0051',
+  type: PlaceType.CAFE,
+  activatedAt: FIXED_ACTIVATED_AT,
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
+  roadAddress: {
+    name: '인천광역시 미추홀구 인하로 151',
+    addressX: coords[51].lon,
+    addressY: coords[51].lat,
+  },
+  weeklyClosedDayList: [
+    {
+      closedDate: new Date('2025-09-21'),
+      type: WeeklyCloseType.BIWEEKLY,
+    },
+  ],
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
+  reviewList: [defaultReview],
+  menuList: [defaultMenu],
+  pickedPlaceList: [],
+};
+
+/**
+ * place52 : 격주 휴무17
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ */
+const place52: PlaceSeedData = {
+  name: '격주 휴무17',
+  tel: '032-111-0052',
+  type: PlaceType.CAFE,
+  activatedAt: FIXED_ACTIVATED_AT,
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
+  roadAddress: {
+    name: '인천광역시 미추홀구 인하로 152',
+    addressX: coords[52].lon,
+    addressY: coords[52].lat,
+  },
+  weeklyClosedDayList: [
+    {
+      closedDate: new Date('2025-09-22'),
+      type: WeeklyCloseType.BIWEEKLY,
+    },
+  ],
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
+  reviewList: [defaultReview],
+  menuList: [defaultMenu],
+  pickedPlaceList: [],
+};
+
+/**
+ * place53 : 격주 휴무18
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ */
+const place53: PlaceSeedData = {
+  name: '격주 휴무18',
+  tel: '032-111-0053',
+  type: PlaceType.CAFE,
+  activatedAt: FIXED_ACTIVATED_AT,
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
+  roadAddress: {
+    name: '인천광역시 미추홀구 인하로 153',
+    addressX: coords[53].lon,
+    addressY: coords[53].lat,
+  },
+  weeklyClosedDayList: [
+    {
+      closedDate: new Date('2025-09-23'),
+      type: WeeklyCloseType.BIWEEKLY,
+    },
+  ],
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
+  reviewList: [defaultReview],
+  menuList: [defaultMenu],
+  pickedPlaceList: [],
+};
+
+/**
+ * place54 : 격주 휴무19
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ */
+const place54: PlaceSeedData = {
+  name: '격주 휴무19',
+  tel: '032-111-0054',
+  type: PlaceType.CAFE,
+  activatedAt: FIXED_ACTIVATED_AT,
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
+  roadAddress: {
+    name: '인천광역시 미추홀구 인하로 154',
+    addressX: coords[54].lon,
+    addressY: coords[54].lat,
+  },
+  weeklyClosedDayList: [
+    {
+      closedDate: new Date('2025-09-24'),
+      type: WeeklyCloseType.BIWEEKLY,
+    },
+  ],
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
+  reviewList: [defaultReview],
+  menuList: [defaultMenu],
+  pickedPlaceList: [],
+};
+
+/**
+ * place55 : 격주 휴무20
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ */
+const place55: PlaceSeedData = {
+  name: '격주 휴무20',
+  tel: '032-111-0055',
+  type: PlaceType.CAFE,
+  activatedAt: FIXED_ACTIVATED_AT,
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
+  roadAddress: {
+    name: '인천광역시 미추홀구 인하로 155',
+    addressX: coords[55].lon,
+    addressY: coords[55].lat,
+  },
+  weeklyClosedDayList: [
+    {
+      closedDate: new Date('2025-09-25'),
+      type: WeeklyCloseType.BIWEEKLY,
+    },
+  ],
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
+  reviewList: [defaultReview],
+  menuList: [defaultMenu],
+  pickedPlaceList: [],
+};
+
+/**
+ * place56 : 격주 휴무21
+ * - 실행 날짜를 기준으로 격주로 휴무인 경우를 테스트할 때 사용됨
+ */
+const place56: PlaceSeedData = {
+  name: '격주 휴무21',
+  tel: '032-111-0056',
+  type: PlaceType.CAFE,
+  activatedAt: FIXED_ACTIVATED_AT,
+  placeImgList: [PLACE_IMAGE.CAFE1, PLACE_IMAGE.BAKERY],
+  roadAddress: {
+    name: '인천광역시 미추홀구 인하로 156',
+    addressX: coords[56].lon,
+    addressY: coords[56].lat,
+  },
+  weeklyClosedDayList: [
+    {
+      closedDate: new Date('2025-09-26'),
+      type: WeeklyCloseType.BIWEEKLY,
+    },
+  ],
+  operatingHourList: CAFE_HOURS,
+  breakTime: CAFE_BREAK_TIME,
+  reviewList: [defaultReview],
+  menuList: [defaultMenu],
+  pickedPlaceList: [],
+};
+/**
  * 바둑판 형태로 좌표를 생성하는 함수
  * rows × cols 개수만큼 좌표 생성
  */
@@ -1442,5 +1945,23 @@ export const PlaceSeedDataList = [
   place36,
   place37,
   place38,
+  place39,
+  place40,
+  place41,
+  place42,
+  place43,
+  place44,
+  place45,
+  place46,
+  place47,
+  place48,
+  place49,
+  place50,
+  place51,
+  place52,
+  place53,
+  place54,
+  place55,
+  place56,
   ...generatedPlaces,
 ];
