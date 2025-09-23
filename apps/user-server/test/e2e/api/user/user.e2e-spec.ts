@@ -1,10 +1,15 @@
+import { UserType } from '@libs/core/user/constants/user-type.enum';
 import { UserCoreService } from '@libs/core/user/user-core.service';
+import { PlaceOwnerSeedHelper } from '@libs/testing/seed/place-owner/place-owner.seed';
+import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { UserEntity } from '@user/api/user/entity/user.entity';
 import { AppModule } from '@user/app.module';
 import { TestHelper } from 'apps/user-server/test/e2e/setup/test.helper';
 
 describe('User E2E test', () => {
   const testHelper = TestHelper.create(AppModule);
+  const placeSeedHelper = testHelper.seedHelper(PlaceSeedHelper);
+  const placeOwnerSeedHelper = testHelper.seedHelper(PlaceOwnerSeedHelper);
 
   beforeEach(async () => {
     await testHelper.init();
@@ -32,6 +37,7 @@ describe('User E2E test', () => {
       expect(responseBody).toHaveProperty('profileImagePath');
       expect(responseBody).toHaveProperty('createdAt');
       expect(responseBody).toHaveProperty('provider');
+      expect(responseBody).toHaveProperty('type');
 
       expect(responseBody.idx).toEqual(loginUser.idx);
 
@@ -48,6 +54,52 @@ describe('User E2E test', () => {
       expect(responseBody.profileImagePath).toEqual(user.profileImagePath);
       expect(responseBody.provider).toEqual(user.userProvider?.name);
       expect(new Date(responseBody.createdAt)).toEqual(user.createdAt);
+      expect(responseBody.type).toEqual(UserType.USER);
+    });
+
+    it('200 - successfully retrieves user info', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      const place = await placeSeedHelper.seed({
+        name: 'Test Place',
+      });
+      const placeOwner = await placeOwnerSeedHelper.seed({
+        userIdx: loginUser.idx,
+        placeIdx: place.idx,
+      });
+
+      const response = await testHelper
+        .test()
+        .get('/user')
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(200);
+
+      const responseBody: UserEntity = response.body;
+
+      expect(responseBody).toBeDefined();
+      expect(responseBody).toHaveProperty('idx');
+      expect(responseBody).toHaveProperty('nickname');
+      expect(responseBody).toHaveProperty('profileImagePath');
+      expect(responseBody).toHaveProperty('createdAt');
+      expect(responseBody).toHaveProperty('provider');
+      expect(responseBody).toHaveProperty('type');
+
+      expect(responseBody.idx).toEqual(loginUser.idx);
+
+      const user = await testHelper.getPrisma().user.findUniqueOrThrow({
+        where: { idx: loginUser.idx },
+        select: {
+          nickname: true,
+          profileImagePath: true,
+          userProvider: { select: { name: true } },
+          createdAt: true,
+        },
+      });
+      expect(responseBody.nickname).toEqual(user.nickname);
+      expect(responseBody.profileImagePath).toEqual(user.profileImagePath);
+      expect(responseBody.provider).toEqual(user.userProvider?.name);
+      expect(new Date(responseBody.createdAt)).toEqual(user.createdAt);
+      expect(responseBody.type).toEqual(UserType.PLACE_OWNER);
     });
 
     it('401 - no accessToken', async () => {

@@ -2,18 +2,22 @@ import { AdminServerModule } from '@admin/admin-server.module';
 import { CreatePlaceDto } from '@admin/api/place/dto/request/create-place.dto';
 import { GetPlaceOverviewDto } from '@admin/api/place/dto/request/get-place-overview-all.dto';
 import { UpdatePlaceDto } from '@admin/api/place/dto/request/update-place.dto';
+import { RunBiWeeklyClosedDayCronJobResponseDto } from '@admin/api/place/dto/response/run-bi-weekly-closed-day-cron-job.response.dto';
 import { PlaceOverviewEntity } from '@admin/api/place/entity/place-overview.entity';
 import { PlaceEntity } from '@admin/api/place/entity/place.entity';
 import { DayOfWeek } from '@libs/common/modules/date-util/constants/day-of-week.constants';
 import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
+import { KakaoAddressService } from '@libs/modules/kakao-address/kakao-address.service';
+import { MenuSeedHelper } from '@libs/testing/seed/menu/menu.seed';
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { TestHelper } from 'apps/admin-server/test/e2e/setup/test.helper';
 
 describe('Place E2E test', () => {
   const testHelper = TestHelper.create(AdminServerModule);
   const placeSeedHelper = testHelper.seedHelper(PlaceSeedHelper);
+  const menuSeedHelper = testHelper.seedHelper(MenuSeedHelper);
 
   beforeEach(async () => {
     await testHelper.init();
@@ -129,6 +133,435 @@ describe('Place E2E test', () => {
         [place3.name, place1.name].sort(),
       );
       expect(count).toBe(2);
+    });
+
+    it('200 - check searchKeyword filtering single place name', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        search: 'place 1',
+      };
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places.map(({ name }) => name)).toStrictEqual([place1.name]);
+      expect(count).toBe(1);
+    });
+
+    it('200 - check searchKeyword filtering multiple place name', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        search: 'place',
+      };
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places.map(({ name }) => name).sort()).toStrictEqual(
+        [place1.name, place2.name, place3.name].sort(),
+      );
+      expect(count).toBe(3);
+    });
+
+    it('200 - check searchKeyword filtering (do not exist place name)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        search: 'not exist',
+      };
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places).toStrictEqual([]);
+      expect(count).toBe(0);
+    });
+
+    it('200 - check searchKeyword filtering single menu name', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        search: 'menu 1',
+      };
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places.map(({ name }) => name)).toStrictEqual([place1.name]);
+      expect(count).toBe(1);
+    });
+
+    it('200 - check searchKeyword filtering multiple menu name', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        search: 'menu',
+      };
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places.map(({ name }) => name).sort()).toStrictEqual(
+        [place1.name, place2.name, place3.name].sort(),
+      );
+      expect(count).toBe(3);
+    });
+
+    it('200 - check searchKeyword filtering (do not exist menu name)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        search: 'not exist',
+      };
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places).toStrictEqual([]);
+      expect(count).toBe(0);
+    });
+
+    it('200 - check searchKeyword filtering single menu content', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        search: 'content 1',
+      };
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+          content: 'content 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+          content: 'content 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+          content: 'content 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places.map(({ name }) => name)).toStrictEqual([place1.name]);
+      expect(count).toBe(1);
+    });
+
+    it('200 - check searchKeyword filtering multiple menu content', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        search: 'content',
+      };
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+          content: 'content 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+          content: 'content 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+          content: 'content 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places.map(({ name }) => name).sort()).toStrictEqual(
+        [place1.name, place2.name, place3.name].sort(),
+      );
+      expect(count).toBe(3);
+    });
+
+    it('200 - check searchKeyword filtering (do not exist menu content)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        search: 'not exist',
+      };
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+          content: 'content 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+          content: 'content 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+          content: 'content 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places).toStrictEqual([]);
+      expect(count).toBe(0);
     });
   });
 
@@ -311,6 +744,11 @@ describe('Place E2E test', () => {
 
   describe('POST /place', () => {
     it('200 - field check', async () => {
+      const kakao = testHelper.get<KakaoAddressService>(KakaoAddressService);
+      const mock = jest.spyOn(kakao, 'searchAddress').mockResolvedValue({
+        documents: [{ x: '127.1111', y: '37.5665' }],
+      } as any);
+
       const createPlaceDto: CreatePlaceDto = {
         name: 'New Place',
         tel: '032-1234-5678',
@@ -320,8 +758,8 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'New Road',
           detail: 'New Detail',
-          addressX: 123.456,
-          addressY: 78.91,
+          addressX: 37.123,
+          addressY: 126.123,
         },
         closedDayList: [
           { day: DayOfWeek.MON, week: 1 },
@@ -355,12 +793,6 @@ describe('Place E2E test', () => {
       expect(place.name).toBe(createPlaceDto.name);
       expect(place.roadAddress.name).toBe(createPlaceDto.roadAddress.name);
       expect(place.roadAddress.detail).toBe(createPlaceDto.roadAddress.detail);
-      expect(place.roadAddress.addressX).toBe(
-        createPlaceDto.roadAddress.addressX,
-      );
-      expect(place.roadAddress.addressY).toBe(
-        createPlaceDto.roadAddress.addressY,
-      );
       expect(place.imagePathList.sort()).toEqual(place.imagePathList.sort());
       expect(place.isClosedOnHoliday).toBe(createPlaceDto.isClosedOnHoliday);
       expect(place.type).toBe(createPlaceDto.type);
@@ -396,6 +828,8 @@ describe('Place E2E test', () => {
       expect(place.closedDayList[0].week).toBe(1);
       expect(place.closedDayList[1].day).toBe(DayOfWeek.TUE);
       expect(place.closedDayList[1].week).toBe(2);
+
+      mock.mockRestore();
     });
 
     it('401 - no access token', async () => {
@@ -408,8 +842,8 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'New Road',
           detail: 'New Detail',
-          addressX: 123.456,
-          addressY: 78.91,
+          addressX: 37.123,
+          addressY: 126.123,
         },
         closedDayList: [
           { day: DayOfWeek.MON, week: 1 },
@@ -442,8 +876,8 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'New Road',
           detail: 'New Detail',
-          addressX: 123.456,
-          addressY: 78.91,
+          addressX: 37.123,
+          addressY: 126.123,
         },
         closedDayList: [],
         breakTimeList: [
@@ -473,8 +907,8 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'New Road',
           detail: 'New Detail',
-          addressX: 123.456,
-          addressY: 78.91,
+          addressX: 37.123,
+          addressY: 126.123,
         },
         closedDayList: [],
         breakTimeList: [],
@@ -497,10 +931,34 @@ describe('Place E2E test', () => {
 
   describe('PUT /place/:idx', () => {
     it('200 - confirms fields are updated successfully', async () => {
+      const kakao = testHelper.get<KakaoAddressService>(KakaoAddressService);
+      const mock = jest.spyOn(kakao, 'searchAddress').mockResolvedValue({
+        documents: [{ x: '127.1111', y: '37.5665' }],
+      } as any);
+
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
         activatedAt: new Date(),
+        // 테스트를 위해 과거 날짜로 격주 휴무일 생성
+        weeklyClosedDayList: [
+          {
+            closedDate: new Date('2025-08-20T00:00:00Z'),
+            type: WeeklyCloseType.BIWEEKLY,
+          },
+        ],
       });
+
+      function getKstDateString(offsetDays = 0): string {
+        const now = new Date();
+        // 한국시간 보정 (+9시간)
+        now.setHours(now.getHours() + 9);
+        now.setDate(now.getDate() + offsetDays);
+
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      }
 
       const updatePlaceDto: UpdatePlaceDto = {
         name: 'Updated Place',
@@ -514,8 +972,8 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'Updated Road',
           detail: 'Updated Detail',
-          addressX: 123.456,
-          addressY: 78.91,
+          addressX: 37.123,
+          addressY: 126.123,
         },
         closedDayList: [
           { day: DayOfWeek.MON, week: 1 },
@@ -530,8 +988,8 @@ describe('Place E2E test', () => {
           { startAt: '11:00:00', endAt: '21:00:00', day: DayOfWeek.SAT },
         ],
         weeklyClosedDayList: [
-          { date: '2025-07-22', type: WeeklyCloseType.BIWEEKLY },
-          { date: '2025-07-23', type: WeeklyCloseType.BIWEEKLY },
+          { date: getKstDateString(), type: WeeklyCloseType.BIWEEKLY },
+          { date: getKstDateString(1), type: WeeklyCloseType.BIWEEKLY },
         ],
       };
 
@@ -559,12 +1017,6 @@ describe('Place E2E test', () => {
       expect(placeModel.roadAddress.name).toBe(updatePlaceDto.roadAddress.name);
       expect(placeModel.roadAddress.detail).toBe(
         updatePlaceDto.roadAddress.detail,
-      );
-      expect(placeModel.roadAddress.addressX).toBe(
-        updatePlaceDto.roadAddress.addressX,
-      );
-      expect(placeModel.roadAddress.addressY).toBe(
-        updatePlaceDto.roadAddress.addressY,
       );
       expect(placeModel.imgPathList.sort()).toEqual(
         updatePlaceDto.imagePathList.sort(),
@@ -601,12 +1053,37 @@ describe('Place E2E test', () => {
       expect(placeModel.weeklyClosedDayList[1].type).toBe(
         updatePlaceDto.weeklyClosedDayList[1].type,
       );
+
+      const pastWeeklyClosedDay = await testHelper
+        .getPrisma()
+        .weeklyClosedDay.findFirst({
+          where: {
+            placeIdx: place.idx,
+            closedDate: new Date('2025-08-20T00:00:00.000Z'),
+            type: WeeklyCloseType.BIWEEKLY,
+          },
+        });
+      expect(pastWeeklyClosedDay).not.toBeNull();
+
+      mock.mockRestore();
     });
 
     it('401 - no access token provided', async () => {
       const place = await placeSeedHelper.seed({
         activatedAt: new Date(),
       });
+
+      function getKstDateString(offsetDays = 0): string {
+        const now = new Date();
+        // 한국시간 보정 (+9시간)
+        now.setHours(now.getHours() + 9);
+        now.setDate(now.getDate() + offsetDays);
+
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      }
 
       const updatePlaceDto: UpdatePlaceDto = {
         name: 'Updated Place',
@@ -620,8 +1097,8 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'Updated Road',
           detail: 'Updated Detail',
-          addressX: 123.456,
-          addressY: 78.91,
+          addressX: 37.123,
+          addressY: 126.123,
         },
         closedDayList: [
           { day: DayOfWeek.MON, week: 1 },
@@ -636,8 +1113,8 @@ describe('Place E2E test', () => {
           { startAt: '11:00:00', endAt: '21:00:00', day: DayOfWeek.SAT },
         ],
         weeklyClosedDayList: [
-          { date: '2025-07-22', type: WeeklyCloseType.BIWEEKLY },
-          { date: '2025-07-23', type: WeeklyCloseType.BIWEEKLY },
+          { date: getKstDateString(), type: WeeklyCloseType.BIWEEKLY },
+          { date: getKstDateString(1), type: WeeklyCloseType.BIWEEKLY },
         ],
       };
 
@@ -652,6 +1129,18 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const placeIdx = -1; // ! no place with this idx
 
+      function getKstDateString(offsetDays = 0): string {
+        const now = new Date();
+        // 한국시간 보정 (+9시간)
+        now.setHours(now.getHours() + 9);
+        now.setDate(now.getDate() + offsetDays);
+
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      }
+
       const updatePlaceDto: UpdatePlaceDto = {
         name: 'Updated Place',
         tel: '032-9876-5432',
@@ -664,8 +1153,8 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'Updated Road',
           detail: 'Updated Detail',
-          addressX: 123.456,
-          addressY: 78.91,
+          addressX: 37.123,
+          addressY: 126.123,
         },
         closedDayList: [
           { day: DayOfWeek.MON, week: 1 },
@@ -680,8 +1169,8 @@ describe('Place E2E test', () => {
           { startAt: '11:00:00', endAt: '21:00:00', day: DayOfWeek.SAT },
         ],
         weeklyClosedDayList: [
-          { date: '2025-07-22', type: WeeklyCloseType.BIWEEKLY },
-          { date: '2025-07-23', type: WeeklyCloseType.BIWEEKLY },
+          { date: getKstDateString(), type: WeeklyCloseType.BIWEEKLY },
+          { date: getKstDateString(1), type: WeeklyCloseType.BIWEEKLY },
         ],
       };
 
@@ -1017,6 +1506,194 @@ describe('Place E2E test', () => {
         .test()
         .post(`/place/${placeSeed.idx}/cancel-close-permanently`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(409);
+    });
+  });
+
+  describe('POST /place/cron/bi-weekly-closed-day', () => {
+    it('200 - should create a next holiday for a single matching place', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const today = new Date('2025-08-20');
+      await placeSeedHelper.seed({
+        weeklyClosedDayList: [
+          { closedDate: today, type: WeeklyCloseType.BIWEEKLY },
+        ],
+      });
+      await placeSeedHelper.seed({
+        weeklyClosedDayList: [
+          { closedDate: today, type: WeeklyCloseType.BIWEEKLY },
+        ],
+      });
+
+      const response = await testHelper
+        .test()
+        .post('/place/cron/bi-weekly-closed-day')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: '2025-08-20' })
+        .expect(200);
+
+      const body: RunBiWeeklyClosedDayCronJobResponseDto = response.body;
+      expect(body.successCount).toBe(2);
+      expect(body.failureCount).toBe(0);
+      expect(body.errorList).toEqual([]);
+    });
+
+    it('200 - should return a partial success if some job fail', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const today = new Date('2025-08-20');
+      await placeSeedHelper.seed({
+        weeklyClosedDayList: [
+          { closedDate: today, type: WeeklyCloseType.BIWEEKLY },
+        ],
+      });
+      const failPlace = await placeSeedHelper.seed({
+        weeklyClosedDayList: [
+          { closedDate: today, type: WeeklyCloseType.BIWEEKLY },
+        ],
+      });
+
+      const placeCoreService =
+        testHelper.get<PlaceCoreService>(PlaceCoreService);
+
+      const mock = jest
+        .spyOn(placeCoreService, 'createWeeklyClosedDay')
+        .mockImplementation(async (placeIdx: number) => {
+          // 만약 실패하기로 약속한 placeIdx가 들어오면, 일부러 에러를 발생
+          if (placeIdx === failPlace.idx) {
+            throw new Error('Simulated DB Error');
+          }
+          // 성공한 케이스는 통과
+          return;
+        });
+
+      const response = await testHelper
+        .test()
+        .post('/place/cron/bi-weekly-closed-day')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: '2025-08-20' })
+        .expect(200);
+
+      const body: RunBiWeeklyClosedDayCronJobResponseDto = response.body;
+
+      expect(body.successCount).toBe(1);
+      expect(body.failureCount).toBe(1);
+      expect(body.errorList.length).toBe(1);
+      expect(body.errorList[0].placeIdx).toBe(failPlace.idx);
+      expect(body.errorList[0].errorMessage).toBe('Simulated DB Error');
+
+      mock.mockRestore();
+    });
+
+    it('200- should return a zero summary if no places are found', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      // 휴무일이 없는 장소 생성
+      await placeSeedHelper.seed({});
+
+      const response = await testHelper
+        .test()
+        .post('/place/cron/bi-weekly-closed-day')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: '2025-08-20' })
+        .expect(200);
+
+      const body: RunBiWeeklyClosedDayCronJobResponseDto = response.body;
+      expect(body.successCount).toBe(0);
+      expect(body.failureCount).toBe(0);
+    });
+
+    it('400 - invalid date', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .post('/place/cron/bi-weekly-closed-day')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: '2025/08/20' }) // ! invalid date format
+        .expect(400);
+    });
+
+    it('401 - no access token provided', async () => {
+      await placeSeedHelper.seed({});
+
+      await testHelper
+        .test()
+        .post('/place/cron/bi-weekly-closed-day')
+        .send({ date: '2025-08-20' })
+        .expect(401);
+    });
+  });
+
+  describe('POST /place/:idx/bi-weekly-closed-day', () => {
+    it('200 - should create a new bi-weekly closed day', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const place = await placeSeedHelper.seed({});
+
+      const closedDate = '2025-08-20';
+
+      await testHelper
+        .test()
+        .post(`/place/${place.idx}/bi-weekly-closed-day`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: closedDate })
+        .expect(200);
+
+      const closedDay = await testHelper.getPrisma().weeklyClosedDay.findFirst({
+        where: {
+          placeIdx: place.idx,
+          closedDate: new Date(closedDate),
+          type: WeeklyCloseType.BIWEEKLY,
+        },
+      });
+
+      expect(closedDay).not.toBeNull();
+    });
+
+    it('400 - invalid place idx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .post(`/place/invalid/bi-weekly-closed-day`) // ! invalid place idx
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: '2025/08/20' })
+        .expect(400);
+    });
+
+    it('401 - no access token provided', async () => {
+      const place = await placeSeedHelper.seed({});
+
+      await testHelper
+        .test()
+        .post(`/place/${place.idx}/bi-weekly-closed-day`)
+        .send({ date: '2025-08-20' })
+        .expect(401);
+    });
+
+    it('404 - place does not exist', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const nonExistentPlaceIdx = 99999;
+      await testHelper
+        .test()
+        .post(`/place/${nonExistentPlaceIdx}/bi-weekly-closed-day`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: '2025-08-20' })
+        .expect(404);
+    });
+
+    it('409 - the closed day already exists', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const date = new Date('2025-08-20');
+      const place = await placeSeedHelper.seed({
+        weeklyClosedDayList: [
+          { closedDate: date, type: WeeklyCloseType.BIWEEKLY },
+        ],
+      });
+
+      await testHelper
+        .test()
+        .post(`/place/${place.idx}/bi-weekly-closed-day`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: '2025-08-20' })
         .expect(409);
     });
   });

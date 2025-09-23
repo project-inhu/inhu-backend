@@ -63,36 +63,4 @@ export class GetAllPlaceOverviewDto {
   @IsEnumValue(PlaceType)
   @Type(() => Number)
   type?: PlaceType;
-
-  /**
-   * 왼쪽 위 x좌표
-   */
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  leftTopX?: number;
-
-  /**
-   * 왼쪽 위 y좌표
-   */
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  leftTopY?: number;
-
-  /**
-   * 오른쪽 아래 x좌표
-   */
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  rightBottomX?: number;
-
-  /**
-   * 오른쪽 아래 y좌표
-   */
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  rightBottomY?: number;
 }

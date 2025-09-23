@@ -12,6 +12,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  Logger,
   Param,
   ParseIntPipe,
   Post,
@@ -19,11 +20,17 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { CreateBiWeeklyClosedDayDto } from './dto/request/create-bi-weekly-closed-day.dto';
+import { RunBiWeeklyClosedDayCronJobDto } from './dto/request/run-bi-weekly-closed-day-cron-job.dto';
+import { RunBiWeeklyClosedDayCronJobResponseDto } from './dto/response/run-bi-weekly-closed-day-cron-job.response.dto';
 
 @Controller('place')
 @ApiTags('Place')
 export class PlaceController {
-  constructor(private readonly placeService: PlaceService) {}
+  constructor(
+    private readonly placeService: PlaceService,
+    private readonly logger: Logger,
+  ) {}
 
   /**
    * 장소 목록 조회 Endpoint
@@ -55,6 +62,7 @@ export class PlaceController {
    */
   @Post()
   @Exception(400, 'Invalid place data')
+  @Exception(404, 'Address not found')
   @HttpCode(200)
   @AdminAuth()
   public async createPlace(@Body() dto: CreatePlaceDto): Promise<PlaceEntity> {
@@ -66,7 +74,7 @@ export class PlaceController {
    */
   @Put('/:idx')
   @Exception(400, 'Invalid place idx or data')
-  @Exception(404, 'Place not found')
+  @Exception(404, 'Place or address not found')
   @HttpCode(200)
   @AdminAuth()
   public async updatePlace(
@@ -148,5 +156,56 @@ export class PlaceController {
     @Param('idx', ParseIntPipe) idx: number,
   ): Promise<void> {
     return await this.placeService.cancelClosePermanentlyPlaceByIdx(idx);
+  }
+
+  /**
+   * 특정 날짜의 14일 뒤 휴무일 생성 cron job을 수동 실행
+   */
+  @Post('/cron/bi-weekly-closed-day')
+  @Exception(400, 'Invalid date')
+  @HttpCode(200)
+  @AdminAuth()
+  public async runBiWeeklyClosedDayCronJob(
+    @Body() dto: RunBiWeeklyClosedDayCronJobDto,
+  ): Promise<RunBiWeeklyClosedDayCronJobResponseDto> {
+    const result = await this.placeService.createAllBiWeeklyClosedDay(dto.date);
+    if (result.failureCount > 0) {
+      const failLogDetails = result.errorList
+        .map((e) => `  - Place Idx: ${e.placeIdx}, Reason: ${e.errorMessage}`)
+        .join('\n');
+
+      const errorMessage = `
+--- 🚨 [수동 실행] Bi-Weekly ClosedDay 배치 실패 ---
+  - 성공: ${result.successCount}건
+  - 실패: ${result.failureCount}건
+  - 실패 상세기록:
+${failLogDetails}
+-------------------------------------------------`;
+      this.logger.error(errorMessage);
+    } else {
+      const successMessage = `
+--- ✅ [수동 실행] Bi-Weekly ClosedDay 배치 완료 ---
+  - 성공: ${result.successCount}건
+-------------------------------------------------`;
+      this.logger.error(successMessage);
+    }
+
+    return result;
+  }
+
+  /**
+   * 특정 장소에 14일 뒤 휴무일 생성
+   */
+  @Post('/:idx/bi-weekly-closed-day')
+  @Exception(400, 'Invalid place idx or date')
+  @Exception(404, 'Place not found')
+  @Exception(409, 'Weekly closed day already exists')
+  @HttpCode(200)
+  @AdminAuth()
+  public async createBiWeeklyClosedDay(
+    @Param('idx', ParseIntPipe) idx: number,
+    @Body() dto: CreateBiWeeklyClosedDayDto,
+  ): Promise<void> {
+    return this.placeService.createBiWeeklyClosedDayByPlaceIdx(idx, dto.date);
   }
 }

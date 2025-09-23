@@ -44,16 +44,6 @@ export class GetPlaceOverviewInput {
   bookmarkUserIdx?: number;
 
   /**
-   * 좌표 필터링
-   */
-  coordinate?: {
-    leftTopX: number;
-    leftTopY: number;
-    rightBottomX: number;
-    rightBottomY: number;
-  };
-
-  /**
    * type 필터링
    */
   types?: PlaceType[];
@@ -75,4 +65,11 @@ export class GetPlaceOverviewInput {
    * - undefined: 폐점된 장소와 폐점되지 않은 장소 모두 가져오기
    */
   permanentlyClosed?: boolean;
+
+  /**
+   * 검색 필터링
+   *
+   * - 장소 이름, 메뉴 이름, 메뉴 설명으로 검색 가능
+   */
+  searchKeyword?: string;
 }

@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE TABLE bookmark_tb
 (
   user_idx   int                      NOT NULL,
@@ -27,7 +29,7 @@ CREATE TABLE closed_day_tb
 
 CREATE TABLE keyword_tb
 (
-  idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  idx        int                      NOT NULL,
   content    varchar                  NOT NULL UNIQUE,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at timestamp with time zone,
@@ -113,7 +115,7 @@ CREATE TABLE place_type_mapping_tb
 
 CREATE TABLE place_type_tb
 (
-  idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  idx        int                      NOT NULL,
   content    varchar                  NOT NULL UNIQUE,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at timestamp with time zone,
@@ -240,6 +242,16 @@ CREATE TABLE withdraw_service_tb
   idx     int     NOT NULL GENERATED ALWAYS AS IDENTITY,
   content varchar,
   PRIMARY KEY (idx)
+);
+
+CREATE TABLE place_owner_tb
+(
+  id         uuid                     NOT NULL DEFAULT uuid_generate_v4(),
+  place_idx  int                      NOT NULL,
+  user_idx   int                      NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at timestamp with time zone,
+  PRIMARY KEY (id)
 );
 
 ALTER TABLE review_image_tb
@@ -375,4 +387,14 @@ ALTER TABLE place_tb
 ALTER TABLE admin_account_tb
   ADD CONSTRAINT FK_user_tb_TO_admin_tb
     FOREIGN KEY (idx)
+    REFERENCES user_tb (idx);
+
+ALTER TABLE place_owner_tb
+  ADD CONSTRAINT FK_place_tb_TO_place_owner_tb
+    FOREIGN KEY (place_idx)
+    REFERENCES place_tb (idx);
+
+ALTER TABLE place_owner_tb
+  ADD CONSTRAINT FK_user_tb_TO_place_owner_tb
+    FOREIGN KEY (user_idx)
     REFERENCES user_tb (idx);

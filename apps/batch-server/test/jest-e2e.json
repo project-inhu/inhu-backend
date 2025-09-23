@@ -1,0 +1,18 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": "../../../",
+  "testRegex": "apps/batch-server/.*\\.e2e-spec\\.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "^src/(.*)$": "<rootDir>/src/$1",
+    "^test/(.*)$": "<rootDir>/test/$1",
+    "^@libs/common(.*)": "<rootDir>/libs/common/src/$1",
+    "^@libs/testing(.*)": "<rootDir>/libs/testing/src/$1",
+    "^@libs/core(.*)": "<rootDir>/libs/core/src/$1",
+    "^@batch(.*)": "<rootDir>/apps/batch-server/src/$1",
+    "^apps(.*)": "<rootDir>/apps/$1"
+  },
+  "verbose": true
+}

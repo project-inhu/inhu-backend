@@ -1,4 +1,11 @@
-import { Controller, Delete, Param, ParseIntPipe, Post } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common';
 import { BookmarkService } from './bookmark.service';
 import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
 import { User } from '@user/common/decorator/user.decorator';
@@ -11,6 +18,18 @@ import { Exception } from '@libs/common/decorator/exception.decorator';
 @ApiTags('Bookmark')
 export class BookmarkController {
   constructor(private readonly bookmarkService: BookmarkService) {}
+
+  /**
+   * 로그인 사용자의 모든 북마크 상태 조회
+   *
+   * @author 이수인
+   */
+  @Get('/bookmark/status/all')
+  async getAllBookmarkStatus(
+    @User() loginUser?: LoginUser,
+  ): Promise<BookmarkEntity[] | null> {
+    return await this.bookmarkService.getAllBookmarkStatus(loginUser?.idx);
+  }
 
   /**
    * 특정 장소에 대한 북마크 등록

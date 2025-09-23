@@ -8,15 +8,7 @@ import { PickType } from '@nestjs/swagger';
  */
 export class GetBookmarkedPlaceOverviewInput extends PickType(
   GetPlaceOverviewInput,
-  [
-    'take',
-    'skip',
-    'activated',
-    'operating',
-    'coordinate',
-    'types',
-    'permanentlyClosed',
-  ],
+  ['take', 'skip', 'activated', 'operating', 'types', 'permanentlyClosed'],
 ) {
   /**
    * 북마크한 사용자의 인덱스
@@ -29,4 +21,14 @@ export class GetBookmarkedPlaceOverviewInput extends PickType(
    * @default 'desc'
    */
   public order?: 'desc' | 'asc';
+
+  /**
+   * 좌표 필터링
+   */
+  coordinate?: {
+    leftTopX: number;
+    leftTopY: number;
+    rightBottomX: number;
+    rightBottomY: number;
+  };
 }

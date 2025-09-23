@@ -4,6 +4,10 @@ import { PickType } from '@nestjs/swagger';
 import { KeywordModel } from '@libs/core/keyword/model/keyword.model';
 import { PlaceRoadAddressModel } from './place-road-address.model';
 import { PlaceType } from '../constants/place-type.constant';
+import { PlaceClosedDayModel } from './place-closed-day.model';
+import { PlaceOperatingHourModel } from './place-operating-hour.model';
+import { PlaceWeeklyClosedDayModel } from './place-weekly-closed-day.model';
+import { PlaceBreakTimeModel } from './place-break-time.model';
 
 /**
  * 북마크된 장소 개요 모델
@@ -24,6 +28,10 @@ export class BookmarkedPlaceOverviewModel extends PickType(PlaceOverviewModel, [
   'topKeywordList',
   'roadAddress',
   'type',
+  'closedDayList',
+  'operatingHourList',
+  'weeklyClosedDayList',
+  'breakTimeList',
 ]) {
   public bookmarkAt: Date;
 
@@ -55,6 +63,14 @@ export class BookmarkedPlaceOverviewModel extends PickType(PlaceOverviewModel, [
         ({ placeTypeIdx }) => placeTypeIdx,
       )[0] as PlaceType,
       roadAddress: PlaceRoadAddressModel.fromPrisma(place.roadAddress),
+      closedDayList: place.closedDayList.map(PlaceClosedDayModel.fromPrisma),
+      operatingHourList: place.operatingHourList.map(
+        PlaceOperatingHourModel.fromPrisma,
+      ),
+      weeklyClosedDayList: place.weeklyClosedDayList.map(
+        PlaceWeeklyClosedDayModel.fromPrisma,
+      ),
+      breakTimeList: place.breakTimeList.map(PlaceBreakTimeModel.fromPrisma),
     });
   }
 }

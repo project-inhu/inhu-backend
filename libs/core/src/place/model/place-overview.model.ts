@@ -4,6 +4,10 @@ import { SelectPlaceOverview } from './prisma-type/select-place-overview';
 import { KeywordModel } from '@libs/core/keyword/model/keyword.model';
 import { PlaceRoadAddressModel } from './place-road-address.model';
 import { PlaceType } from '../constants/place-type.constant';
+import { PlaceClosedDayModel } from './place-closed-day.model';
+import { PlaceOperatingHourModel } from './place-operating-hour.model';
+import { PlaceWeeklyClosedDayModel } from './place-weekly-closed-day.model';
+import { PlaceBreakTimeModel } from './place-break-time.model';
 
 /**
  * 장소 개요 모델
@@ -24,6 +28,10 @@ export class PlaceOverviewModel extends PickType(PlaceModel, [
   'topKeywordList',
   'roadAddress',
   'type',
+  'closedDayList',
+  'operatingHourList',
+  'weeklyClosedDayList',
+  'breakTimeList',
 ]) {
   constructor(data: PlaceOverviewModel) {
     super();
@@ -49,6 +57,14 @@ export class PlaceOverviewModel extends PickType(PlaceModel, [
       type: place.placeTypeMappingList.map(
         ({ placeTypeIdx }) => placeTypeIdx,
       )[0] as PlaceType,
+      closedDayList: place.closedDayList.map(PlaceClosedDayModel.fromPrisma),
+      operatingHourList: place.operatingHourList.map(
+        PlaceOperatingHourModel.fromPrisma,
+      ),
+      weeklyClosedDayList: place.weeklyClosedDayList.map(
+        PlaceWeeklyClosedDayModel.fromPrisma,
+      ),
+      breakTimeList: place.breakTimeList.map(PlaceBreakTimeModel.fromPrisma),
     });
   }
 }

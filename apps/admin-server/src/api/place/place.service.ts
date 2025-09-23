@@ -10,11 +10,19 @@ import { NotClosedPermanentlyPlaceException } from '@admin/api/place/exception/n
 import { PlaceNotFoundException } from '@admin/api/place/exception/place-not-found.exception';
 import { GetPlaceOverviewInput } from '@libs/core/place/inputs/get-place-overview.input';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { AddressSearchDocumentEntity } from '@libs/modules/kakao-address/entity/address-search-document.entity';
+import { KakaoAddressService } from '@libs/modules/kakao-address/kakao-address.service';
+import { AddressRequiredException } from './exception/address-required.exception';
+import { AlreadyExistWeeklyClosedDayException } from './exception/already-exist-weekly-closed-day.exception';
+import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 
 @Injectable()
 export class PlaceService {
-  constructor(private readonly placeCoreService: PlaceCoreService) {}
+  constructor(
+    private readonly placeCoreService: PlaceCoreService,
+    private readonly kakaoAddressService: KakaoAddressService,
+  ) {}
 
   public async getPlaceAll(
     dto: GetPlaceOverviewDto,
@@ -25,6 +33,7 @@ export class PlaceService {
       activated: dto.active,
       order: 'desc',
       orderBy: 'time',
+      searchKeyword: dto.search,
     };
 
     return {
@@ -46,6 +55,8 @@ export class PlaceService {
   }
 
   public async createPlace(dto: CreatePlaceDto): Promise<PlaceEntity> {
+    // const addressDocument = await this.getAddressInfo(dto.roadAddress.name);
+
     return await this.placeCoreService
       .createPlace({
         name: dto.name,
@@ -95,6 +106,8 @@ export class PlaceService {
       throw new PlaceNotFoundException('Cannot find place with idx: ' + idx);
     }
 
+    const addressDocument = await this.getAddressInfo(dto.roadAddress.name);
+
     return await this.placeCoreService.updatePlaceByIdx(idx, {
       name: dto.name,
       tel: dto.tel,
@@ -104,8 +117,8 @@ export class PlaceService {
       roadAddress: {
         name: dto.roadAddress.name,
         detail: dto.roadAddress.detail,
-        addressX: dto.roadAddress.addressX,
-        addressY: dto.roadAddress.addressY,
+        addressX: parseFloat(addressDocument.x),
+        addressY: parseFloat(addressDocument.y),
       },
       closedDayList: dto.closedDayList.map(({ day, week }) => ({
         day,
@@ -210,5 +223,52 @@ export class PlaceService {
     return await this.placeCoreService.updatePlaceByIdx(idx, {
       permanentlyClosedAt: null,
     });
+  }
+
+  private async getAddressInfo(
+    address: string,
+  ): Promise<AddressSearchDocumentEntity> {
+    if (!address) throw new AddressRequiredException('Address is required');
+
+    const response = await this.kakaoAddressService.searchAddress(address);
+    return response.documents[0];
+  }
+
+  public async createBiWeeklyClosedDayByPlaceIdx(
+    idx: number,
+    date: string,
+  ): Promise<void> {
+    const place = await this.placeCoreService.getPlaceByIdx(idx);
+
+    if (!place) {
+      throw new PlaceNotFoundException('Cannot find place with idx: ' + idx);
+    }
+
+    const existingClosedDay =
+      await this.placeCoreService.getWeeklyClosedDayByDate(
+        idx,
+        date,
+        WeeklyCloseType.BIWEEKLY,
+      );
+
+    if (existingClosedDay) {
+      throw new AlreadyExistWeeklyClosedDayException(
+        'Weekly closed day already exists' + idx,
+      );
+    }
+
+    return await this.placeCoreService.createWeeklyClosedDay(
+      idx,
+      date,
+      WeeklyCloseType.BIWEEKLY,
+    );
+  }
+
+  public async createAllBiWeeklyClosedDay(date: string): Promise<{
+    successCount: number;
+    failureCount: number;
+    errorList: { placeIdx: number; errorMessage: string }[];
+  }> {
+    return await this.placeCoreService.createAllBiWeeklyClosedDay(date);
   }
 }

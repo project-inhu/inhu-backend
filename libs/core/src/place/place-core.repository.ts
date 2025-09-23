@@ -17,6 +17,12 @@ import {
   SelectBookmarkedPlaceOverview,
 } from './model/prisma-type/select-bookmarked-place-overview';
 import { DateUtilService } from '@libs/common/modules/date-util/date-util.service';
+import {
+  SELECT_PLACE_MARKER,
+  SelectPlaceMarker,
+} from './model/prisma-type/select-place-marker';
+import { GetPlaceMarkerInput } from './inputs/get-place-overview-marker.input';
+import { SelectPlaceWeeklyClosedDay } from './model/prisma-type/select-place-weekly-closed-day';
 
 @Injectable()
 export class PlaceCoreRepository {
@@ -26,8 +32,19 @@ export class PlaceCoreRepository {
   ) {}
 
   public async selectPlaceByIdx(idx: number): Promise<SelectPlace | null> {
+    const now = this.dateUtilService.getNow();
+    const todayKst = this.dateUtilService.transformKoreanDate(now);
+    const today = new Date(`${todayKst}T00:00:00Z`);
+
     return await this.txHost.tx.place.findUnique({
       ...SELECT_PLACE,
+      select: {
+        ...SELECT_PLACE.select,
+        weeklyClosedDayList: {
+          ...SELECT_PLACE.select.weeklyClosedDayList,
+          where: { closedDate: { gte: today } },
+        },
+      },
       where: {
         idx,
         deletedAt: null,
@@ -36,28 +53,39 @@ export class PlaceCoreRepository {
   }
 
   public async selectPlaceAll({
+    take,
+    skip,
+    orderBy,
+    order,
     operating,
     bookmarkUserIdx,
-    coordinate,
     types,
-    skip,
-    take,
-    order,
-    orderBy,
     activated,
     permanentlyClosed,
+    searchKeyword,
   }: GetPlaceOverviewInput): Promise<SelectPlaceOverview[]> {
+    const now = this.dateUtilService.getNow();
+    const todayKst = this.dateUtilService.transformKoreanDate(now);
+    const today = new Date(`${todayKst}T00:00:00Z`);
+
     return await this.txHost.tx.place.findMany({
       ...SELECT_PLACE_OVERVIEW,
+      select: {
+        ...SELECT_PLACE_OVERVIEW.select,
+        weeklyClosedDayList: {
+          ...SELECT_PLACE_OVERVIEW.select.weeklyClosedDayList,
+          where: { closedDate: { gte: today } },
+        },
+      },
       where: {
         AND: [
           { deletedAt: null },
           this.getOperatingFilterWhereClause(operating), // 영업중 필터링
           this.getBookmarkFilterWhereClause(bookmarkUserIdx), // 북마크 필터링
-          this.getCoordinateFilterWhereClause(coordinate), // 좌표 필터링
           this.getTypesFilterWhereClause(types), // 타입 필터링
           this.getActivatedAtFilterWhereClause(activated), // 활성화 필터링
           this.getPermanentlyClosedFilterWhereClause(permanentlyClosed), // 폐점 여부 필터링
+          this.getSearchKeywordWhereClause(searchKeyword), // 검색 키워드 필터링
         ],
       },
       orderBy: this.getOrderByClause({ order, orderBy }),
@@ -66,17 +94,44 @@ export class PlaceCoreRepository {
     });
   }
 
-  public async selectPlaceCount({
-    operating,
-    bookmarkUserIdx,
-    coordinate,
-    types,
-    skip,
-    take,
-    order,
+  public async selectPlaceMarkerAll({
     orderBy,
+    order,
+    operating,
+    types,
     activated,
     permanentlyClosed,
+    searchKeyword,
+    coordinate,
+  }: GetPlaceMarkerInput): Promise<SelectPlaceMarker[]> {
+    return await this.txHost.tx.place.findMany({
+      ...SELECT_PLACE_MARKER,
+      where: {
+        AND: [
+          { deletedAt: null },
+          this.getOperatingFilterWhereClause(operating), // 영업중 필터링
+          this.getTypesFilterWhereClause(types), // 타입 필터링
+          this.getActivatedAtFilterWhereClause(activated), // 활성화 필터링
+          this.getPermanentlyClosedFilterWhereClause(permanentlyClosed), // 폐점 여부 필터링
+          this.getSearchKeywordWhereClause(searchKeyword), // 검색 키워드 필터링
+          this.getCoordinateFilterWhereClause(coordinate), // 좌표 필터링
+        ],
+      },
+      orderBy: this.getOrderByClause({ order, orderBy }),
+    });
+  }
+
+  public async selectPlaceCount({
+    take,
+    skip,
+    orderBy,
+    order,
+    operating,
+    bookmarkUserIdx,
+    types,
+    activated,
+    permanentlyClosed,
+    searchKeyword,
   }: GetPlaceOverviewInput): Promise<number> {
     return await this.txHost.tx.place.count({
       where: {
@@ -84,12 +139,32 @@ export class PlaceCoreRepository {
           { deletedAt: null },
           this.getOperatingFilterWhereClause(operating), // 영업중 필터링
           this.getBookmarkFilterWhereClause(bookmarkUserIdx), // 북마크 필터링
-          this.getCoordinateFilterWhereClause(coordinate), // 좌표 필터링
           this.getTypesFilterWhereClause(types), // 타입 필터링
           this.getActivatedAtFilterWhereClause(activated), // 활성화 필터링
           this.getPermanentlyClosedFilterWhereClause(permanentlyClosed), // 폐점 여부 필터링
+          this.getSearchKeywordWhereClause(searchKeyword), // 검색 키워드 필터링
         ],
       },
+    });
+  }
+
+  public async selectOperatingPlaceCount(): Promise<number> {
+    return await this.txHost.tx.place.count({
+      where: {
+        AND: [{ deletedAt: null }, this.getOperatingFilterWhereClause(true)],
+      },
+    });
+  }
+
+  public async selectOwnerPlaceAllByUserIdx(
+    userIdx: number,
+  ): Promise<SelectPlace[]> {
+    return await this.txHost.tx.place.findMany({
+      ...SELECT_PLACE,
+      where: {
+        AND: [{ deletedAt: null }, { placeOwnerList: { some: { userIdx } } }],
+      },
+      orderBy: { idx: 'asc' },
     });
   }
 
@@ -108,6 +183,41 @@ export class PlaceCoreRepository {
     }
 
     return { permanentlyClosedAt: null };
+  }
+
+  /**
+   * 검색 키워드
+   */
+  private getSearchKeywordWhereClause(
+    searchKeyword?: string,
+  ): Prisma.PlaceWhereInput {
+    if (!searchKeyword) {
+      return {};
+    }
+
+    const trimmedSearchKeyword = searchKeyword.trim();
+
+    return {
+      OR: [
+        { name: { contains: trimmedSearchKeyword } },
+        {
+          menuList: {
+            some: {
+              OR: [
+                {
+                  name: { contains: trimmedSearchKeyword },
+                },
+                {
+                  content: {
+                    contains: trimmedSearchKeyword,
+                  },
+                },
+              ],
+            },
+          },
+        },
+      ],
+    };
   }
 
   private getOperatingFilterWhereClause(
@@ -386,10 +496,21 @@ export class PlaceCoreRepository {
           : undefined,
         weeklyClosedDayList: input.weeklyClosedDayList
           ? {
-              deleteMany: {},
+              deleteMany: {
+                closedDate: {
+                  gte: new Date(
+                    `${this.dateUtilService.transformKoreanDate(
+                      this.dateUtilService.getNow(),
+                    )}T00:00:00Z`,
+                  ),
+                },
+                type: {
+                  in: input.weeklyClosedDayList.map((date) => date.type),
+                },
+              },
               createMany: {
                 data: input.weeklyClosedDayList.map(({ closedDate, type }) => ({
-                  closedDate: `${closedDate}T00:00:00Z`,
+                  closedDate: new Date(`${closedDate}T00:00:00Z`),
                   type,
                 })),
               },
@@ -558,6 +679,74 @@ export class PlaceCoreRepository {
           placeIdx,
           keywordIdx,
         },
+      },
+    });
+  }
+
+  public async selectPlaceIdxAllByWeeklyClosedDay(
+    today: string,
+    afterTwoWeeks: string,
+    type: number,
+  ): Promise<{ idx: number }[]> {
+    return await this.txHost.tx.place.findMany({
+      where: {
+        AND: [
+          {
+            weeklyClosedDayList: {
+              some: {
+                closedDate: {
+                  gte: `${today}T00:00:00Z`,
+                  lte: `${today}T23:59:59Z`,
+                },
+                type,
+              },
+            },
+          },
+          {
+            NOT: {
+              weeklyClosedDayList: {
+                some: {
+                  closedDate: {
+                    gte: `${afterTwoWeeks}T00:00:00Z`,
+                    lte: `${afterTwoWeeks}T23:59:59Z`,
+                  },
+                  type,
+                },
+              },
+            },
+          },
+        ],
+      },
+      select: {
+        idx: true,
+      },
+    });
+  }
+
+  public async insertWeeklyClosedDayByPlaceIdx(
+    placeIdx: number,
+    closedDate: string,
+    type: number,
+  ): Promise<void> {
+    await this.txHost.tx.weeklyClosedDay.create({
+      data: {
+        placeIdx,
+        closedDate: `${closedDate}T00:00:00Z`,
+        type,
+      },
+    });
+  }
+
+  public async selectWeeklyClosedDayByDate(
+    placeIdx: number,
+    closedDate: string,
+    type: number,
+  ): Promise<SelectPlaceWeeklyClosedDay | null> {
+    return await this.txHost.tx.weeklyClosedDay.findFirst({
+      where: {
+        placeIdx,
+        closedDate: `${closedDate}T00:00:00Z`,
+        type,
       },
     });
   }

@@ -48,6 +48,7 @@ export class KeywordCoreRepository {
         content: true,
       },
       data: {
+        idx: input.idx,
         content: input.content,
       },
     });

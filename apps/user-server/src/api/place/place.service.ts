@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PlaceOverviewEntity } from './entity/place-overview.entity';
 import { GetAllPlaceOverviewDto } from './dto/request/get-all-place-overview.dto';
 import { PlaceEntity } from '@user/api/place/entity/place.entity';
@@ -6,6 +6,9 @@ import { PlaceNotFoundException } from '@user/api/place/exception/place-not-foun
 import { GetAllBookmarkedPlaceOverviewPlaceDto } from '@user/api/place/dto/request/get-all-bookmarked-place-overview.dto';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { BookmarkCoreService } from '@libs/core/bookmark/bookmark-core.service';
+import { GetAllPlaceMarkerDto } from './dto/request/get-all-place-marker.dto';
+import { PlaceMarkerEntity } from './entity/place-marker.entity';
+import { PlaceOverviewModel } from '@libs/core/place/model/place-overview.model';
 
 @Injectable()
 export class PlaceService {
@@ -22,24 +25,18 @@ export class PlaceService {
     hasNext: boolean;
   }> {
     const pageSize = 10;
-    const coordinate = {
-      leftTopX: dto.leftTopX,
-      rightBottomX: dto.rightBottomX,
-      leftTopY: dto.leftTopY,
-      rightBottomY: dto.rightBottomY,
-    };
+    const skip = (dto.page - 1) * pageSize;
 
     const placeOverviewModelList = await this.placeCoreService.getPlaceAll({
       take: pageSize + 1,
-      skip: (dto.page - 1) * pageSize,
+      skip: skip,
+      orderBy: dto.orderby,
+      order: dto.order,
+      operating: dto.operating,
+      bookmarkUserIdx: undefined,
+      types: dto.type ? [dto.type] : undefined,
       activated: true,
       permanentlyClosed: false,
-      coordinate: this.isValidCoordinate(coordinate) ? coordinate : undefined,
-      operating: dto.operating,
-      order: dto.order,
-      types: dto.type ? [dto.type] : undefined,
-      orderBy: dto.orderby,
-      bookmarkUserIdx: undefined,
     });
 
     const paginatedList = placeOverviewModelList.slice(0, pageSize);
@@ -74,12 +71,12 @@ export class PlaceService {
 
   private isValidCoordinate(
     coordinate: Pick<
-      GetAllPlaceOverviewDto,
+      GetAllPlaceMarkerDto,
       'leftTopX' | 'rightBottomX' | 'leftTopY' | 'rightBottomY'
     >,
   ): coordinate is Required<
     Pick<
-      GetAllPlaceOverviewDto,
+      GetAllPlaceMarkerDto,
       'leftTopX' | 'rightBottomX' | 'leftTopY' | 'rightBottomY'
     >
   > {
@@ -89,6 +86,34 @@ export class PlaceService {
       coordinate.leftTopY !== undefined &&
       coordinate.rightBottomY !== undefined
     );
+  }
+
+  public async getPlaceMarkerAll(dto: GetAllPlaceMarkerDto): Promise<{
+    placeMarkerList: PlaceMarkerEntity[];
+  }> {
+    const coordinate = {
+      leftTopX: dto.leftTopX,
+      rightBottomX: dto.rightBottomX,
+      leftTopY: dto.leftTopY,
+      rightBottomY: dto.rightBottomY,
+    };
+
+    const placeMarkerModelList = await this.placeCoreService.getPlaceMarkerAll({
+      orderBy: dto.orderby,
+      order: dto.order,
+      operating: dto.operating,
+      types: dto.type ? [dto.type] : undefined,
+      activated: true,
+      permanentlyClosed: false,
+      searchKeyword: dto.searchKeyword,
+      coordinate: this.isValidCoordinate(coordinate) ? coordinate : undefined,
+    });
+
+    return {
+      placeMarkerList: placeMarkerModelList.map((place) =>
+        PlaceMarkerEntity.fromModel(place, false),
+      ),
+    };
   }
 
   public async getPlaceByIdx(
@@ -145,5 +170,11 @@ export class PlaceService {
         .slice(0, 10)
         .map((place) => PlaceOverviewEntity.fromModel(place, true)),
     };
+  }
+
+  public async getOwnerPlaceAll(userIdx: number): Promise<PlaceEntity[]> {
+    return (await this.placeCoreService.getOwnerPlaceAllByUserIdx(userIdx)).map(
+      (place) => PlaceEntity.fromModel(place, false),
+    );
   }
 }
