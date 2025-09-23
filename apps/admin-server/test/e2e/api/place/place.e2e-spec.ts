@@ -758,6 +758,8 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'New Road',
           detail: 'New Detail',
+          addressX: 37.123,
+          addressY: 126.123,
         },
         closedDayList: [
           { day: DayOfWeek.MON, week: 1 },
@@ -840,6 +842,8 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'New Road',
           detail: 'New Detail',
+          addressX: 37.123,
+          addressY: 126.123,
         },
         closedDayList: [
           { day: DayOfWeek.MON, week: 1 },
@@ -872,6 +876,8 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'New Road',
           detail: 'New Detail',
+          addressX: 37.123,
+          addressY: 126.123,
         },
         closedDayList: [],
         breakTimeList: [
@@ -901,6 +907,8 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'New Road',
           detail: 'New Detail',
+          addressX: 37.123,
+          addressY: 126.123,
         },
         closedDayList: [],
         breakTimeList: [],
@@ -964,6 +972,8 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'Updated Road',
           detail: 'Updated Detail',
+          addressX: 37.123,
+          addressY: 126.123,
         },
         closedDayList: [
           { day: DayOfWeek.MON, week: 1 },
@@ -1087,6 +1097,8 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'Updated Road',
           detail: 'Updated Detail',
+          addressX: 37.123,
+          addressY: 126.123,
         },
         closedDayList: [
           { day: DayOfWeek.MON, week: 1 },
@@ -1141,6 +1153,8 @@ describe('Place E2E test', () => {
         roadAddress: {
           name: 'Updated Road',
           detail: 'Updated Detail',
+          addressX: 37.123,
+          addressY: 126.123,
         },
         closedDayList: [
           { day: DayOfWeek.MON, week: 1 },

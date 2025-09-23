@@ -55,7 +55,7 @@ export class PlaceService {
   }
 
   public async createPlace(dto: CreatePlaceDto): Promise<PlaceEntity> {
-    const addressDocument = await this.getAddressInfo(dto.roadAddress.name);
+    // const addressDocument = await this.getAddressInfo(dto.roadAddress.name);
 
     return await this.placeCoreService
       .createPlace({
@@ -67,8 +67,8 @@ export class PlaceService {
         roadAddress: {
           name: dto.roadAddress.name,
           detail: dto.roadAddress.detail,
-          addressX: parseFloat(addressDocument.x),
-          addressY: parseFloat(addressDocument.y),
+          addressX: dto.roadAddress.addressX,
+          addressY: dto.roadAddress.addressY,
         },
         activatedAt: null,
         permanentlyClosedAt: null,
