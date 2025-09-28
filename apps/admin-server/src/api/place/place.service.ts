@@ -106,7 +106,7 @@ export class PlaceService {
       throw new PlaceNotFoundException('Cannot find place with idx: ' + idx);
     }
 
-    const addressDocument = await this.getAddressInfo(dto.roadAddress.name);
+    // const addressDocument = await this.getAddressInfo(dto.roadAddress.name);
 
     return await this.placeCoreService.updatePlaceByIdx(idx, {
       name: dto.name,
@@ -117,8 +117,8 @@ export class PlaceService {
       roadAddress: {
         name: dto.roadAddress.name,
         detail: dto.roadAddress.detail,
-        addressX: parseFloat(addressDocument.x),
-        addressY: parseFloat(addressDocument.y),
+        addressX: dto.roadAddress.addressX,
+        addressY: dto.roadAddress.addressY,
       },
       closedDayList: dto.closedDayList.map(({ day, week }) => ({
         day,
