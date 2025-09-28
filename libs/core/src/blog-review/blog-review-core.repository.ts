@@ -57,6 +57,9 @@ export class BlogReviewCoreRepository {
       },
       take,
       skip,
+      orderBy: {
+        uploadedAt: 'desc',
+      },
     });
   }
 
