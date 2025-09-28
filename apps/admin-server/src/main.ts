@@ -10,6 +10,7 @@ import { AdminServerModule } from './admin-server.module';
 import { getMode } from '@libs/common/utils/get-mode.util';
 import { DiscordWebhookService } from '@libs/common/modules/discord-webhook/discord-webhook.service';
 import { DiscordWebhookContext } from '@libs/common/modules/discord-webhook/constants/discord-webhook-context.enum';
+import { NaverBlogService } from '@libs/modules/naver-blog/naver-blog.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AdminServerModule);
@@ -57,6 +58,12 @@ async function bootstrap() {
     const documentFactory = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, documentFactory, customOptions);
   }
+
+  const naverBlogService = app.get(NaverBlogService);
+
+  // const result = await naverBlogService.extractNaverBlogMetaData(
+  //   'https://blog.naver.com/ho94best/222785600285',
+  // );
 
   await app.listen(process.env.ADMIN_SERVER_PORT ?? 3000);
 }
