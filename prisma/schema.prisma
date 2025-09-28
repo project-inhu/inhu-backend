@@ -65,6 +65,7 @@ model Place {
   placeTypeMappingList  PlaceTypeMapping[]
   reviewList            Review[]
   weeklyClosedDayList   WeeklyClosedDay[]
+  BlogReview            BlogReview[]
 
   @@map("place_tb")
 }
@@ -312,13 +313,33 @@ model WeeklyClosedDay {
 }
 
 model PlaceOwner {
-  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  placeIdx   Int       @map("place_idx")
-  userIdx    Int       @map("user_idx")
-  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt  DateTime? @map("deleted_at") @db.Timestamptz(6)
-  place      Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_owner_tb")
-  user       User      @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_place_owner_tb")
+  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  placeIdx  Int       @map("place_idx")
+  userIdx   Int       @map("user_idx")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+  place     Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_owner_tb")
+  user      User      @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_place_owner_tb")
 
   @@map("place_owner_tb")
+}
+
+model BlogReview {
+  idx                    Int       @id @default(autoincrement())
+  placeIdx               Int       @map("place_idx")
+  blogName               String    @map("blog_name") @db.VarChar()
+  title                  String    @db.VarChar()
+  description            String?   @db.VarChar()
+  contents               String?   @db.VarChar()
+  authorName             String    @map("author_name") @db.VarChar()
+  authorProfileImagePath String?   @map("author_profile_image_path") @db.VarChar()
+  thumbnailImagePath     String?   @map("thumbnail_image_path") @db.VarChar()
+  url                    String    @db.VarChar()
+  blogType               Int       @db.SmallInt
+  place                  Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_owner_tb")
+  createdAt              DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  uploadedAt             DateTime  @map("uploaded_at") @db.Timestamptz(6)
+  deletedAt              DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  @@map("blog_review_tb")
 }
