@@ -9,5 +9,8 @@ export class GetBlogReviewAllInput {
    */
   skip: number;
 
+  /**
+   * 장소 필터링
+   */
   placeIdx?: number;
 }

@@ -1,5 +1,5 @@
-import { NaverBlogEntity } from '@libs/modules/naver-blog/entity/NaverBlogEntity';
-import { NaverBlogNotFoundException } from '@libs/modules/naver-blog/exception/NaverBlogNotFoundException';
+import { NaverBlogEntity } from '@libs/common/modules/naver-blog/entity/NaverBlogEntity';
+import { NaverBlogNotFoundException } from '@libs/common/modules/naver-blog/exception/NaverBlogNotFoundException';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { isAxiosError } from 'axios';
@@ -44,7 +44,7 @@ export class NaverBlogService {
       authorProfileImageUrl: metadata.authorProfileImage,
       contents: paragraphs.join(' '),
       description: metadata.description,
-      thumbnailProfileImageUrl: metadata.thumbnail,
+      thumbnailImageUrl: metadata.thumbnail,
       title: metadata.title || '',
       uploadedAt: uploadedAt,
       url: link,
@@ -106,7 +106,7 @@ export class NaverBlogService {
       ),
       blogName:
         this.getProperty(metadata, BLOG_NAME_PROPERTY_NAME)?.replace(
-          '네이버 블로그 |',
+          '네이버 블로그 | ',
           '',
         ) || null,
       thumbnail: this.getProperty(metadata, THUMBNAIL_PROPERTY_NAME),

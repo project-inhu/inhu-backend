@@ -13,7 +13,8 @@ import { MenuModule } from './api/menu/menu.module';
 import { ReviewModule } from './api/review/review.module';
 import { S3UploadModule } from '@admin/api/s3-upload/s3-upload.module';
 import { DiscordWebhookModule } from '@libs/common/modules/discord-webhook/discord-webhook.module';
-import { NaverBlogModule } from '@libs/modules/naver-blog/naver-blog.module';
+import { NaverBlogModule } from '@libs/common/modules/naver-blog/naver-blog.module';
+import { BlogReviewModule } from '@admin/api/blog-review/blog-review.module';
 
 @Module({
   imports: [
@@ -36,7 +37,7 @@ import { NaverBlogModule } from '@libs/modules/naver-blog/naver-blog.module';
     MenuModule,
     ReviewModule,
     S3UploadModule,
-    NaverBlogModule,
+    BlogReviewModule,
   ],
 })
 export class AdminServerModule implements NestModule {

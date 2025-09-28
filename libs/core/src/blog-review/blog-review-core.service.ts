@@ -21,6 +21,15 @@ export class BlogReviewCoreService {
     return blogReview && BlogReviewModel.fromPrisma(blogReview);
   }
 
+  public async getBlogReviewByUrl(
+    url: string,
+  ): Promise<BlogReviewModel | null> {
+    const blogReview =
+      await this.blogReviewCoreRepository.selectBlogReviewByUrl(url);
+
+    return blogReview && BlogReviewModel.fromPrisma(blogReview);
+  }
+
   public async getBlogReviewAll(
     input: GetBlogReviewAllInput,
   ): Promise<BlogReviewOverviewModel[]> {

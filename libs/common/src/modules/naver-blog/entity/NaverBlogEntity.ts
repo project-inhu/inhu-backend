@@ -26,7 +26,7 @@ export class NaverBlogEntity {
    */
   authorProfileImageUrl: string | null;
 
-  thumbnailProfileImageUrl: string | null;
+  thumbnailImageUrl: string | null;
 
   uploadedAt: Date;
 }

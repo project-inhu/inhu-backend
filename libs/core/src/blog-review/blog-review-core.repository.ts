@@ -32,6 +32,18 @@ export class BlogReviewCoreRepository {
     });
   }
 
+  public async selectBlogReviewByUrl(
+    url: string,
+  ): Promise<SelectBlogReview | null> {
+    return await this.txHost.tx.blogReview.findFirst({
+      ...SELECT_BLOG_REVIEW,
+      where: {
+        url,
+        deletedAt: null,
+      },
+    });
+  }
+
   public async selectBlogReviewAll({
     skip,
     take,
