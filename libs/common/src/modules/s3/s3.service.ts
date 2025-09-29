@@ -6,6 +6,10 @@ import { PresignedUrlModel } from './model/presigned-url.model';
 import { v4 as uuidv4 } from 'uuid';
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { GetPresignedUrlsInput } from './input/get-presigned-urls.input';
+import { HttpService } from '@nestjs/axios';
+import { Upload } from '@aws-sdk/lib-storage';
+import { S3Folder } from '@libs/common/modules/s3/constants/s3-folder.constants';
+import { UploadedFileModel } from '@libs/common/modules/s3/model/uploaded-file.model';
 
 /**
  * S3 서비스
@@ -19,7 +23,10 @@ export class S3Service {
   private readonly region: string;
   private readonly fileHost: string;
 
-  constructor(configService: ConfigService) {
+  constructor(
+    configService: ConfigService,
+    private readonly httpService: HttpService,
+  ) {
     const region = configService.get<string>('s3.region');
     const bucketName = configService.get<string>('s3.bucketName');
     const fileHost = configService.get<string>('s3.fileHost') || '';
@@ -84,5 +91,46 @@ export class S3Service {
         this.getPresignedUrl({ folder, extension, maxSize, contentType }),
       ),
     );
+  }
+
+  public async uploadImageFromUrl(
+    options: { path: S3Folder; name: string },
+    url: string,
+  ) {
+    const response = await this.httpService.axiosRef.get(url, {
+      responseType: 'stream',
+    });
+
+    // const contentType: string = response.headers['content-type'] || '';
+
+    // if (!contentType.includes('image') && !url.endsWith('jfif')) {
+    //   throw new Error('fail to download image | url = ' + url);
+    // }
+
+    const upload = new Upload({
+      client: this.s3Client,
+      params: {
+        Bucket: this.bucketName,
+        Key: `${options.path}/${options.name}`,
+        Body: response.data,
+        ACL: 'public-read',
+      },
+    });
+
+    const result = await upload.done();
+
+    return new UploadedFileModel({
+      url: result.Location || '',
+      name: options.name,
+      ext: this.extractFileExt(options.name),
+      path: `/${result.Key}`,
+    });
+  }
+
+  /**
+   * 파일 확장자명 추출하기
+   */
+  private extractFileExt(fileName: string): string {
+    return fileName.split('.')[fileName.split('.').length - 1];
   }
 }

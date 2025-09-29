@@ -254,6 +254,25 @@ CREATE TABLE place_owner_tb
   PRIMARY KEY (id)
 );
 
+CREATE TABLE blog_review_tb
+(
+  idx                       int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  place_idx                 int                      NOT NULL,
+  blog_name                 varchar                  NOT NULL,
+  title                     varchar                  NOT NULL,
+  description               varchar                 ,
+  contents                  varchar                 ,
+  author_name               varchar                  NOT NULL,
+  author_profile_image_path varchar                 ,
+  thumbnail_image_path      varchar                 ,
+  url                       varchar                  NOT NULL,
+  blog_type                 smallint                 NOT NULL DEFAULT 0,
+  created_at                timestamp with time zone NOT NULL DEFAULT NOW(),
+  uploaded_at               timestamp with time zone NOT NULL,
+  deleted_at                timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+
 ALTER TABLE review_image_tb
   ADD CONSTRAINT FK_review_tb_TO_review_image_tb
     FOREIGN KEY (review_idx)
@@ -398,3 +417,9 @@ ALTER TABLE place_owner_tb
   ADD CONSTRAINT FK_user_tb_TO_place_owner_tb
     FOREIGN KEY (user_idx)
     REFERENCES user_tb (idx);
+
+ALTER TABLE blog_review_tb
+  ADD CONSTRAINT FK_place_tb_TO_blog_review_tb
+    FOREIGN KEY (place_idx)
+    REFERENCES place_tb (idx);
+    

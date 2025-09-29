@@ -10,4 +10,5 @@ export enum S3Folder {
   PROFILE = 'profile',
   BANNER = 'banner',
   REVIEW = 'review',
+  BLOG_REVIEW = 'blog-review',
 }
