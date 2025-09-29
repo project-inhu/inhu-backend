@@ -10,6 +10,7 @@ import { PlaceNotFoundException } from '@admin/api/place/exception/place-not-fou
 import { DuplicateBlogReviewUrlException } from '@admin/api/blog-review/exception/DuplicateBlogReviewUrlExcepion';
 import { GetBlogReviewAllDto } from '@admin/api/blog-review/dto/request/get-blog-review-all.dto';
 import { BlogReviewOverviewEntity } from '@admin/api/blog-review/entity/blog-review-overview.entity';
+import { BlogReviewNotFoundException } from '@admin/api/blog-review/exception/BlogReviewNotFoundException';
 
 @Injectable()
 export class BlogReviewService {
@@ -78,6 +79,16 @@ export class BlogReviewService {
     return model.path;
   }
 
+  private async getBlogReviewByIdx(idx: number): Promise<BlogReviewEntity> {
+    const blogReview = await this.blogReviewCoreService.getBlogReviewByIdx(idx);
+
+    if (!blogReview) {
+      throw new BlogReviewNotFoundException('Cannot find blog review');
+    }
+
+    return BlogReviewEntity.fromModel(blogReview);
+  }
+
   public async getBlogReviewAll(placeIdx: number, dto: GetBlogReviewAllDto) {
     const blogList = await this.blogReviewCoreService.getBlogReviewAll({
       placeIdx,
@@ -96,6 +107,22 @@ export class BlogReviewService {
   }
 
   public async deleteBlogReviewByIdx(idx: number): Promise<void> {
+    const blogReview = await this.blogReviewCoreService.getBlogReviewByIdx(idx);
+
+    if (!blogReview) {
+      throw new BlogReviewNotFoundException('Cannot find blog review');
+    }
+
     return await this.blogReviewCoreService.deleteBlogReviewByIdx(idx);
+  }
+
+  public async getBlogReviewByUrl(url: string): Promise<BlogReviewEntity> {
+    const blogReview = await this.blogReviewCoreService.getBlogReviewByUrl(url);
+
+    if (!blogReview) {
+      throw new BlogReviewNotFoundException('Cannot find blog review');
+    }
+
+    return BlogReviewEntity.fromModel(blogReview);
   }
 }

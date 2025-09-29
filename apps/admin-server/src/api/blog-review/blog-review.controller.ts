@@ -65,4 +65,28 @@ export class BlogReviewController {
   ): Promise<void> {
     return await this.blogReviewService.deleteBlogReviewByIdx(idx);
   }
+
+  /**
+   * 블로그 리뷰 자세히보기
+   */
+  @Get('/blog-review/:blogReviewIdx')
+  @Exception(400, 'invalid path parameter')
+  @Exception(404, 'blog review not found')
+  @AdminAuth()
+  public async getBlogReviewByIdx(
+    @Param('blogReviewIdx', ParseIntPipe) idx: number,
+  ) {
+    return await this.blogReviewService.getBlogReviewByIdx(idx);
+  }
+
+  /**
+   * 블로그 리뷰 url로 자세히보기
+   */
+  @Get('/blog-review/url/:url')
+  @Exception(400, 'invalid path parameter')
+  @Exception(404, 'blog review not found')
+  @AdminAuth()
+  public async getBlogReviewByUrl(@Param('url') url: string) {
+    return await this.blogReviewService.getBlogReviewByUrl(url);
+  }
 }
