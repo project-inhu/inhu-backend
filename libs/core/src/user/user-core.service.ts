@@ -6,6 +6,7 @@ import { AuthProvider } from './constants/auth-provider.constant';
 import { UpdateUserInput } from '@libs/core/user/inputs/update-user.input';
 import { GetAllUsersInput } from './inputs/get-user-overview.input';
 import { UserForAdminModel } from './model/user-for-admin.model';
+import { adjectiveList, nounList } from './constants/random-word-list';
 
 /**
  * 사용자 코어 서비스
@@ -61,5 +62,19 @@ export class UserCoreService {
 
   public async deleteUserByIdx(idx: number): Promise<void> {
     return this.userCoreRepository.softDeleteUserByIdx(idx);
+  }
+
+  public async generateRandomUniqueNickname(): Promise<string> {
+    while (true) {
+      const adjectiveListIndex = Math.floor(Math.random() * 150);
+      const nounListIndex = Math.floor(Math.random() * 150);
+      const nickname = `${adjectiveList[adjectiveListIndex]} ${nounList[nounListIndex]}`;
+
+      const existingUser =
+        await this.userCoreRepository.selectUserByNickname(nickname);
+      if (!existingUser) {
+        return nickname;
+      }
+    }
   }
 }

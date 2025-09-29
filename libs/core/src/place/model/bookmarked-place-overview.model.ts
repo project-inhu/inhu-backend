@@ -54,7 +54,7 @@ export class BookmarkedPlaceOverviewModel extends PickType(PlaceOverviewModel, [
       createdAt: place.createdAt,
       activatedAt: place.activatedAt,
       permanentlyClosedAt: place.permanentlyClosedAt,
-      imgPathList: place.placeImageList.map((image) => image.path),
+      imgPathList: place.placeImageList.map((image) => image.imagePath),
       topKeywordList: place.placeKeywordCountList.map(({ keyword }) =>
         KeywordModel.fromPrisma(keyword),
       ),

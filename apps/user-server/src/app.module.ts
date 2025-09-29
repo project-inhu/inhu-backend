@@ -18,6 +18,9 @@ import { BookmarkModule } from './api/bookmark/bookmark.module';
 import { DiscordWebhookModule } from '@libs/common/modules/discord-webhook/discord-webhook.module';
 import { RedlockModule } from '@libs/common/modules/redlock/redlock.module';
 import { AopModule } from '@toss/nestjs-aop';
+import { OwnedPlaceModule } from './api/owned-place/owned-place.module';
+import { CouponTemplateModule } from './api/coupon-template/coupon-template.module';
+import { CouponModule } from './api/coupon/coupon.module';
 
 @Module({
   imports: [
@@ -46,6 +49,9 @@ import { AopModule } from '@toss/nestjs-aop';
       ],
     }),
     AopModule,
+    OwnedPlaceModule,
+    CouponModule,
+    CouponTemplateModule,
   ],
   controllers: [],
   providers: [],

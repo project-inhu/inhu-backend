@@ -11,13 +11,17 @@ import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
 import { LoginUser } from '@user/common/types/LoginUser';
 import { GetAllPlaceMarkerDto } from './dto/request/get-all-place-marker.dto';
 import { GetAllPlaceMarkerResponseDto } from './dto/response/get-all-place-marker-response.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller()
+@ApiTags('Place')
 export class PlaceController {
   constructor(private placeService: PlaceService) {}
 
   /**
    * 모든 place 개요 가져오기
+   *
+   * 운영 중인 장소와 운영 중이지 않은 장소를 가지고 올 경우 운영 중인 장소를 먼저 가지고 옴
    */
   @Get('/place/all')
   @Exception(400, 'Invalid page number or orderBy')
@@ -66,16 +70,5 @@ export class PlaceController {
     @User() loginUser?: LoginUser,
   ): Promise<PlaceEntity> {
     return await this.placeService.getPlaceByIdx(placeIdx, loginUser?.idx);
-  }
-
-  /**
-   * 내 가게 조회
-   *
-   * @author 이수인
-   */
-  @Get('/owner/place/all')
-  @LoginAuth()
-  async getAllOwnerPlace(@User() user: LoginUser): Promise<PlaceEntity[]> {
-    return await this.placeService.getOwnerPlaceAll(user.idx);
   }
 }

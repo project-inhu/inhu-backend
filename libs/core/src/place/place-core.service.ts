@@ -114,14 +114,6 @@ export class PlaceCoreService {
     return await this.placeCoreRepository.selectOperatingPlaceCount();
   }
 
-  public async getOwnerPlaceAllByUserIdx(
-    userIdx: number,
-  ): Promise<PlaceModel[]> {
-    return (
-      await this.placeCoreRepository.selectOwnerPlaceAllByUserIdx(userIdx)
-    ).map(PlaceModel.fromPrisma);
-  }
-
   public async createPlace(input: CreatePlaceInput): Promise<PlaceModel> {
     return PlaceModel.fromPrisma(
       await this.placeCoreRepository.insertPlace(input),

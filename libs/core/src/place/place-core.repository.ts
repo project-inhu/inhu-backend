@@ -156,18 +156,6 @@ export class PlaceCoreRepository {
     });
   }
 
-  public async selectOwnerPlaceAllByUserIdx(
-    userIdx: number,
-  ): Promise<SelectPlace[]> {
-    return await this.txHost.tx.place.findMany({
-      ...SELECT_PLACE,
-      where: {
-        AND: [{ deletedAt: null }, { placeOwnerList: { some: { userIdx } } }],
-      },
-      orderBy: { idx: 'asc' },
-    });
-  }
-
   /**
    * 폐점 여부 필터링
    */
@@ -370,7 +358,7 @@ export class PlaceCoreRepository {
         activatedAt: input.activatedAt,
         placeImageList: {
           createMany: {
-            data: input.imgList.map((path) => ({ path })),
+            data: input.imgList.map((imagePath) => ({ imagePath })),
           },
         },
         roadAddressIdx: createdRoadAddress.idx,
@@ -457,7 +445,7 @@ export class PlaceCoreRepository {
                 },
               },
               createMany: {
-                data: input.imgList.map((path) => ({ path })),
+                data: input.imgList.map((imagePath) => ({ imagePath })),
               },
             }
           : undefined,

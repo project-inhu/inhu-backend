@@ -852,9 +852,9 @@ describe('Review E2E test', () => {
       });
 
       expect(updated.content).toBe(updateReviewDto.content);
-      expect(updated.reviewImageList.map((i) => i.path).sort()).toStrictEqual(
-        [...updateReviewDto.imagePathList].sort(),
-      );
+      expect(
+        updated.reviewImageList.map((i) => i.imagePath).sort(),
+      ).toStrictEqual([...updateReviewDto.imagePathList].sort());
       expect(
         updated.reviewKeywordMappingList.map((k) => k.keyword.idx).sort(),
       ).toStrictEqual([...updateReviewDto.keywordIdxList].sort());
@@ -943,7 +943,9 @@ describe('Review E2E test', () => {
       });
 
       expect(updated.content).toBe(originalReview.content);
-      expect(updated.reviewImageList.map((i) => i.path).sort()).toStrictEqual(
+      expect(
+        updated.reviewImageList.map((i) => i.imagePath).sort(),
+      ).toStrictEqual(
         [...(originalReview.reviewImgList || [])].sort(), // null일 경우 빈 배열로 안전하게 처리
       );
       expect(
@@ -990,9 +992,9 @@ describe('Review E2E test', () => {
         },
       });
       expect(updated.content).toBe(updateReviewDto.content);
-      expect(updated.reviewImageList.map((i) => i.path).sort()).toStrictEqual(
-        [...(originalReview.reviewImgList || [])].sort(),
-      );
+      expect(
+        updated.reviewImageList.map((i) => i.imagePath).sort(),
+      ).toStrictEqual([...(originalReview.reviewImgList || [])].sort());
       expect(
         updated.reviewKeywordMappingList.map((k) => k.keyword.idx).sort(),
       ).toStrictEqual([...(originalReview.keywordIdxList || [])].sort());
@@ -1040,9 +1042,9 @@ describe('Review E2E test', () => {
         },
       });
       expect(updated.content).toBe(originalReview.content);
-      expect(updated.reviewImageList.map((i) => i.path).sort()).toStrictEqual(
-        [...updateReviewDto.imagePathList].sort(),
-      );
+      expect(
+        updated.reviewImageList.map((i) => i.imagePath).sort(),
+      ).toStrictEqual([...updateReviewDto.imagePathList].sort());
       expect(
         updated.reviewKeywordMappingList.map((k) => k.keyword.idx).sort(),
       ).toStrictEqual([...(originalReview.keywordIdxList || [])].sort());
@@ -1087,9 +1089,9 @@ describe('Review E2E test', () => {
         },
       });
       expect(updated.content).toBe(originalReview.content);
-      expect(updated.reviewImageList.map((i) => i.path).sort()).toStrictEqual(
-        [...(originalReview.reviewImgList || [])].sort(),
-      );
+      expect(
+        updated.reviewImageList.map((i) => i.imagePath).sort(),
+      ).toStrictEqual([...(originalReview.reviewImgList || [])].sort());
       expect(
         updated.reviewKeywordMappingList.map((k) => k.keyword.idx).sort(),
       ).toStrictEqual([...updateReviewDto.keywordIdxList].sort());

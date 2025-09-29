@@ -53,7 +53,7 @@ export class ReviewModel {
       idx: review.idx,
       content: review.content,
       createdAt: review.createdAt,
-      imagePathList: review.reviewImageList.map(({ path }) => path),
+      imagePathList: review.reviewImageList.map(({ imagePath }) => imagePath),
       keywordList: review.reviewKeywordMappingList.map(({ keyword }) =>
         KeywordModel.fromPrisma(keyword),
       ),

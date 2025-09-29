@@ -68,6 +68,15 @@ export class UserCoreRepository {
     });
   }
 
+  public async selectUserByNickname(
+    nickname: string,
+  ): Promise<SelectUser | null> {
+    return this.txHost.tx.user.findFirst({
+      ...SELECT_USER,
+      where: { nickname },
+    });
+  }
+
   public async insertUser(input: CreateUserInput): Promise<SelectUser> {
     return this.txHost.tx.user.create({
       ...SELECT_USER,

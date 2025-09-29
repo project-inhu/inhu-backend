@@ -4,6 +4,6 @@
  * @publicApi
  */
 export enum UserType {
-  USER = 'user',
+  GENERAL = 'general',
   PLACE_OWNER = 'placeOwner',
 }

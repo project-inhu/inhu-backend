@@ -27,6 +27,89 @@ CREATE TABLE closed_day_tb
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE coupon_etc_tb
+(
+  coupon_id uuid    NOT NULL,
+  name      varchar NOT NULL,
+  PRIMARY KEY (coupon_id)
+);
+
+CREATE TABLE coupon_fixed_discount_tb
+(
+  coupon_id uuid    NOT NULL,
+  menu_name varchar NOT NULL,
+  price     int     NOT NULL,
+  PRIMARY KEY (coupon_id)
+);
+
+CREATE TABLE coupon_owner_tb
+(
+  id         uuid                     NOT NULL DEFAULT uuid_generate_v4(),
+  coupon_id  uuid                     NOT NULL,
+  user_idx   int                      NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at timestamp with time zone,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE coupon_percent_discount_tb
+(
+  coupon_id uuid    NOT NULL,
+  menu_name varchar NOT NULL,
+  percent   int     NOT NULL,
+  max_price int    ,
+  PRIMARY KEY (coupon_id)
+);
+
+CREATE TABLE coupon_tb
+(
+  id               uuid                     NOT NULL DEFAULT uuid_generate_v4(),
+  usable_place_idx int                      NOT NULL,
+  bundle_id        varchar                  NOT NULL,
+  description      varchar                 ,
+  image_path       varchar                 ,
+  created_at       timestamp with time zone NOT NULL DEFAULT NOW(),
+  activated_at     timestamp with time zone NOT NULL,
+  expired_at       timestamp with time zone NOT NULL,
+  used_at          timestamp with time zone,
+  deleted_at       timestamp with time zone,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE coupon_template_etc_tb
+(
+  coupon_template_id uuid    NOT NULL,
+  name               varchar NOT NULL,
+  PRIMARY KEY (coupon_template_id)
+);
+
+CREATE TABLE coupon_template_fixed_discount_tb
+(
+  coupon_template_id uuid    NOT NULL,
+  menu_name          varchar NOT NULL,
+  price              int     NOT NULL,
+  PRIMARY KEY (coupon_template_id)
+);
+
+CREATE TABLE coupon_template_percent_discount_tb
+(
+  coupon_template_id uuid    NOT NULL,
+  menu_name          varchar NOT NULL,
+  percent            int     NOT NULL,
+  max_price          int    ,
+  PRIMARY KEY (coupon_template_id)
+);
+
+CREATE TABLE coupon_template_tb
+(
+  id          uuid                     NOT NULL DEFAULT uuid_generate_v4(),
+  place_idx   int                      NOT NULL,
+  description varchar                 ,
+  image_path  varchar                 ,
+  deleted_at  timestamp with time zone,
+  PRIMARY KEY (id)
+);
+
 CREATE TABLE keyword_tb
 (
   idx        int                      NOT NULL,
@@ -398,3 +481,53 @@ ALTER TABLE place_owner_tb
   ADD CONSTRAINT FK_user_tb_TO_place_owner_tb
     FOREIGN KEY (user_idx)
     REFERENCES user_tb (idx);
+
+ALTER TABLE coupon_template_tb
+  ADD CONSTRAINT FK_place_tb_TO_coupon_template_tb
+    FOREIGN KEY (place_idx)
+    REFERENCES place_tb (idx);
+
+ALTER TABLE coupon_template_fixed_discount_tb
+  ADD CONSTRAINT FK_coupon_template_tb_TO_coupon_template_fixed_discount_tb
+    FOREIGN KEY (coupon_template_id)
+    REFERENCES coupon_template_tb (id);
+
+ALTER TABLE coupon_tb
+  ADD CONSTRAINT FK_place_tb_TO_coupon_tb
+    FOREIGN KEY (usable_place_idx)
+    REFERENCES place_tb (idx);
+
+ALTER TABLE coupon_template_percent_discount_tb
+  ADD CONSTRAINT FK_coupon_template_tb_TO_coupon_template_percent_discount_tb
+    FOREIGN KEY (coupon_template_id)
+    REFERENCES coupon_template_tb (id);
+
+ALTER TABLE coupon_owner_tb
+  ADD CONSTRAINT FK_coupon_tb_TO_coupon_owner_tb
+    FOREIGN KEY (coupon_id)
+    REFERENCES coupon_tb (id);
+
+ALTER TABLE coupon_owner_tb
+  ADD CONSTRAINT FK_user_tb_TO_coupon_owner_tb
+    FOREIGN KEY (user_idx)
+    REFERENCES user_tb (idx);
+
+ALTER TABLE coupon_template_etc_tb
+  ADD CONSTRAINT FK_coupon_template_tb_TO_coupon_template_etc_tb
+    FOREIGN KEY (coupon_template_id)
+    REFERENCES coupon_template_tb (id);
+
+ALTER TABLE coupon_fixed_discount_tb
+  ADD CONSTRAINT FK_coupon_tb_TO_coupon_fixed_discount_tb
+    FOREIGN KEY (coupon_id)
+    REFERENCES coupon_tb (id);
+
+ALTER TABLE coupon_percent_discount_tb
+  ADD CONSTRAINT FK_coupon_tb_TO_coupon_percent_discount_tb
+    FOREIGN KEY (coupon_id)
+    REFERENCES coupon_tb (id);
+
+ALTER TABLE coupon_etc_tb
+  ADD CONSTRAINT FK_coupon_tb_TO_coupon_etc_tb
+    FOREIGN KEY (coupon_id)
+    REFERENCES coupon_tb (id);
