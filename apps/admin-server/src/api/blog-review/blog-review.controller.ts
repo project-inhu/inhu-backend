@@ -8,6 +8,7 @@ import { Exception } from '@libs/common/decorator/exception.decorator';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -50,5 +51,18 @@ export class BlogReviewController {
     @Query() dto: GetBlogReviewAllDto,
   ): Promise<GetBlogReviewAllResponseDto> {
     return await this.blogReviewService.getBlogReviewAll(placeIdx, dto);
+  }
+
+  /**
+   * 블로그 리뷰 삭제하기
+   */
+  @Delete('/blog-review/:blogReviewIdx')
+  @Exception(400, 'invalid querystring')
+  @Exception(404, 'blog review not found')
+  @AdminAuth()
+  public async deleteBlogReviewByIdx(
+    @Param('blogReviewIdx', ParseIntPipe) idx: number,
+  ): Promise<void> {
+    return await this.blogReviewService.deleteBlogReviewByIdx(idx);
   }
 }

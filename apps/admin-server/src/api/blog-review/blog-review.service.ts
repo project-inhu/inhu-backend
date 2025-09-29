@@ -94,4 +94,8 @@ export class BlogReviewService {
         .map(BlogReviewOverviewEntity.fromModel),
     };
   }
+
+  public async deleteBlogReviewByIdx(idx: number): Promise<void> {
+    return await this.blogReviewCoreService.deleteBlogReviewByIdx(idx);
+  }
 }
