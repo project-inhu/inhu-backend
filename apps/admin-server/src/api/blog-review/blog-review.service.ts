@@ -8,6 +8,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { PlaceNotFoundException } from '@admin/api/place/exception/place-not-found.exception';
 import { DuplicateBlogReviewUrlException } from '@admin/api/blog-review/exception/DuplicateBlogReviewUrlExcepion';
+import { GetBlogReviewAllDto } from '@admin/api/blog-review/dto/request/get-blog-review-all.dto';
+import { BlogReviewOverviewEntity } from '@admin/api/blog-review/entity/blog-review-overview.entity';
 
 @Injectable()
 export class BlogReviewService {
@@ -74,5 +76,22 @@ export class BlogReviewService {
     );
 
     return model.path;
+  }
+
+  public async getBlogReviewAll(placeIdx: number, dto: GetBlogReviewAllDto) {
+    const blogList = await this.blogReviewCoreService.getBlogReviewAll({
+      placeIdx,
+      skip: (dto.page - 1) * 10,
+      take: 11,
+    });
+
+    const hasNext = !!blogList[10];
+
+    return {
+      hasNext,
+      blogReviewList: blogList
+        .slice(0, 10)
+        .map(BlogReviewOverviewEntity.fromModel),
+    };
   }
 }

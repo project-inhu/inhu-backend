@@ -1,9 +1,19 @@
 import { BlogReviewService } from '@admin/api/blog-review/blog-review.service';
 import { CreateBlogReviewViaLinkDto } from '@admin/api/blog-review/dto/request/create-blog-review-via-link.dto';
+import { GetBlogReviewAllDto } from '@admin/api/blog-review/dto/request/get-blog-review-all.dto';
+import { GetBlogReviewAllResponseDto } from '@admin/api/blog-review/dto/response/get-blog-review-all-response.dto';
 import { BlogReviewEntity } from '@admin/api/blog-review/entity/blog-review.entity';
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { Exception } from '@libs/common/decorator/exception.decorator';
-import { Body, Controller, Param, ParseIntPipe, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller()
@@ -11,6 +21,9 @@ import { ApiTags } from '@nestjs/swagger';
 export class BlogReviewController {
   constructor(private readonly blogReviewService: BlogReviewService) {}
 
+  /**
+   * url로 블로그 리뷰 등록하기
+   */
   @Post('/place/:placeIdx/blog-review/naver-blog')
   @Exception(400, 'invalid place idx')
   @Exception(404, 'place not found')
@@ -24,5 +37,18 @@ export class BlogReviewController {
       placeIdx,
       dto.url,
     );
+  }
+
+  /**
+   * 블로그 리뷰 목록보기
+   */
+  @Get('/place/:placeIdx/blog-review')
+  @Exception(400, 'invalid querystring')
+  @AdminAuth()
+  public async getBlogReviewAll(
+    @Param('placeIdx', ParseIntPipe) placeIdx: number,
+    @Query() dto: GetBlogReviewAllDto,
+  ): Promise<GetBlogReviewAllResponseDto> {
+    return await this.blogReviewService.getBlogReviewAll(placeIdx, dto);
   }
 }
