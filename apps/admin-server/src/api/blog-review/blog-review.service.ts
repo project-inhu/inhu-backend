@@ -79,7 +79,7 @@ export class BlogReviewService {
     return model.path;
   }
 
-  private async getBlogReviewByIdx(idx: number): Promise<BlogReviewEntity> {
+  public async getBlogReviewByIdx(idx: number): Promise<BlogReviewEntity> {
     const blogReview = await this.blogReviewCoreService.getBlogReviewByIdx(idx);
 
     if (!blogReview) {
