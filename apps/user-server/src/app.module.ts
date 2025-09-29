@@ -18,6 +18,7 @@ import { BookmarkModule } from './api/bookmark/bookmark.module';
 import { DiscordWebhookModule } from '@libs/common/modules/discord-webhook/discord-webhook.module';
 import { RedlockModule } from '@libs/common/modules/redlock/redlock.module';
 import { AopModule } from '@toss/nestjs-aop';
+import { BlogReviewModule } from '@user/api/blog-review/blog-review.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { AopModule } from '@toss/nestjs-aop';
         }),
       ],
     }),
+    BlogReviewModule,
     AopModule,
   ],
   controllers: [],
