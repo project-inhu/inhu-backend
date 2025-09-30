@@ -191,7 +191,7 @@ jobs:
           DEPENDENCY_CHANGED: ${{ needs.check-changes.outputs.dependency_changed }}
 
         run: |
-          sudo apt-get update && sudo apt-get install -y sshpass
+          sudo apt-get install -y sshpass || (sudo apt-get update && sudo apt-get install -y sshpass)
 
           sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST "mkdir -p ~/inhu-backend/deploy-scripts"
 
