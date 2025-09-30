@@ -23,12 +23,21 @@ jobs:
         run: |
           npx prisma generate
           npm run build user-server
+          npm run build:seed
 
       - name: Upload User artifact
         uses: actions/upload-artifact@v4
         with:
           name: user-server-build
-          path: dist/apps/user-server
+          path: |
+            dist/apps/user-server
+            dist/scripts/dev-infra/seed
+            scripts/dev-infra/init
+            scripts/dev-infra/docker-compose.yml
+            scripts/rdb
+            prisma
+            package.json
+            package-lock.json
 
   # 2. User 서버 배포
   deploy-user:
