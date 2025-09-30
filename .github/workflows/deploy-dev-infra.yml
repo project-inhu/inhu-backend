@@ -191,28 +191,24 @@ jobs:
           DEPENDENCY_CHANGED: ${{ needs.check-changes.outputs.dependency_changed }}
 
         run: |
-          sudo apt-get install -y sshpass || (sudo apt-get update && sudo apt-get install -y sshpass)
+          sudo apt-get update || (sudo apt-get update && sudo apt-get install -y sshpass)
 
-          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST "mkdir -p ~/inhu-backend/deploy-scripts"
+          tar -czf infra-bundle.tar.gz \
+            package.json package-lock.json \
+            prisma scripts \
+            dist/scripts/dev-infra/seed \
+            .github/workflows/scripts/deploy-dev-infra-script.sh
 
-          if [ "$DEPENDENCY_CHANGED" = "true" ]; then
-            sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no \
-              package.json package-lock.json $USER@$HOST:~/inhu-backend/
-          fi
+          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no infra-bundle.tar.gz $USER@$HOST:~/inhu-backend/
 
-          sshpass -p "$PASSWORD" scp -P "$PORT" -r -o StrictHostKeyChecking=no \
-          prisma scripts $USER@$HOST:~/inhu-backend/
-
-          sshpass -p "$PASSWORD" scp -P "$PORT" -r -o StrictHostKeyChecking=no \
-          dist/scripts/dev-infra/seed $USER@$HOST:~/inhu-backend/dist/scripts/dev-infra/
-
-          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no \
-          .github/workflows/scripts/deploy-dev-infra-script.sh $USER@$HOST:~/inhu-backend/deploy-scripts/
-
-          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST \
-          "chmod +x ~/inhu-backend/deploy-scripts/deploy-dev-infra-script.sh && \
+          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST "
+          cd ~/inhu-backend && \
+          tar -xzf infra-bundle.tar.gz && \
+          rm infra-bundle.tar.gz && \
+          chmod +x .github/workflows/scripts/deploy-dev-infra-script.sh && \
           DB_DOWN_FLAG='$DB_DOWN' USER_CHANGED='$USER_CHANGED' ADMIN_CHANGED='$ADMIN_CHANGED' BATCH_CHANGED='$BATCH_CHANGED' DEPENDENCY_CHANGED='$DEPENDENCY_CHANGED' \
-          ~/inhu-backend/deploy-scripts/deploy-dev-infra-script.sh"
+          ./.github/workflows/scripts/deploy-dev-infra-script.sh
+          "
 
   # 3. 서비스별 워크플로우 호출
   call-user-workflow:
