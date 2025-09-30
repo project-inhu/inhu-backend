@@ -187,6 +187,8 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y sshpass
 
+          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST "mkdir -p ~/inhu-backend/deploy-scripts"
+
           sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no \
           package.json package-lock.json $USER@$HOST:~/inhu-backend/
 
