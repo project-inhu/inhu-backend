@@ -81,8 +81,8 @@ export class AppleLoginStrategy implements ISocialLoginStrategy {
         secret: this.APPLE_PRIVATE_KEY,
         expiresIn: exp,
       };
-
       clientSecret = this.jwtService.sign({}, clientSecretOptions);
+
       await this.redisService.set(
         'apple-client-secret',
         clientSecret,
