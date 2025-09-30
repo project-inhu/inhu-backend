@@ -1,7 +1,10 @@
 #!/bin/bash
 set -e
 cd ~/inhu-backend
-npm ci
+
+if [ "$DEPENDENCY_CHANGED" = "true" ]; then
+  npm ci
+fi
 
 if [ "$DB_DOWN_FLAG" = "true" ]; then
     npm run dev-infra:down
@@ -11,10 +14,10 @@ if [ "$DB_DOWN_FLAG" = "true" ]; then
     done
     npx prisma generate
     npm run seed
+fi
 
-    if [ "$USER_CHANGED" != "true" ] && [ "$ADMIN_CHANGED" != "true" ] && [ "$BATCH_CHANGED" != "true" ]; then
-        pm2 reload inhu-backend-user-dev
-        pm2 reload inhu-backend-admin-dev
-        pm2 reload inhu-backend-batch-dev
-    fi
+if [ "$USER_CHANGED" != "true" ] && [ "$ADMIN_CHANGED" != "true" ] && [ "$BATCH_CHANGED" != "true" ]; then
+    pm2 reload inhu-backend-user-dev
+    pm2 reload inhu-backend-admin-dev
+    pm2 reload inhu-backend-batch-dev
 fi
