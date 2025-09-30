@@ -19,6 +19,7 @@ jobs:
       user_changed: ${{ steps.user-filter.outputs.any_modified }}
       admin_changed: ${{ steps.admin-filter.outputs.any_modified }}
       batch_changed: ${{ steps.batch-filter.outputs.any_modified }}
+      dependency_changed: ${{ steps.dependency-check.outputs.any_modified }}
 
     steps:
       - name: Checkout code
@@ -62,6 +63,15 @@ jobs:
             **/*.md
             libs/testing/**
 
+      # package.json  변경 감지
+      - name: Check for dependency Changes
+        id: dependency-check
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            package.json
+            package-lock.json
+
       # 실제 배포 트리거 파일 변경 감지
       - name: Check for deployable Changes
         id: deployment-gate
@@ -77,8 +87,6 @@ jobs:
             apps/**/src/**
             libs/**
             prisma/**
-            package.json
-            package-lock.json
             scripts/dev-infra/**
             scripts/rdb/**
           files_ignore: |
@@ -119,9 +127,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22.x
-
-      - name: Install dependencies
-        run: npm ci
+          cache: 'npm'
 
       - name: Run E2E tests for User Server
         if: needs.check-changes.outputs.user_changed == 'true'
@@ -161,9 +167,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22.x
-
-      - name: Install dependencies
-        run: npm ci
+          cache: 'npm'
 
       - name: Build seed
         run: npm run build:seed
@@ -178,14 +182,27 @@ jobs:
           USER_CHANGED: ${{ needs.check-changes.outputs.user_changed }}
           ADMIN_CHANGED: ${{ needs.check-changes.outputs.admin_changed }}
           BATCH_CHANGED: ${{ needs.check-changes.outputs.batch_changed }}
+          DEPENDENCY_CHANGED: ${{ needs.check-changes.outputs.dependency_changed }}
 
         run: |
           sudo apt-get update && sudo apt-get install -y sshpass
-          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no ./.github/workflows/scripts/deploy-dev-infra-script.sh $USER@$HOST:~/inhu-backend/
-          sshpass -p "$PASSWORD" scp -P "$PORT" -r -o StrictHostKeyChecking=no dist/scripts/dev-infra/seed $USER@$HOST:~/inhu-backend/dist/scripts/dev-infra/
+
+          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no \
+          package.json package-lock.json $USER@$HOST:~/inhu-backend/
+
+          sshpass -p "$PASSWORD" scp -P "$PORT" -r -o StrictHostKeyChecking=no \
+          prisma scripts $USER@$HOST:~/inhu-backend/
+
+          sshpass -p "$PASSWORD" scp -P "$PORT" -r -o StrictHostKeyChecking=no \
+          dist/scripts/dev-infra/seed $USER@$HOST:~/inhu-backend/dist/scripts/dev-infra/
+
+          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no \
+          .github/workflows/scripts/deploy-dev-infra-script.sh $USER@$HOST:~/inhu-backend/deploy-scripts/
+
           sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST \
-            "chmod +x ~/inhu-backend/deploy-dev-infra-script.sh && \
-             DB_DOWN_FLAG='$DB_DOWN' USER_CHANGED='$USER_CHANGED' ADMIN_CHANGED='$ADMIN_CHANGED' BATCH_CHANGED='$BATCH_CHANGED' ~/inhu-backend/deploy-dev-infra-script.sh"
+          "chmod +x ~/inhu-backend/deploy-scripts/deploy-dev-infra-script.sh && \
+          DB_DOWN_FLAG='$DB_DOWN' USER_CHANGED='$USER_CHANGED' ADMIN_CHANGED='$ADMIN_CHANGED' BATCH_CHANGED='$BATCH_CHANGED' DEPENDENCY_CHANGED='$DEPENDENCY_CHANGED' \
+          ~/inhu-backend/deploy-scripts/deploy-dev-infra-script.sh"
 
   # 3. 서비스별 워크플로우 호출
   call-user-workflow:
