@@ -10,6 +10,7 @@ import { AppleLoginStrategy } from '@user/api/auth/social-login/strategy/apple/a
 import { JwtModule } from '@nestjs/jwt';
 import authConfig from '@user/api/auth/config/auth.config';
 import { UserCoreModule } from '@libs/core/user/user-core.module';
+import { RedisModule } from '@libs/common/modules/redis/redis.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { UserCoreModule } from '@libs/core/user/user-core.module';
     ConfigModule.forFeature(authConfig),
     UserCoreModule,
     JwtModule,
+    RedisModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, KakaoLoginStrategy, AppleLoginStrategy],
