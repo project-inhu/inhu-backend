@@ -42,7 +42,7 @@ export class AppleLoginStrategy implements ISocialLoginStrategy {
 
   public getSocialLoginRedirect(): string {
     return (
-      'https://kauth.kakao.com/oauth/authorize' +
+      'https://appleid.apple.com/auth/authorize' +
       `?client_id=${this.APPLE_CLIENT_ID}&` +
       `redirect_uri=${encodeURIComponent(this.APPLE_REDIRECT_URI)}&` +
       'response_type=code&' +
