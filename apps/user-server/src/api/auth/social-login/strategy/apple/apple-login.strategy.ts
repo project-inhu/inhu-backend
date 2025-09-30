@@ -67,7 +67,7 @@ export class AppleLoginStrategy implements ISocialLoginStrategy {
     };
   }
 
-  public async getAppleClientSecret(): Promise<string> {
+  private async getAppleClientSecret(): Promise<string> {
     let clientSecret = await this.redisService.get('apple-client-secret');
 
     if (!clientSecret) {
