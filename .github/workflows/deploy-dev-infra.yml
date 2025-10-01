@@ -159,7 +159,7 @@ jobs:
   # 3. 공통 작업 실행 (DB reset, seed, npm ci)
   run-common-tasks:
     name: Run Common tasks
-    needs: [check-changes, test-services]
+    needs: [check-changes]
     if: github.event_name == 'push' && needs.check-changes.outputs.should_deploy == 'true'
     runs-on: ubuntu-latest
     steps:
