@@ -19,6 +19,7 @@ jobs:
       user_changed: ${{ steps.user-filter.outputs.any_modified }}
       admin_changed: ${{ steps.admin-filter.outputs.any_modified }}
       batch_changed: ${{ steps.batch-filter.outputs.any_modified }}
+      dependency_changed: ${{ steps.dependency-check.outputs.any_modified }}
 
     steps:
       - name: Checkout code
@@ -62,6 +63,15 @@ jobs:
             **/*.md
             libs/testing/**
 
+      # package.json  변경 감지
+      - name: Check for dependency Changes
+        id: dependency-check
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            package.json
+            package-lock.json
+
       # 실제 배포 트리거 파일 변경 감지
       - name: Check for deployable Changes
         id: deployment-gate
@@ -77,8 +87,6 @@ jobs:
             apps/**/src/**
             libs/**
             prisma/**
-            package.json
-            package-lock.json
             scripts/dev-infra/**
             scripts/rdb/**
           files_ignore: |
@@ -109,7 +117,7 @@ jobs:
   test-services:
     name: Run E2E Tests
     needs: check-changes
-    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -119,6 +127,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22.x
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
@@ -150,7 +159,7 @@ jobs:
   # 3. 공통 작업 실행 (DB reset, seed, npm ci)
   run-common-tasks:
     name: Run Common tasks
-    needs: [check-changes, test-services]
+    needs: [check-changes]
     if: github.event_name == 'push' && needs.check-changes.outputs.should_deploy == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -161,6 +170,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22.x
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
@@ -178,14 +188,27 @@ jobs:
           USER_CHANGED: ${{ needs.check-changes.outputs.user_changed }}
           ADMIN_CHANGED: ${{ needs.check-changes.outputs.admin_changed }}
           BATCH_CHANGED: ${{ needs.check-changes.outputs.batch_changed }}
+          DEPENDENCY_CHANGED: ${{ needs.check-changes.outputs.dependency_changed }}
 
         run: |
-          sudo apt-get update && sudo apt-get install -y sshpass
-          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no ./.github/workflows/scripts/deploy-dev-infra-script.sh $USER@$HOST:~/inhu-backend/
-          sshpass -p "$PASSWORD" scp -P "$PORT" -r -o StrictHostKeyChecking=no dist/scripts/dev-infra/seed $USER@$HOST:~/inhu-backend/dist/scripts/dev-infra/
-          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST \
-            "chmod +x ~/inhu-backend/deploy-dev-infra-script.sh && \
-             DB_DOWN_FLAG='$DB_DOWN' USER_CHANGED='$USER_CHANGED' ADMIN_CHANGED='$ADMIN_CHANGED' BATCH_CHANGED='$BATCH_CHANGED' ~/inhu-backend/deploy-dev-infra-script.sh"
+          sudo apt-get update || (sudo apt-get update && sudo apt-get install -y sshpass)
+
+          tar -czf infra-bundle.tar.gz \
+            package.json package-lock.json \
+            prisma scripts \
+            dist/scripts/dev-infra/seed \
+            .github/workflows/scripts/deploy-dev-infra-script.sh
+
+          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no infra-bundle.tar.gz $USER@$HOST:~/inhu-backend/
+
+          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST "
+          cd ~/inhu-backend && \
+          tar -xzf infra-bundle.tar.gz && \
+          rm infra-bundle.tar.gz && \
+          chmod +x .github/workflows/scripts/deploy-dev-infra-script.sh && \
+          DB_DOWN_FLAG='$DB_DOWN' USER_CHANGED='$USER_CHANGED' ADMIN_CHANGED='$ADMIN_CHANGED' BATCH_CHANGED='$BATCH_CHANGED' DEPENDENCY_CHANGED='$DEPENDENCY_CHANGED' \
+          ./.github/workflows/scripts/deploy-dev-infra-script.sh
+          "
 
   # 3. 서비스별 워크플로우 호출
   call-user-workflow:
