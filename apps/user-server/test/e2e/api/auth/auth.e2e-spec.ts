@@ -577,6 +577,7 @@ describe('Auth E2E test', () => {
     });
   });
 
+  // TODO: redis 값 확인 필요
   describe('POST /auth/apple/callback/web', () => {
     it('200 - successfully issue access token and refresh token (first login)', async () => {
       // mocking
@@ -779,6 +780,7 @@ describe('Auth E2E test', () => {
     });
   });
 
+  // TODO: redis 값 확인 필요
   describe('POST /auth/apple/callback/app', () => {
     it('200 - successfully issue access token and refresh token (first login)', async () => {
       // mocking
