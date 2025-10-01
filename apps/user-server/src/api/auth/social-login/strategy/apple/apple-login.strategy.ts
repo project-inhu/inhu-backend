@@ -15,7 +15,9 @@ import { RedisService } from '@libs/common/modules/redis/redis.service';
 @Injectable()
 export class AppleLoginStrategy implements ISocialLoginStrategy {
   private readonly TEAM_ID: string;
-  private readonly APPLE_CLIENT_ID: string;
+  private readonly APPLE_SERVICE_CLIENT_ID: string;
+  private APPLE_CLIENT_ID: string;
+  private readonly APPLE_APP_CLIENT_ID: string;
   private readonly APPLE_REDIRECT_URI: string;
   private readonly jwksClient: JwksClient;
   private readonly APPLE_KEY_ID: string;
@@ -28,8 +30,11 @@ export class AppleLoginStrategy implements ISocialLoginStrategy {
     private readonly redisService: RedisService,
   ) {
     this.TEAM_ID = this.configService.get<string>('APPLE_TEAM_ID') ?? '';
-    this.APPLE_CLIENT_ID =
-      this.configService.get<string>('APPLE_CLIENT_ID') ?? '';
+    this.APPLE_SERVICE_CLIENT_ID =
+      this.configService.get<string>('APPLE_SERVICE_CLIENT_ID') ?? '';
+    this.APPLE_CLIENT_ID = '';
+    this.APPLE_APP_CLIENT_ID =
+      this.configService.get<string>('APPLE_APP_CLIENT_ID') ?? '';
     this.APPLE_REDIRECT_URI =
       this.configService.get<string>('APPLE_REDIRECT_URI') ?? '';
     this.jwksClient = new JwksClient({
@@ -43,7 +48,7 @@ export class AppleLoginStrategy implements ISocialLoginStrategy {
   public getSocialLoginRedirect(): string {
     return (
       'https://appleid.apple.com/auth/authorize' +
-      `?client_id=${this.APPLE_CLIENT_ID}&` +
+      `?client_id=${this.APPLE_SERVICE_CLIENT_ID}&` +
       `redirect_uri=${encodeURIComponent(this.APPLE_REDIRECT_URI)}&` +
       'response_type=code&' +
       'scope=name%20email&' +
@@ -57,7 +62,8 @@ export class AppleLoginStrategy implements ISocialLoginStrategy {
     provider: AuthProvider,
     req: Request,
   ): Promise<OAuthInfo> {
-    const clientSecret = await this.getAppleClientSecret();
+    await this.setAppleClientId(req);
+    const clientSecret = await this.getAppleClientSecret(req.body.isApp);
     const appleIdToken = await this.getAppleIdToken(req, clientSecret);
     const decodedToken = await this.decodeIdToken(appleIdToken);
 
@@ -67,8 +73,11 @@ export class AppleLoginStrategy implements ISocialLoginStrategy {
     };
   }
 
-  private async getAppleClientSecret(): Promise<string> {
-    let clientSecret = await this.redisService.get('apple-client-secret');
+  private async getAppleClientSecret(isApp: boolean): Promise<string> {
+    const cacheKey = isApp
+      ? 'apple-app-client-secret'
+      : 'apple-service-client-secret';
+    let clientSecret = await this.redisService.get(cacheKey);
 
     if (!clientSecret) {
       const exp = 30 * 24 * 60 * 60;
@@ -83,12 +92,7 @@ export class AppleLoginStrategy implements ISocialLoginStrategy {
       };
       clientSecret = this.jwtService.sign({}, clientSecretOptions);
 
-      await this.redisService.set(
-        'apple-client-secret',
-        clientSecret,
-        'EX',
-        exp,
-      );
+      await this.redisService.set(cacheKey, clientSecret, 'EX', exp);
     }
 
     return clientSecret;
@@ -126,5 +130,13 @@ export class AppleLoginStrategy implements ISocialLoginStrategy {
       issuer: 'https://appleid.apple.com',
       audience: this.APPLE_CLIENT_ID,
     }) as GetAppleDecodedDto;
+  }
+
+  private async setAppleClientId(req: Request): Promise<void> {
+    if (req.body.isApp) {
+      this.APPLE_CLIENT_ID = this.APPLE_APP_CLIENT_ID;
+    } else {
+      this.APPLE_CLIENT_ID = this.APPLE_SERVICE_CLIENT_ID;
+    }
   }
 }
