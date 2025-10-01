@@ -112,15 +112,14 @@ export class AuthController {
   /**
    * Web 전용 Social Login Callback을 처리하는 엔드포인트
    */
-  @Get('/:provider/callback/web')
+  @Get('/kakao/callback/web')
   public async socialLoginWebViaGet(
     @Res({ passthrough: true }) res: Response,
     @Req() req: Request,
-    @Param('provider') provider: AuthProvider,
   ): Promise<SocialLoginWebResponseDto> {
     const { accessToken, refreshToken } = await this.authService.login(
       req,
-      provider,
+      AuthProvider.KAKAO,
       TokenIssuedBy.WEB,
     );
 
@@ -150,22 +149,21 @@ export class AuthController {
   /**
    * Web 전용 Social Login Callback을 처리하는 엔드포인트
    */
-  @Post('/:provider/callback/web')
+  @Post('/apple/callback/web')
   @HttpCode(200)
   public async socialLoginWebViaPost(
-    @Res({ passthrough: true }) res: Response,
+    @Res() res: Response,
     @Req() req: Request,
-    @Param('provider') provider: AuthProvider,
-  ): Promise<SocialLoginWebResponseDto> {
+  ): Promise<void> {
     const { accessToken, refreshToken } = await this.authService.login(
       req,
-      provider,
+      AuthProvider.APPLE,
       TokenIssuedBy.WEB,
     );
 
     res.cookie('refreshToken', `Bearer ${refreshToken}`, cookieConfig());
 
-    return { accessToken };
+    res.redirect(this.MAIN_PAGE_URL);
   }
 
   /**
