@@ -110,7 +110,7 @@ export class AuthController {
   }
 
   /**
-   * Web 전용 Social Login Callback을 처리하는 엔드포인트
+   * Web 전용 Social Login Callback을 처리하는 엔드포인트 (kakao login)
    */
   @Get('/kakao/callback/web')
   public async socialLoginWebViaGet(
@@ -147,7 +147,7 @@ export class AuthController {
   }
 
   /**
-   * Web 전용 Social Login Callback을 처리하는 엔드포인트
+   * Web 전용 Social Login Callback을 처리하는 엔드포인트 (apple login)
    */
   @Post('/apple/callback/web')
   @HttpCode(200)
