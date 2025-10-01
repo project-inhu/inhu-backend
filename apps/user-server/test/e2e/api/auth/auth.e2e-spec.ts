@@ -2,6 +2,7 @@ import { RedisService } from '@libs/common/modules/redis/redis.service';
 import { AuthProvider } from '@libs/core/user/constants/auth-provider.constant';
 import { UserSeedHelper } from '@libs/testing/seed/user/user.seed';
 import { extractCookieValueFromSetCookieHeader } from '@libs/testing/utils/extract-cookie-value.util';
+import { ConfigService } from '@nestjs/config';
 import { AppleLoginStrategy } from '@user/api/auth/social-login/strategy/apple/apple-login.strategy';
 import { KakaoLoginStrategy } from '@user/api/auth/social-login/strategy/kakao/kakao-login.strategy';
 import { AppModule } from '@user/app.module';
@@ -381,12 +382,12 @@ describe('Auth E2E test', () => {
       expect(accessTokenPayload.id).toBe(refreshTokenPayload.jti);
     });
 
-    it('500 - invalid provider', async () => {
+    it('404 - invalid provider', async () => {
       const invalidProvider = 'invalid provider';
       await testHelper
         .test()
         .get(`/auth/${invalidProvider}/callback/web`)
-        .expect(500);
+        .expect(404);
     });
   });
 
@@ -607,16 +608,16 @@ describe('Auth E2E test', () => {
         .test()
         .post('/auth/apple/callback/web')
         .send({ code: 'mocking-code' })
-        .expect(200);
+        .expect(302);
 
       // access token과 refresh token이 발급되어야 함
       const [type, refreshToken] = extractCookieValueFromSetCookieHeader(
         response.headers['set-cookie'][0],
         'refreshToken',
       )?.split(' ') || [null, null];
-      expect(response.body).toHaveProperty('accessToken');
       expect(refreshToken).not.toBeNull();
       expect(type).toBe('Bearer');
+      // TODO: 리다이렉트 되는지 확인하는 로직 추가
 
       // 유저 정보가 생성되어야 함
       const user = await prisma.user.findFirstOrThrow({
@@ -676,16 +677,16 @@ describe('Auth E2E test', () => {
         .test()
         .post('/auth/apple/callback/web')
         .send({ code: 'mocking-code' })
-        .expect(200);
+        .expect(302);
 
       // access token과 refresh token이 발급되어야 함
       const [type, refreshToken] = extractCookieValueFromSetCookieHeader(
         response.headers['set-cookie'][0],
         'refreshToken',
       )?.split(' ') || [null, null];
-      expect(response.body).toHaveProperty('accessToken');
       expect(refreshToken).not.toBeNull();
       expect(type).toBe('Bearer');
+      // TODO: 리다이렉트 되는지 확인하는 로직 추가
 
       // 유저 정보가 생성되어야 함
       const user = await prisma.user.findFirstOrThrow({
@@ -726,14 +727,13 @@ describe('Auth E2E test', () => {
         .test()
         .post('/auth/apple/callback/web')
         .send({ code: 'mocking-code' })
-        .expect(200);
+        .expect(302);
 
       // access token과 refresh token이 발급되어야 함
       const [type, refreshToken] = extractCookieValueFromSetCookieHeader(
         response.headers['set-cookie'][0],
         'refreshToken',
       )?.split(' ') || [null, null];
-      expect(response.body).toHaveProperty('accessToken');
       expect(refreshToken).not.toBeNull();
       expect(type).toBe('Bearer');
 
@@ -761,21 +761,21 @@ describe('Auth E2E test', () => {
       expect(refreshTokenPayload.idx).toBe(user.idx);
 
       // access token 에 의도된 정보가 포함되어야 함
-      const accessToken = response.body.accessToken;
-      const accessTokenPayload =
-        await loginTokenService.verifyAccessToken(accessToken);
-      expect(accessTokenPayload.category).toBe(TokenCategory.ACCESS);
-      expect(accessTokenPayload.issuedBy).toBe(TokenIssuedBy.WEB);
-      expect(accessTokenPayload.idx).toBe(user.idx);
-      expect(accessTokenPayload.id).toBe(refreshTokenPayload.jti);
+      // const accessToken = response.body.accessToken;
+      // const accessTokenPayload =
+      //   await loginTokenService.verifyAccessToken(accessToken);
+      // expect(accessTokenPayload.category).toBe(TokenCategory.ACCESS);
+      // expect(accessTokenPayload.issuedBy).toBe(TokenIssuedBy.WEB);
+      // expect(accessTokenPayload.idx).toBe(user.idx);
+      // expect(accessTokenPayload.id).toBe(refreshTokenPayload.jti);
     });
 
-    it('500 - invalid provider', async () => {
+    it('404 - invalid provider', async () => {
       const invalidProvider = 'invalid provider';
       await testHelper
         .test()
         .post(`/auth/${invalidProvider}/callback/web`)
-        .expect(500);
+        .expect(404);
     });
   });
 

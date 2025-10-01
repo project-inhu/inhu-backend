@@ -152,7 +152,7 @@ export class AuthController {
   @Post('/apple/callback/web')
   @HttpCode(200)
   public async socialLoginWebViaPost(
-    @Res({ passthrough: true }) res: Response,
+    @Res() res: Response,
     @Req() req: Request,
   ): Promise<void> {
     const { accessToken, refreshToken } = await this.authService.login(
