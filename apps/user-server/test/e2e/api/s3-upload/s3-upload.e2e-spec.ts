@@ -143,7 +143,7 @@ describe('s3-upload E2E test', () => {
       expect(s3ServiceMock).toHaveBeenCalledWith({
         folder: S3Folder.REVIEW,
         extensions: dto.extensions,
-        maxSize: 1,
+        maxSize: 5,
         contentType: ContentType.IMAGE,
       });
 
