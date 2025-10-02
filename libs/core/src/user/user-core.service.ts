@@ -16,6 +16,13 @@ import { UserForAdminModel } from './model/user-for-admin.model';
 export class UserCoreService {
   constructor(private readonly userCoreRepository: UserCoreRepository) {}
 
+  // ! temporary
+  public async getUserByNickname(nickname: string): Promise<UserModel> {
+    const user = await this.userCoreRepository.selectUserByNickname(nickname);
+
+    return user && UserModel.fromPrisma(user);
+  }
+
   public async getUserByIdx(idx: number): Promise<UserModel | null> {
     const user = await this.userCoreRepository.selectUserByIdx(idx);
 
