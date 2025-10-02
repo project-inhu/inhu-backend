@@ -74,6 +74,28 @@ export class AuthController {
     return await this.authService.reissueAccessToken(refreshToken);
   }
 
+  // !temporary guest login for test
+  @Get('/guest/login/web')
+  public async guestLoginWeb(@Res({ passthrough: true }) res: Response) {
+    const { accessToken, refreshToken } = await this.authService.guestLogin(
+      TokenIssuedBy.WEB,
+    );
+
+    res.cookie('refreshToken', `Bearer ${refreshToken}`, cookieConfig());
+
+    return { accessToken };
+  }
+
+  // !temporary guest login for test
+  @Get('/guest/login/app')
+  public async guestLoginApp() {
+    const { accessToken, refreshToken } = await this.authService.guestLogin(
+      TokenIssuedBy.APP,
+    );
+
+    return { accessToken, refreshToken };
+  }
+
   /**
    * Social Login Redirect를 처리하는 엔드포인트
    */
