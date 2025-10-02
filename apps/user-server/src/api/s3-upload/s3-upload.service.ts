@@ -16,7 +16,7 @@ export class S3UploadService {
     return await this.s3Service.getPresignedUrl({
       folder: S3Folder.PROFILE,
       extension: createProfileImagePresignedUrlDto.extension,
-      maxSize: 1,
+      maxSize: 5,
       contentType: ContentType.IMAGE,
     });
   }
@@ -27,7 +27,7 @@ export class S3UploadService {
     return this.s3Service.getPresignedUrls({
       folder: S3Folder.REVIEW,
       extensions: createReviewImagePresignedUrlsDto.extensions,
-      maxSize: 1,
+      maxSize: 5,
       contentType: ContentType.IMAGE,
     });
   }
