@@ -43,6 +43,16 @@ export class AuthService {
     return strategy.getSocialLoginRedirect();
   }
 
+  // !게스트 로그인 (temporary)
+  public async guestLogin(issuedBy: TokenIssuedBy) {
+    const userModel = await this.userCoreService.getUserByNickname('guest');
+
+    return await this.loginTokenService.issueTokenSet(
+      { idx: userModel.idx },
+      issuedBy,
+    );
+  }
+
   public async login(
     req: Request,
     provider: AuthProvider,

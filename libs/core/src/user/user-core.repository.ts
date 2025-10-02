@@ -17,6 +17,14 @@ export class UserCoreRepository {
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
   ) {}
 
+  // ! temporary
+  public async selectUserByNickname(nickname: string): Promise<SelectUser> {
+    return this.txHost.tx.user.findFirstOrThrow({
+      ...SELECT_USER,
+      where: { nickname, deletedAt: null },
+    });
+  }
+
   public async selectUserByIdx(idx: number): Promise<SelectUser | null> {
     return this.txHost.tx.user.findUnique({
       ...SELECT_USER,
