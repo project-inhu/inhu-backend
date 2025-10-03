@@ -114,4 +114,14 @@ export class MenuCoreService {
   public async deleteMenuByIdx(idx: number): Promise<void> {
     return await this.menuCoreRepository.softDeleteMenuByIdx(idx);
   }
+
+  public async deleteMenuReviewByReviewIdxAndMenuIdx(
+    reviewIdx: number,
+    menuIdx: number,
+  ): Promise<void> {
+    return await this.menuCoreRepository.deleteMenuReviewByReviewIdxAndMenuIdx(
+      reviewIdx,
+      menuIdx,
+    );
+  }
 }

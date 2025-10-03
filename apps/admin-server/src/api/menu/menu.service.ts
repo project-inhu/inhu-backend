@@ -116,4 +116,14 @@ export class MenuService {
 
     await this.menuCoreService.deleteMenuByIdx(menuIdx);
   }
+
+  public async deleteMenuReviewByReviewIdxAndMenuIdx(
+    reviewIdx: number,
+    menuIdx: number,
+  ): Promise<void> {
+    await this.menuCoreService.deleteMenuReviewByReviewIdxAndMenuIdx(
+      reviewIdx,
+      menuIdx,
+    );
+  }
 }

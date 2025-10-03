@@ -156,4 +156,23 @@ export class MenuCoreRepository {
       menu.sortOrder,
     );
   }
+
+  public async deleteMenuReviewByReviewIdxAndMenuIdx(
+    reviewIdx: number,
+    menuIdx: number,
+  ): Promise<void> {
+    await this.txHost.tx.menu.update({
+      data: {
+        reviewList: {
+          delete: {
+            menuIdx_reviewIdx: {
+              reviewIdx,
+              menuIdx,
+            },
+          },
+        },
+      },
+      where: { idx: menuIdx },
+    });
+  }
 }
