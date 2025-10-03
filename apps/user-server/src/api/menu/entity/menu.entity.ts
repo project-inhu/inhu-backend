@@ -1,5 +1,5 @@
-import { ReviewEntity } from '@admin/api/review/entity/review.entity';
 import { MenuModel } from '@libs/core/menu/model/menu.model';
+import { ReviewEntity } from '@user/api/review/entity/review.entity';
 
 export class MenuEntity {
   /**
