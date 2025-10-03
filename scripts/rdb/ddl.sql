@@ -36,6 +36,13 @@ CREATE TABLE keyword_tb
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE menu_review_tb
+(
+  menu_idx   int NOT NULL,
+  review_idx int NOT NULL,
+  PRIMARY KEY (menu_idx, review_idx)
+);
+
 CREATE TABLE menu_tb
 (
   idx         int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -139,12 +146,13 @@ CREATE TABLE review_keyword_mapping_tb
 
 CREATE TABLE review_tb
 (
-  idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
-  user_idx   int                      NOT NULL,
-  place_idx  int                      NOT NULL,
-  content    varchar                  NOT NULL,
-  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
-  deleted_at timestamp with time zone,
+  idx             int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  user_idx        int                      NOT NULL,
+  place_idx       int                      NOT NULL,
+  content         varchar                  NOT NULL,
+  is_menu_checked boolean                  NOT NULL DEFAULT false,
+  created_at      timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at      timestamp with time zone,
   PRIMARY KEY (idx)
 );
 
@@ -423,3 +431,12 @@ ALTER TABLE blog_review_tb
     FOREIGN KEY (place_idx)
     REFERENCES place_tb (idx);
     
+ALTER TABLE menu_review_tb
+  ADD CONSTRAINT FK_menu_tb_TO_menu_review_mapping_tb
+    FOREIGN KEY (menu_idx)
+    REFERENCES menu_tb (idx);
+
+ALTER TABLE menu_review_tb
+  ADD CONSTRAINT FK_review_tb_TO_menu_review_mapping_tb
+    FOREIGN KEY (review_idx)
+    REFERENCES review_tb (idx);

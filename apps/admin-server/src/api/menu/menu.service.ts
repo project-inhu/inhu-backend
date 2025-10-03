@@ -10,12 +10,14 @@ import { UpdateMenuDto } from './dto/request/update-menu.dto';
 import { MenuCoreService } from '@libs/core/menu/menu-core.service';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { UpdateMenuSortOrderDto } from './dto/request/update-menu-sort-order.dto';
+import { ReviewCoreService } from '@libs/core/review/review-core.service';
 
 @Injectable()
 export class MenuService {
   constructor(
     private readonly menuCoreService: MenuCoreService,
     private readonly placeCoreService: PlaceCoreService,
+    private readonly reviewCoreService: ReviewCoreService,
   ) {}
 
   public async getAllMenuByPlaceIdx(
@@ -59,6 +61,23 @@ export class MenuService {
     return MenuEntity.fromModel(menuModel);
   }
 
+  public async createMenuReview(
+    reviewIdx: number,
+    menuIdx: number,
+  ): Promise<void> {
+    const menu = await this.menuCoreService.getMenuByIdx(menuIdx);
+    if (!menu) {
+      throw new NotFoundException('Cannot find menu with given idx');
+    }
+
+    const review = await this.reviewCoreService.getReviewByIdx(reviewIdx);
+    if (!review) {
+      throw new NotFoundException('Cannot find review with given idx');
+    }
+
+    await this.menuCoreService.createMenuReview(reviewIdx, menuIdx);
+  }
+
   public async updateMenuByPlaceIdx(
     menuIdx: number,
     dto: UpdateMenuDto,
@@ -96,5 +115,26 @@ export class MenuService {
     }
 
     await this.menuCoreService.deleteMenuByIdx(menuIdx);
+  }
+
+  public async deleteMenuReviewByReviewIdxAndMenuIdx(
+    reviewIdx: number,
+    menuIdx: number,
+  ): Promise<void> {
+    const menuReview =
+      await this.menuCoreService.getMenuReviewByMenuIdxAndReviewIdx(
+        menuIdx,
+        reviewIdx,
+      );
+    if (!menuReview) {
+      throw new NotFoundException(
+        'Cannot find menu review with given menuIdx and reviewIdx',
+      );
+    }
+
+    await this.menuCoreService.deleteMenuReviewByReviewIdxAndMenuIdx(
+      reviewIdx,
+      menuIdx,
+    );
   }
 }

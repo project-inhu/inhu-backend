@@ -25,6 +25,19 @@ export class MenuCoreService {
     return menu && MenuModel.fromPrisma(menu);
   }
 
+  // TODO: menuReviewModel 존재 유무 판단인데 menuModel 리턴. 변경 필요
+  public async getMenuReviewByMenuIdxAndReviewIdx(
+    menuIdx: number,
+    reviewIdx: number,
+  ): Promise<MenuModel | null> {
+    const menu =
+      await this.menuCoreRepository.selectMenuReviewByMenuIdxAndReviewIdx(
+        menuIdx,
+        reviewIdx,
+      );
+    return menu && MenuModel.fromPrisma(menu);
+  }
+
   public async getMenuAllByPlaceIdx(
     idx: number,
     input: GetMenuAllInput,
@@ -45,6 +58,13 @@ export class MenuCoreService {
     return await this.menuCoreRepository
       .insertMenu(idx, input)
       .then(MenuModel.fromPrisma);
+  }
+
+  public async createMenuReview(
+    reviewIdx: number,
+    menuIdx: number,
+  ): Promise<void> {
+    await this.menuCoreRepository.insertMenuReview(reviewIdx, menuIdx);
   }
 
   public async updateMenuByIdx(
@@ -106,5 +126,15 @@ export class MenuCoreService {
   @Transactional()
   public async deleteMenuByIdx(idx: number): Promise<void> {
     return await this.menuCoreRepository.softDeleteMenuByIdx(idx);
+  }
+
+  public async deleteMenuReviewByReviewIdxAndMenuIdx(
+    reviewIdx: number,
+    menuIdx: number,
+  ): Promise<void> {
+    return await this.menuCoreRepository.deleteMenuReviewByReviewIdxAndMenuIdx(
+      reviewIdx,
+      menuIdx,
+    );
   }
 }

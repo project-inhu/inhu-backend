@@ -1,3 +1,4 @@
+import { ReviewEntity } from '@admin/api/review/entity/review.entity';
 import { MenuModel } from '@libs/core/menu/model/menu.model';
 
 export class MenuEntity {
@@ -62,6 +63,16 @@ export class MenuEntity {
    */
   public createdAt: Date;
 
+  /**
+   * 리뷰 목록
+   */
+  public reviewList: ReviewEntity[];
+
+  /**
+   * 리뷰 개수
+   */
+  public reviewCount: number;
+
   constructor(data: MenuEntity) {
     Object.assign(this, data);
   }
@@ -77,6 +88,8 @@ export class MenuEntity {
       isFlexible: model.isFlexible,
       sortOrder: model.sortOrder,
       createdAt: model.createdAt,
+      reviewList: model.reviewList.map(ReviewEntity.fromModel),
+      reviewCount: model.reviewCount,
     });
   }
 }
