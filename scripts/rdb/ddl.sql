@@ -146,12 +146,13 @@ CREATE TABLE review_keyword_mapping_tb
 
 CREATE TABLE review_tb
 (
-  idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
-  user_idx   int                      NOT NULL,
-  place_idx  int                      NOT NULL,
-  content    varchar                  NOT NULL,
-  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
-  deleted_at timestamp with time zone,
+  idx             int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  user_idx        int                      NOT NULL,
+  place_idx       int                      NOT NULL,
+  content         varchar                  NOT NULL,
+  is_menu_checked boolean                  NOT NULL DEFAULT false,
+  created_at      timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at      timestamp with time zone,
   PRIMARY KEY (idx)
 );
 

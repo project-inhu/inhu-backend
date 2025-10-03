@@ -187,6 +187,7 @@ model Review {
   userIdx                  Int                      @map("user_idx")
   placeIdx                 Int                      @map("place_idx")
   content                  String                   @db.VarChar
+  isMenuChecked            Boolean                  @default(false) @map("is_menu_checked")
   createdAt                DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt                DateTime?                @map("deleted_at") @db.Timestamptz(6)
   menuReviewList           MenuReview[]
