@@ -40,7 +40,6 @@ CREATE TABLE menu_review_tb
 (
   menu_idx   int NOT NULL,
   review_idx int NOT NULL,
-  count      int NOT NULL DEFAULT 0,
   PRIMARY KEY (menu_idx, review_idx)
 );
 
