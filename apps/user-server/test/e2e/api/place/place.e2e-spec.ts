@@ -908,6 +908,7 @@ describe('Place E2E test', () => {
     });
   });
 
+  // TODO: 운영 정보 필드 추가해서 테스트 해야 됨.
   describe('GET /place/marker/all', () => {
     it('200 - field check', async () => {
       const placeSeed = await placeSeedHelper.seed({
