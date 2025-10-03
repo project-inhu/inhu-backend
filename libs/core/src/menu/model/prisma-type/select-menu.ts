@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { SELECT_REVIEW } from '@libs/core/review/model/prisma-type/select-review';
 
 export const SELECT_MENU = Prisma.validator<Prisma.MenuDefaultArgs>()({
   select: {
@@ -11,6 +12,11 @@ export const SELECT_MENU = Prisma.validator<Prisma.MenuDefaultArgs>()({
     isFlexible: true,
     sortOrder: true,
     createdAt: true,
+    reviewList: {
+      select: {
+        review: SELECT_REVIEW,
+      },
+    },
   },
 });
 
