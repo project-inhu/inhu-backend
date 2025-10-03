@@ -47,6 +47,13 @@ export class MenuCoreService {
       .then(MenuModel.fromPrisma);
   }
 
+  public async createMenuReview(
+    reviewIdx: number,
+    menuIdx: number,
+  ): Promise<void> {
+    await this.menuCoreRepository.insertMenuReview(reviewIdx, menuIdx);
+  }
+
   public async updateMenuByIdx(
     idx: number,
     input: UpdateMenuInput,

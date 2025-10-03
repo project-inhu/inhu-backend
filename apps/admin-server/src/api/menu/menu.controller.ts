@@ -49,6 +49,17 @@ export class MenuController {
     return await this.menuService.createMenuByPlaceIdx(placeIdx, dto);
   }
 
+  @AdminAuth()
+  @Exception(400, 'Invalid menuIdx or reviewIdx')
+  @Exception(404, 'Menu or Review does not exist')
+  @Post('/menu/:menuIdx/review/:reviewIdx')
+  public async createMenuReview(
+    @Param('menuIdx', ParseIntPipe) menuIdx: number,
+    @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
+  ): Promise<void> {
+    return await this.menuService.createMenuReview(menuIdx, reviewIdx);
+  }
+
   /**
    * 메뉴 수정
    */

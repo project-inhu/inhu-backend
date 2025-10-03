@@ -64,6 +64,22 @@ export class MenuCoreRepository {
     });
   }
 
+  public async insertMenuReview(
+    reviewIdx: number,
+    menuIdx: number,
+  ): Promise<void> {
+    await this.txHost.tx.menu.update({
+      data: {
+        reviewList: {
+          create: {
+            reviewIdx,
+          },
+        },
+      },
+      where: { idx: menuIdx },
+    });
+  }
+
   public async updateMenuByIdx(
     idx: number,
     { name, price, content, imagePath, isFlexible }: UpdateMenuInput,

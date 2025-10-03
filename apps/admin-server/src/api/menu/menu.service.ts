@@ -59,6 +59,13 @@ export class MenuService {
     return MenuEntity.fromModel(menuModel);
   }
 
+  public async createMenuReview(
+    reviewIdx: number,
+    menuIdx: number,
+  ): Promise<void> {
+    await this.menuCoreService.createMenuReview(reviewIdx, menuIdx);
+  }
+
   public async updateMenuByPlaceIdx(
     menuIdx: number,
     dto: UpdateMenuDto,
