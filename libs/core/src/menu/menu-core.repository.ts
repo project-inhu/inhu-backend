@@ -5,7 +5,6 @@ import { GetMenuAllInput } from './inputs/get-menu-all.input';
 import { SELECT_MENU, SelectMenu } from './model/prisma-type/select-menu';
 import { CreateMenuInput } from './inputs/create-menu.input';
 import { UpdateMenuInput } from './inputs/update-menu.input';
-import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class MenuCoreRepository {
