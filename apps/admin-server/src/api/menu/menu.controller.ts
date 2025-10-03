@@ -110,6 +110,7 @@ export class MenuController {
    */
   @AdminAuth()
   @Exception(400, 'Invalid reviewIdx or menuIdx')
+  @Exception(404, 'Menu or Review does not exist')
   @Delete('/menu/:menuIdx/review/:reviewIdx')
   public async deleteMenuReviewByReviewIdxAndMenuIdx(
     @Param('menuIdx', ParseIntPipe) menuIdx: number,

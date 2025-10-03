@@ -25,6 +25,19 @@ export class MenuCoreService {
     return menu && MenuModel.fromPrisma(menu);
   }
 
+  // TODO: menuReviewModel 존재 유무 판단인데 menuModel 리턴. 변경 필요
+  public async getMenuReviewByMenuIdxAndReviewIdx(
+    menuIdx: number,
+    reviewIdx: number,
+  ): Promise<MenuModel | null> {
+    const menu =
+      await this.menuCoreRepository.selectMenuReviewByMenuIdxAndReviewIdx(
+        menuIdx,
+        reviewIdx,
+      );
+    return menu && MenuModel.fromPrisma(menu);
+  }
+
   public async getMenuAllByPlaceIdx(
     idx: number,
     input: GetMenuAllInput,

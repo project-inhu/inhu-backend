@@ -121,6 +121,17 @@ export class MenuService {
     reviewIdx: number,
     menuIdx: number,
   ): Promise<void> {
+    const menuReview =
+      await this.menuCoreService.getMenuReviewByMenuIdxAndReviewIdx(
+        menuIdx,
+        reviewIdx,
+      );
+    if (!menuReview) {
+      throw new NotFoundException(
+        'Cannot find menu review with given menuIdx and reviewIdx',
+      );
+    }
+
     await this.menuCoreService.deleteMenuReviewByReviewIdxAndMenuIdx(
       reviewIdx,
       menuIdx,

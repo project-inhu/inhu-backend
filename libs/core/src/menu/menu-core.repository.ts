@@ -40,6 +40,25 @@ export class MenuCoreRepository {
     });
   }
 
+  // TODO: menuReviewModel 존재 유무 판단인데 menuModel 리턴. 변경 필요
+  public async selectMenuReviewByMenuIdxAndReviewIdx(
+    menuIdx: number,
+    reviewIdx: number,
+  ): Promise<SelectMenu | null> {
+    return await this.txHost.tx.menu.findFirst({
+      ...SELECT_MENU,
+      where: {
+        idx: menuIdx,
+        reviewList: {
+          some: {
+            reviewIdx,
+          },
+        },
+        deletedAt: null,
+      },
+    });
+  }
+
   public async getMenuCountByPlaceIdx(placeIdx: number): Promise<number> {
     return await this.txHost.tx.menu.count({
       where: { placeIdx, deletedAt: null },
