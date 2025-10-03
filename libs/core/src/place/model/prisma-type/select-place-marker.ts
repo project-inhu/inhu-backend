@@ -37,6 +37,36 @@ export const SELECT_PLACE_MARKER = Prisma.validator<Prisma.PlaceDefaultArgs>()({
         addressY: true,
       },
     },
+    closedDayList: {
+      select: {
+        idx: true,
+        day: true,
+        week: true,
+      },
+    },
+    operatingHourList: {
+      select: {
+        idx: true,
+        day: true,
+        startAt: true,
+        endAt: true,
+      },
+    },
+    weeklyClosedDayList: {
+      select: {
+        idx: true,
+        closedDate: true,
+        type: true,
+      },
+    },
+    breakTimeList: {
+      select: {
+        idx: true,
+        day: true,
+        startAt: true,
+        endAt: true,
+      },
+    },
   },
 });
 
