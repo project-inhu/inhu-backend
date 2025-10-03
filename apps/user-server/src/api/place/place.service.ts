@@ -26,18 +26,55 @@ export class PlaceService {
   }> {
     const pageSize = 10;
     const skip = (dto.page - 1) * pageSize;
-
-    const placeOverviewModelList = await this.placeCoreService.getPlaceAll({
-      take: pageSize + 1,
-      skip: skip,
-      orderBy: dto.orderby,
-      order: dto.order,
-      operating: dto.operating,
-      bookmarkUserIdx: undefined,
-      types: dto.type ? [dto.type] : undefined,
+    const baseFilter = {
       activated: true,
       permanentlyClosed: false,
-    });
+      order: dto.order,
+      types: dto.type ? [dto.type] : undefined,
+      orderBy: dto.orderby,
+      bookmarkUserIdx: undefined,
+    };
+    let placeOverviewModelList: PlaceOverviewModel[];
+
+    if (dto.operating === undefined) {
+      const operatingPlaceCount =
+        await this.placeCoreService.getOperatingPlaceCount();
+
+      const operatingRemain = Math.max(0, operatingPlaceCount - skip); // 운영중인 장소에서 남은 수
+      const operatingTake = Math.max(0, Math.min(pageSize, operatingRemain)); // 실제로 가져올 운영중인 장소 수
+
+      const closedSkip =
+        skip <= operatingPlaceCount ? 0 : skip - operatingPlaceCount; // 폐점된 장소에서 건너뛸 수
+      const closedTake = Math.max(0, pageSize - operatingTake); // 실제로 가져올 폐점된 장소 수
+
+      const [operatingList, closedList] = await Promise.all([
+        operatingTake > 0
+          ? this.placeCoreService.getPlaceAll({
+              ...baseFilter,
+              take: operatingTake + 1,
+              skip: skip,
+              operating: true,
+            })
+          : Promise.resolve([]),
+        closedTake > 0
+          ? this.placeCoreService.getPlaceAll({
+              ...baseFilter,
+              take: closedTake + 1,
+              skip: closedSkip,
+              operating: false,
+            })
+          : Promise.resolve([]),
+      ]);
+
+      placeOverviewModelList = [...operatingList, ...closedList];
+    } else {
+      placeOverviewModelList = await this.placeCoreService.getPlaceAll({
+        ...baseFilter,
+        take: pageSize + 1,
+        skip: skip,
+        operating: dto.operating,
+      });
+    }
 
     const paginatedList = placeOverviewModelList.slice(0, pageSize);
     const hasNext = placeOverviewModelList.length > pageSize;
