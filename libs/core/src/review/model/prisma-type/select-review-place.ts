@@ -13,6 +13,11 @@ export const SELECT_REVIEW_PLACE = Prisma.validator<Prisma.PlaceDefaultArgs>()({
         addressY: true,
       },
     },
+    placeTypeMappingList: {
+      select: {
+        placeTypeIdx: true,
+      },
+    },
   },
 });
 
