@@ -129,7 +129,10 @@ export class NaverBlogService {
     const year = dateArr[0];
     const month = dateArr[1].padStart(2, '0');
     const date = dateArr[2].padStart(2, '0');
-    const hhmm = dateArr[3];
+    const hhmm = dateArr[3]
+      .split(':')
+      .map((t) => t.padStart(2, '0'))
+      .join(':');
 
     const dateStr = `${year}-${month}-${date}T${hhmm}:00`;
     return new Date(dateStr);
