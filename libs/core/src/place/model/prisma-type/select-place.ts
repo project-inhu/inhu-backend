@@ -19,6 +19,9 @@ export const SELECT_PLACE = Prisma.validator<Prisma.PlaceDefaultArgs>()({
       select: {
         keyword: { select: { content: true, idx: true } },
       },
+      where: {
+        count: { gt: 0 },
+      },
     },
     roadAddress: {
       select: {
