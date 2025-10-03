@@ -348,10 +348,11 @@ model BlogReview {
 }
 
 model MenuReview {
-  menuIdx   Int
-  reviewIdx Int
+  menuIdx   Int    @map("menu_idx")
+  reviewIdx Int    @map("review_idx")
   menu      Menu   @relation(fields: [menuIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_menu_tb_to_menu_review_tb")
   review    Review @relation(fields: [reviewIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_review_tb_to_menu_review_tb")
 
   @@id([menuIdx, reviewIdx])
+  @@map("menu_review_tb")  
 }
