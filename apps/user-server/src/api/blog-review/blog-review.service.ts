@@ -10,8 +10,8 @@ export class BlogReviewService {
   public async getBlogReviewAll(placeIdx: number, dto: GetBlogReviewAllDto) {
     const blogList = await this.blogReviewCoreService.getBlogReviewAll({
       placeIdx,
-      take: 10,
-      skip: (dto.page - 1) * 10 + 1,
+      skip: (dto.page - 1) * 10,
+      take: 11,
     });
 
     return {
