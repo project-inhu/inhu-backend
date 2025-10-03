@@ -157,7 +157,7 @@ model Menu {
   sortOrder              Int                      @map("sort_order") @db.SmallInt
   createdAt              DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt              DateTime?                @map("deleted_at") @db.Timestamptz(6)
-  menuReviewMappingList  MenuReviewMapping[]
+  menuReviewList         MenuReview[]
   place                  Place                    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_menu_tb")
 
   @@map("menu_tb")
@@ -189,7 +189,7 @@ model Review {
   content                  String                   @db.VarChar
   createdAt                DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt                DateTime?                @map("deleted_at") @db.Timestamptz(6)
-  menuReviewMappingList    MenuReviewMapping[]
+  menuReviewList           MenuReview[]
   reviewImageList          ReviewImage[]
   reviewKeywordMappingList ReviewKeywordMapping[]
   place                    Place                    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_review_tb")
@@ -346,12 +346,12 @@ model BlogReview {
   @@map("blog_review_tb")
 }
 
-model MenuReviewMapping {
+model MenuReview {
   menuIdx   Int
   reviewIdx Int
   count     Int    @default(0)
-  menu      Menu   @relation(fields: [menuIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_menu_tb_to_menu_review_mapping_tb")
-  review    Review @relation(fields: [reviewIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_review_tb_to_menu_review_mapping_tb")
+  menu      Menu   @relation(fields: [menuIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_menu_tb_to_menu_review_tb")
+  review    Review @relation(fields: [reviewIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_review_tb_to_menu_review_tb")
 
   @@id([menuIdx, reviewIdx])
 }

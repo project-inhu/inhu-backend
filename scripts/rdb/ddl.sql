@@ -36,7 +36,7 @@ CREATE TABLE keyword_tb
   PRIMARY KEY (idx)
 );
 
-CREATE TABLE menu_review_mapping_tb
+CREATE TABLE menu_review_tb
 (
   menu_idx   int NOT NULL,
   review_idx int NOT NULL,
@@ -431,12 +431,12 @@ ALTER TABLE blog_review_tb
     FOREIGN KEY (place_idx)
     REFERENCES place_tb (idx);
     
-ALTER TABLE menu_review_mapping_tb
+ALTER TABLE menu_review_tb
   ADD CONSTRAINT FK_menu_tb_TO_menu_review_mapping_tb
     FOREIGN KEY (menu_idx)
     REFERENCES menu_tb (idx);
 
-ALTER TABLE menu_review_mapping_tb
+ALTER TABLE menu_review_tb
   ADD CONSTRAINT FK_review_tb_TO_menu_review_mapping_tb
     FOREIGN KEY (review_idx)
     REFERENCES review_tb (idx);
