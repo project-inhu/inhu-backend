@@ -7,6 +7,7 @@ export class ReviewPlaceEntity extends PickType(PlaceEntity, [
   'idx',
   'name',
   'roadAddress',
+  'type',
 ]) {
   constructor(data: ReviewPlaceEntity) {
     super();
@@ -18,6 +19,7 @@ export class ReviewPlaceEntity extends PickType(PlaceEntity, [
       idx: place.idx,
       name: place.name,
       roadAddress: PlaceRoadAddressEntity.fromModel(place.roadAddress),
+      type: place.type,
     });
   }
 }

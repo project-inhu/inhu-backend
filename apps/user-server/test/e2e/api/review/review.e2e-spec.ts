@@ -18,6 +18,7 @@ describe('Review E2E test', () => {
     await testHelper.destroy();
   });
 
+  // TODO: place type 추가해서 체크해줘야 됨.
   describe('GET /review/all', () => {
     it('200 - review field check', async () => {
       const loginUser = testHelper.loginUsers.user1;
