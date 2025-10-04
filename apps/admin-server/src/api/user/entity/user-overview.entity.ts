@@ -1,5 +1,5 @@
 import { UserForAdminModel } from '@libs/core/user/model/user-for-admin.model';
-import { UserProviderModel } from '@libs/core/user/model/user-provider.model';
+import { UserProviderEntity } from './user-provider.entity';
 
 export class UserOverviewEntity {
   /**
@@ -26,7 +26,7 @@ export class UserOverviewEntity {
   /**
    * 권한 인증처
    */
-  provider: UserProviderModel | null;
+  provider: UserProviderEntity | null;
 
   /**
    * 사용자가 작성한 리뷰 개수
