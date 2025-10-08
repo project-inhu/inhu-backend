@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { MagazineCoreRepository } from './magazine-core.repository';
 import { MagazineModel } from './model/magazine.model';
 
+/**
+ * @publicApi
+ */
 @Injectable()
 export class MagazineCoreService {
   constructor(
