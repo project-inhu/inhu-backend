@@ -369,13 +369,14 @@ model MagazinePlace {
 }
 
 model Magazine {
-  idx               Int               @id @default(autoincrement())
-  title             String            @db.VarChar
-  content           String            @db.VarChar
-  isTitleVisible    Boolean           @default(false) @map("is_title_visible")
-  createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
-  activatedAt       DateTime?         @map("activated_at") @db.Timestamptz(6)
-  placeList         MagazinePlace[]
+  idx            Int               @id @default(autoincrement())
+  title          String            @db.VarChar
+  content        String            @db.VarChar
+  isTitleVisible Boolean           @default(false) @map("is_title_visible")
+  createdAt      DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  activatedAt    DateTime?         @map("activated_at") @db.Timestamptz(6)
+  deletedAt      DateTime?         @map("deleted_at") @db.Timestamptz(6)
+  placeList      MagazinePlace[]
 
   @@map("magazine_tb")
 }

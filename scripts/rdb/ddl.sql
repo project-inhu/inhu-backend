@@ -51,6 +51,7 @@ CREATE TABLE magazine_tb
   is_title_visible boolean                  NOT NULL DEFAULT false,
   created_at       timestamp with time zone NOT NULL DEFAULT NOW(),
   activated_at     timestamp with time zone,
+  deleted_at       timestamp with time zone,
   PRIMARY KEY (idx)
 );
 
