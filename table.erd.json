@@ -10,7 +10,7 @@
     "show": 511,
     "database": 16,
     "databaseName": "inhu",
-    "canvasType": "@dineug/erd-editor/builtin-schema-sql",
+    "canvasType": "ERD",
     "language": 1,
     "tableNameCase": 4,
     "columnNameCase": 2,
@@ -1050,6 +1050,7 @@
         "comment": "",
         "columnIds": [
           "PlNQjPMJUtDU410lw4-2E",
+          "L83y4ppHxHZbJc2mqOuWo",
           "lqZ3s7s15vI2sr1Gz2MtF",
           "_NeVX7NZhOzhbH5sQTHye",
           "n0VWuORzaeP25qiXSmQW3",
@@ -1057,6 +1058,7 @@
         ],
         "seqColumnIds": [
           "PlNQjPMJUtDU410lw4-2E",
+          "L83y4ppHxHZbJc2mqOuWo",
           "lqZ3s7s15vI2sr1Gz2MtF",
           "_NeVX7NZhOzhbH5sQTHye",
           "n0VWuORzaeP25qiXSmQW3",
@@ -1071,7 +1073,7 @@
           "color": ""
         },
         "meta": {
-          "updateAt": 1759905027323,
+          "updateAt": 1759915930890,
           "createAt": 1759904721721
         }
       },
@@ -5162,6 +5164,26 @@
           "updateAt": 1759905076349,
           "createAt": 1759905065948
         }
+      },
+      "L83y4ppHxHZbJc2mqOuWo": {
+        "id": "L83y4ppHxHZbJc2mqOuWo",
+        "tableId": "ivhf5YI3Sbge6ZHmkEvU3",
+        "name": "title",
+        "comment": "",
+        "dataType": "varchar",
+        "default": "",
+        "options": 8,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1759915937719,
+          "createAt": 1759915925988
+        }
       }
     },
     "relationshipEntities": {
@@ -6072,7 +6094,7 @@
             "PlNQjPMJUtDU410lw4-2E"
           ],
           "x": 3086,
-          "y": 1035.714,
+          "y": 1047.714,
           "direction": 2
         },
         "end": {

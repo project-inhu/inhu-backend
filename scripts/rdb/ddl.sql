@@ -46,6 +46,7 @@ CREATE TABLE magazine_place_tb
 CREATE TABLE magazine_tb
 (
   idx              int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  title            varchar                  NOT NULL,
   content          varchar                  NOT NULL,
   is_title_visible boolean                  NOT NULL DEFAULT false,
   created_at       timestamp with time zone NOT NULL DEFAULT NOW(),
