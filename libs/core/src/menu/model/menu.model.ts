@@ -1,3 +1,4 @@
+import { ReviewModel } from '@libs/core/review/model/review.model';
 import { SelectMenu } from './prisma-type/select-menu';
 
 /**
@@ -53,6 +54,16 @@ export class MenuModel {
    */
   public createdAt: Date;
 
+  /**
+   * 리뷰 목록
+   */
+  public reviewList: ReviewModel[];
+
+  /**
+   * 리뷰 개수
+   */
+  public reviewCount: number;
+
   constructor(data: MenuModel) {
     Object.assign(this, data);
   }
@@ -68,6 +79,10 @@ export class MenuModel {
       isFlexible: menu.isFlexible,
       sortOrder: menu.sortOrder,
       createdAt: menu.createdAt,
+      reviewList: menu.reviewList.map((menuReview) =>
+        ReviewModel.fromPrisma(menuReview.review),
+      ),
+      reviewCount: menu.reviewList.length,
     });
   }
 }

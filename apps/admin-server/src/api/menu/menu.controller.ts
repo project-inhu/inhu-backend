@@ -41,12 +41,27 @@ export class MenuController {
    */
   @AdminAuth()
   @Exception(400, 'Invalid placeIdx or request body')
+  @Exception(404, 'Place does not exist')
   @Post('/place/:placeIdx/menu')
   public async createMenu(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @Body() dto: CreateMenuDto,
   ): Promise<MenuEntity> {
     return await this.menuService.createMenuByPlaceIdx(placeIdx, dto);
+  }
+
+  /**
+   * 메뉴 리뷰 생성
+   */
+  @AdminAuth()
+  @Exception(400, 'Invalid menuIdx or reviewIdx')
+  @Exception(404, 'Menu or Review does not exist')
+  @Post('/menu/:menuIdx/review/:reviewIdx')
+  public async createMenuReview(
+    @Param('menuIdx', ParseIntPipe) menuIdx: number,
+    @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
+  ): Promise<void> {
+    return await this.menuService.createMenuReview(menuIdx, reviewIdx);
   }
 
   /**
@@ -88,5 +103,22 @@ export class MenuController {
     @Param('menuIdx', ParseIntPipe) menuIdx: number,
   ): Promise<void> {
     return await this.menuService.deleteMenuByIdx(menuIdx);
+  }
+
+  /**
+   * 메뉴 리뷰 삭제
+   */
+  @AdminAuth()
+  @Exception(400, 'Invalid reviewIdx or menuIdx')
+  @Exception(404, 'Menu or Review does not exist')
+  @Delete('/menu/:menuIdx/review/:reviewIdx')
+  public async deleteMenuReviewByReviewIdxAndMenuIdx(
+    @Param('menuIdx', ParseIntPipe) menuIdx: number,
+    @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
+  ): Promise<void> {
+    return await this.menuService.deleteMenuReviewByReviewIdxAndMenuIdx(
+      reviewIdx,
+      menuIdx,
+    );
   }
 }

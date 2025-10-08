@@ -5,7 +5,6 @@ import { GetMenuAllInput } from './inputs/get-menu-all.input';
 import { SELECT_MENU, SelectMenu } from './model/prisma-type/select-menu';
 import { CreateMenuInput } from './inputs/create-menu.input';
 import { UpdateMenuInput } from './inputs/update-menu.input';
-import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class MenuCoreRepository {
@@ -41,6 +40,25 @@ export class MenuCoreRepository {
     });
   }
 
+  // TODO: menuReviewModel 존재 유무 판단인데 menuModel 리턴. 변경 필요
+  public async selectMenuReviewByMenuIdxAndReviewIdx(
+    menuIdx: number,
+    reviewIdx: number,
+  ): Promise<SelectMenu | null> {
+    return await this.txHost.tx.menu.findFirst({
+      ...SELECT_MENU,
+      where: {
+        idx: menuIdx,
+        reviewList: {
+          some: {
+            reviewIdx,
+          },
+        },
+        deletedAt: null,
+      },
+    });
+  }
+
   public async getMenuCountByPlaceIdx(placeIdx: number): Promise<number> {
     return await this.txHost.tx.menu.count({
       where: { placeIdx, deletedAt: null },
@@ -62,6 +80,22 @@ export class MenuCoreRepository {
         isFlexible,
         sortOrder: (await this.getMenuCountByPlaceIdx(placeIdx)) + 1,
       },
+    });
+  }
+
+  public async insertMenuReview(
+    reviewIdx: number,
+    menuIdx: number,
+  ): Promise<void> {
+    await this.txHost.tx.menu.update({
+      data: {
+        reviewList: {
+          create: {
+            reviewIdx,
+          },
+        },
+      },
+      where: { idx: menuIdx },
     });
   }
 
@@ -140,5 +174,24 @@ export class MenuCoreRepository {
       'gt',
       menu.sortOrder,
     );
+  }
+
+  public async deleteMenuReviewByReviewIdxAndMenuIdx(
+    reviewIdx: number,
+    menuIdx: number,
+  ): Promise<void> {
+    await this.txHost.tx.menu.update({
+      data: {
+        reviewList: {
+          delete: {
+            menuIdx_reviewIdx: {
+              reviewIdx,
+              menuIdx,
+            },
+          },
+        },
+      },
+      where: { idx: menuIdx },
+    });
   }
 }
