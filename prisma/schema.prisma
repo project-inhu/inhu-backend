@@ -362,7 +362,7 @@ model MagazinePlace {
   magazineIdx Int        @map("magazine_idx")
   placeIdx    Int        @map("place_idx")
   magazine    Magazine   @relation(fields: [magazineIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_magazine_tb_to_magazine_place_tb")
-  placeTb     Place      @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_magazine_place_tb")
+  place       Place      @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_magazine_place_tb")
 
   @@id([magazineIdx, placeIdx])
   @@map("magazine_place_tb")
@@ -375,7 +375,7 @@ model Magazine {
   isTitleVisible    Boolean           @default(false) @map("is_title_visible")
   createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
   activatedAt       DateTime?         @map("activated_at") @db.Timestamptz(6)
-  magazinePlaceList MagazinePlace[]
+  placeList         MagazinePlace[]
 
   @@map("magazine_tb")
 }
