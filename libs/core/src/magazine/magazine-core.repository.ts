@@ -5,6 +5,7 @@ import {
   SELECT_MAGAZINE,
   SelectMagazine,
 } from './model/prisma-type/select-magazine';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class MagazineCoreRepository {
@@ -20,6 +21,7 @@ export class MagazineCoreRepository {
       where: {
         idx,
         activatedAt: { not: null },
+        deletedAt: null,
       },
     });
   }
@@ -28,11 +30,35 @@ export class MagazineCoreRepository {
     return await this.txHost.tx.magazine.findMany({
       ...SELECT_MAGAZINE,
       where: {
-        activatedAt: { not: null },
+        AND: [{ deletedAt: null }, this.getActivatedAtFilterWhereClause(true)],
       },
       orderBy: {
         activatedAt: 'desc',
       },
     });
+  }
+
+  public async updateMagazineActivatedAtByIdx(
+    idx: number,
+    activate: boolean,
+  ): Promise<void> {
+    await this.txHost.tx.magazine.update({
+      where: { idx },
+      data: { activatedAt: activate ? new Date() : null },
+    });
+  }
+
+  private getActivatedAtFilterWhereClause(
+    activated?: boolean,
+  ): Prisma.MagazineWhereInput {
+    if (activated === undefined) {
+      return {};
+    }
+
+    if (activated) {
+      return { activatedAt: { not: null } };
+    }
+
+    return { activatedAt: null };
   }
 }
