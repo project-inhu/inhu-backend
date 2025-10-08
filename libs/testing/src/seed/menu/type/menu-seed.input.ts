@@ -20,4 +20,6 @@ export type MenuSeedInput = {
   isFlexible?: boolean;
 
   deletedAt?: Date | null;
+
+  reviewIdxList?: [number, ...number[]] | null;
 };
