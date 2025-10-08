@@ -23,4 +23,16 @@ export class MagazineCoreRepository {
       },
     });
   }
+
+  public async selectMagazineAll(): Promise<SelectMagazine[]> {
+    return await this.txHost.tx.magazine.findMany({
+      ...SELECT_MAGAZINE,
+      where: {
+        activatedAt: { not: null },
+      },
+      orderBy: {
+        activatedAt: 'desc',
+      },
+    });
+  }
 }

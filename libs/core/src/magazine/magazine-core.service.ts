@@ -16,4 +16,10 @@ export class MagazineCoreService {
 
     return magazine && MagazineModel.fromPrisma(magazine);
   }
+
+  public async getMagazineAll(): Promise<MagazineModel[]> {
+    return (await this.magazineCoreRepository.selectMagazineAll()).map(
+      MagazineModel.fromPrisma,
+    );
+  }
 }
