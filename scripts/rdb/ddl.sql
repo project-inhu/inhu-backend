@@ -36,6 +36,23 @@ CREATE TABLE keyword_tb
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE magazine_place_tb
+(
+  magazine_idx int NOT NULL,
+  place_idx    int NOT NULL,
+  PRIMARY KEY (magazine_idx, place_idx)
+);
+
+CREATE TABLE magazine_tb
+(
+  idx              int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  content          varchar                  NOT NULL,
+  is_title_visible boolean                  NOT NULL DEFAULT false,
+  created_at       timestamp with time zone NOT NULL DEFAULT NOW(),
+  activated_at     timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+
 CREATE TABLE menu_review_tb
 (
   menu_idx   int NOT NULL,
@@ -440,3 +457,13 @@ ALTER TABLE menu_review_tb
   ADD CONSTRAINT FK_review_tb_TO_menu_review_mapping_tb
     FOREIGN KEY (review_idx)
     REFERENCES review_tb (idx);
+
+ALTER TABLE magazine_place_tb
+  ADD CONSTRAINT FK_magazine_tb_TO_magazine_place_tb
+    FOREIGN KEY (magazine_idx)
+    REFERENCES magazine_tb (idx);
+
+ALTER TABLE magazine_place_tb
+  ADD CONSTRAINT FK_place_tb_TO_magazine_place_tb
+    FOREIGN KEY (place_idx)
+    REFERENCES place_tb (idx);
