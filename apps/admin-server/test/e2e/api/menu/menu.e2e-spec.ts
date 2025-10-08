@@ -4,11 +4,13 @@ import { GetAllMenuResponseDto } from '@admin/api/menu/dto/response/get-all-menu
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { MenuSeedHelper } from '@libs/testing/seed/menu/menu.seed';
 import { MenuEntity } from '@admin/api/menu/entity/menu.entity';
+import { ReviewSeedHelper } from '@libs/testing/seed/review/review.seed';
 
 describe('Menu e2e test', () => {
   const testHelper = TestHelper.create(AdminServerModule);
   const placeSeedHelper = testHelper.seedHelper(PlaceSeedHelper);
   const menuSeedHelper = testHelper.seedHelper(MenuSeedHelper);
+  const reviewSeedHelper = testHelper.seedHelper(ReviewSeedHelper);
 
   beforeEach(async () => {
     await testHelper.init();
@@ -26,6 +28,10 @@ describe('Menu e2e test', () => {
         deletedAt: null,
         activatedAt: new Date(),
       });
+      const reviewSeed = await reviewSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        userIdx: loginUser.idx,
+      });
 
       const menuSeed = await menuSeedHelper.seed({
         placeIdx: placeSeed.idx,
@@ -35,6 +41,7 @@ describe('Menu e2e test', () => {
         isFlexible: false,
         imagePath: '/test-image.png',
         deletedAt: null,
+        reviewIdxList: [reviewSeed.idx],
       });
 
       const response = await testHelper
@@ -61,6 +68,77 @@ describe('Menu e2e test', () => {
       expect(menu.isFlexible).toBe(menuSeed.isFlexible);
       expect(menu.imagePath).toBe(menuSeed.imagePath);
       expect(menu.sortOrder).toBe(1);
+      expect(menu.reviewList[0].idx).toBe(reviewSeed.idx);
+      expect(menu.reviewList[0].place.idx).toBe(placeSeed.idx);
+      expect(menu.reviewList[0].author.idx).toBe(loginUser.idx);
+      expect(menu.reviewCount).toBe(1);
+    });
+
+    it('200 - no menu review exists', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        deletedAt: null,
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/place/${placeSeed.idx}/menu`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query({ page: 1, row: 10 })
+        .expect(200);
+
+      const menuList: MenuEntity[] = response.body.menuList;
+      const menu = menuList[0];
+
+      expect(menu.reviewList).toEqual([]);
+      expect(menu.reviewCount).toBe(0);
+    });
+
+    it('200 - multiple menu review exists', async () => {
+      const loginUser1 = testHelper.loginAdmin.admin1;
+      const loginUser2 = testHelper.loginAdmin.admin2;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const [review1, review2] = await reviewSeedHelper.seedAll([
+        {
+          placeIdx: placeSeed.idx,
+          userIdx: loginUser1.idx,
+        },
+        {
+          placeIdx: placeSeed.idx,
+          userIdx: loginUser2.idx,
+        },
+      ]);
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        deletedAt: null,
+        reviewIdxList: [review1.idx, review2.idx],
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/place/${placeSeed.idx}/menu`)
+        .set('Cookie', `token=Bearer ${loginUser1.token}`)
+        .query({ page: 1, row: 10 })
+        .expect(200);
+
+      const menuList: MenuEntity[] = response.body.menuList;
+      const menu = menuList[0];
+
+      expect(menu.reviewList[0].idx).toBe(review1.idx);
+      expect(menu.reviewList[0].place.idx).toBe(placeSeed.idx);
+      expect(menu.reviewList[0].author.idx).toBe(loginUser1.idx);
+      expect(menu.reviewList[1].idx).toBe(review2.idx);
+      expect(menu.reviewList[1].place.idx).toBe(placeSeed.idx);
+      expect(menu.reviewList[1].author.idx).toBe(loginUser2.idx);
+      expect(menu.reviewCount).toBe(2);
     });
 
     it('200 - hasNext check', async () => {
@@ -296,6 +374,8 @@ describe('Menu e2e test', () => {
       expect(menu.isFlexible).toBe(createMenuDto.isFlexible);
       expect(menu.imagePath).toBe(createMenuDto.imagePath);
       expect(menu.sortOrder).toBe(1);
+      expect(menu.reviewList).toEqual([]);
+      expect(menu.reviewCount).toBe(0);
     });
 
     it('201 - create with no optional data', async () => {
@@ -329,6 +409,8 @@ describe('Menu e2e test', () => {
       expect(resultMenu.isFlexible).toBe(false);
       expect(resultMenu.imagePath).toBeNull();
       expect(resultMenu.sortOrder).toBe(1);
+      expect(resultMenu.reviewList).toEqual([]);
+      expect(resultMenu.reviewCount).toBe(0);
     });
 
     it('400 - invalid placeIdx', async () => {
@@ -426,6 +508,111 @@ describe('Menu e2e test', () => {
         .post(`/place/99999/menu`) //! 존재하지 않는 장소
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send(createMenuDto)
+        .expect(404);
+    });
+  });
+
+  describe('POST /menu/:menuIdx/review/:reviewIdx', () => {
+    it('201 - successfully create menu review', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const reviewSeed = await reviewSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        userIdx: loginUser.idx,
+      });
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        deletedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .post(`/menu/${menuSeed.idx}/review/${reviewSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(201);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
+        include: { reviewList: true },
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu.reviewList[0].menuIdx).toBe(menuSeed.idx);
+      expect(updatedMenu.reviewList[0].reviewIdx).toBe(reviewSeed.idx);
+      expect(updatedMenu.reviewList.length).toBe(1);
+    });
+
+    it('400 - invalid menuIdx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const reviewSeed = await reviewSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        userIdx: loginUser.idx,
+      });
+
+      await testHelper
+        .test()
+        .post(`/menu/invalid/review/${reviewSeed.idx}`) // ! invalid menuIdx
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(400);
+    });
+
+    it('400 - invalid reviewIdx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        deletedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .post(`/menu/${menuSeed.idx}/review/invalid`) // ! invalid reviewIdx
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(400);
+    });
+
+    it('404 - menu not found', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const reviewSeed = await reviewSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        userIdx: loginUser.idx,
+      });
+
+      await testHelper
+        .test()
+        .post(`/menu/99999/review/${reviewSeed.idx}`) // ! 존재하지 않는 메뉴
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(404);
+    });
+
+    it('404 - review not found', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        deletedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .post(`/menu/${menuSeed.idx}/review/99999`) // ! 존재하지 않는 리뷰
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(404);
     });
   });
@@ -1154,6 +1341,103 @@ describe('Menu e2e test', () => {
       await testHelper
         .test()
         .delete(`/menu/99999`) // ! 존재하지 않는 메뉴
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(404);
+    });
+  });
+
+  describe('DELETE /mnu/:menuIdx/review/:reviewIdx', () => {
+    it('200 - successfully delete menu review', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const reviewSeed = await reviewSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        userIdx: loginUser.idx,
+      });
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        deletedAt: null,
+      });
+
+      // 먼저 메뉴리뷰를 등록
+      await testHelper
+        .test()
+        .post(`/menu/${menuSeed.idx}/review/${reviewSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(201);
+
+      // 등록된 메뉴리뷰를 삭제
+      await testHelper
+        .test()
+        .delete(`/menu/${menuSeed.idx}/review/${reviewSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findFirst({
+        include: { reviewList: true },
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu?.reviewList.length).toBe(0);
+    });
+
+    it('400 - invalid menuIdx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const reviewSeed = await reviewSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        userIdx: loginUser.idx,
+      });
+
+      await testHelper
+        .test()
+        .delete(`/menu/invalid/review/${reviewSeed.idx}`) // ! invalid menuIdx
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(400);
+    });
+
+    it('400 - invalid reviewIdx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        deletedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .delete(`/menu/${menuSeed.idx}/review/invalid`) // ! invalid reviewIdx
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(400);
+    });
+
+    it('404 - menu review not found', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const reviewSeed = await reviewSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        userIdx: loginUser.idx,
+      });
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        deletedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .delete(`/menu/${menuSeed.idx}/review/${reviewSeed.idx}`) // ! 존재하지 않는 메뉴리뷰
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(404);
     });
