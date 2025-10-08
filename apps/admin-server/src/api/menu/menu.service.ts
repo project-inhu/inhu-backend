@@ -62,8 +62,8 @@ export class MenuService {
   }
 
   public async createMenuReview(
-    reviewIdx: number,
     menuIdx: number,
+    reviewIdx: number,
   ): Promise<void> {
     const menu = await this.menuCoreService.getMenuByIdx(menuIdx);
     if (!menu) {
