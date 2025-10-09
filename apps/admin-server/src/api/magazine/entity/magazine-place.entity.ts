@@ -1,41 +1,25 @@
 import { PlaceRoadAddressEntity } from '@admin/api/place/entity/place-road-address.entity';
+import { PlaceEntity } from '@admin/api/place/entity/place.entity';
 import { MagazinePlaceModel } from '@libs/core/magazine/model/magazine-place.model';
+import { PickType } from '@nestjs/swagger';
 
-export class MagazinePlaceEntity {
+export class MagazinePlaceEntity extends PickType(PlaceEntity, [
+  'idx',
+  'name',
+  'tel',
+  'roadAddress',
+  'imagePathList',
+]) {
   /**
-   * 장소 식별자
+   * 현재 사용자가 특정 항목을 북마크했는지 여부
+   * - admin-server에서는 항상 false
    *
-   * @example 1
+   * @example false
    */
-  public idx: number;
-
-  /**
-   * 장소 이름
-   *
-   * @example "동아리 닭갈비"
-   */
-  public name: string;
-
-  /**
-   * 장소 전화번호
-   *
-   * @example "032-1111-2222"
-   */
-  public tel: string | null;
-
-  /**
-   * 도로명 주소
-   */
-  public roadAddress: PlaceRoadAddressEntity;
-
-  /**
-   * 특정 장소 이미지 경로 리스트
-   *
-   * @example ["/place/image1.jpg", "/place/image2.jpg"]
-   */
-  public placeImageList: string[];
+  public bookmark: boolean;
 
   constructor(data: MagazinePlaceEntity) {
+    super();
     Object.assign(this, data);
   }
 
@@ -45,7 +29,8 @@ export class MagazinePlaceEntity {
       name: model.name,
       tel: model.tel,
       roadAddress: PlaceRoadAddressEntity.fromModel(model.roadAddress),
-      placeImageList: model.placeImageList,
+      imagePathList: model.imgPathList,
+      bookmark: false,
     });
   }
 }

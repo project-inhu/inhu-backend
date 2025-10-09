@@ -1,30 +1,17 @@
 import { PlaceRoadAddressModel } from '@libs/core/place/model/place-road-address.model';
 import { SelectMagazinePlace } from './prisma-type/select-magazine-place';
+import { PickType } from '@nestjs/swagger';
+import { PlaceModel } from '@libs/core/place/model/place.model';
 
-export class MagazinePlaceModel {
-  /**
-   * 장소 식별자
-   */
-  public idx: number;
-
-  /**
-   * 장소 이름
-   */
-  public name: string;
-
-  /**
-   * 장소 전화번호
-   */
-  public tel: string | null;
-
-  /**
-   * 도로명 주소
-   */
-  public roadAddress: PlaceRoadAddressModel;
-
-  public placeImageList: string[];
-
+export class MagazinePlaceModel extends PickType(PlaceModel, [
+  'idx',
+  'name',
+  'tel',
+  'roadAddress',
+  'imgPathList',
+]) {
   constructor(data: MagazinePlaceModel) {
+    super();
     Object.assign(this, data);
   }
 
@@ -38,9 +25,7 @@ export class MagazinePlaceModel {
       roadAddress: PlaceRoadAddressModel.fromPrisma(
         magazinePlace.place.roadAddress,
       ),
-      placeImageList: magazinePlace.place.placeImageList.map(
-        ({ path }) => path,
-      ),
+      imgPathList: magazinePlace.place.placeImageList.map(({ path }) => path),
     });
   }
 }

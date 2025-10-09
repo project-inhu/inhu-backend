@@ -35,13 +35,15 @@ export class MagazineService {
   }
 
   public async createMagazine(dto: CreateMagazineDto): Promise<MagazineEntity> {
-    const placeIdxList = this.extractAllPlaceIdxFromText(dto.content);
+    const placeIdxList = dto.placeIdxList;
     const invalidPlaceIdxList: number[] = [];
 
-    for (const placeIdx of placeIdxList) {
-      const place = await this.placeCoreService.getPlaceByIdx(placeIdx);
-      if (!place) {
-        invalidPlaceIdxList.push(placeIdx);
+    if (placeIdxList && placeIdxList.length > 0) {
+      for (const placeIdx of placeIdxList) {
+        const place = await this.placeCoreService.getPlaceByIdx(placeIdx);
+        if (!place) {
+          invalidPlaceIdxList.push(placeIdx);
+        }
       }
     }
     if (invalidPlaceIdxList.length > 0) {

@@ -1,5 +1,14 @@
 import { ToBoolean } from '@libs/common/decorator/to-boolean.decorator';
-import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { UniqueArray } from '@user/common/decorator/unique-array.decorator';
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsBoolean,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateMagazineDto {
   /**
@@ -37,4 +46,16 @@ export class CreateMagazineDto {
   @ToBoolean()
   @IsBoolean()
   isTitleVisible: boolean;
+
+  /**
+   * 매거진에 포함된 장소 식별자 리스트
+   *
+   * @example [1, 2, 3]
+   */
+  @IsOptional()
+  @UniqueArray()
+  @Type(() => Number)
+  @IsArray()
+  @IsInt({ each: true })
+  placeIdxList: number[] | null;
 }
