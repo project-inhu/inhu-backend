@@ -7,6 +7,7 @@ import {
 } from './model/prisma-type/select-magazine';
 import { Prisma } from '@prisma/client';
 import { CreateMagazineInput } from './inputs/create-magazine.input';
+import { GetAllMagazineInput } from './inputs/get-all-magazine.input';
 
 @Injectable()
 export class MagazineCoreRepository {
@@ -27,15 +28,22 @@ export class MagazineCoreRepository {
     });
   }
 
-  public async selectMagazineAll(): Promise<SelectMagazine[]> {
+  public async selectMagazineAll(
+    input: GetAllMagazineInput,
+  ): Promise<SelectMagazine[]> {
     return await this.txHost.tx.magazine.findMany({
       ...SELECT_MAGAZINE,
       where: {
-        AND: [{ deletedAt: null }, this.getActivatedAtFilterWhereClause(true)],
+        AND: [
+          { deletedAt: null },
+          this.getActivatedAtFilterWhereClause(input.activated),
+        ],
       },
       orderBy: {
         activatedAt: 'desc',
       },
+      take: input.take,
+      skip: input.skip,
     });
   }
 

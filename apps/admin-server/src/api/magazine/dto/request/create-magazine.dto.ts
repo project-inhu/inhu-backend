@@ -1,5 +1,5 @@
 import { ToBoolean } from '@libs/common/decorator/to-boolean.decorator';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateMagazineDto {
   /**
@@ -35,5 +35,6 @@ export class CreateMagazineDto {
    */
   @IsOptional()
   @ToBoolean()
+  @IsBoolean()
   isTitleVisible: boolean;
 }

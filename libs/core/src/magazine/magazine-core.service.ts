@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MagazineCoreRepository } from './magazine-core.repository';
 import { MagazineModel } from './model/magazine.model';
 import { CreateMagazineInput } from './inputs/create-magazine.input';
+import { GetAllMagazineInput } from './inputs/get-all-magazine.input';
 
 /**
  * @publicApi
@@ -18,13 +19,14 @@ export class MagazineCoreService {
     return magazine && MagazineModel.fromPrisma(magazine);
   }
 
-  public async getMagazineAll(): Promise<MagazineModel[]> {
-    return (await this.magazineCoreRepository.selectMagazineAll()).map(
+  public async getMagazineAll(
+    input: GetAllMagazineInput,
+  ): Promise<MagazineModel[]> {
+    return (await this.magazineCoreRepository.selectMagazineAll(input)).map(
       MagazineModel.fromPrisma,
     );
   }
 
-  // TODO: text 추출 알고리즘 필요
   public async createMagazine(
     input: CreateMagazineInput,
   ): Promise<MagazineModel> {
