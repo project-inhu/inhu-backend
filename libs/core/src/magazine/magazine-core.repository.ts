@@ -6,6 +6,7 @@ import {
   SelectMagazine,
 } from './model/prisma-type/select-magazine';
 import { Prisma } from '@prisma/client';
+import { CreateMagazineInput } from './inputs/create-magazine.input';
 
 @Injectable()
 export class MagazineCoreRepository {
@@ -38,6 +39,29 @@ export class MagazineCoreRepository {
     });
   }
 
+  public async insertMagazine(
+    input: CreateMagazineInput,
+  ): Promise<SelectMagazine> {
+    return await this.txHost.tx.magazine.create({
+      ...SELECT_MAGAZINE,
+      data: {
+        title: input.title,
+        content: input.content,
+        thumbnailImagePath: input.thumbnailImagePath,
+        isTitleVisible: input.isTitleVisible,
+        placeList: input.placeIdxList
+          ? {
+              createMany: {
+                data: input.placeIdxList.map((placeIdx) => ({
+                  placeIdx,
+                })),
+              },
+            }
+          : undefined,
+      },
+    });
+  }
+
   public async updateMagazineActivatedAtByIdx(
     idx: number,
     activate: boolean,
@@ -45,6 +69,13 @@ export class MagazineCoreRepository {
     await this.txHost.tx.magazine.update({
       where: { idx },
       data: { activatedAt: activate ? new Date() : null },
+    });
+  }
+
+  public async softDeleteMagazineByIdx(idx: number): Promise<void> {
+    await this.txHost.tx.magazine.update({
+      data: { deletedAt: new Date() },
+      where: { idx },
     });
   }
 
