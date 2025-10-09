@@ -52,10 +52,11 @@ model Place {
   deletedAt             DateTime?           @map("deleted_at") @db.Timestamptz(6)
   permanentlyClosedAt   DateTime?           @map("permanently_closed_at") @db.Timestamptz(6)
   activatedAt           DateTime?           @map("activated_at") @db.Timestamptz(6)
-  BlogReview            BlogReview[]
+  blogReview            BlogReview[]
   bookmarkList          Bookmark[]
   breakTimeList         BreakTime[]
   closedDayList         ClosedDay[]
+  magazinePlaceList     MagazinePlace[]
   menuList              Menu[]
   operatingHourList     OperatingHour[]
   pickedPlace           PickedPlace?
@@ -147,18 +148,18 @@ model PlaceType {
 }
 
 model Menu {
-  idx                    Int                      @id @default(autoincrement())
-  placeIdx               Int                      @map("place_idx")
-  name                   String                   @db.VarChar
-  content                String?                  @db.VarChar
-  price                  Int?
-  imagePath              String?                  @map("image_path") @db.VarChar
-  isFlexible             Boolean                  @default(false) @map("is_flexible")
-  sortOrder              Int                      @map("sort_order") @db.SmallInt
-  createdAt              DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt              DateTime?                @map("deleted_at") @db.Timestamptz(6)
-  reviewList             MenuReview[]
-  place                  Place                    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_menu_tb")
+  idx        Int          @id @default(autoincrement())
+  placeIdx   Int          @map("place_idx")
+  name       String       @db.VarChar
+  content    String?      @db.VarChar
+  price      Int?
+  imagePath  String?      @map("image_path") @db.VarChar
+  isFlexible Boolean      @default(false) @map("is_flexible")
+  sortOrder  Int          @map("sort_order") @db.SmallInt
+  createdAt  DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt  DateTime?    @map("deleted_at") @db.Timestamptz(6)
+  reviewList MenuReview[]
+  place      Place        @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_menu_tb")
 
   @@map("menu_tb")
 }
@@ -183,18 +184,18 @@ model ReviewKeywordMapping {
 }
 
 model Review {
-  idx                      Int                      @id @default(autoincrement())
-  userIdx                  Int                      @map("user_idx")
-  placeIdx                 Int                      @map("place_idx")
-  content                  String                   @db.VarChar
-  isMenuChecked            Boolean                  @default(false) @map("is_menu_checked")
-  createdAt                DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt                DateTime?                @map("deleted_at") @db.Timestamptz(6)
+  idx                      Int                    @id @default(autoincrement())
+  userIdx                  Int                    @map("user_idx")
+  placeIdx                 Int                    @map("place_idx")
+  content                  String                 @db.VarChar
+  isMenuChecked            Boolean                @default(false) @map("is_menu_checked")
+  createdAt                DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                DateTime?              @map("deleted_at") @db.Timestamptz(6)
   menuReviewList           MenuReview[]
   reviewImageList          ReviewImage[]
   reviewKeywordMappingList ReviewKeywordMapping[]
-  place                    Place                    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_review_tb")
-  user                     User                     @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_review_tb")
+  place                    Place                  @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_review_tb")
+  user                     User                   @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_review_tb")
 
   @@map("review_tb")
 }
@@ -354,5 +355,29 @@ model MenuReview {
   review    Review @relation(fields: [reviewIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_review_tb_to_menu_review_tb")
 
   @@id([menuIdx, reviewIdx])
-  @@map("menu_review_tb")  
+  @@map("menu_review_tb")
+}
+
+model MagazinePlace {
+  magazineIdx Int        @map("magazine_idx")
+  placeIdx    Int        @map("place_idx")
+  magazine    Magazine   @relation(fields: [magazineIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_magazine_tb_to_magazine_place_tb")
+  place       Place      @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_magazine_place_tb")
+
+  @@id([magazineIdx, placeIdx])
+  @@map("magazine_place_tb")
+}
+
+model Magazine {
+  idx                Int               @id @default(autoincrement())
+  title              String            @db.VarChar
+  content            String            @db.VarChar
+  thumbnailImagePath String?           @map("thumbnail_image_path") @db.VarChar
+  isTitleVisible     Boolean           @default(false) @map("is_title_visible")
+  createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  activatedAt        DateTime?         @map("activated_at") @db.Timestamptz(6)
+  deletedAt          DateTime?         @map("deleted_at") @db.Timestamptz(6)
+  placeList          MagazinePlace[]
+
+  @@map("magazine_tb")
 }

@@ -15,6 +15,7 @@ import { S3UploadModule } from '@admin/api/s3-upload/s3-upload.module';
 import { DiscordWebhookModule } from '@libs/common/modules/discord-webhook/discord-webhook.module';
 import { NaverBlogModule } from '@libs/common/modules/naver-blog/naver-blog.module';
 import { BlogReviewModule } from '@admin/api/blog-review/blog-review.module';
+import { MagazineModule } from './api/magazine/magazine.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { BlogReviewModule } from '@admin/api/blog-review/blog-review.module';
     ReviewModule,
     S3UploadModule,
     BlogReviewModule,
+    MagazineModule,
   ],
 })
 export class AdminServerModule implements NestModule {

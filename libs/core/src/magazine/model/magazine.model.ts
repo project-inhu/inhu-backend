@@ -1,0 +1,63 @@
+import { MagazinePlaceModel } from './magazine-place.model';
+import { SelectMagazine } from './prisma-type/select-magazine';
+
+export class MagazineModel {
+  /**
+   * 매거진 식별자
+   */
+  public idx: number;
+
+  /**
+   * 매거진 제목
+   */
+  public title: string;
+
+  /**
+   * 매거진 내용
+   */
+  public content: string;
+
+  /**
+   * 썸네일 이미지 경로
+   */
+  public thumbnailImagePath: string | null;
+
+  /**
+   * 썸네일 제목 표시 여부
+   */
+  public isTitleVisible: boolean;
+
+  /**
+   * 생성 시간
+   */
+  public createdAt: Date;
+
+  /**
+   * 활성화 시간
+   */
+  public activatedAt: Date | null;
+
+  /**
+   * 매거진 장소 리스트
+   */
+  public placeList: MagazinePlaceModel[];
+
+  constructor(data: MagazineModel) {
+    Object.assign(this, data);
+  }
+
+  public static fromPrisma(magazine: SelectMagazine): MagazineModel {
+    return new MagazineModel({
+      idx: magazine.idx,
+      title: magazine.title,
+      content: magazine.content,
+      thumbnailImagePath: magazine.thumbnailImagePath,
+      isTitleVisible: magazine.isTitleVisible,
+      createdAt: magazine.createdAt,
+      activatedAt: magazine.activatedAt,
+      placeList: magazine.placeList.map((mp) =>
+        MagazinePlaceModel.fromPrisma(mp),
+      ),
+    });
+  }
+}
