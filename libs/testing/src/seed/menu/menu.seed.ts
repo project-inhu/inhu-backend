@@ -25,6 +25,7 @@ export class MenuSeedHelper extends ISeedHelper<MenuSeedInput, MenuSeedOutput> {
       imagePath: defaultValue(input.imagePath, null),
       isFlexible: defaultValue(input.isFlexible, false),
       deletedAt: defaultValue(input.deletedAt, null),
+      reviewIdxList: defaultValue(input.reviewIdxList, null),
     };
   }
 
@@ -45,6 +46,15 @@ export class MenuSeedHelper extends ISeedHelper<MenuSeedInput, MenuSeedOutput> {
         isFlexible: filledInput.isFlexible,
         sortOrder: menuCount + 1,
         deletedAt: filledInput.deletedAt,
+        reviewList: filledInput.reviewIdxList
+          ? {
+              createMany: {
+                data: filledInput.reviewIdxList.map((reviewIdx) => ({
+                  reviewIdx,
+                })),
+              },
+            }
+          : undefined,
       },
     });
 

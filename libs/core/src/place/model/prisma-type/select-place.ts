@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { SELECT_PLACE_ROAD_ADDRESS } from './select-place-road-address';
 
 export const SELECT_PLACE = Prisma.validator<Prisma.PlaceDefaultArgs>()({
   select: {
@@ -23,15 +24,7 @@ export const SELECT_PLACE = Prisma.validator<Prisma.PlaceDefaultArgs>()({
         count: { gt: 0 },
       },
     },
-    roadAddress: {
-      select: {
-        idx: true,
-        addressName: true,
-        detailAddress: true,
-        addressX: true,
-        addressY: true,
-      },
-    },
+    roadAddress: SELECT_PLACE_ROAD_ADDRESS,
     placeImageList: {
       select: { path: true },
       where: { deletedAt: null },

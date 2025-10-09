@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 
-const SELECT_PLACE_ROAD_ADDRESS =
+export const SELECT_PLACE_ROAD_ADDRESS =
   Prisma.validator<Prisma.RoadAddressDefaultArgs>()({
     select: {
       idx: true,
