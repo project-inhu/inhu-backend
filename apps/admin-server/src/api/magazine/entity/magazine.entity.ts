@@ -33,7 +33,7 @@ export class MagazineEntity {
   /**
    * 썸네일 제목 표시 여부
    *
-   * @example true
+   * @example false
    */
   public isTitleVisible: boolean;
 
