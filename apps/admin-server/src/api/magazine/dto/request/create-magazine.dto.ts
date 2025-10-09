@@ -1,5 +1,5 @@
 import { ToBoolean } from '@libs/common/decorator/to-boolean.decorator';
-import { UniqueArray } from '@user/common/decorator/unique-array.decorator';
+import { UniqueArray } from '@libs/common/decorator/unique-array.decorator';
 import { Type } from 'class-transformer';
 import {
   IsArray,

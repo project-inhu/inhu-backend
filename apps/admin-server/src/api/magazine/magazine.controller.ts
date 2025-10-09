@@ -2,7 +2,8 @@ import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { MagazineService } from './magazine.service';
 import { MagazineEntity } from './entity/magazine.entity';
 import { CreateMagazineDto } from './dto/request/create-magazine.dto';
-import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
+// import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
+
 import { GetAllMagazineDto } from './dto/request/get-all-magazine.dto';
 import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine.response.dto';
 import { Exception } from '@libs/common/decorator/exception.decorator';
@@ -11,7 +12,8 @@ import { Exception } from '@libs/common/decorator/exception.decorator';
 export class MagazineController {
   constructor(private readonly magazineService: MagazineService) {}
 
-  @AdminAuth()
+  // @AdminAuth()
+
   @Get('/all')
   @Exception(400, 'Invalid magazine request')
   public async getMagazineAll(
@@ -20,7 +22,8 @@ export class MagazineController {
     return await this.magazineService.getMagazineAll(dto);
   }
 
-  @AdminAuth()
+  // @AdminAuth()
+
   @Post()
   @Exception(400, 'Invalid create magazine request')
   @Exception(404, 'Places not found for idx: {idx list}')
