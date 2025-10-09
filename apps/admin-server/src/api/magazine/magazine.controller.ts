@@ -5,12 +5,15 @@ import { CreateMagazineDto } from './dto/request/create-magazine.dto';
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { GetAllMagazineDto } from './dto/request/get-all-magazine.dto';
 import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine.response.dto';
+import { Exception } from '@libs/common/decorator/exception.decorator';
 
 @Controller('magazine')
 export class MagazineController {
   constructor(private readonly magazineService: MagazineService) {}
 
+  @AdminAuth()
   @Get('/all')
+  @Exception(400, 'Invalid magazine request')
   public async getMagazineAll(
     @Query() dto: GetAllMagazineDto,
   ): Promise<GetAllMagazineResponseDto> {
@@ -19,6 +22,8 @@ export class MagazineController {
 
   @AdminAuth()
   @Post()
+  @Exception(400, 'Invalid create magazine request')
+  @Exception(404, 'Places not found for idx: {idx list}')
   public async createMagazine(
     @Body() dto: CreateMagazineDto,
   ): Promise<MagazineEntity> {

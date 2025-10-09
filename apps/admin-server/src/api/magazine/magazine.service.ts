@@ -1,13 +1,17 @@
 import { MagazineCoreService } from '@libs/core/magazine/magazine-core.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMagazineDto } from './dto/request/create-magazine.dto';
 import { MagazineEntity } from './entity/magazine.entity';
 import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine.response.dto';
 import { GetAllMagazineDto } from './dto/request/get-all-magazine.dto';
+import { PlaceCoreService } from '@libs/core/place/place-core.service';
 
 @Injectable()
 export class MagazineService {
-  constructor(private readonly magazineCoreService: MagazineCoreService) {}
+  constructor(
+    private readonly magazineCoreService: MagazineCoreService,
+    private readonly placeCoreService: PlaceCoreService,
+  ) {}
 
   public async getMagazineAll(
     dto: GetAllMagazineDto,
@@ -31,13 +35,28 @@ export class MagazineService {
   }
 
   public async createMagazine(dto: CreateMagazineDto): Promise<MagazineEntity> {
+    const placeIdxList = this.extractAllPlaceIdxFromText(dto.content);
+    const invalidPlaceIdxList: number[] = [];
+
+    for (const placeIdx of placeIdxList) {
+      const place = await this.placeCoreService.getPlaceByIdx(placeIdx);
+      if (!place) {
+        invalidPlaceIdxList.push(placeIdx);
+      }
+    }
+    if (invalidPlaceIdxList.length > 0) {
+      throw new NotFoundException(
+        `Places not found for idx: ${invalidPlaceIdxList.join(', ')}`,
+      );
+    }
+
     return await this.magazineCoreService
       .createMagazine({
         title: dto.title,
         content: dto.content,
         thumbnailImagePath: dto.thumbnailImagePath,
         isTitleVisible: dto.isTitleVisible,
-        placeIdxList: this.extractAllPlaceIdxFromText(dto.content),
+        placeIdxList: placeIdxList,
       })
       .then(MagazineEntity.fromModel);
   }
