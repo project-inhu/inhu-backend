@@ -22,6 +22,8 @@ export class MagazinePlaceModel {
    */
   public roadAddress: PlaceRoadAddressModel;
 
+  public placeImageList: string[];
+
   constructor(data: MagazinePlaceModel) {
     Object.assign(this, data);
   }
@@ -35,6 +37,9 @@ export class MagazinePlaceModel {
       tel: magazinePlace.place.tel,
       roadAddress: PlaceRoadAddressModel.fromPrisma(
         magazinePlace.place.roadAddress,
+      ),
+      placeImageList: magazinePlace.place.placeImageList.map(
+        ({ path }) => path,
       ),
     });
   }

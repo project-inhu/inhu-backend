@@ -10,6 +10,11 @@ export const SELECT_MAGAZINE_PLACE =
           name: true,
           tel: true,
           roadAddress: SELECT_PLACE_ROAD_ADDRESS,
+          placeImageList: {
+            select: { path: true },
+            where: { deletedAt: null },
+            orderBy: { idx: 'asc' },
+          },
         },
       },
     },

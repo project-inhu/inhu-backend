@@ -18,6 +18,11 @@ export class MagazineModel {
   public content: string;
 
   /**
+   * 썸네일 이미지 경로
+   */
+  public thumbnailImagePath: string | null;
+
+  /**
    * 썸네일 제목 표시 여부
    */
   public isTitleVisible: boolean;
@@ -46,6 +51,7 @@ export class MagazineModel {
       idx: magazine.idx,
       title: magazine.title,
       content: magazine.content,
+      thumbnailImagePath: magazine.thumbnailImagePath,
       isTitleVisible: magazine.isTitleVisible,
       createdAt: magazine.createdAt,
       activatedAt: magazine.activatedAt,
