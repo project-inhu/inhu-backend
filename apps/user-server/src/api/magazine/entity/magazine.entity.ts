@@ -62,7 +62,7 @@ export class MagazineEntity {
 
   public static fromModel(
     model: MagazineModel,
-    bookmark: boolean,
+    userBookmarkedPlaceList: number[],
   ): MagazineEntity {
     return new MagazineEntity({
       idx: model.idx,
@@ -73,7 +73,7 @@ export class MagazineEntity {
       createdAt: model.createdAt,
       activatedAt: model.activatedAt,
       placeList: model.placeList.map((model) =>
-        MagazinePlaceEntity.fromModel(model, bookmark),
+        MagazinePlaceEntity.fromModel(model, userBookmarkedPlaceList),
       ),
     });
   }

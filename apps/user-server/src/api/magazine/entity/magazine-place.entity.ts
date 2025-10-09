@@ -18,7 +18,7 @@ export class MagazinePlaceEntity extends PickType(PlaceEntity, [
 
   public static fromModel(
     model: MagazinePlaceModel,
-    bookmark: boolean,
+    userBookmarkedPlaceList: number[],
   ): MagazinePlaceEntity {
     return new MagazinePlaceEntity({
       idx: model.idx,
@@ -26,7 +26,7 @@ export class MagazinePlaceEntity extends PickType(PlaceEntity, [
       tel: model.tel,
       roadAddress: PlaceRoadAddressEntity.fromModel(model.roadAddress),
       imagePathList: model.imgPathList,
-      bookmark,
+      bookmark: userBookmarkedPlaceList.includes(model.idx),
     });
   }
 }
