@@ -19,6 +19,7 @@ import { DiscordWebhookModule } from '@libs/common/modules/discord-webhook/disco
 import { RedlockModule } from '@libs/common/modules/redlock/redlock.module';
 import { AopModule } from '@toss/nestjs-aop';
 import { BlogReviewModule } from '@user/api/blog-review/blog-review.module';
+import { MagazineModule } from './api/magazine/magazine.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { BlogReviewModule } from '@user/api/blog-review/blog-review.module';
     }),
     BlogReviewModule,
     AopModule,
+    MagazineModule,
   ],
   controllers: [],
   providers: [],
