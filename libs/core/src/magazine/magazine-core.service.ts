@@ -3,6 +3,8 @@ import { MagazineCoreRepository } from './magazine-core.repository';
 import { MagazineModel } from './model/magazine.model';
 import { CreateMagazineInput } from './inputs/create-magazine.input';
 import { GetAllMagazineInput } from './inputs/get-all-magazine.input';
+import { GetAllMagazineOverviewInput } from './inputs/get-all-magazine-overview.input';
+import { MagazineOverviewModel } from './model/magazine-overview.model';
 
 /**
  * @publicApi
@@ -25,6 +27,14 @@ export class MagazineCoreService {
     return (await this.magazineCoreRepository.selectMagazineAll(input)).map(
       MagazineModel.fromPrisma,
     );
+  }
+
+  public async getMagazineOverviewAll(
+    input: GetAllMagazineOverviewInput,
+  ): Promise<MagazineOverviewModel[]> {
+    return (
+      await this.magazineCoreRepository.selectMagazineOverviewAll(input)
+    ).map(MagazineOverviewModel.fromPrisma);
   }
 
   public async createMagazine(
