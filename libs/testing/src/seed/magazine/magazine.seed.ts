@@ -2,7 +2,7 @@ import { ISeedHelper } from '@libs/testing/interface/seed-helper.interface';
 import { MagazineSeedInput } from './type/magazine-seed.input';
 import { MagazineSeedOutput } from './type/magazine-seed.output';
 import { FilledSeedInput } from '@libs/testing/types/SeedFilledValue';
-import { faker } from '@faker-js/faker/.';
+import { faker } from '@faker-js/faker';
 import { defaultValue } from '@libs/common/utils/default-value.util';
 
 /**
@@ -22,6 +22,7 @@ export class MagazineSeedHelper extends ISeedHelper<
       content: defaultValue(input.content, faker.lorem.paragraphs()),
       thumbnailPath: defaultValue(input.thumbnailPath, null),
       isTitleVisible: defaultValue(input.isTitleVisible, false),
+      activatedAt: defaultValue(input.activatedAt, null),
       deletedAt: defaultValue(input.deletedAt, null),
       placeIdxList: defaultValue(input.placeIdxList, null),
     };
@@ -37,6 +38,7 @@ export class MagazineSeedHelper extends ISeedHelper<
         content: filledInput.content,
         thumbnailImagePath: filledInput.thumbnailPath,
         isTitleVisible: filledInput.isTitleVisible,
+        activatedAt: filledInput.activatedAt,
         deletedAt: filledInput.deletedAt,
         placeList: filledInput.placeIdxList
           ? {
