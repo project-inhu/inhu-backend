@@ -11,6 +11,7 @@ export type MagazineSeedInput = {
    * @default false
    */
   isTitleVisible?: boolean;
+  activatedAt?: Date | null;
   deletedAt?: Date | null;
   placeIdxList?: [number, ...number[]] | null;
 };

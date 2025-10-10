@@ -5,6 +5,7 @@ import { MagazineEntity } from './entity/magazine.entity';
 import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine.response.dto';
 import { GetAllMagazineDto } from './dto/request/get-all-magazine.dto';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
+import { Transactional } from '@nestjs-cls/transactional';
 
 @Injectable()
 export class MagazineService {
@@ -34,6 +35,7 @@ export class MagazineService {
     };
   }
 
+  @Transactional()
   public async createMagazine(dto: CreateMagazineDto): Promise<MagazineEntity> {
     const placeIdxList = dto.placeIdxList;
     const invalidPlaceIdxList: number[] = [];
