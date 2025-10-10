@@ -3,6 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { MagazineEntity } from './entity/magazine.entity';
 import { BookmarkCoreService } from '@libs/core/bookmark/bookmark-core.service';
 import { LoginUser } from '@user/common/types/LoginUser';
+import { MagazineOverviewEntity } from './entity/magazine-overview.entity';
+import { GetAllMagazineOverviewDto } from './dto/request/get-all-magazine-overview.dto';
 
 @Injectable()
 export class MagazineService {
@@ -34,5 +36,13 @@ export class MagazineService {
       .then((bookmarks) => bookmarks.map((bookmark) => bookmark.placeIdx));
 
     return magazine && MagazineEntity.fromModel(magazine, bookmarkedPlaceList);
+  }
+
+  public async getMagazineOverviewAll(
+    dto: GetAllMagazineOverviewDto,
+  ): Promise<MagazineOverviewEntity[]> {
+    return (await this.magazineCoreService.getMagazineOverviewAll(dto)).map(
+      MagazineOverviewEntity.fromModel,
+    );
   }
 }

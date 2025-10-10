@@ -64,7 +64,6 @@ export class MagazineCoreRepository {
         activatedAt: 'desc',
       },
       take: input.take,
-      skip: input.skip,
     });
   }
 
