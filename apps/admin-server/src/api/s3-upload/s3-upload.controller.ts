@@ -5,7 +5,7 @@ import { CreateBannerImagePresignedUrlDto } from '@admin/api/s3-upload/dto/reque
 import { PresignedUrlEntity } from '@admin/api/s3-upload/entity/presigned-url.entity';
 import { CreatePlaceImagePresignedUrlsDto } from '@admin/api/s3-upload/dto/request/create-place-image-presigned-url.dto';
 import { ApiBadRequestResponse, ApiTags } from '@nestjs/swagger';
-import { CreateMagazineImagePresignedUrlsDto } from './dto/request/create-magazine-imgae-presigned-url.dto';
+import { CreateMagazineImagePresignedUrlsDto } from './dto/request/create-magazine-image-presigned-url.dto';
 
 @Controller('s3-upload')
 @ApiTags('s3-upload')

@@ -6,7 +6,7 @@ import { S3Service } from '@libs/common/modules/s3/s3.service';
 import { PresignedUrlModel } from '@libs/common/modules/s3/model/presigned-url.model';
 import { S3Folder } from '@libs/common/modules/s3/constants/s3-folder.constants';
 import { ContentType } from '@libs/common/modules/s3/constants/content-type.constants';
-import { CreateMagazineImagePresignedUrlsDto } from './dto/request/create-magazine-imgae-presigned-url.dto';
+import { CreateMagazineImagePresignedUrlsDto } from './dto/request/create-magazine-image-presigned-url.dto';
 
 @Injectable()
 export class S3UploadService {
