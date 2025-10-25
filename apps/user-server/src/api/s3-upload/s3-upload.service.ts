@@ -5,7 +5,6 @@ import { PresignedUrlModel } from '@libs/common/modules/s3/model/presigned-url.m
 import { S3Folder } from '@libs/common/modules/s3/constants/s3-folder.constants';
 import { ContentType } from '@libs/common/modules/s3/constants/content-type.constants';
 import { CreateReviewImagePresignedUrlsDto } from './dto/request/create-review-image-presigned-url.dto';
-import { CreateMagazineImagePresignedUrlsDto } from './dto/request/create-magazine-image-presigned-url.dto';
 
 @Injectable()
 export class S3UploadService {
@@ -28,17 +27,6 @@ export class S3UploadService {
     return this.s3Service.getPresignedUrls({
       folder: S3Folder.REVIEW,
       extensions: createReviewImagePresignedUrlsDto.extensions,
-      maxSize: 5,
-      contentType: ContentType.IMAGE,
-    });
-  }
-
-  public async createMagazineImagePresignedUrls(
-    createMagazineImagePresignedUrlsDto: CreateMagazineImagePresignedUrlsDto,
-  ): Promise<PresignedUrlModel[]> {
-    return this.s3Service.getPresignedUrls({
-      folder: S3Folder.MAGAZINE,
-      extensions: createMagazineImagePresignedUrlsDto.extensions,
       maxSize: 5,
       contentType: ContentType.IMAGE,
     });
