@@ -5,6 +5,7 @@ import { CreateProfileImagePresignedUrlDto } from './dto/request/create-profile-
 import { PresignedUrlEntity } from './entity/presigned-url.entity';
 import { ApiBadRequestResponse, ApiTags } from '@nestjs/swagger';
 import { CreateReviewImagePresignedUrlsDto } from './dto/request/create-review-image-presigned-url.dto';
+import { CreateMagazineImagePresignedUrlsDto } from './dto/request/create-magazine-image-presigned-url.dto';
 
 @Controller('s3-upload')
 @ApiTags('s3-upload')
@@ -45,6 +46,26 @@ export class S3UploadController {
   ): Promise<PresignedUrlEntity[]> {
     return this.s3UploadService.createReviewImagePresignedUrls(
       createReviewImagePresignedUrlsDto,
+    );
+  }
+
+  @Post('/magazine-image/presigned-urls')
+  @HttpCode(201)
+  @ApiBadRequestResponse({
+    description:
+      '- extension field is not provided\n' +
+      '- extension is not in IMAGE_EXTENSION type\n' +
+      '- extensions array is empty\n' +
+      '- extensions array contains an invalid extension\n' +
+      '- extensions array exceeds max size',
+  })
+  @LoginAuth()
+  async createMagazineImagePresignedUrls(
+    @Body()
+    createMagazineImagePresignedUrlsDto: CreateMagazineImagePresignedUrlsDto,
+  ): Promise<PresignedUrlEntity[]> {
+    return this.s3UploadService.createMagazineImagePresignedUrls(
+      createMagazineImagePresignedUrlsDto,
     );
   }
 }
