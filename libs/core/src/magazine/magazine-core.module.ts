@@ -3,6 +3,8 @@ import { MagazineCoreRepository } from './magazine-core.repository';
 import { MagazineCoreService } from './magazine-core.service';
 
 /**
+ * 매거진 코어 모듈
+ *
  * @publicApi
  */
 @Module({
