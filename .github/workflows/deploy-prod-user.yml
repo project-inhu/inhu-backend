@@ -161,6 +161,7 @@ jobs:
           scp -o StrictHostKeyChecking=no -i key.pem ./.github/workflows/scripts/load-nvm-script.sh $USER@$HOST:~/inhu-backend/bash-scripts/
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST << 'EOF'
             cd ~/inhu-backend
+            . ~/inhu-backend/bash-scripts/load-nvm-script.sh
             tar -xzf deploy-user.tar.gz
             rm deploy-user.tar.gz
             npm ci
