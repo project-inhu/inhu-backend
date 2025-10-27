@@ -155,6 +155,7 @@ jobs:
           echo "$KEY" > key.pem
           chmod 400 key.pem
           scp -o StrictHostKeyChecking=no -i key.pem deploy-user.tar.gz $USER@$HOST:~/inhu-backend/
+          scp -o StrictHostKeyChecking=no -i key.pem ./.github/workflows/scripts/load-nvm-script.sh $USER@$HOST:~/inhu-backend/bash-scripts/
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST << 'EOF'
             cd ~/inhu-backend
             tar -xzf deploy-user.tar.gz
