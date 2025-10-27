@@ -165,5 +165,5 @@ jobs:
             tar -xzf deploy-user.tar.gz
             rm deploy-user.tar.gz
             npm ci
-            pm2 restart inhu-backend-user
+            pm2 restart inhu-backend
           EOF
