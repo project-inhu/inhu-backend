@@ -47,6 +47,7 @@ CREATE TABLE magazine_tb
 (
   idx                  int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
   title                varchar                  NOT NULL,
+  description          varchar                 ,
   content              varchar                  NOT NULL,
   thumbnail_image_path varchar                  ,
   is_title_visible     boolean                  NOT NULL DEFAULT false,
