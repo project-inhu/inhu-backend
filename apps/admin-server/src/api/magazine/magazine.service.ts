@@ -6,6 +6,7 @@ import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine.respo
 import { GetAllMagazineDto } from './dto/request/get-all-magazine.dto';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { Transactional } from '@nestjs-cls/transactional';
+import { UpdateMagazineActivatedAtByIdxDto } from './dto/request/update-magazine-activated-at-by-idx.dto';
 
 @Injectable()
 export class MagazineService {
@@ -68,7 +69,7 @@ export class MagazineService {
 
   public async updateMagazineActivatedAtByIdx(
     idx: number,
-    activate: boolean,
+    dto: UpdateMagazineActivatedAtByIdxDto,
   ): Promise<void> {
     const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
     if (!magazine) {
@@ -77,7 +78,7 @@ export class MagazineService {
 
     await this.magazineCoreService.updateMagazineActivatedAtByIdx(
       idx,
-      activate,
+      dto.activate,
     );
   }
 

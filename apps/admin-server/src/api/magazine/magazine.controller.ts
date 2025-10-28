@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { MagazineService } from './magazine.service';
 import { MagazineEntity } from './entity/magazine.entity';
 import { CreateMagazineDto } from './dto/request/create-magazine.dto';
@@ -6,6 +15,7 @@ import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { GetAllMagazineDto } from './dto/request/get-all-magazine.dto';
 import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine.response.dto';
 import { Exception } from '@libs/common/decorator/exception.decorator';
+import { UpdateMagazineActivatedAtByIdxDto } from './dto/request/update-magazine-activated-at-by-idx.dto';
 
 @Controller('magazine')
 export class MagazineController {
@@ -13,6 +23,8 @@ export class MagazineController {
 
   /**
    * 모든 매거진 조회
+   *
+   * @author 이수인
    */
   @AdminAuth()
   @Get('/all')
@@ -25,6 +37,8 @@ export class MagazineController {
 
   /**
    * 매거진 생성
+   *
+   * @author 이수인
    */
   @AdminAuth()
   @Post()
@@ -34,5 +48,34 @@ export class MagazineController {
     @Body() dto: CreateMagazineDto,
   ): Promise<MagazineEntity> {
     return await this.magazineService.createMagazine(dto);
+  }
+
+  /**
+   * 매거진 활성화/비활성화
+   *
+   * @author 이수인
+   */
+  @AdminAuth()
+  @Patch(':idx/activate')
+  @Exception(400, 'Invalid magazine idx')
+  @Exception(404, 'Magazine not found')
+  public async updateMagazineActivatedAtByIdx(
+    @Param('idx') idx: number,
+    @Body() dto: UpdateMagazineActivatedAtByIdxDto,
+  ): Promise<void> {
+    await this.magazineService.updateMagazineActivatedAtByIdx(idx, dto);
+  }
+
+  /**
+   * 매거진 삭제
+   *
+   * @author 이수인
+   */
+  @AdminAuth()
+  @Delete(':idx')
+  @Exception(400, 'Invalid magazine idx')
+  @Exception(404, 'Magazine not found')
+  public async deleteMagazineByIdx(@Param('idx') idx: number): Promise<void> {
+    await this.magazineService.deleteMagazineByIdx(idx);
   }
 }
