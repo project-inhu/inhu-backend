@@ -45,7 +45,7 @@ export class MagazineCoreRepository {
         ],
       },
       orderBy: {
-        activatedAt: 'desc',
+        createdAt: 'desc',
       },
       take: input.take,
       skip: input.skip,
@@ -61,7 +61,7 @@ export class MagazineCoreRepository {
         AND: [{ deletedAt: null }, this.getActivatedAtFilterWhereClause(true)],
       },
       orderBy: {
-        activatedAt: 'desc',
+        createdAt: 'desc',
       },
       take: input.take,
     });
@@ -74,6 +74,7 @@ export class MagazineCoreRepository {
       ...SELECT_MAGAZINE,
       data: {
         title: input.title,
+        description: input.description,
         content: input.content,
         thumbnailImagePath: input.thumbnailImagePath,
         isTitleVisible: input.isTitleVisible,

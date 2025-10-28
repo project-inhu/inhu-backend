@@ -37,7 +37,7 @@ export class MagazineService {
 
   @Transactional()
   public async createMagazine(dto: CreateMagazineDto): Promise<MagazineEntity> {
-    const placeIdxList = dto.placeIdxList;
+    const placeIdxList = this.extractAllPlaceIdxFromText(dto.content);
     const invalidPlaceIdxList: number[] = [];
 
     if (placeIdxList && placeIdxList.length > 0) {
@@ -57,6 +57,7 @@ export class MagazineService {
     return await this.magazineCoreService
       .createMagazine({
         title: dto.title,
+        description: dto.description,
         content: dto.content,
         thumbnailImagePath: dto.thumbnailImagePath,
         isTitleVisible: dto.isTitleVisible,

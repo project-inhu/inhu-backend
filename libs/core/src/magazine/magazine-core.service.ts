@@ -15,12 +15,22 @@ export class MagazineCoreService {
     private readonly magazineCoreRepository: MagazineCoreRepository,
   ) {}
 
+  /**
+   * idx로 매거진 조회
+   *
+   * @author 이수인
+   */
   public async getMagazineByIdx(idx: number): Promise<MagazineModel | null> {
     const magazine = await this.magazineCoreRepository.selectMagazineByIdx(idx);
 
     return magazine && MagazineModel.fromPrisma(magazine);
   }
 
+  /**
+   * 모든 매거진 조회
+   *
+   * @author 이수인
+   */
   public async getMagazineAll(
     input: GetAllMagazineInput,
   ): Promise<MagazineModel[]> {
@@ -29,6 +39,11 @@ export class MagazineCoreService {
     );
   }
 
+  /**
+   * 모든 매거진 개요 조회
+   *
+   * @author 이수인
+   */
   public async getMagazineOverviewAll(
     input: GetAllMagazineOverviewInput,
   ): Promise<MagazineOverviewModel[]> {
@@ -37,6 +52,11 @@ export class MagazineCoreService {
     ).map(MagazineOverviewModel.fromPrisma);
   }
 
+  /**
+   * 매거진 생성
+   *
+   * @author 이수인
+   */
   public async createMagazine(
     input: CreateMagazineInput,
   ): Promise<MagazineModel> {
@@ -45,6 +65,11 @@ export class MagazineCoreService {
     );
   }
 
+  /**
+   * 매거진 활성화/비활성화 업데이트
+   *
+   * @author 이수인
+   */
   public async updateMagazineActivatedAtByIdx(
     idx: number,
     activate: boolean,
@@ -55,6 +80,11 @@ export class MagazineCoreService {
     );
   }
 
+  /**
+   * 매거진 삭제
+   *
+   * @author 이수인
+   */
   public async deleteMagazineByIdx(idx: number): Promise<void> {
     await this.magazineCoreRepository.softDeleteMagazineByIdx(idx);
   }
