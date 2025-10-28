@@ -371,9 +371,12 @@ model MagazinePlace {
 model Magazine {
   idx                Int               @id @default(autoincrement())
   title              String            @db.VarChar
+  description        String?           @db.VarChar
   content            String            @db.VarChar
   thumbnailImagePath String?           @map("thumbnail_image_path") @db.VarChar
   isTitleVisible     Boolean           @default(false) @map("is_title_visible")
+  likeCount          Int               @default(0) @map("like_count")
+  viewCount          Int               @default(0) @map("view_count")
   createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
   activatedAt        DateTime?         @map("activated_at") @db.Timestamptz(6)
   deletedAt          DateTime?         @map("deleted_at") @db.Timestamptz(6)

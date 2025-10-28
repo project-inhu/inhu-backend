@@ -5,6 +5,7 @@ export const SELECT_MAGAZINE_OVERVIEW =
     select: {
       idx: true,
       title: true,
+      description: true,
       thumbnailImagePath: true,
       isTitleVisible: true,
       createdAt: true,

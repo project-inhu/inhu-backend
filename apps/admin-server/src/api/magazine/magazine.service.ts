@@ -6,6 +6,7 @@ import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine.respo
 import { GetAllMagazineDto } from './dto/request/get-all-magazine.dto';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { Transactional } from '@nestjs-cls/transactional';
+import { UpdateMagazineActivatedAtByIdxDto } from './dto/request/update-magazine-activated-at-by-idx.dto';
 
 @Injectable()
 export class MagazineService {
@@ -37,7 +38,7 @@ export class MagazineService {
 
   @Transactional()
   public async createMagazine(dto: CreateMagazineDto): Promise<MagazineEntity> {
-    const placeIdxList = dto.placeIdxList;
+    const placeIdxList = this.extractAllPlaceIdxFromText(dto.content);
     const invalidPlaceIdxList: number[] = [];
 
     if (placeIdxList && placeIdxList.length > 0) {
@@ -57,12 +58,40 @@ export class MagazineService {
     return await this.magazineCoreService
       .createMagazine({
         title: dto.title,
+        description: dto.description,
         content: dto.content,
         thumbnailImagePath: dto.thumbnailImagePath,
         isTitleVisible: dto.isTitleVisible,
         placeIdxList: placeIdxList,
       })
       .then(MagazineEntity.fromModel);
+  }
+
+  public async updateMagazineActivatedAtByIdx(
+    idx: number,
+    dto: UpdateMagazineActivatedAtByIdxDto,
+  ): Promise<void> {
+    const magazine = await this.magazineCoreService.getMagazineByIdx(
+      idx,
+      false,
+    );
+    if (!magazine) {
+      throw new NotFoundException(`Magazine not found for idx: ${idx}`);
+    }
+
+    await this.magazineCoreService.updateMagazineActivatedAtByIdx(
+      idx,
+      dto.activate,
+    );
+  }
+
+  public async deleteMagazineByIdx(idx: number): Promise<void> {
+    const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
+    if (!magazine) {
+      throw new NotFoundException(`Magazine not found for idx: ${idx}`);
+    }
+
+    await this.magazineCoreService.deleteMagazineByIdx(idx);
   }
 
   private extractAllPlaceIdxFromText(bodyText: string): number[] {

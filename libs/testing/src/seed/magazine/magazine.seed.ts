@@ -19,6 +19,7 @@ export class MagazineSeedHelper extends ISeedHelper<
   ): FilledSeedInput<MagazineSeedInput> {
     return {
       title: defaultValue(input.title, faker.lorem.sentence()),
+      description: defaultValue(input.description, faker.lorem.paragraph()),
       content: defaultValue(input.content, faker.lorem.paragraphs()),
       thumbnailPath: defaultValue(input.thumbnailPath, null),
       isTitleVisible: defaultValue(input.isTitleVisible, false),
@@ -35,6 +36,7 @@ export class MagazineSeedHelper extends ISeedHelper<
       select: { idx: true },
       data: {
         title: filledInput.title,
+        description: filledInput.description,
         content: filledInput.content,
         thumbnailImagePath: filledInput.thumbnailPath,
         isTitleVisible: filledInput.isTitleVisible,

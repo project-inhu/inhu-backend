@@ -5,6 +5,7 @@ import { MagazineOverviewModel } from '@libs/core/magazine/model/magazine-overvi
 export class MagazineOverviewEntity extends PickType(MagazineEntity, [
   'idx',
   'title',
+  'description',
   'thumbnailImagePath',
   'isTitleVisible',
   'createdAt',
@@ -21,6 +22,7 @@ export class MagazineOverviewEntity extends PickType(MagazineEntity, [
     return new MagazineOverviewEntity({
       idx: model.idx,
       title: model.title,
+      description: model.description,
       thumbnailImagePath: model.thumbnailImagePath,
       isTitleVisible: model.isTitleVisible,
       createdAt: model.createdAt,

@@ -5,6 +5,7 @@
  */
 export type MagazineSeedInput = {
   title?: string;
+  description?: string;
   content?: string;
   thumbnailPath?: string | null;
   /**

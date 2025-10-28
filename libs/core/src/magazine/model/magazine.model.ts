@@ -13,6 +13,11 @@ export class MagazineModel {
   public title: string;
 
   /**
+   * 매거진 설명
+   */
+  public description: string | null;
+
+  /**
    * 매거진 내용
    */
   public content: string;
@@ -50,6 +55,7 @@ export class MagazineModel {
     return new MagazineModel({
       idx: magazine.idx,
       title: magazine.title,
+      description: magazine.description,
       content: magazine.content,
       thumbnailImagePath: magazine.thumbnailImagePath,
       isTitleVisible: magazine.isTitleVisible,
