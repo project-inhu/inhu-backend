@@ -17,6 +17,13 @@ export class MagazineEntity {
   public title: string;
 
   /**
+   * 매거진 설명
+   *
+   * @example "서울에서 꼭 가봐야 할 맛집을 소개합니다."
+   */
+  public description: string | null;
+
+  /**
    * 매거진 내용
    *
    * @example "이번 주말에 가볼 만한 맛집을 소개합니다."
@@ -67,6 +74,7 @@ export class MagazineEntity {
     return new MagazineEntity({
       idx: model.idx,
       title: model.title,
+      description: model.description,
       content: model.content,
       thumbnailImagePath: model.thumbnailImagePath,
       isTitleVisible: model.isTitleVisible,
