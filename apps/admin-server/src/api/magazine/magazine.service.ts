@@ -66,6 +66,30 @@ export class MagazineService {
       .then(MagazineEntity.fromModel);
   }
 
+  public async updateMagazineActivatedAtByIdx(
+    idx: number,
+    activate: boolean,
+  ): Promise<void> {
+    const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
+    if (!magazine) {
+      throw new NotFoundException(`Magazine not found for idx: ${idx}`);
+    }
+
+    await this.magazineCoreService.updateMagazineActivatedAtByIdx(
+      idx,
+      activate,
+    );
+  }
+
+  public async deleteMagazineByIdx(idx: number): Promise<void> {
+    const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
+    if (!magazine) {
+      throw new NotFoundException(`Magazine not found for idx: ${idx}`);
+    }
+
+    await this.magazineCoreService.deleteMagazineByIdx(idx);
+  }
+
   private extractAllPlaceIdxFromText(bodyText: string): number[] {
     const regex = /https:\/\/inhu\.co\.kr\/place\/(\d+)\/?/g;
 

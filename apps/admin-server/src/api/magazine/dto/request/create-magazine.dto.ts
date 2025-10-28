@@ -1,14 +1,5 @@
 import { ToBoolean } from '@libs/common/decorator/to-boolean.decorator';
-import { UniqueArray } from '@libs/common/decorator/unique-array.decorator';
-import { Type } from 'class-transformer';
-import {
-  IsArray,
-  IsBoolean,
-  IsInt,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateMagazineDto {
   /**
