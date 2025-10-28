@@ -71,7 +71,10 @@ export class MagazineService {
     idx: number,
     dto: UpdateMagazineActivatedAtByIdxDto,
   ): Promise<void> {
-    const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
+    const magazine = await this.magazineCoreService.getMagazineByIdx(
+      idx,
+      false,
+    );
     if (!magazine) {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }

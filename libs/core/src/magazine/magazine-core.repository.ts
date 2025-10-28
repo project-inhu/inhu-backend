@@ -22,12 +22,13 @@ export class MagazineCoreRepository {
 
   public async selectMagazineByIdx(
     idx: number,
+    onlyActivated = true,
   ): Promise<SelectMagazine | null> {
     return await this.txHost.tx.magazine.findUnique({
       ...SELECT_MAGAZINE,
       where: {
         idx,
-        activatedAt: { not: null },
+        activatedAt: onlyActivated ? { not: null } : {},
         deletedAt: null,
       },
     });

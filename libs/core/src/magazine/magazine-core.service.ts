@@ -20,8 +20,14 @@ export class MagazineCoreService {
    *
    * @author 이수인
    */
-  public async getMagazineByIdx(idx: number): Promise<MagazineModel | null> {
-    const magazine = await this.magazineCoreRepository.selectMagazineByIdx(idx);
+  public async getMagazineByIdx(
+    idx: number,
+    onlyActivated?: boolean,
+  ): Promise<MagazineModel | null> {
+    const magazine = await this.magazineCoreRepository.selectMagazineByIdx(
+      idx,
+      onlyActivated,
+    );
 
     return magazine && MagazineModel.fromPrisma(magazine);
   }
