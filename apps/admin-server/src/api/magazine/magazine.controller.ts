@@ -3,7 +3,9 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -59,8 +61,9 @@ export class MagazineController {
   @Patch(':idx/activate')
   @Exception(400, 'Invalid magazine idx')
   @Exception(404, 'Magazine not found')
+  @HttpCode(200)
   public async updateMagazineActivatedAtByIdx(
-    @Param('idx') idx: number,
+    @Param('idx', ParseIntPipe) idx: number,
     @Body() dto: UpdateMagazineActivatedAtByIdxDto,
   ): Promise<void> {
     await this.magazineService.updateMagazineActivatedAtByIdx(idx, dto);
@@ -75,7 +78,9 @@ export class MagazineController {
   @Delete(':idx')
   @Exception(400, 'Invalid magazine idx')
   @Exception(404, 'Magazine not found')
-  public async deleteMagazineByIdx(@Param('idx') idx: number): Promise<void> {
+  public async deleteMagazineByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+  ): Promise<void> {
     await this.magazineService.deleteMagazineByIdx(idx);
   }
 }
