@@ -95,11 +95,11 @@ export class MagazineService {
   }
 
   private extractAllPlaceIdxFromText(bodyText: string): number[] {
-    const regex = /https:\/\/inhu\.co\.kr\/place\/(\d+)\/?/g;
+    const regex = /:::place-(\d+):::/g;
 
     const matches = [...bodyText.matchAll(regex)];
     const idxList = matches.map((match) => parseInt(match[1], 10));
 
-    return idxList;
+    return Array.from(new Set(idxList));
   }
 }

@@ -227,7 +227,7 @@ describe('Menu e2e test', () => {
       const createMagazineDto = {
         title: 'New Magazine',
         description: 'New Description',
-        content: `This is a new magazine. Look at this!! https://inhu.co.kr/place/${placeSeed.idx}`,
+        content: `This is a new magazine. Look at this!! :::place-${placeSeed.idx}:::`,
         thumbnailImagePath: '/new-thumbnail.jpg',
         isTitleVisible: true,
       };
@@ -296,6 +296,134 @@ describe('Menu e2e test', () => {
 
       expect(Array.isArray(resultMagazine.placeList)).toBe(true);
       expect(resultMagazine.placeList.length).toBe(0);
+    });
+
+    it('201 - multiple places in magazine content(separate place information)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed1 = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const placeSeed2 = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const createMagazineDto = {
+        title: 'New Magazine',
+        content: `This is a new magazine. :::place-${placeSeed1.idx}::: ....... :::place-${placeSeed2.idx}:::`,
+        thumbnailImagePath: '/new-thumbnail.jpg',
+        isTitleVisible: true,
+      };
+
+      const response = await testHelper
+        .test()
+        .post('/magazine')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(createMagazineDto)
+        .expect(201);
+
+      const resultMagazine: MagazineEntity = response.body;
+
+      expect(Array.isArray(resultMagazine.placeList)).toBe(true);
+      expect(resultMagazine.placeList.length).toBe(2);
+      const placeIdxList = resultMagazine.placeList.map((p) => p.idx);
+      expect(placeIdxList).toContain(placeSeed1.idx);
+      expect(placeIdxList).toContain(placeSeed2.idx);
+    });
+
+    it('201 - multiple places in magazine content (:::place-1::::::place-2:::', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed1 = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const placeSeed2 = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const createMagazineDto = {
+        title: 'New Magazine',
+        content: `This is a new magazine. :::place-${placeSeed1.idx}::::::place-${placeSeed2.idx}:::`,
+        thumbnailImagePath: '/new-thumbnail.jpg',
+        isTitleVisible: true,
+      };
+
+      const response = await testHelper
+        .test()
+        .post('/magazine')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(createMagazineDto)
+        .expect(201);
+
+      const resultMagazine: MagazineEntity = response.body;
+
+      expect(Array.isArray(resultMagazine.placeList)).toBe(true);
+      expect(resultMagazine.placeList.length).toBe(2);
+      const placeIdxList = resultMagazine.placeList.map((p) => p.idx);
+      expect(placeIdxList).toContain(placeSeed1.idx);
+      expect(placeIdxList).toContain(placeSeed2.idx);
+    });
+
+    it('201 - multiple places in magazine content (:::place-1::::place-2:::)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed1 = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const placeSeed2 = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const createMagazineDto = {
+        title: 'New Magazine',
+        content: `This is a new magazine. :::place-${placeSeed1.idx}::::place-${placeSeed2.idx}:::`,
+        thumbnailImagePath: '/new-thumbnail.jpg',
+        isTitleVisible: true,
+      };
+
+      const response = await testHelper
+        .test()
+        .post('/magazine')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(createMagazineDto)
+        .expect(201);
+
+      const resultMagazine: MagazineEntity = response.body;
+
+      expect(Array.isArray(resultMagazine.placeList)).toBe(true);
+      expect(resultMagazine.placeList.length).toBe(1);
+      expect(resultMagazine.placeList[0].idx).toBe(placeSeed1.idx);
+    });
+
+    it('201 - duplicate places in magazine content', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const createMagazineDto = {
+        title: 'New Magazine',
+        content: `This is a new magazine. :::place-${placeSeed.idx}::: ....... :::place-${placeSeed.idx}:::`,
+        thumbnailImagePath: '/new-thumbnail.jpg',
+        isTitleVisible: true,
+      };
+
+      const response = await testHelper
+        .test()
+        .post('/magazine')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(createMagazineDto)
+        .expect(201);
+
+      const resultMagazine: MagazineEntity = response.body;
+
+      expect(Array.isArray(resultMagazine.placeList)).toBe(true);
+      expect(resultMagazine.placeList.length).toBe(1);
+      expect(resultMagazine.placeList[0].idx).toBe(placeSeed.idx);
     });
 
     it('400 - title is empty', async () => {
