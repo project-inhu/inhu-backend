@@ -51,6 +51,8 @@ CREATE TABLE magazine_tb
   content              varchar                  NOT NULL,
   thumbnail_image_path varchar                  ,
   is_title_visible     boolean                  NOT NULL DEFAULT false,
+  like_count           int                      NOT NULL DEFAULT 0,
+  view_count           int                      NOT NULL DEFAULT 0,
   created_at           timestamp with time zone NOT NULL DEFAULT NOW(),
   activated_at         timestamp with time zone,
   deleted_at           timestamp with time zone,
