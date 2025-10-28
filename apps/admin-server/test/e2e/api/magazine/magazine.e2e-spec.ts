@@ -34,6 +34,7 @@ describe('Menu e2e test', () => {
       });
       const magazineSeed = await magazineSeedHelper.seed({
         title: 'Test Magazine',
+        description: 'Test Description',
         content: 'Test Content',
         thumbnailPath: '/test-image.png',
         isTitleVisible: true,
@@ -60,6 +61,7 @@ describe('Menu e2e test', () => {
 
       expect(magazine.idx).toBe(magazineSeed.idx);
       expect(magazine.title).toBe(magazineSeed.title);
+      expect(magazine.description).toBe(magazineSeed.description);
       expect(magazine.content).toBe(magazineSeed.content);
       expect(magazine.thumbnailImagePath).toBe(magazineSeed.thumbnailPath);
       expect(magazine.isTitleVisible).toBe(magazineSeed.isTitleVisible);
@@ -224,10 +226,10 @@ describe('Menu e2e test', () => {
 
       const createMagazineDto = {
         title: 'New Magazine',
-        content: 'This is a new magazine.',
+        description: 'New Description',
+        content: `This is a new magazine. Look at this!! https://inhu.co.kr/place/${placeSeed.idx}`,
         thumbnailImagePath: '/new-thumbnail.jpg',
         isTitleVisible: true,
-        placeIdxList: [placeSeed.idx],
       };
 
       const response = await testHelper
@@ -247,6 +249,7 @@ describe('Menu e2e test', () => {
 
       expect(resultMagazine.idx).toBe(selectMagazine.idx);
       expect(resultMagazine.title).toBe(createMagazineDto.title);
+      expect(resultMagazine.description).toBe(createMagazineDto.description);
       expect(resultMagazine.content).toBe(createMagazineDto.content);
       expect(resultMagazine.thumbnailImagePath).toBe(
         createMagazineDto.thumbnailImagePath,
@@ -272,7 +275,7 @@ describe('Menu e2e test', () => {
       expect(resultMagazine.placeList[0].bookmark).toBe(false);
     });
 
-    it('201 - placeIdxList is null', async () => {
+    it('201 - no place in magazine content (placeIdxList is empty)', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
       const createMagazineDto = {
@@ -280,31 +283,6 @@ describe('Menu e2e test', () => {
         content: 'This is a new magazine.',
         thumbnailImagePath: '/new-thumbnail.jpg',
         isTitleVisible: true,
-        placeIdxList: null,
-      };
-
-      const response = await testHelper
-        .test()
-        .post('/magazine')
-        .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .send(createMagazineDto)
-        .expect(201);
-
-      const resultMagazine: MagazineEntity = response.body;
-
-      expect(Array.isArray(resultMagazine.placeList)).toBe(true);
-      expect(resultMagazine.placeList.length).toBe(0);
-    });
-
-    it('201 - placeIdxList is empty array', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-
-      const createMagazineDto = {
-        title: 'New Magazine',
-        content: 'This is a new magazine.',
-        thumbnailImagePath: '/new-thumbnail.jpg',
-        isTitleVisible: true,
-        placeIdxList: [],
       };
 
       const response = await testHelper
@@ -357,35 +335,140 @@ describe('Menu e2e test', () => {
         .send(createMagazineDto)
         .expect(400);
     });
+  });
 
-    it('404 - placeIdxList contains invalid place idx', async () => {
+  describe('PATCH /magazine/:idx/activate', () => {
+    it('200 - successfully activate magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
-      const placeSeed = await placeSeedHelper.seed({
-        name: 'Test Place',
-        tel: '010-1234-5678',
-        roadAddress: {
-          name: 'Test Road Address',
-          detail: 'Test Detail Address',
-          addressX: 37.123456,
-          addressY: 127.123456,
-        },
+      const magazineSeed = await magazineSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: null,
+      });
+
+      const updateMagazineDto = {
+        activate: true,
+      };
+
+      const response = await testHelper
+        .test()
+        .patch(`/magazine/${magazineSeed.idx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMagazineDto)
+        .expect(200);
+
+      expect(response.body).toEqual({});
+
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .magazine.findUniqueOrThrow({
+          where: { idx: magazineSeed.idx },
+        });
+
+      expect(updatedMagazine.activatedAt).not.toBeNull();
+    });
+
+    it('200 - successfully deactivate magazine', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const magazineSeed = await magazineSeedHelper.seed({
         deletedAt: null,
         activatedAt: new Date(),
       });
 
-      const createMagazineDto = {
-        title: 'New Magazine',
-        content: 'This is a new magazine.',
-        thumbnailImagePath: '/new-thumbnail.jpg',
-        isTitleVisible: true,
-        placeIdxList: [placeSeed.idx, 9999],
+      const response = await testHelper
+        .test()
+        .patch(`/magazine/${magazineSeed.idx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ activate: false })
+        .expect(200);
+
+      expect(response.body).toEqual({});
+
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .magazine.findUniqueOrThrow({
+          where: { idx: magazineSeed.idx },
+        });
+
+      expect(updatedMagazine.activatedAt).toBeNull();
+    });
+
+    it('400 - invalid magazine idx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const invalidMagazineIdx = 'invalid-magazine-idx';
+
+      const updateMagazineDto = {
+        activate: true,
       };
 
       await testHelper
         .test()
-        .post('/magazine')
+        .patch(`/magazine/${invalidMagazineIdx}/activate`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .send(createMagazineDto)
+        .send(updateMagazineDto)
+        .expect(400);
+    });
+
+    it('404 - magazine not found', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const nonExistentMagazineIdx = 9999999;
+
+      const updateMagazineDto = {
+        activate: true,
+      };
+
+      await testHelper
+        .test()
+        .patch(`/magazine/${nonExistentMagazineIdx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMagazineDto)
+        .expect(404);
+    });
+  });
+
+  describe('DELETE /magazine/:idx', () => {
+    it('200 - successfully delete magazine', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const response = await testHelper
+        .test()
+        .delete(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+
+      expect(response.body).toEqual({});
+
+      const deletedMagazine = await testHelper
+        .getPrisma()
+        .magazine.findUniqueOrThrow({
+          where: { idx: magazineSeed.idx },
+        });
+
+      expect(deletedMagazine.deletedAt).not.toBeNull();
+    });
+
+    it('400 - invalid magazine idx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const invalidMagazineIdx = 'invalid-magazine-idx';
+
+      await testHelper
+        .test()
+        .delete(`/magazine/${invalidMagazineIdx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(400);
+    });
+
+    it('404 - magazine not found', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const nonExistentMagazineIdx = 9999999;
+
+      await testHelper
+        .test()
+        .delete(`/magazine/${nonExistentMagazineIdx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(404);
     });
   });

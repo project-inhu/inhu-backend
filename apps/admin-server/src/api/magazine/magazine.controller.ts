@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { MagazineService } from './magazine.service';
 import { MagazineEntity } from './entity/magazine.entity';
 import { CreateMagazineDto } from './dto/request/create-magazine.dto';
@@ -6,11 +17,17 @@ import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { GetAllMagazineDto } from './dto/request/get-all-magazine.dto';
 import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine.response.dto';
 import { Exception } from '@libs/common/decorator/exception.decorator';
+import { UpdateMagazineActivatedAtByIdxDto } from './dto/request/update-magazine-activated-at-by-idx.dto';
 
 @Controller('magazine')
 export class MagazineController {
   constructor(private readonly magazineService: MagazineService) {}
 
+  /**
+   * 모든 매거진 조회
+   *
+   * @author 이수인
+   */
   @AdminAuth()
   @Get('/all')
   @Exception(400, 'Invalid magazine request')
@@ -20,6 +37,11 @@ export class MagazineController {
     return await this.magazineService.getMagazineAll(dto);
   }
 
+  /**
+   * 매거진 생성
+   *
+   * @author 이수인
+   */
   @AdminAuth()
   @Post()
   @Exception(400, 'Invalid create magazine request')
@@ -28,5 +50,37 @@ export class MagazineController {
     @Body() dto: CreateMagazineDto,
   ): Promise<MagazineEntity> {
     return await this.magazineService.createMagazine(dto);
+  }
+
+  /**
+   * 매거진 활성화/비활성화
+   *
+   * @author 이수인
+   */
+  @AdminAuth()
+  @Patch(':idx/activate')
+  @Exception(400, 'Invalid magazine idx')
+  @Exception(404, 'Magazine not found')
+  @HttpCode(200)
+  public async updateMagazineActivatedAtByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+    @Body() dto: UpdateMagazineActivatedAtByIdxDto,
+  ): Promise<void> {
+    await this.magazineService.updateMagazineActivatedAtByIdx(idx, dto);
+  }
+
+  /**
+   * 매거진 삭제
+   *
+   * @author 이수인
+   */
+  @AdminAuth()
+  @Delete(':idx')
+  @Exception(400, 'Invalid magazine idx')
+  @Exception(404, 'Magazine not found')
+  public async deleteMagazineByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+  ): Promise<void> {
+    await this.magazineService.deleteMagazineByIdx(idx);
   }
 }

@@ -22,12 +22,13 @@ export class MagazineCoreRepository {
 
   public async selectMagazineByIdx(
     idx: number,
+    onlyActivated = true,
   ): Promise<SelectMagazine | null> {
     return await this.txHost.tx.magazine.findUnique({
       ...SELECT_MAGAZINE,
       where: {
         idx,
-        activatedAt: { not: null },
+        activatedAt: onlyActivated ? { not: null } : {},
         deletedAt: null,
       },
     });
@@ -45,7 +46,7 @@ export class MagazineCoreRepository {
         ],
       },
       orderBy: {
-        activatedAt: 'desc',
+        createdAt: 'desc',
       },
       take: input.take,
       skip: input.skip,
@@ -61,7 +62,7 @@ export class MagazineCoreRepository {
         AND: [{ deletedAt: null }, this.getActivatedAtFilterWhereClause(true)],
       },
       orderBy: {
-        activatedAt: 'desc',
+        createdAt: 'desc',
       },
       take: input.take,
     });
@@ -74,6 +75,7 @@ export class MagazineCoreRepository {
       ...SELECT_MAGAZINE,
       data: {
         title: input.title,
+        description: input.description,
         content: input.content,
         thumbnailImagePath: input.thumbnailImagePath,
         isTitleVisible: input.isTitleVisible,
