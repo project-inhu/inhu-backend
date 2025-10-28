@@ -5,6 +5,7 @@ import { SelectMagazineOverview } from './prisma-type/select-magazine-overview';
 export class MagazineOverviewModel extends PickType(MagazineModel, [
   'idx',
   'title',
+  'description',
   'thumbnailImagePath',
   'isTitleVisible',
   'createdAt',
@@ -21,6 +22,7 @@ export class MagazineOverviewModel extends PickType(MagazineModel, [
     return new MagazineOverviewModel({
       idx: magazine.idx,
       title: magazine.title,
+      description: magazine.description,
       thumbnailImagePath: magazine.thumbnailImagePath,
       isTitleVisible: magazine.isTitleVisible,
       createdAt: magazine.createdAt,
