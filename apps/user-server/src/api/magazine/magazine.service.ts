@@ -27,6 +27,7 @@ export class MagazineService {
     }
 
     await this.magazineCoreService.increaseMagazineViewCount(idx);
+    magazine.viewCount += 1;
 
     if (!loginUser) {
       return MagazineEntity.fromModel(magazine, []);

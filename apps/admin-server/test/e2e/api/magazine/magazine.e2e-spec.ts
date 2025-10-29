@@ -167,6 +167,98 @@ describe('Magazine e2e test', () => {
     });
   });
 
+  describe('GET /magazine/:idx', () => {
+    it('200 - field check', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        name: 'Test Place',
+        tel: '010-1234-5678',
+        roadAddress: {
+          name: 'Test Road Address',
+          detail: 'Test Detail Address',
+          addressX: 37.123456,
+          addressY: 127.123456,
+        },
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const magazineSeed = await magazineSeedHelper.seed({
+        title: 'Test Magazine',
+        description: 'Test Description',
+        content: 'Test Content',
+        thumbnailPath: 'Test Thumbnail',
+        isTitleVisible: true,
+        activatedAt: new Date(),
+        deletedAt: null,
+        placeIdxList: [placeSeed.idx],
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+
+      const magazine: MagazineEntity = response.body;
+
+      expect(magazine.idx).toBe(magazineSeed.idx);
+      expect(magazine.title).toBe(magazineSeed.title);
+      expect(magazine.description).toBe(magazineSeed.description);
+      expect(magazine.content).toBe(magazineSeed.content);
+      expect(magazine.thumbnailImagePath).toBe(magazineSeed.thumbnailPath);
+      expect(magazine.isTitleVisible).toBe(magazineSeed.isTitleVisible);
+      expect(magazine.likeCount).toBe(0);
+      expect(magazine.viewCount).toBe(0);
+      expect(magazine.activatedAt).not.toBeNull();
+      expect(magazine.activatedAt).toEqual(
+        magazineSeed.activatedAt?.toISOString(),
+      );
+      expect(Array.isArray(magazine.placeList)).toBe(true);
+      expect(magazine.placeList.length).toBe(1);
+      expect(magazine.placeList[0].idx).toBe(placeSeed.idx);
+      expect(magazine.placeList[0].name).toBe(placeSeed.name);
+      expect(magazine.placeList[0].tel).toBe(placeSeed.tel);
+      expect(magazine.placeList[0].roadAddress).toEqual({
+        name: placeSeed.roadAddress.name,
+        detail: placeSeed.roadAddress.detail,
+        addressX: placeSeed.roadAddress.addressX,
+        addressY: placeSeed.roadAddress.addressY,
+      });
+      expect(magazine.placeList[0].imagePathList).toEqual(
+        placeSeed.placeImgList,
+      );
+    });
+
+    it('200 - does not increase view count', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+
+      const magazine: MagazineEntity = response.body;
+
+      expect(magazine.viewCount).toBe(0);
+    });
+
+    it('404 - magazine not found', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const nonExistentMagazineIdx = 9999999;
+
+      await testHelper
+        .test()
+        .get(`/magazine/${nonExistentMagazineIdx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(404);
+    });
+  });
+
   describe('POST /magazine', () => {
     it('201 - successfully create magazine and field check', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
@@ -216,6 +308,8 @@ describe('Magazine e2e test', () => {
       expect(resultMagazine.isTitleVisible).toBe(
         createMagazineDto.isTitleVisible,
       );
+      expect(resultMagazine.likeCount).toBe(0);
+      expect(resultMagazine.viewCount).toBe(0);
       expect(resultMagazine.activatedAt).toBeNull();
       expect(Array.isArray(resultMagazine.placeList)).toBe(true);
       expect(resultMagazine.placeList.length).toBe(1);

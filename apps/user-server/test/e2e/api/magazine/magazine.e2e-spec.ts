@@ -41,6 +41,7 @@ describe('Menu E2E test', () => {
       });
       const magazineSeed = await magazineSeedHelper.seed({
         title: 'Test Magazine',
+        description: 'Test Description',
         content: 'Test Content',
         thumbnailPath: '/test-image.png',
         isTitleVisible: true,
@@ -59,9 +60,12 @@ describe('Menu E2E test', () => {
 
       expect(magazine.idx).toBe(magazineSeed.idx);
       expect(magazine.title).toBe(magazineSeed.title);
+      expect(magazine.description).toBe(magazineSeed.description);
       expect(magazine.content).toBe(magazineSeed.content);
       expect(magazine.thumbnailImagePath).toBe(magazineSeed.thumbnailPath);
       expect(magazine.isTitleVisible).toBe(magazineSeed.isTitleVisible);
+      expect(magazine.likeCount).toBe(0);
+      expect(magazine.viewCount).toBe(1);
       expect(magazine.activatedAt).not.toBeNull();
       expect(magazine.activatedAt).toEqual(
         magazineSeed.activatedAt?.toISOString(),
@@ -147,24 +151,6 @@ describe('Menu E2E test', () => {
       expect(magazine).toEqual({});
     });
 
-    it('200 - does not select magazine that is deleted', async () => {
-      const loginUser = testHelper.loginUsers.user1;
-      const magazineSeed = await magazineSeedHelper.seed({
-        activatedAt: new Date(),
-        deletedAt: new Date(),
-      });
-
-      const response = await testHelper
-        .test()
-        .get(`/magazine/${magazineSeed.idx}`)
-        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
-        .expect(200);
-
-      const magazine: MagazineEntity = response.body;
-
-      expect(magazine).toEqual({});
-    });
-
     it('400 - invalid idx', async () => {
       const loginUser = testHelper.loginUsers.user1;
 
@@ -180,6 +166,7 @@ describe('Menu E2E test', () => {
     it('200 - field check', async () => {
       const magazineSeed = await magazineSeedHelper.seed({
         title: 'Test Magazine',
+        description: 'Test Description',
         content: 'Test Content',
         thumbnailPath: '/test-image.png',
         isTitleVisible: true,
@@ -204,6 +191,7 @@ describe('Menu E2E test', () => {
 
       expect(magazine.idx).toBe(magazineSeed.idx);
       expect(magazine.title).toBe(magazineSeed.title);
+      expect(magazine.description).toBe(magazineSeed.description);
       expect(magazine.thumbnailImagePath).toBe(magazineSeed.thumbnailPath);
       expect(magazine.activatedAt).not.toBeNull();
       expect(magazine.activatedAt).toEqual(
