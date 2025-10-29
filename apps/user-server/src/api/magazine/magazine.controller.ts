@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  HttpCode,
   Param,
   ParseIntPipe,
   Post,
@@ -13,6 +14,7 @@ import { LoginUser } from '@user/common/types/LoginUser';
 import { MagazineEntity } from './entity/magazine.entity';
 import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
 import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine-response.dto';
+import { Exception } from '@libs/common/decorator/exception.decorator';
 
 @Controller('magazine')
 export class MagazineController {
@@ -34,6 +36,9 @@ export class MagazineController {
   }
 
   @Post('/:idx/like')
+  @Exception(400, 'Invalid magazine idx')
+  @Exception(404, 'Magazine not found for idx: {idx}')
+  @HttpCode(200)
   @LoginAuth()
   public async likeMagazineByIdx(
     @Param('idx', ParseIntPipe) idx: number,
@@ -42,6 +47,9 @@ export class MagazineController {
   }
 
   @Post('/:idx/unlike')
+  @Exception(400, 'Invalid magazine idx')
+  @Exception(404, 'Magazine not found for idx: {idx}')
+  @HttpCode(200)
   @LoginAuth()
   public async unlikeMagazineByIdx(
     @Param('idx', ParseIntPipe) idx: number,

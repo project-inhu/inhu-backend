@@ -1,5 +1,5 @@
 import { MagazineCoreService } from '@libs/core/magazine/magazine-core.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { MagazineEntity } from './entity/magazine.entity';
 import { BookmarkCoreService } from '@libs/core/bookmark/bookmark-core.service';
 import { LoginUser } from '@user/common/types/LoginUser';
@@ -62,10 +62,24 @@ export class MagazineService {
   }
 
   public async likeMagazineByIdx(idx: number): Promise<void> {
+    const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
+    if (!magazine) {
+      throw new NotFoundException(`Magazine not found for idx: ${idx}`);
+    }
+
     await this.magazineCoreService.increaseMagazineLikeCount(idx);
   }
 
   public async unlikeMagazineByIdx(idx: number): Promise<void> {
+    const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
+    if (!magazine) {
+      throw new NotFoundException(`Magazine not found for idx: ${idx}`);
+    }
+
+    if (magazine.likeCount === 0) {
+      return;
+    }
+
     await this.magazineCoreService.decreaseMagazineLikeCount(idx);
   }
 }
