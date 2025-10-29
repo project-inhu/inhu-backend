@@ -5,6 +5,7 @@ import { BookmarkCoreService } from '@libs/core/bookmark/bookmark-core.service';
 import { LoginUser } from '@user/common/types/LoginUser';
 import { MagazineOverviewEntity } from './entity/magazine-overview.entity';
 import { GetAllMagazineOverviewDto } from './dto/request/get-all-magazine-overview.dto';
+import { Transactional } from '@nestjs-cls/transactional';
 
 @Injectable()
 export class MagazineService {
@@ -13,16 +14,17 @@ export class MagazineService {
     private readonly bookmarkCoreService: BookmarkCoreService,
   ) {}
 
-  // ! 가게 정보가 사라졌을 때 메거진에서는 어떻게 해야 되나?
+  @Transactional()
   public async getMagazineByIdx(
     idx: number,
     loginUser?: LoginUser,
   ): Promise<MagazineEntity | null> {
     const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
-
     if (!magazine) {
       return null;
     }
+
+    await this.magazineCoreService.increaseMagazineViewCount(idx);
 
     if (!loginUser) {
       return MagazineEntity.fromModel(magazine, []);
@@ -44,5 +46,13 @@ export class MagazineService {
     return (await this.magazineCoreService.getMagazineOverviewAll(dto)).map(
       MagazineOverviewEntity.fromModel,
     );
+  }
+
+  public async likeMagazineByIdx(idx: number): Promise<void> {
+    await this.magazineCoreService.increaseMagazineLikeCount(idx);
+  }
+
+  public async unlikeMagazineByIdx(idx: number): Promise<void> {
+    await this.magazineCoreService.decreaseMagazineLikeCount(idx);
   }
 }
