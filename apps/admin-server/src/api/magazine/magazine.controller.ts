@@ -24,19 +24,6 @@ export class MagazineController {
   constructor(private readonly magazineService: MagazineService) {}
 
   /**
-   * 매거진 자세히보기
-   */
-  @AdminAuth()
-  @Get('/:idx')
-  @Exception(400, 'Invalid path parameter')
-  @Exception(404, 'Cannot find magazine')
-  public async getMagazineByIdx(
-    @Param('idx', ParseIntPipe) idx: number,
-  ): Promise<MagazineEntity> {
-    return await this.magazineService.getMagazineByIdx(idx);
-  }
-
-  /**
    * 모든 매거진 조회
    *
    * @author 이수인
@@ -48,6 +35,19 @@ export class MagazineController {
     @Query() dto: GetAllMagazineDto,
   ): Promise<GetAllMagazineResponseDto> {
     return await this.magazineService.getMagazineAll(dto);
+  }
+
+  /**
+   * 매거진 자세히보기
+   */
+  @AdminAuth()
+  @Get('/:idx')
+  @Exception(400, 'Invalid path parameter')
+  @Exception(404, 'Cannot find magazine')
+  public async getMagazineByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+  ): Promise<MagazineEntity> {
+    return await this.magazineService.getMagazineByIdx(idx);
   }
 
   /**
