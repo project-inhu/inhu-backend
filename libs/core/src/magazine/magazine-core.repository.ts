@@ -22,13 +22,11 @@ export class MagazineCoreRepository {
 
   public async selectMagazineByIdx(
     idx: number,
-    onlyActivated = true,
   ): Promise<SelectMagazine | null> {
     return await this.txHost.tx.magazine.findUnique({
       ...SELECT_MAGAZINE,
       where: {
         idx,
-        activatedAt: onlyActivated ? { not: null } : {},
         deletedAt: null,
       },
     });
@@ -36,7 +34,7 @@ export class MagazineCoreRepository {
 
   public async selectMagazineAll(
     input: GetAllMagazineInput,
-  ): Promise<SelectMagazine[]> {
+  ): Promise<SelectMagazineOverview[]> {
     return await this.txHost.tx.magazine.findMany({
       ...SELECT_MAGAZINE,
       where: {
@@ -92,7 +90,7 @@ export class MagazineCoreRepository {
     });
   }
 
-  public async updateMagazineActivatedAtByIdx(
+  public async updateMagazineByIdx(
     idx: number,
     activate: boolean,
   ): Promise<void> {

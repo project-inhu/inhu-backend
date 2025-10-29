@@ -20,12 +20,12 @@ export class MagazineService {
   ): Promise<MagazineEntity | null> {
     const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
 
-    if (!loginUser) {
-      return magazine && MagazineEntity.fromModel(magazine, []);
-    }
-
     if (!magazine) {
       return null;
+    }
+
+    if (!loginUser) {
+      return MagazineEntity.fromModel(magazine, []);
     }
 
     const bookmarkedPlaceList = await this.bookmarkCoreService

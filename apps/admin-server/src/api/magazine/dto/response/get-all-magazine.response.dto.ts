@@ -1,6 +1,6 @@
-import { MagazineEntity } from '../../entity/magazine.entity';
+import { MagazineOverviewEntity } from '../../entity/magazine-overview.entity';
 
 export class GetAllMagazineResponseDto {
-  magazineList: MagazineEntity[];
-  hasNext: boolean;
+  magazineList: MagazineOverviewEntity[];
+  count: number;
 }

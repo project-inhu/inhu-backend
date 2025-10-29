@@ -6,7 +6,6 @@ import {
   HttpCode,
   Param,
   ParseIntPipe,
-  Patch,
   Post,
   Query,
 } from '@nestjs/common';
@@ -17,7 +16,6 @@ import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { GetAllMagazineDto } from './dto/request/get-all-magazine.dto';
 import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine.response.dto';
 import { Exception } from '@libs/common/decorator/exception.decorator';
-import { UpdateMagazineActivatedAtByIdxDto } from './dto/request/update-magazine-activated-at-by-idx.dto';
 
 @Controller('magazine')
 export class MagazineController {
@@ -38,6 +36,19 @@ export class MagazineController {
   }
 
   /**
+   * 매거진 자세히보기
+   */
+  @AdminAuth()
+  @Get('/:idx')
+  @Exception(400, 'Invalid path parameter')
+  @Exception(404, 'Cannot find magazine')
+  public async getMagazineByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+  ): Promise<MagazineEntity> {
+    return await this.magazineService.getMagazineByIdx(idx);
+  }
+
+  /**
    * 매거진 생성
    *
    * @author 이수인
@@ -45,7 +56,6 @@ export class MagazineController {
   @AdminAuth()
   @Post()
   @Exception(400, 'Invalid create magazine request')
-  @Exception(404, 'Places not found for idx: {idx list}')
   public async createMagazine(
     @Body() dto: CreateMagazineDto,
   ): Promise<MagazineEntity> {
@@ -53,20 +63,37 @@ export class MagazineController {
   }
 
   /**
-   * 매거진 활성화/비활성화
+   * 매거진 활성화
    *
    * @author 이수인
    */
   @AdminAuth()
-  @Patch(':idx/activate')
+  @Post(':idx/activate')
   @Exception(400, 'Invalid magazine idx')
   @Exception(404, 'Magazine not found')
+  @Exception(409, 'Magazine is already activated')
   @HttpCode(200)
-  public async updateMagazineActivatedAtByIdx(
+  public async activateMagazineByIdx(
     @Param('idx', ParseIntPipe) idx: number,
-    @Body() dto: UpdateMagazineActivatedAtByIdxDto,
   ): Promise<void> {
-    await this.magazineService.updateMagazineActivatedAtByIdx(idx, dto);
+    await this.magazineService.activateMagazineByIdx(idx);
+  }
+
+  /**
+   * 매거진 비활성화
+   *
+   * @author 이수인
+   */
+  @AdminAuth()
+  @Post(':idx/deactivate')
+  @Exception(400, 'Invalid magazine idx')
+  @Exception(404, 'Magazine not found')
+  @Exception(409, 'Magazine is not activated')
+  @HttpCode(200)
+  public async deactivateMagazineByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+  ): Promise<void> {
+    await this.magazineService.deactivateMagazineByIdx(idx);
   }
 
   /**
