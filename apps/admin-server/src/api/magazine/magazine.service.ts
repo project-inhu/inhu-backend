@@ -6,7 +6,6 @@ import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine.respo
 import { GetAllMagazineDto } from './dto/request/get-all-magazine.dto';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { Transactional } from '@nestjs-cls/transactional';
-import { UpdateMagazineActivatedAtByIdxDto } from './dto/request/update-magazine-activated-at-by-idx.dto';
 import { MagazineNotFoundException } from '@admin/api/magazine/exception/MagazineNotFoundException';
 
 @Injectable()
@@ -78,10 +77,7 @@ export class MagazineService {
       .then(MagazineEntity.fromModel);
   }
 
-  public async updateMagazineActivatedAtByIdx(
-    idx: number,
-    dto: UpdateMagazineActivatedAtByIdxDto,
-  ): Promise<void> {
+  public async activateMagazineActivatedAtByIdx(idx: number): Promise<void> {
     const magazine = await this.magazineCoreService.getMagazineByIdx(
       idx,
       false,
@@ -90,10 +86,19 @@ export class MagazineService {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
 
-    await this.magazineCoreService.updateMagazineActivatedAtByIdx(
+    await this.magazineCoreService.updateMagazineActivatedAtByIdx(idx, true);
+  }
+
+  public async deactivateMagazineActivatedAtByIdx(idx: number): Promise<void> {
+    const magazine = await this.magazineCoreService.getMagazineByIdx(
       idx,
-      dto.activate,
+      false,
     );
+    if (!magazine) {
+      throw new NotFoundException(`Magazine not found for idx: ${idx}`);
+    }
+
+    await this.magazineCoreService.updateMagazineActivatedAtByIdx(idx, false);
   }
 
   public async deleteMagazineByIdx(idx: number): Promise<void> {
