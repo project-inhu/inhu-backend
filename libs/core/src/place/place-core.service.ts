@@ -31,6 +31,12 @@ export class PlaceCoreService {
     return place && PlaceModel.fromPrisma(place);
   }
 
+  public async getPlaceByIdxList(idxList: number[]): Promise<PlaceModel[]> {
+    const placeList =
+      await this.placeCoreRepository.selectPlaceByIdxList(idxList);
+    return placeList.map(PlaceModel.fromPrisma);
+  }
+
   public async getPlaceOverviewCount(
     input: GetPlaceOverviewInput,
   ): Promise<number> {

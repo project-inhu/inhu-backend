@@ -52,6 +52,16 @@ export class PlaceCoreRepository {
     });
   }
 
+  public async selectPlaceByIdxList(idxList: number[]): Promise<SelectPlace[]> {
+    return await this.txHost.tx.place.findMany({
+      ...SELECT_PLACE,
+      where: {
+        idx: { in: idxList },
+        deletedAt: null,
+      },
+    });
+  }
+
   public async selectPlaceAll({
     take,
     skip,
