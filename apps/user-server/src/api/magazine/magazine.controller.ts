@@ -18,19 +18,19 @@ import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine-respo
 export class MagazineController {
   constructor(private readonly magazineService: MagazineService) {}
 
+  @Get('/all')
+  public async getMagazineAll(
+    @Query() dto: GetAllMagazineDto,
+  ): Promise<GetAllMagazineResponseDto> {
+    return await this.magazineService.getMagazineAll(dto);
+  }
+
   @Get('/:idx')
   public async getMagazineByIdx(
     @Param('idx', ParseIntPipe) idx: number,
     @User() loginUser?: LoginUser,
   ): Promise<MagazineEntity | null> {
     return await this.magazineService.getMagazineByIdx(idx, loginUser);
-  }
-
-  @Get('/all')
-  public async getMagazineAll(
-    @Query() dto: GetAllMagazineDto,
-  ): Promise<GetAllMagazineResponseDto> {
-    return await this.magazineService.getMagazineAll(dto);
   }
 
   @Post('/:idx/like')

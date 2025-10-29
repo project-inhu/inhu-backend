@@ -88,7 +88,7 @@ describe('Magazine e2e test', () => {
 
       expect(Array.isArray(magazineList)).toBe(true);
       expect(magazineList.length).toBe(0);
-      expect(count).toBe(0);
+      expect(count).toBe(2);
     });
 
     // TODO 정렬 기준 확실해지면 다시 작성

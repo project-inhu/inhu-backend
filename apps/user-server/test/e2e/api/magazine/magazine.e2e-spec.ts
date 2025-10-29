@@ -1,6 +1,7 @@
 import { BookmarkSeedHelper } from '@libs/testing/seed/bookmark/bookmark.seed';
 import { MagazineSeedHelper } from '@libs/testing/seed/magazine/magazine.seed';
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
+import { MagazineOverviewEntity } from '@user/api/magazine/entity/magazine-overview.entity';
 import { MagazineEntity } from '@user/api/magazine/entity/magazine.entity';
 import { AppModule } from '@user/app.module';
 import { TestHelper } from 'apps/user-server/test/e2e/setup/test.helper';
@@ -175,7 +176,7 @@ describe('Menu E2E test', () => {
     });
   });
 
-  describe('GET /magazine/overview/all', () => {
+  describe('GET /magazine/all', () => {
     it('200 - field check', async () => {
       const magazineSeed = await magazineSeedHelper.seed({
         title: 'Test Magazine',
@@ -188,21 +189,22 @@ describe('Menu E2E test', () => {
 
       const response = await testHelper
         .test()
-        .get(`/magazine/overview/all`)
-        .query({ take: 10 })
+        .get('/magazine/all')
+        .query({ page: 1 })
         .expect(200);
 
-      const magazineList: MagazineEntity[] = response.body;
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+      const count: number = response.body.count;
 
       expect(Array.isArray(magazineList)).toBe(true);
       expect(magazineList.length).toBe(1);
+      expect(count).toBe(1);
 
       const magazine = magazineList[0];
 
       expect(magazine.idx).toBe(magazineSeed.idx);
       expect(magazine.title).toBe(magazineSeed.title);
       expect(magazine.thumbnailImagePath).toBe(magazineSeed.thumbnailPath);
-      expect(magazine.isTitleVisible).toBe(magazineSeed.isTitleVisible);
       expect(magazine.activatedAt).not.toBeNull();
       expect(magazine.activatedAt).toEqual(
         magazineSeed.activatedAt?.toISOString(),
@@ -217,14 +219,16 @@ describe('Menu E2E test', () => {
 
       const response = await testHelper
         .test()
-        .get(`/magazine/overview/all`)
-        .query({ take: 10 })
+        .get(`/magazine/all`)
+        .query({ page: 1 })
         .expect(200);
 
-      const magazineList: MagazineEntity[] = response.body;
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+      const count: number = response.body.count;
 
       expect(Array.isArray(magazineList)).toBe(true);
       expect(magazineList.length).toBe(0);
+      expect(count).toBe(0);
     });
 
     it('200 - not select magazine that is deleted', async () => {
@@ -235,35 +239,31 @@ describe('Menu E2E test', () => {
 
       const response = await testHelper
         .test()
-        .get(`/magazine/overview/all`)
-        .query({ take: 10 })
+        .get(`/magazine/all`)
+        .query({ page: 1 })
         .expect(200);
 
-      const magazineList: MagazineEntity[] = response.body;
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+      const count: number = response.body.count;
 
       expect(Array.isArray(magazineList)).toBe(true);
       expect(magazineList.length).toBe(0);
+      expect(count).toBe(0);
     });
 
     it('200 - no magazine', async () => {
       const response = await testHelper
         .test()
-        .get(`/magazine/overview/all`)
-        .query({ take: 10 })
+        .get(`/magazine/all`)
+        .query({ page: 1 })
         .expect(200);
 
-      const magazineList: MagazineEntity[] = response.body;
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+      const count: number = response.body.count;
 
       expect(Array.isArray(magazineList)).toBe(true);
       expect(magazineList.length).toBe(0);
-    });
-
-    it('400 - invalid take', async () => {
-      await testHelper
-        .test()
-        .get(`/magazine/overview/all`)
-        .query({ take: 'invalid-take' })
-        .expect(400);
+      expect(count).toBe(0);
     });
   });
 });
