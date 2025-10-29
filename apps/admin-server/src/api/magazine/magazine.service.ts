@@ -50,20 +50,14 @@ export class MagazineService {
 
   @Transactional()
   public async createMagazine(dto: CreateMagazineDto): Promise<MagazineEntity> {
-    const placeIdxList = this.extractAllPlaceIdxFromText(dto.content);
-    const invalidPlaceIdxList: number[] = [];
+    const extractedPlaceIdxList = this.extractAllPlaceIdxFromText(dto.content);
+    const validPlaceList: number[] = [];
 
-    if (placeIdxList && placeIdxList.length > 0) {
-      for (const placeIdx of placeIdxList) {
-        const place = await this.placeCoreService.getPlaceByIdx(placeIdx);
-        if (!place) {
-          invalidPlaceIdxList.push(placeIdx);
-        }
-      }
-    }
-    if (invalidPlaceIdxList.length > 0) {
-      throw new NotFoundException(
-        `Places not found for idx: ${invalidPlaceIdxList.join(', ')}`,
+    if (extractedPlaceIdxList.length > 0) {
+      validPlaceList.push(
+        ...(await this.placeCoreService
+          .getPlaceByIdxList(extractedPlaceIdxList)
+          .then((places) => places.map((place) => place.idx))),
       );
     }
 
@@ -74,16 +68,13 @@ export class MagazineService {
         content: dto.content,
         thumbnailImagePath: dto.thumbnailImagePath,
         isTitleVisible: dto.isTitleVisible,
-        placeIdxList: placeIdxList,
+        placeIdxList: validPlaceList,
       })
       .then(MagazineEntity.fromModel);
   }
 
-  public async activateMagazineActivatedAtByIdx(idx: number): Promise<void> {
-    const magazine = await this.magazineCoreService.getMagazineByIdx(
-      idx,
-      false,
-    );
+  public async activateMagazineByIdx(idx: number): Promise<void> {
+    const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
     if (!magazine) {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
@@ -92,14 +83,11 @@ export class MagazineService {
       throw new ConflictException(`Magazine is already activated: ${idx}`);
     }
 
-    await this.magazineCoreService.updateMagazineActivatedAtByIdx(idx, true);
+    await this.magazineCoreService.updateMagazineByIdx(idx, true);
   }
 
-  public async deactivateMagazineActivatedAtByIdx(idx: number): Promise<void> {
-    const magazine = await this.magazineCoreService.getMagazineByIdx(
-      idx,
-      false,
-    );
+  public async deactivateMagazineByIdx(idx: number): Promise<void> {
+    const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
     if (!magazine) {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
@@ -108,7 +96,7 @@ export class MagazineService {
       throw new ConflictException(`Magazine is not activated: ${idx}`);
     }
 
-    await this.magazineCoreService.updateMagazineActivatedAtByIdx(idx, false);
+    await this.magazineCoreService.updateMagazineByIdx(idx, false);
   }
 
   public async deleteMagazineByIdx(idx: number): Promise<void> {

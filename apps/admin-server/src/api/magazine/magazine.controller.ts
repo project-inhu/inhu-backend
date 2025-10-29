@@ -56,7 +56,6 @@ export class MagazineController {
   @AdminAuth()
   @Post()
   @Exception(400, 'Invalid create magazine request')
-  @Exception(404, 'Places not found for idx: {idx list}')
   public async createMagazine(
     @Body() dto: CreateMagazineDto,
   ): Promise<MagazineEntity> {
@@ -74,10 +73,10 @@ export class MagazineController {
   @Exception(404, 'Magazine not found')
   @Exception(409, 'Magazine is already activated')
   @HttpCode(200)
-  public async activateMagazineActivatedAtByIdx(
+  public async activateMagazineByIdx(
     @Param('idx', ParseIntPipe) idx: number,
   ): Promise<void> {
-    await this.magazineService.activateMagazineActivatedAtByIdx(idx);
+    await this.magazineService.activateMagazineByIdx(idx);
   }
 
   /**
@@ -91,10 +90,10 @@ export class MagazineController {
   @Exception(404, 'Magazine not found')
   @Exception(409, 'Magazine is not activated')
   @HttpCode(200)
-  public async deactivateMagazineActivatedAtByIdx(
+  public async deactivateMagazineByIdx(
     @Param('idx', ParseIntPipe) idx: number,
   ): Promise<void> {
-    await this.magazineService.deactivateMagazineActivatedAtByIdx(idx);
+    await this.magazineService.deactivateMagazineByIdx(idx);
   }
 
   /**
