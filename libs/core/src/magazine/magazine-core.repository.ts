@@ -107,6 +107,42 @@ export class MagazineCoreRepository {
     });
   }
 
+  public async increaseMagazineLikeCount(
+    idx: number,
+    count: number,
+  ): Promise<void> {
+    await this.txHost.tx.magazine.update({
+      data: {
+        likeCount: { increment: count },
+      },
+      where: { idx, deletedAt: null },
+    });
+  }
+
+  public async decreaseMagazineLikeCount(
+    idx: number,
+    count: number,
+  ): Promise<void> {
+    await this.txHost.tx.magazine.update({
+      data: {
+        likeCount: { decrement: count },
+      },
+      where: { idx, deletedAt: null },
+    });
+  }
+
+  public async increaseMagazineViewCount(
+    idx: number,
+    count: number,
+  ): Promise<void> {
+    await this.txHost.tx.magazine.update({
+      data: {
+        viewCount: { increment: count },
+      },
+      where: { idx, deletedAt: null },
+    });
+  }
+
   private getActivatedAtFilterWhereClause(
     activated?: boolean,
   ): Prisma.MagazineWhereInput {

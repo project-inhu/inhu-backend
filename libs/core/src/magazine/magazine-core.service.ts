@@ -85,4 +85,31 @@ export class MagazineCoreService {
   public async deleteMagazineByIdx(idx: number): Promise<void> {
     await this.magazineCoreRepository.softDeleteMagazineByIdx(idx);
   }
+
+  /**
+   * 매거진 좋아요 수 증가
+   *
+   * @author 이수인
+   */
+  public async increaseMagazineLikeCount(idx: number): Promise<void> {
+    await this.magazineCoreRepository.increaseMagazineLikeCount(idx, 1);
+  }
+
+  /**
+   * 매거진 좋아요 수 감소
+   *
+   * @author 이수인
+   */
+  public async decreaseMagazineLikeCount(idx: number): Promise<void> {
+    await this.magazineCoreRepository.decreaseMagazineLikeCount(idx, 1);
+  }
+
+  /**
+   * 매거진 조회 수 증가
+   *
+   * @author 이수인
+   */
+  public async increaseMagazineViewCount(idx: number): Promise<void> {
+    await this.magazineCoreRepository.increaseMagazineViewCount(idx, 1);
+  }
 }

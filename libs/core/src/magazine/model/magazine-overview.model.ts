@@ -8,6 +8,8 @@ export class MagazineOverviewModel extends PickType(MagazineModel, [
   'description',
   'thumbnailImagePath',
   'isTitleVisible',
+  'likeCount',
+  'viewCount',
   'createdAt',
   'activatedAt',
 ]) {
@@ -25,6 +27,8 @@ export class MagazineOverviewModel extends PickType(MagazineModel, [
       description: magazine.description,
       thumbnailImagePath: magazine.thumbnailImagePath,
       isTitleVisible: magazine.isTitleVisible,
+      likeCount: magazine.likeCount,
+      viewCount: magazine.viewCount,
       createdAt: magazine.createdAt,
       activatedAt: magazine.activatedAt,
     });
