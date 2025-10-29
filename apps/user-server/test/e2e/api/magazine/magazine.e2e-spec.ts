@@ -146,24 +146,6 @@ describe('Menu E2E test', () => {
       expect(magazine).toEqual({});
     });
 
-    // it('200 - does not select magazine that is not activated', async () => {
-    //   const loginUser = testHelper.loginUsers.user1;
-    //   const magazineSeed = await magazineSeedHelper.seed({
-    //     activatedAt: null,
-    //     deletedAt: null,
-    //   });
-
-    //   const response = await testHelper
-    //     .test()
-    //     .get(`/magazine/${magazineSeed.idx}`)
-    //     .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
-    //     .expect(200);
-
-    //   const magazine: MagazineEntity = response.body;
-
-    //   expect(magazine).toEqual({});
-    // });
-
     it('200 - does not select magazine that is deleted', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({

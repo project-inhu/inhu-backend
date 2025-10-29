@@ -11,6 +11,7 @@ import { GetAllMagazineDto } from './dto/request/get-all-magazine.dto';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { Transactional } from '@nestjs-cls/transactional';
 import { MagazineNotFoundException } from '@admin/api/magazine/exception/MagazineNotFoundException';
+import { MagazineOverviewEntity } from './entity/magazine-overview.entity';
 
 @Injectable()
 export class MagazineService {
@@ -43,7 +44,9 @@ export class MagazineService {
       });
 
     return {
-      magazineList: magazineOverviewModelList.map(MagazineEntity.fromModel),
+      magazineList: magazineOverviewModelList.map(
+        MagazineOverviewEntity.fromModel,
+      ),
       count: magazineOverviewModelList.length,
     };
   }
