@@ -72,6 +72,7 @@ export class MagazineController {
   @Post(':idx/activate')
   @Exception(400, 'Invalid magazine idx')
   @Exception(404, 'Magazine not found')
+  @Exception(409, 'Magazine is already activated')
   @HttpCode(200)
   public async activateMagazineActivatedAtByIdx(
     @Param('idx', ParseIntPipe) idx: number,
@@ -88,6 +89,7 @@ export class MagazineController {
   @Post(':idx/deactivate')
   @Exception(400, 'Invalid magazine idx')
   @Exception(404, 'Magazine not found')
+  @Exception(409, 'Magazine is not activated')
   @HttpCode(200)
   public async deactivateMagazineActivatedAtByIdx(
     @Param('idx', ParseIntPipe) idx: number,

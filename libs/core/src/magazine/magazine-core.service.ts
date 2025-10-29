@@ -39,9 +39,9 @@ export class MagazineCoreService {
    */
   public async getMagazineAll(
     input: GetAllMagazineInput,
-  ): Promise<MagazineModel[]> {
+  ): Promise<MagazineOverviewModel[]> {
     return (await this.magazineCoreRepository.selectMagazineAll(input)).map(
-      MagazineModel.fromPrisma,
+      MagazineOverviewModel.fromPrisma,
     );
   }
 

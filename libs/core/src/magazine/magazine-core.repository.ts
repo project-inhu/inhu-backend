@@ -36,7 +36,7 @@ export class MagazineCoreRepository {
 
   public async selectMagazineAll(
     input: GetAllMagazineInput,
-  ): Promise<SelectMagazine[]> {
+  ): Promise<SelectMagazineOverview[]> {
     return await this.txHost.tx.magazine.findMany({
       ...SELECT_MAGAZINE,
       where: {

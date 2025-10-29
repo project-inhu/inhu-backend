@@ -1,5 +1,9 @@
 import { MagazineCoreService } from '@libs/core/magazine/magazine-core.service';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateMagazineDto } from './dto/request/create-magazine.dto';
 import { MagazineEntity } from './entity/magazine.entity';
 import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine.response.dto';
@@ -31,18 +35,16 @@ export class MagazineService {
     const TAKE = 10;
     const SKIP = (dto.page - 1) * TAKE;
 
-    const magazineModelList = await this.magazineCoreService.getMagazineAll({
-      take: TAKE + 1,
-      skip: SKIP,
-      activated: dto.activated,
-    });
-
-    const paginatedList = magazineModelList.slice(0, TAKE);
-    const hasNext = magazineModelList.length > TAKE;
+    const magazineOverviewModelList =
+      await this.magazineCoreService.getMagazineAll({
+        take: TAKE + 1,
+        skip: SKIP,
+        activated: dto.activated,
+      });
 
     return {
-      magazineList: paginatedList.map(MagazineEntity.fromModel),
-      hasNext,
+      magazineList: magazineOverviewModelList.map(MagazineEntity.fromModel),
+      count: magazineOverviewModelList.length,
     };
   }
 
@@ -86,6 +88,10 @@ export class MagazineService {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
 
+    if (magazine.activatedAt) {
+      throw new ConflictException(`Magazine is already activated: ${idx}`);
+    }
+
     await this.magazineCoreService.updateMagazineActivatedAtByIdx(idx, true);
   }
 
@@ -96,6 +102,10 @@ export class MagazineService {
     );
     if (!magazine) {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
+    }
+
+    if (!magazine.activatedAt) {
+      throw new ConflictException(`Magazine is not activated: ${idx}`);
     }
 
     await this.magazineCoreService.updateMagazineActivatedAtByIdx(idx, false);
