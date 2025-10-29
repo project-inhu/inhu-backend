@@ -356,4 +356,113 @@ describe('Menu E2E test', () => {
       ]);
     });
   });
+
+  describe('POST /magazine/:idx/like', () => {
+    it('200 - successfully like magazine', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        activatedAt: new Date(),
+        deletedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/like`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(200);
+
+      const prisma = testHelper.getPrisma();
+      const magazine = await prisma.magazine.findUnique({
+        where: { idx: magazineSeed.idx },
+      });
+
+      expect(magazine?.likeCount).toBe(1);
+    });
+
+    it('400 - invalid idx', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .post(`/magazine/invalid-idx/like`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(400);
+    });
+
+    it('404 - magazine not found', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .post(`/magazine/9999999/like`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(404);
+    });
+  });
+
+  describe('POST /magazine/:idx/unlike', () => {
+    it('200 - successfully unlike magazine', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        activatedAt: new Date(),
+        deletedAt: null,
+        likeCount: 5,
+      });
+
+      await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/unlike`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(200);
+
+      const prisma = testHelper.getPrisma();
+      const magazine = await prisma.magazine.findUnique({
+        where: { idx: magazineSeed.idx },
+      });
+
+      expect(magazine?.likeCount).toBe(4);
+    });
+
+    it('200 - unlike magazine when likeCount is 0 (no effect)', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        activatedAt: new Date(),
+        deletedAt: null,
+        likeCount: 0,
+      });
+
+      await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/unlike`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(200);
+
+      const prisma = testHelper.getPrisma();
+      const magazine = await prisma.magazine.findUnique({
+        where: { idx: magazineSeed.idx },
+      });
+
+      expect(magazine?.likeCount).toBe(0);
+    });
+
+    it('400 - invalid idx', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .post(`/magazine/invalid-idx/unlike`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(400);
+    });
+
+    it('404 - magazine not found', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .post(`/magazine/9999999/unlike`)
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(404);
+    });
+  });
 });
