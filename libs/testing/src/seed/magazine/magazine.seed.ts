@@ -23,6 +23,8 @@ export class MagazineSeedHelper extends ISeedHelper<
       content: defaultValue(input.content, faker.lorem.paragraphs()),
       thumbnailPath: defaultValue(input.thumbnailPath, null),
       isTitleVisible: defaultValue(input.isTitleVisible, false),
+      likeCount: defaultValue(input.likeCount, 0),
+      viewCount: defaultValue(input.viewCount, 0),
       activatedAt: defaultValue(input.activatedAt, null),
       deletedAt: defaultValue(input.deletedAt, null),
       placeIdxList: defaultValue(input.placeIdxList, null),
@@ -40,6 +42,8 @@ export class MagazineSeedHelper extends ISeedHelper<
         content: filledInput.content,
         thumbnailImagePath: filledInput.thumbnailPath,
         isTitleVisible: filledInput.isTitleVisible,
+        likeCount: filledInput.likeCount,
+        viewCount: filledInput.viewCount,
         activatedAt: filledInput.activatedAt,
         deletedAt: filledInput.deletedAt,
         placeList: filledInput.placeIdxList
