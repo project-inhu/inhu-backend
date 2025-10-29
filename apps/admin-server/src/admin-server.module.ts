@@ -16,6 +16,7 @@ import { DiscordWebhookModule } from '@libs/common/modules/discord-webhook/disco
 import { NaverBlogModule } from '@libs/common/modules/naver-blog/naver-blog.module';
 import { BlogReviewModule } from '@admin/api/blog-review/blog-review.module';
 import { MagazineModule } from './api/magazine/magazine.module';
+import { OpenAIModule } from '@libs/common/modules/openAI/openAI.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { MagazineModule } from './api/magazine/magazine.module';
     S3UploadModule,
     BlogReviewModule,
     MagazineModule,
+    OpenAIModule,
   ],
 })
 export class AdminServerModule implements NestModule {
