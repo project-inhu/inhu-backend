@@ -42,9 +42,7 @@ export class MagazineCoreRepository {
           this.getActivatedAtFilterWhereClause(input.activated),
         ],
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy: this.getOrderByClause(input),
       take: input.take,
       skip: input.skip,
     });
@@ -152,5 +150,22 @@ export class MagazineCoreRepository {
     }
 
     return { activatedAt: null };
+  }
+
+  private getOrderByClause({
+    orderBy = 'like',
+  }: Pick<
+    GetAllMagazineInput,
+    'orderBy'
+  >): Prisma.MagazineOrderByWithRelationInput {
+    if (orderBy === 'like') {
+      return { likeCount: 'desc' };
+    } else if (orderBy === 'view') {
+      return { viewCount: 'desc' };
+    } else if (orderBy === 'time') {
+      return { createdAt: 'desc' };
+    } else {
+      return { likeCount: 'desc' };
+    }
   }
 }

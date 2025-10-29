@@ -50,6 +50,7 @@ export class MagazineService {
       take: 10,
       skip: (dto.page - 1) * 10,
       activated: true,
+      orderBy: dto.orderBy,
     };
 
     return {
