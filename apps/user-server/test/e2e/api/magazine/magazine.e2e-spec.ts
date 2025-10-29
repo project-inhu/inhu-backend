@@ -253,5 +253,107 @@ describe('Menu E2E test', () => {
       expect(magazineList.length).toBe(0);
       expect(count).toBe(0);
     });
+
+    it('200 - order by check(like)', async () => {
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          {
+            likeCount: 5,
+            activatedAt: new Date(),
+            deletedAt: null,
+          },
+          {
+            likeCount: 10,
+            activatedAt: new Date(),
+            deletedAt: null,
+          },
+          {
+            likeCount: 3,
+            activatedAt: new Date(),
+            deletedAt: null,
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .query({ page: 1, orderBy: 'like' })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+
+      expect(magazineList.map(({ idx }) => idx)).toStrictEqual([
+        magazine2.idx,
+        magazine1.idx,
+        magazine3.idx,
+      ]);
+    });
+
+    it('200 - order by check(view)', async () => {
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          {
+            viewCount: 50,
+            activatedAt: new Date(),
+            deletedAt: null,
+          },
+          {
+            viewCount: 100,
+            activatedAt: new Date(),
+            deletedAt: null,
+          },
+          {
+            viewCount: 30,
+            activatedAt: new Date(),
+            deletedAt: null,
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .query({ page: 1, orderBy: 'view' })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+
+      expect(magazineList.map(({ idx }) => idx)).toStrictEqual([
+        magazine2.idx,
+        magazine1.idx,
+        magazine3.idx,
+      ]);
+    });
+
+    it('200 - order by check(time)', async () => {
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          {
+            activatedAt: new Date(),
+            deletedAt: null,
+          },
+          {
+            activatedAt: new Date(),
+            deletedAt: null,
+          },
+          {
+            activatedAt: new Date(),
+            deletedAt: null,
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .query({ page: 1, orderBy: 'time' })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+
+      expect(magazineList.map(({ idx }) => idx)).toStrictEqual([
+        magazine3.idx,
+        magazine2.idx,
+        magazine1.idx,
+      ]);
+    });
   });
 });
