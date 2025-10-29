@@ -12,6 +12,7 @@ import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { Transactional } from '@nestjs-cls/transactional';
 import { MagazineNotFoundException } from '@admin/api/magazine/exception/MagazineNotFoundException';
 import { MagazineOverviewEntity } from './entity/magazine-overview.entity';
+import { GetAllMagazineInput } from '@libs/core/magazine/inputs/get-all-magazine.input';
 
 @Injectable()
 export class MagazineService {
@@ -33,21 +34,17 @@ export class MagazineService {
   public async getMagazineAll(
     dto: GetAllMagazineDto,
   ): Promise<GetAllMagazineResponseDto> {
-    const TAKE = 10;
-    const SKIP = (dto.page - 1) * TAKE;
-
-    const magazineOverviewModelList =
-      await this.magazineCoreService.getMagazineAll({
-        take: TAKE + 1,
-        skip: SKIP,
-        activated: dto.activated,
-      });
+    const input: GetAllMagazineInput = {
+      take: 10,
+      skip: (dto.page - 1) * 10,
+      activated: dto.activated,
+    };
 
     return {
-      magazineList: magazineOverviewModelList.map(
+      magazineList: (await this.magazineCoreService.getMagazineAll(input)).map(
         MagazineOverviewEntity.fromModel,
       ),
-      count: magazineOverviewModelList.length,
+      count: await this.magazineCoreService.getMagazineCount(input),
     };
   }
 

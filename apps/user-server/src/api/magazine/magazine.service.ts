@@ -4,8 +4,10 @@ import { MagazineEntity } from './entity/magazine.entity';
 import { BookmarkCoreService } from '@libs/core/bookmark/bookmark-core.service';
 import { LoginUser } from '@user/common/types/LoginUser';
 import { MagazineOverviewEntity } from './entity/magazine-overview.entity';
-import { GetAllMagazineOverviewDto } from './dto/request/get-all-magazine-overview.dto';
+import { GetAllMagazineDto } from './dto/request/get-all-magazine.dto';
 import { Transactional } from '@nestjs-cls/transactional';
+import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine-response.dto';
+import { GetAllMagazineInput } from '@libs/core/magazine/inputs/get-all-magazine.input';
 
 @Injectable()
 export class MagazineService {
@@ -40,12 +42,21 @@ export class MagazineService {
     return magazine && MagazineEntity.fromModel(magazine, bookmarkedPlaceList);
   }
 
-  public async getMagazineOverviewAll(
-    dto: GetAllMagazineOverviewDto,
-  ): Promise<MagazineOverviewEntity[]> {
-    return (await this.magazineCoreService.getMagazineOverviewAll(dto)).map(
-      MagazineOverviewEntity.fromModel,
-    );
+  public async getMagazineAll(
+    dto: GetAllMagazineDto,
+  ): Promise<GetAllMagazineResponseDto> {
+    const input: GetAllMagazineInput = {
+      take: 10,
+      skip: (dto.page - 1) * 10,
+      activated: true,
+    };
+
+    return {
+      magazineList: (await this.magazineCoreService.getMagazineAll(input)).map(
+        MagazineOverviewEntity.fromModel,
+      ),
+      count: await this.magazineCoreService.getMagazineCount(input),
+    };
   }
 
   public async likeMagazineByIdx(idx: number): Promise<void> {

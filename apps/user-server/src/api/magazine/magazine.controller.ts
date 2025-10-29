@@ -7,12 +7,12 @@ import {
   Query,
 } from '@nestjs/common';
 import { MagazineService } from './magazine.service';
-import { GetAllMagazineOverviewDto } from './dto/request/get-all-magazine-overview.dto';
+import { GetAllMagazineDto } from './dto/request/get-all-magazine.dto';
 import { User } from '@user/common/decorator/user.decorator';
 import { LoginUser } from '@user/common/types/LoginUser';
 import { MagazineEntity } from './entity/magazine.entity';
-import { MagazineOverviewEntity } from './entity/magazine-overview.entity';
 import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
+import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine-response.dto';
 
 @Controller('magazine')
 export class MagazineController {
@@ -26,11 +26,11 @@ export class MagazineController {
     return await this.magazineService.getMagazineByIdx(idx, loginUser);
   }
 
-  @Get('/overview/all')
-  public async getMagazineOverviewAll(
-    @Query() dto: GetAllMagazineOverviewDto,
-  ): Promise<MagazineOverviewEntity[]> {
-    return await this.magazineService.getMagazineOverviewAll(dto);
+  @Get('/all')
+  public async getMagazineAll(
+    @Query() dto: GetAllMagazineDto,
+  ): Promise<GetAllMagazineResponseDto> {
+    return await this.magazineService.getMagazineAll(dto);
   }
 
   @Post('/:idx/like')

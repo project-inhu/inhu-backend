@@ -1,15 +1,15 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsNotEmpty, Min } from 'class-validator';
 
-export class GetAllMagazineOverviewDto {
+export class GetAllMagazineDto {
   /**
-   * 가져올 매거진 개수
+   * page number
    *
    * @example 1
    */
   @Type(() => Number)
   @IsNotEmpty()
   @IsInt()
-  @Min(0)
-  take: number;
+  @Min(1)
+  page: number;
 }

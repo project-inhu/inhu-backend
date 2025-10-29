@@ -12,7 +12,6 @@ import {
   SELECT_MAGAZINE_OVERVIEW,
   SelectMagazineOverview,
 } from './model/prisma-type/select-magazine-overview';
-import { GetAllMagazineOverviewInput } from './inputs/get-all-magazine-overview.input';
 
 @Injectable()
 export class MagazineCoreRepository {
@@ -36,7 +35,7 @@ export class MagazineCoreRepository {
     input: GetAllMagazineInput,
   ): Promise<SelectMagazineOverview[]> {
     return await this.txHost.tx.magazine.findMany({
-      ...SELECT_MAGAZINE,
+      ...SELECT_MAGAZINE_OVERVIEW,
       where: {
         AND: [
           { deletedAt: null },
@@ -51,18 +50,16 @@ export class MagazineCoreRepository {
     });
   }
 
-  public async selectMagazineOverviewAll(
-    input: GetAllMagazineOverviewInput,
-  ): Promise<SelectMagazineOverview[]> {
-    return await this.txHost.tx.magazine.findMany({
-      ...SELECT_MAGAZINE_OVERVIEW,
+  public async selectMagazineCount(
+    input: GetAllMagazineInput,
+  ): Promise<number> {
+    return await this.txHost.tx.magazine.count({
       where: {
-        AND: [{ deletedAt: null }, this.getActivatedAtFilterWhereClause(true)],
+        AND: [
+          { deletedAt: null },
+          this.getActivatedAtFilterWhereClause(input.activated),
+        ],
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      take: input.take,
     });
   }
 
