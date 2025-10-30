@@ -36,26 +36,4 @@ export class MagazineController {
   ): Promise<MagazineEntity> {
     return await this.magazineService.getMagazineByIdx(idx, loginUser);
   }
-
-  @Post('/:idx/like')
-  @Exception(400, 'Invalid magazine idx')
-  @Exception(404, 'Magazine not found for idx: {idx}')
-  @HttpCode(200)
-  @LoginAuth()
-  public async likeMagazineByIdx(
-    @Param('idx', ParseIntPipe) idx: number,
-  ): Promise<void> {
-    return await this.magazineService.likeMagazineByIdx(idx);
-  }
-
-  @Post('/:idx/unlike')
-  @Exception(400, 'Invalid magazine idx')
-  @Exception(404, 'Magazine not found for idx: {idx}')
-  @HttpCode(200)
-  @LoginAuth()
-  public async unlikeMagazineByIdx(
-    @Param('idx', ParseIntPipe) idx: number,
-  ): Promise<void> {
-    return await this.magazineService.unlikeMagazineByIdx(idx);
-  }
 }

@@ -7,7 +7,6 @@ import { MagazineOverviewEntity } from './entity/magazine-overview.entity';
 import { GetAllMagazineDto } from './dto/request/get-all-magazine.dto';
 import { Transactional } from '@nestjs-cls/transactional';
 import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine-response.dto';
-import { GetAllMagazineInput } from '@libs/core/magazine/inputs/get-all-magazine.input';
 
 @Injectable()
 export class MagazineService {
@@ -63,27 +62,5 @@ export class MagazineService {
         .map(MagazineOverviewEntity.fromModel),
       hasNext: magazineOverviewModelList.length > TAKE,
     };
-  }
-
-  public async likeMagazineByIdx(idx: number): Promise<void> {
-    const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
-    if (!magazine) {
-      throw new NotFoundException(`Magazine not found for idx: ${idx}`);
-    }
-
-    await this.magazineCoreService.increaseMagazineLikeCount(idx);
-  }
-
-  public async unlikeMagazineByIdx(idx: number): Promise<void> {
-    const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
-    if (!magazine) {
-      throw new NotFoundException(`Magazine not found for idx: ${idx}`);
-    }
-
-    if (magazine.likeCount === 0) {
-      return;
-    }
-
-    await this.magazineCoreService.decreaseMagazineLikeCount(idx);
   }
 }
