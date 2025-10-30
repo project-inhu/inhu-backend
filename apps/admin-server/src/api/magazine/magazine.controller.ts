@@ -7,6 +7,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { MagazineService } from './magazine.service';
@@ -17,6 +18,7 @@ import { GetAllMagazineDto } from './dto/request/get-all-magazine.dto';
 import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine.response.dto';
 import { Exception } from '@libs/common/decorator/exception.decorator';
 import { ActivateMagazineByIdxDto } from './dto/request/activate-magazine-by-idx.dto';
+import { UpdateMagazineByIdxDto } from './dto/request/update-magazine-by-idx.dto';
 
 @Controller('magazine')
 export class MagazineController {
@@ -83,6 +85,23 @@ export class MagazineController {
     @Body() dto: ActivateMagazineByIdxDto,
   ): Promise<void> {
     await this.magazineService.activateMagazineByIdx(idx, dto);
+  }
+
+  /**
+   * 매거진 수정
+   *
+   * @author 이수인
+   */
+  @AdminAuth()
+  @Put(':idx')
+  @Exception(400, 'Invalid magazine idx')
+  @Exception(404, 'Magazine not found')
+  @HttpCode(200)
+  public async updateMagazineByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+    @Body() dto: UpdateMagazineByIdxDto,
+  ): Promise<void> {
+    return await this.magazineService.updateMagazineByIdx(idx, dto);
   }
 
   /**

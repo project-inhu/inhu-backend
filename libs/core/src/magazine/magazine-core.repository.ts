@@ -12,6 +12,7 @@ import {
   SELECT_MAGAZINE_OVERVIEW,
   SelectMagazineOverview,
 } from './model/prisma-type/select-magazine-overview';
+import { UpdateMagazineInput } from './inputs/update-magazine.input';
 
 @Injectable()
 export class MagazineCoreRepository {
@@ -87,11 +88,28 @@ export class MagazineCoreRepository {
 
   public async updateMagazineByIdx(
     idx: number,
-    activate: boolean,
+    input: UpdateMagazineInput,
   ): Promise<void> {
     await this.txHost.tx.magazine.update({
-      where: { idx },
-      data: { activatedAt: activate ? new Date() : null },
+      where: { idx, deletedAt: null },
+      data: {
+        title: input.title,
+        description: input.description,
+        content: input.content,
+        thumbnailImagePath: input.thumbnailImagePath,
+        isTitleVisible: input.isTitleVisible,
+        activatedAt: input.activate ? new Date() : null,
+        placeList: input.placeIdxList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.placeIdxList.map((placeIdx) => ({
+                  placeIdx,
+                })),
+              },
+            }
+          : undefined,
+      },
     });
   }
 

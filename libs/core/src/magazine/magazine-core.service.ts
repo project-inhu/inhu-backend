@@ -4,6 +4,7 @@ import { MagazineModel } from './model/magazine.model';
 import { CreateMagazineInput } from './inputs/create-magazine.input';
 import { GetAllMagazineInput } from './inputs/get-all-magazine.input';
 import { MagazineOverviewModel } from './model/magazine-overview.model';
+import { UpdateMagazineInput } from './inputs/update-magazine.input';
 
 /**
  * @publicApi
@@ -67,9 +68,9 @@ export class MagazineCoreService {
    */
   public async updateMagazineByIdx(
     idx: number,
-    activate: boolean,
+    input: UpdateMagazineInput,
   ): Promise<void> {
-    await this.magazineCoreRepository.updateMagazineByIdx(idx, activate);
+    await this.magazineCoreRepository.updateMagazineByIdx(idx, input);
   }
 
   /**
