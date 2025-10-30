@@ -20,7 +20,6 @@ import { RedlockModule } from '@libs/common/modules/redlock/redlock.module';
 import { AopModule } from '@toss/nestjs-aop';
 import { BlogReviewModule } from '@user/api/blog-review/blog-review.module';
 import { MagazineModule } from './api/magazine/magazine.module';
-import { OpenAIModule } from '@libs/common/modules/openAI/openAI.module';
 
 @Module({
   imports: [
