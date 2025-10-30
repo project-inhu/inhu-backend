@@ -13,6 +13,7 @@ import { Transactional } from '@nestjs-cls/transactional';
 import { MagazineNotFoundException } from '@admin/api/magazine/exception/MagazineNotFoundException';
 import { MagazineOverviewEntity } from './entity/magazine-overview.entity';
 import { GetAllMagazineInput } from '@libs/core/magazine/inputs/get-all-magazine.input';
+import { ActivateMagazineByIdxDto } from './dto/request/activate-magazine-by-idx.dto';
 
 @Injectable()
 export class MagazineService {
@@ -73,30 +74,26 @@ export class MagazineService {
       .then(MagazineEntity.fromModel);
   }
 
-  public async activateMagazineByIdx(idx: number): Promise<void> {
+  public async activateMagazineByIdx(
+    idx: number,
+    dto: ActivateMagazineByIdxDto,
+  ): Promise<void> {
+    const isActivate = dto.activate;
     const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
+
     if (!magazine) {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
 
-    if (magazine.activatedAt) {
+    if (isActivate && magazine.activatedAt) {
       throw new ConflictException(`Magazine is already activated: ${idx}`);
     }
 
-    await this.magazineCoreService.updateMagazineByIdx(idx, true);
-  }
-
-  public async deactivateMagazineByIdx(idx: number): Promise<void> {
-    const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
-    if (!magazine) {
-      throw new NotFoundException(`Magazine not found for idx: ${idx}`);
-    }
-
-    if (!magazine.activatedAt) {
+    if (!isActivate && !magazine.activatedAt) {
       throw new ConflictException(`Magazine is not activated: ${idx}`);
     }
 
-    await this.magazineCoreService.updateMagazineByIdx(idx, false);
+    await this.magazineCoreService.updateMagazineByIdx(idx, isActivate);
   }
 
   public async deleteMagazineByIdx(idx: number): Promise<void> {
