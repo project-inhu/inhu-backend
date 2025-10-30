@@ -11,7 +11,6 @@ export class MagazineOverviewEntity extends PickType(MagazineEntity, [
   'likeCount',
   'viewCount',
   'createdAt',
-  'activatedAt',
 ]) {
   constructor(data: MagazineOverviewEntity) {
     super();
@@ -30,7 +29,6 @@ export class MagazineOverviewEntity extends PickType(MagazineEntity, [
       likeCount: model.likeCount,
       viewCount: model.viewCount,
       createdAt: model.createdAt,
-      activatedAt: model.activatedAt,
     });
   }
 }

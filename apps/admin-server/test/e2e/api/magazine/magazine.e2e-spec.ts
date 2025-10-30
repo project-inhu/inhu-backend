@@ -546,130 +546,559 @@ describe('Magazine e2e test', () => {
     });
   });
 
-  // describe('POST /magazine/:idx/activate', () => {
-  //   it('200 - successfully activate magazine', async () => {
-  //     const loginUser = testHelper.loginAdmin.admin1;
-  //     const magazineSeed = await magazineSeedHelper.seed({
-  //       deletedAt: null,
-  //       activatedAt: null,
-  //     });
+  describe('POST /magazine/:idx/activate', () => {
+    it('200 - successfully activate magazine', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const [place1, place2] = await placeSeedHelper.seedAll([
+        {
+          deletedAt: null,
+          activatedAt: new Date(),
+        },
+        {
+          deletedAt: null,
+          activatedAt: new Date(),
+        },
+      ]);
+      const magazineSeed = await magazineSeedHelper.seed({
+        title: 'Test Magazine',
+        description: 'Test Description',
+        content: `Test Content. here is place :::place-${place1.idx}:::`,
+        thumbnailPath: 'Test Thumbnail',
+        isTitleVisible: true,
+        likeCount: 10,
+        viewCount: 100,
+        deletedAt: null,
+        activatedAt: null,
+        placeIdxList: [place1.idx],
+      });
 
-  //     const response = await testHelper
-  //       .test()
-  //       .post(`/magazine/${magazineSeed.idx}/activate`)
-  //       .set('Cookie', `token=Bearer ${loginUser.token}`)
-  //       .expect(200);
+      const response = await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ activate: true })
+        .expect(200);
 
-  //     expect(response.body).toEqual({});
+      expect(response.body).toEqual({});
 
-  //     const updatedMagazine = await testHelper
-  //       .getPrisma()
-  //       .magazine.findUniqueOrThrow({
-  //         where: { idx: magazineSeed.idx },
-  //       });
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .magazine.findUniqueOrThrow({
+          where: { idx: magazineSeed.idx },
+          include: { placeList: true },
+        });
 
-  //     expect(updatedMagazine.activatedAt).not.toBeNull();
-  //   });
+      expect(updatedMagazine.title).toBe(magazineSeed.title);
+      expect(updatedMagazine.description).toBe(magazineSeed.description);
+      expect(updatedMagazine.content).toBe(magazineSeed.content);
+      expect(updatedMagazine.thumbnailImagePath).toBe(
+        magazineSeed.thumbnailPath,
+      );
+      expect(updatedMagazine.isTitleVisible).toBe(magazineSeed.isTitleVisible);
+      expect(updatedMagazine.likeCount).toBe(magazineSeed.likeCount);
+      expect(updatedMagazine.viewCount).toBe(magazineSeed.viewCount);
+      expect(updatedMagazine.placeList.length).toBe(1);
+      expect(updatedMagazine.placeList[0].placeIdx).toBe(place1.idx);
+      expect(updatedMagazine.activatedAt).not.toBeNull();
+    });
 
-  //   it('400 - invalid magazine idx', async () => {
-  //     const loginUser = testHelper.loginAdmin.admin1;
-  //     const invalidMagazineIdx = 'invalid-magazine-idx';
+    it('200 - successfully deactivate magazine', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const magazineSeed = await magazineSeedHelper.seed({
+        title: 'Test Magazine',
+        description: 'Test Description',
+        content: `Test Content. here is place :::place-${placeSeed.idx}:::`,
+        thumbnailPath: 'Test Thumbnail',
+        isTitleVisible: true,
+        likeCount: 10,
+        viewCount: 100,
+        deletedAt: null,
+        activatedAt: new Date(),
+        placeIdxList: [placeSeed.idx],
+      });
 
-  //     await testHelper
-  //       .test()
-  //       .post(`/magazine/${invalidMagazineIdx}/activate`)
-  //       .set('Cookie', `token=Bearer ${loginUser.token}`)
-  //       .expect(400);
-  //   });
+      const response = await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ activate: false })
+        .expect(200);
 
-  //   it('404 - magazine not found', async () => {
-  //     const loginUser = testHelper.loginAdmin.admin1;
-  //     const nonExistentMagazineIdx = 9999999;
+      expect(response.body).toEqual({});
 
-  //     await testHelper
-  //       .test()
-  //       .post(`/magazine/${nonExistentMagazineIdx}/activate`)
-  //       .set('Cookie', `token=Bearer ${loginUser.token}`)
-  //       .expect(404);
-  //   });
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .magazine.findUniqueOrThrow({
+          where: { idx: magazineSeed.idx },
+          include: { placeList: true },
+        });
 
-  //   it('409 - magazine is already activated', async () => {
-  //     const loginUser = testHelper.loginAdmin.admin1;
-  //     const magazineSeed = await magazineSeedHelper.seed({
-  //       deletedAt: null,
-  //       activatedAt: new Date(),
-  //     });
+      expect(updatedMagazine.title).toBe(magazineSeed.title);
+      expect(updatedMagazine.description).toBe(magazineSeed.description);
+      expect(updatedMagazine.content).toBe(magazineSeed.content);
+      expect(updatedMagazine.thumbnailImagePath).toBe(
+        magazineSeed.thumbnailPath,
+      );
+      expect(updatedMagazine.isTitleVisible).toBe(magazineSeed.isTitleVisible);
+      expect(updatedMagazine.likeCount).toBe(magazineSeed.likeCount);
+      expect(updatedMagazine.viewCount).toBe(magazineSeed.viewCount);
+      expect(updatedMagazine.placeList.length).toBe(1);
+      expect(updatedMagazine.placeList[0].placeIdx).toBe(placeSeed.idx);
+      expect(updatedMagazine.activatedAt).toBeNull();
+    });
 
-  //     await testHelper
-  //       .test()
-  //       .post(`/magazine/${magazineSeed.idx}/activate`)
-  //       .set('Cookie', `token=Bearer ${loginUser.token}`)
-  //       .expect(409);
-  //   });
-  // });
+    it('400 - invalid magazine idx (activate)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const invalidMagazineIdx = 'invalid-magazine-idx';
 
-  // describe('POST /magazine/:idx/deactivate', () => {
-  //   it('200 - successfully deactivate magazine', async () => {
-  //     const loginUser = testHelper.loginAdmin.admin1;
-  //     const magazineSeed = await magazineSeedHelper.seed({
-  //       deletedAt: null,
-  //       activatedAt: new Date(),
-  //     });
+      await testHelper
+        .test()
+        .post(`/magazine/${invalidMagazineIdx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(400);
+    });
 
-  //     const response = await testHelper
-  //       .test()
-  //       .post(`/magazine/${magazineSeed.idx}/deactivate`)
-  //       .set('Cookie', `token=Bearer ${loginUser.token}`)
-  //       .send({ activate: false })
-  //       .expect(200);
+    it('400 - invalid magazine idx (deactivate)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const invalidMagazineIdx = 'invalid-magazine-idx';
 
-  //     expect(response.body).toEqual({});
+      await testHelper
+        .test()
+        .post(`/magazine/${invalidMagazineIdx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(400);
+    });
 
-  //     const updatedMagazine = await testHelper
-  //       .getPrisma()
-  //       .magazine.findUniqueOrThrow({
-  //         where: { idx: magazineSeed.idx },
-  //       });
+    it('404 - magazine not found (activate)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const nonExistentMagazineIdx = 9999999;
 
-  //     expect(updatedMagazine.activatedAt).toBeNull();
-  //   });
+      await testHelper
+        .test()
+        .post(`/magazine/${nonExistentMagazineIdx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ activate: true })
+        .expect(404);
+    });
 
-  //   it('400 - invalid magazine idx', async () => {
-  //     const loginUser = testHelper.loginAdmin.admin1;
-  //     const invalidMagazineIdx = 'invalid-magazine-idx';
+    it('404 - magazine not found (deactivate)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const nonExistentMagazineIdx = 9999999;
 
-  //     await testHelper
-  //       .test()
-  //       .post(`/magazine/${invalidMagazineIdx}/deactivate`)
-  //       .set('Cookie', `token=Bearer ${loginUser.token}`)
-  //       .expect(400);
-  //   });
+      await testHelper
+        .test()
+        .post(`/magazine/${nonExistentMagazineIdx}/deactivate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ activate: false })
+        .expect(404);
+    });
 
-  //   it('404 - magazine not found', async () => {
-  //     const loginUser = testHelper.loginAdmin.admin1;
-  //     const nonExistentMagazineIdx = 9999999;
+    it('409 - magazine is already activated', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
 
-  //     await testHelper
-  //       .test()
-  //       .post(`/magazine/${nonExistentMagazineIdx}/deactivate`)
-  //       .set('Cookie', `token=Bearer ${loginUser.token}`)
-  //       .expect(404);
-  //   });
+      await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ activate: true })
+        .expect(409);
+    });
 
-  //   it('409 - magazine is not activated', async () => {
-  //     const loginUser = testHelper.loginAdmin.admin1;
-  //     const magazineSeed = await magazineSeedHelper.seed({
-  //       deletedAt: null,
-  //       activatedAt: null,
-  //     });
+    it('409 - magazine is not activated', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: null,
+      });
 
-  //     await testHelper
-  //       .test()
-  //       .post(`/magazine/${magazineSeed.idx}/deactivate`)
-  //       .set('Cookie', `token=Bearer ${loginUser.token}`)
-  //       .expect(409);
-  //   });
-  // });
+      await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ activate: false })
+        .expect(409);
+    });
+  });
+
+  describe('PUT /magazine/:idx', () => {
+    it('200 - successfully update magazine', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const [place1, place2] = await placeSeedHelper.seedAll([
+        {
+          deletedAt: null,
+          activatedAt: new Date(),
+        },
+        {
+          deletedAt: null,
+          activatedAt: new Date(),
+        },
+      ]);
+      const magazineSeed = await magazineSeedHelper.seed({
+        title: 'Old Title',
+        description: 'Old Description',
+        content: `Old Content. here is place 1 :::place-${place1.idx}:::`,
+        thumbnailPath: '/old-thumbnail.jpg',
+        isTitleVisible: false,
+        deletedAt: null,
+        activatedAt: new Date(),
+        placeIdxList: [place1.idx],
+      });
+
+      const updateMagazineDto = {
+        title: 'New Title',
+        description: 'New Description',
+        content: `New Content, here is place 2 :::place-${place2.idx}:::`,
+        thumbnailImagePath: '/new-thumbnail.jpg',
+        isTitleVisible: true,
+      };
+
+      await testHelper
+        .test()
+        .put(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMagazineDto)
+        .expect(200);
+
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .magazine.findUniqueOrThrow({
+          where: { idx: magazineSeed.idx },
+          include: { placeList: true },
+        });
+
+      expect(updatedMagazine.title).toBe(updateMagazineDto.title);
+      expect(updatedMagazine.description).toBe(updateMagazineDto.description);
+      expect(updatedMagazine.content).toBe(updateMagazineDto.content);
+      expect(updatedMagazine.thumbnailImagePath).toBe(
+        updateMagazineDto.thumbnailImagePath,
+      );
+      expect(updatedMagazine.isTitleVisible).toBe(
+        updateMagazineDto.isTitleVisible,
+      );
+      expect(updatedMagazine.placeList.length).toBe(1);
+      expect(updatedMagazine.placeList[0].placeIdx).toBe(place2.idx);
+    });
+
+    it('200 - update magazine with no place in content (placeIdxList becomes empty)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const magazineSeed = await magazineSeedHelper.seed({
+        title: 'Old Title',
+        description: 'Old Description',
+        content: `Old Content. here is place :::place-${placeSeed.idx}:::`,
+        thumbnailPath: '/old-thumbnail.jpg',
+        isTitleVisible: false,
+        deletedAt: null,
+        activatedAt: new Date(),
+        placeIdxList: [placeSeed.idx],
+      });
+
+      const updateMagazineDto = {
+        title: 'New Title',
+        description: 'New Description',
+        content: 'New Content with no place.',
+        thumbnailImagePath: '/new-thumbnail.jpg',
+        isTitleVisible: true,
+      };
+
+      await testHelper
+        .test()
+        .put(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMagazineDto)
+        .expect(200);
+
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .magazine.findUniqueOrThrow({
+          where: { idx: magazineSeed.idx },
+          include: { placeList: true },
+        });
+
+      expect(updatedMagazine.title).toBe(updateMagazineDto.title);
+      expect(updatedMagazine.description).toBe(updateMagazineDto.description);
+      expect(updatedMagazine.content).toBe(updateMagazineDto.content);
+      expect(updatedMagazine.thumbnailImagePath).toBe(
+        updateMagazineDto.thumbnailImagePath,
+      );
+      expect(updatedMagazine.isTitleVisible).toBe(
+        updateMagazineDto.isTitleVisible,
+      );
+      expect(updatedMagazine.placeList.length).toBe(0);
+    });
+
+    it('200 - update magazine with multiple places in content', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          deletedAt: null,
+          activatedAt: new Date(),
+        },
+        {
+          deletedAt: null,
+          activatedAt: new Date(),
+        },
+        {
+          deletedAt: null,
+          activatedAt: new Date(),
+        },
+      ]);
+      const magazineSeed = await magazineSeedHelper.seed({
+        title: 'Old Title',
+        description: 'Old Description',
+        content: `Old Content. here is place 1 :::place-${place1.idx}:::`,
+        thumbnailPath: '/old-thumbnail.jpg',
+        isTitleVisible: false,
+        deletedAt: null,
+        activatedAt: new Date(),
+        placeIdxList: [place1.idx],
+      });
+
+      const updateMagazineDto = {
+        title: 'New Title',
+        description: 'New Description',
+        content: `New Content, here is place 1 :::place-${place1.idx}::: and place 2 :::place-${place2.idx}::: and place 3 :::place-${place3.idx}:::`,
+        thumbnailImagePath: '/new-thumbnail.jpg',
+        isTitleVisible: true,
+      };
+
+      await testHelper
+        .test()
+        .put(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMagazineDto)
+        .expect(200);
+
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .magazine.findUniqueOrThrow({
+          where: { idx: magazineSeed.idx },
+          include: { placeList: true },
+        });
+
+      expect(updatedMagazine.title).toBe(updateMagazineDto.title);
+      expect(updatedMagazine.description).toBe(updateMagazineDto.description);
+      expect(updatedMagazine.content).toBe(updateMagazineDto.content);
+      expect(updatedMagazine.thumbnailImagePath).toBe(
+        updateMagazineDto.thumbnailImagePath,
+      );
+      expect(updatedMagazine.isTitleVisible).toBe(
+        updateMagazineDto.isTitleVisible,
+      );
+      expect(updatedMagazine.placeList.length).toBe(3);
+      const placeIdxList = updatedMagazine.placeList.map((p) => p.placeIdx);
+      expect(placeIdxList).toContain(place1.idx);
+      expect(placeIdxList).toContain(place2.idx);
+      expect(placeIdxList).toContain(place3.idx);
+    });
+
+    it('200 - update magazine with duplicate places in content', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const magazineSeed = await magazineSeedHelper.seed({
+        title: 'Old Title',
+        description: 'Old Description',
+        content: `Old Content. here is place :::place-${placeSeed.idx}:::`,
+        thumbnailPath: '/old-thumbnail.jpg',
+        isTitleVisible: false,
+        deletedAt: null,
+        activatedAt: new Date(),
+        placeIdxList: [placeSeed.idx],
+      });
+
+      const updateMagazineDto = {
+        title: 'New Title',
+        description: 'New Description',
+        content: `New Content, here is place :::place-${placeSeed.idx}::: and again place :::place-${placeSeed.idx}:::`,
+        thumbnailImagePath: '/new-thumbnail.jpg',
+        isTitleVisible: true,
+      };
+
+      await testHelper
+        .test()
+        .put(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMagazineDto)
+        .expect(200);
+
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .magazine.findUniqueOrThrow({
+          where: { idx: magazineSeed.idx },
+          include: { placeList: true },
+        });
+
+      expect(updatedMagazine.title).toBe(updateMagazineDto.title);
+      expect(updatedMagazine.description).toBe(updateMagazineDto.description);
+      expect(updatedMagazine.content).toBe(updateMagazineDto.content);
+      expect(updatedMagazine.thumbnailImagePath).toBe(
+        updateMagazineDto.thumbnailImagePath,
+      );
+      expect(updatedMagazine.isTitleVisible).toBe(
+        updateMagazineDto.isTitleVisible,
+      );
+      expect(updatedMagazine.placeList.length).toBe(1);
+      expect(updatedMagazine.placeList[0].placeIdx).toBe(placeSeed.idx);
+    });
+
+    it('200 - update magazine with invalid and valid place idx in content', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const magazineSeed = await magazineSeedHelper.seed({
+        title: 'Old Title',
+        description: 'Old Description',
+        content: `Old Content. here is place :::place-${placeSeed.idx}:::`,
+        thumbnailPath: '/old-thumbnail.jpg',
+        isTitleVisible: false,
+        deletedAt: null,
+        activatedAt: new Date(),
+        placeIdxList: [placeSeed.idx],
+      });
+
+      const updateMagazineDto = {
+        title: 'New Title',
+        description: 'New Description',
+        content: `New Content, here is invalid place :::place-999999::: and valid place :::place-${placeSeed.idx}:::`,
+        thumbnailImagePath: '/new-thumbnail.jpg',
+        isTitleVisible: true,
+      };
+
+      await testHelper
+        .test()
+        .put(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMagazineDto)
+        .expect(200);
+
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .magazine.findUniqueOrThrow({
+          where: { idx: magazineSeed.idx },
+          include: { placeList: true },
+        });
+
+      expect(updatedMagazine.title).toBe(updateMagazineDto.title);
+      expect(updatedMagazine.description).toBe(updateMagazineDto.description);
+      expect(updatedMagazine.content).toBe(updateMagazineDto.content);
+      expect(updatedMagazine.thumbnailImagePath).toBe(
+        updateMagazineDto.thumbnailImagePath,
+      );
+      expect(updatedMagazine.isTitleVisible).toBe(
+        updateMagazineDto.isTitleVisible,
+      );
+      expect(updatedMagazine.placeList.length).toBe(1);
+      expect(updatedMagazine.placeList[0].placeIdx).toBe(placeSeed.idx);
+    });
+
+    it('200 - update magazine with no changes', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const magazineSeed = await magazineSeedHelper.seed({
+        title: 'Old Title',
+        description: 'Old Description',
+        content: `Old Content. here is place :::place-${placeSeed.idx}:::`,
+        thumbnailPath: '/old-thumbnail.jpg',
+        isTitleVisible: false,
+        deletedAt: null,
+        activatedAt: new Date(),
+        placeIdxList: [placeSeed.idx],
+      });
+
+      const updateMagazineDto = {
+        title: magazineSeed.title,
+        description: magazineSeed.description,
+        content: magazineSeed.content,
+        thumbnailImagePath: magazineSeed.thumbnailPath,
+        isTitleVisible: magazineSeed.isTitleVisible,
+      };
+
+      await testHelper
+        .test()
+        .put(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMagazineDto)
+        .expect(200);
+
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .magazine.findUniqueOrThrow({
+          where: { idx: magazineSeed.idx },
+          include: { placeList: true },
+        });
+
+      expect(updatedMagazine.title).toBe(updateMagazineDto.title);
+      expect(updatedMagazine.description).toBe(updateMagazineDto.description);
+      expect(updatedMagazine.content).toBe(updateMagazineDto.content);
+      expect(updatedMagazine.thumbnailImagePath).toBe(
+        updateMagazineDto.thumbnailImagePath,
+      );
+      expect(updatedMagazine.isTitleVisible).toBe(
+        updateMagazineDto.isTitleVisible,
+      );
+      expect(updatedMagazine.placeList.length).toBe(1);
+      expect(updatedMagazine.placeList[0].placeIdx).toBe(placeSeed.idx);
+    });
+
+    it('400 - invalid magazine idx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const invalidMagazineIdx = 'invalid-magazine-idx';
+
+      const updateMagazineDto = {
+        title: 'New Title',
+        description: 'New Description',
+        content: 'New Content',
+        thumbnailImagePath: '/new-thumbnail.jpg',
+        isTitleVisible: true,
+      };
+
+      await testHelper
+        .test()
+        .put(`/magazine/${invalidMagazineIdx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMagazineDto)
+        .expect(400);
+    });
+
+    it('404 - magazine not found', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const nonExistentMagazineIdx = 9999999;
+
+      const updateMagazineDto = {
+        title: 'New Title',
+        description: 'New Description',
+        content: 'New Content',
+        thumbnailImagePath: '/new-thumbnail.jpg',
+        isTitleVisible: true,
+      };
+
+      await testHelper
+        .test()
+        .put(`/magazine/${nonExistentMagazineIdx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMagazineDto)
+        .expect(404);
+    });
+  });
 
   describe('DELETE /magazine/:idx', () => {
     it('200 - successfully delete magazine', async () => {
