@@ -33,6 +33,16 @@ export class MagazineModel {
   public isTitleVisible: boolean;
 
   /**
+   * 좋아요 수
+   */
+  public likeCount: number;
+
+  /**
+   * 조회 수
+   */
+  public viewCount: number;
+
+  /**
    * 생성 시간
    */
   public createdAt: Date;
@@ -59,6 +69,8 @@ export class MagazineModel {
       content: magazine.content,
       thumbnailImagePath: magazine.thumbnailImagePath,
       isTitleVisible: magazine.isTitleVisible,
+      likeCount: magazine.likeCount,
+      viewCount: magazine.viewCount,
       createdAt: magazine.createdAt,
       activatedAt: magazine.activatedAt,
       placeList: magazine.placeList.map((mp) =>

@@ -45,6 +45,20 @@ export class MagazineEntity {
   public isTitleVisible: boolean;
 
   /**
+   * 좋아요 수
+   *
+   * @example 32
+   */
+  public likeCount: number;
+
+  /**
+   * 조회 수
+   *
+   * @example 120
+   */
+  public viewCount: number;
+
+  /**
    * 생성 시간
    *
    * @example "2025-10-09T12:00:00Z"
@@ -75,6 +89,8 @@ export class MagazineEntity {
       content: model.content,
       thumbnailImagePath: model.thumbnailImagePath,
       isTitleVisible: model.isTitleVisible,
+      likeCount: model.likeCount,
+      viewCount: model.viewCount,
       createdAt: model.createdAt,
       activatedAt: model.activatedAt,
       placeList: model.placeList.map(MagazinePlaceEntity.fromModel),

@@ -11,6 +11,10 @@ import { GetAllMagazineDto } from './dto/request/get-all-magazine.dto';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { Transactional } from '@nestjs-cls/transactional';
 import { MagazineNotFoundException } from '@admin/api/magazine/exception/MagazineNotFoundException';
+import { MagazineOverviewEntity } from './entity/magazine-overview.entity';
+import { GetAllMagazineInput } from '@libs/core/magazine/inputs/get-all-magazine.input';
+import { ActivateMagazineByIdxDto } from './dto/request/activate-magazine-by-idx.dto';
+import { UpdateMagazineByIdxDto } from './dto/request/update-magazine-by-idx.dto';
 
 @Injectable()
 export class MagazineService {
@@ -32,19 +36,17 @@ export class MagazineService {
   public async getMagazineAll(
     dto: GetAllMagazineDto,
   ): Promise<GetAllMagazineResponseDto> {
-    const TAKE = 10;
-    const SKIP = (dto.page - 1) * TAKE;
-
-    const magazineOverviewModelList =
-      await this.magazineCoreService.getMagazineAll({
-        take: TAKE + 1,
-        skip: SKIP,
-        activated: dto.activated,
-      });
+    const input: GetAllMagazineInput = {
+      take: 10,
+      skip: (dto.page - 1) * 10,
+      activated: dto.activated,
+    };
 
     return {
-      magazineList: magazineOverviewModelList.map(MagazineEntity.fromModel),
-      count: magazineOverviewModelList.length,
+      magazineList: (await this.magazineCoreService.getMagazineAll(input)).map(
+        MagazineOverviewEntity.fromModel,
+      ),
+      count: await this.magazineCoreService.getMagazineCount(input),
     };
   }
 
@@ -73,30 +75,60 @@ export class MagazineService {
       .then(MagazineEntity.fromModel);
   }
 
-  public async activateMagazineByIdx(idx: number): Promise<void> {
+  public async activateMagazineByIdx(
+    idx: number,
+    dto: ActivateMagazineByIdxDto,
+  ): Promise<void> {
+    const isActivate = dto.activate;
     const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
+
     if (!magazine) {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
 
-    if (magazine.activatedAt) {
+    if (isActivate && magazine.activatedAt) {
       throw new ConflictException(`Magazine is already activated: ${idx}`);
     }
 
-    await this.magazineCoreService.updateMagazineByIdx(idx, true);
+    if (!isActivate && !magazine.activatedAt) {
+      throw new ConflictException(`Magazine is not activated: ${idx}`);
+    }
+
+    await this.magazineCoreService.updateMagazineByIdx(idx, {
+      activate: isActivate,
+    });
   }
 
-  public async deactivateMagazineByIdx(idx: number): Promise<void> {
+  public async updateMagazineByIdx(
+    idx: number,
+    dto: UpdateMagazineByIdxDto,
+  ): Promise<void> {
     const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
     if (!magazine) {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
 
-    if (!magazine.activatedAt) {
-      throw new ConflictException(`Magazine is not activated: ${idx}`);
+    const extractedPlaceIdxList = this.extractAllPlaceIdxFromText(
+      dto.content ?? magazine.content,
+    );
+    const validPlaceList: number[] = [];
+
+    if (extractedPlaceIdxList.length > 0) {
+      validPlaceList.push(
+        ...(await this.placeCoreService
+          .getPlaceByIdxList(extractedPlaceIdxList)
+          .then((places) => places.map((place) => place.idx))),
+      );
     }
 
-    await this.magazineCoreService.updateMagazineByIdx(idx, false);
+    await this.magazineCoreService.updateMagazineByIdx(idx, {
+      title: dto.title,
+      description: dto.description,
+      content: dto.content,
+      thumbnailImagePath: dto.thumbnailImagePath,
+      isTitleVisible: dto.isTitleVisible,
+      placeIdxList: validPlaceList,
+    });
   }
 
   public async deleteMagazineByIdx(idx: number): Promise<void> {

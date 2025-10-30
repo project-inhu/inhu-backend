@@ -12,6 +12,14 @@ export type MagazineSeedInput = {
    * @default false
    */
   isTitleVisible?: boolean;
+  /**
+   * @default 0
+   */
+  likeCount?: number;
+  /**
+   * @default 0
+   */
+  viewCount?: number;
   activatedAt?: Date | null;
   deletedAt?: Date | null;
   placeIdxList?: [number, ...number[]] | null;

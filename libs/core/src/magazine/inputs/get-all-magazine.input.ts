@@ -17,4 +17,13 @@ export class GetAllMagazineInput {
    * - undefined: 활성화된 장소와 비활성화된 장소 모두 가져오기
    */
   activated?: boolean;
+
+  /**
+   * 정렬 옵션
+   *
+   * like = 좋아요 많은 순
+   * view = 조회수 높은 순
+   * time = 시간순
+   */
+  orderBy?: 'like' | 'view' | 'time';
 }

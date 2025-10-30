@@ -12,7 +12,7 @@ import {
   SELECT_MAGAZINE_OVERVIEW,
   SelectMagazineOverview,
 } from './model/prisma-type/select-magazine-overview';
-import { GetAllMagazineOverviewInput } from './inputs/get-all-magazine-overview.input';
+import { UpdateMagazineInput } from './inputs/update-magazine.input';
 
 @Injectable()
 export class MagazineCoreRepository {
@@ -36,33 +36,29 @@ export class MagazineCoreRepository {
     input: GetAllMagazineInput,
   ): Promise<SelectMagazineOverview[]> {
     return await this.txHost.tx.magazine.findMany({
-      ...SELECT_MAGAZINE,
+      ...SELECT_MAGAZINE_OVERVIEW,
       where: {
         AND: [
           { deletedAt: null },
           this.getActivatedAtFilterWhereClause(input.activated),
         ],
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy: this.getOrderByClause(input),
       take: input.take,
       skip: input.skip,
     });
   }
 
-  public async selectMagazineOverviewAll(
-    input: GetAllMagazineOverviewInput,
-  ): Promise<SelectMagazineOverview[]> {
-    return await this.txHost.tx.magazine.findMany({
-      ...SELECT_MAGAZINE_OVERVIEW,
+  public async selectMagazineCount(
+    input: GetAllMagazineInput,
+  ): Promise<number> {
+    return await this.txHost.tx.magazine.count({
       where: {
-        AND: [{ deletedAt: null }, this.getActivatedAtFilterWhereClause(true)],
+        AND: [
+          { deletedAt: null },
+          this.getActivatedAtFilterWhereClause(input.activated),
+        ],
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      take: input.take,
     });
   }
 
@@ -92,11 +88,28 @@ export class MagazineCoreRepository {
 
   public async updateMagazineByIdx(
     idx: number,
-    activate: boolean,
+    input: UpdateMagazineInput,
   ): Promise<void> {
     await this.txHost.tx.magazine.update({
-      where: { idx },
-      data: { activatedAt: activate ? new Date() : null },
+      where: { idx, deletedAt: null },
+      data: {
+        title: input.title,
+        description: input.description,
+        content: input.content,
+        thumbnailImagePath: input.thumbnailImagePath,
+        isTitleVisible: input.isTitleVisible,
+        activatedAt: input.activate ? new Date() : null,
+        placeList: input.placeIdxList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.placeIdxList.map((placeIdx) => ({
+                  placeIdx,
+                })),
+              },
+            }
+          : undefined,
+      },
     });
   }
 
@@ -104,6 +117,42 @@ export class MagazineCoreRepository {
     await this.txHost.tx.magazine.update({
       data: { deletedAt: new Date() },
       where: { idx },
+    });
+  }
+
+  public async increaseMagazineLikeCount(
+    idx: number,
+    count: number,
+  ): Promise<void> {
+    await this.txHost.tx.magazine.update({
+      data: {
+        likeCount: { increment: count },
+      },
+      where: { idx, deletedAt: null },
+    });
+  }
+
+  public async decreaseMagazineLikeCount(
+    idx: number,
+    count: number,
+  ): Promise<void> {
+    await this.txHost.tx.magazine.update({
+      data: {
+        likeCount: { decrement: count },
+      },
+      where: { idx, deletedAt: null },
+    });
+  }
+
+  public async increaseMagazineViewCount(
+    idx: number,
+    count: number,
+  ): Promise<void> {
+    await this.txHost.tx.magazine.update({
+      data: {
+        viewCount: { increment: count },
+      },
+      where: { idx, deletedAt: null },
     });
   }
 
@@ -119,5 +168,22 @@ export class MagazineCoreRepository {
     }
 
     return { activatedAt: null };
+  }
+
+  private getOrderByClause({
+    orderBy,
+  }: Pick<
+    GetAllMagazineInput,
+    'orderBy'
+  >): Prisma.MagazineOrderByWithRelationInput {
+    if (orderBy === 'like') {
+      return { likeCount: 'desc' };
+    } else if (orderBy === 'view') {
+      return { viewCount: 'desc' };
+    } else if (orderBy === 'time') {
+      return { createdAt: 'desc' };
+    } else {
+      return { createdAt: 'desc' };
+    }
   }
 }

@@ -8,8 +8,9 @@ export class MagazineOverviewEntity extends PickType(MagazineEntity, [
   'description',
   'thumbnailImagePath',
   'isTitleVisible',
+  'likeCount',
+  'viewCount',
   'createdAt',
-  'activatedAt',
 ]) {
   constructor(data: MagazineOverviewEntity) {
     super();
@@ -25,8 +26,9 @@ export class MagazineOverviewEntity extends PickType(MagazineEntity, [
       description: model.description,
       thumbnailImagePath: model.thumbnailImagePath,
       isTitleVisible: model.isTitleVisible,
+      likeCount: model.likeCount,
+      viewCount: model.viewCount,
       createdAt: model.createdAt,
-      activatedAt: model.activatedAt,
     });
   }
 }
