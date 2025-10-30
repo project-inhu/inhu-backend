@@ -7,6 +7,8 @@ import { MagazineOverviewEntity } from './entity/magazine-overview.entity';
 import { GetAllMagazineDto } from './dto/request/get-all-magazine.dto';
 import { Transactional } from '@nestjs-cls/transactional';
 import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine-response.dto';
+import { GetAllLikedMagazineDto } from './dto/request/get-all-liked-magazine.dto';
+import { GetAllLikedMagazineResponseDto } from './dto/response/get-all-liked-magazine-response.dto';
 
 @Injectable()
 export class MagazineService {
@@ -61,6 +63,30 @@ export class MagazineService {
         .slice(0, TAKE)
         .map(MagazineOverviewEntity.fromModel),
       hasNext: magazineOverviewModelList.length > TAKE,
+    };
+  }
+
+  public async getLikedMagazineAllByUserIdx(
+    dto: GetAllLikedMagazineDto,
+    userIdx: number,
+  ): Promise<GetAllLikedMagazineResponseDto> {
+    const TAKE = 10;
+    const SKIP = (dto.page - 1) * TAKE;
+
+    const likedMagazineOverviewModelList =
+      await this.magazineCoreService.getLikedMagazineAllByUserIdx({
+        userIdx,
+        take: TAKE + 1,
+        skip: SKIP,
+        activated: true,
+        orderBy: dto.orderBy,
+      });
+
+    return {
+      magazineList: likedMagazineOverviewModelList
+        .slice(0, TAKE)
+        .map(MagazineOverviewEntity.fromModel),
+      hasNext: likedMagazineOverviewModelList.length > TAKE,
     };
   }
 }

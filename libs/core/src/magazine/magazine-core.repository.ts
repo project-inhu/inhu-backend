@@ -13,6 +13,11 @@ import {
   SelectMagazineOverview,
 } from './model/prisma-type/select-magazine-overview';
 import { UpdateMagazineInput } from './inputs/update-magazine.input';
+import {
+  SELECT_LIKED_MAGAZINE_OVERVIEW,
+  SelectLikedMagazineOverview,
+} from './model/prisma-type/select-liked-magazine-overview';
+import { GetAllLikedMagazineInput } from './inputs/get-all-liked-magazine.input';
 
 @Injectable()
 export class MagazineCoreRepository {
@@ -42,6 +47,26 @@ export class MagazineCoreRepository {
           { deletedAt: null },
           this.getActivatedAtFilterWhereClause(input.activated),
         ],
+      },
+      orderBy: this.getOrderByClause(input),
+      take: input.take,
+      skip: input.skip,
+    });
+  }
+
+  public async selectLikedMagazineAllByUserIdx(
+    input: GetAllLikedMagazineInput,
+  ): Promise<SelectLikedMagazineOverview[]> {
+    return await this.txHost.tx.magazineLike.findMany({
+      ...SELECT_LIKED_MAGAZINE_OVERVIEW,
+      where: {
+        userIdx: input.userIdx,
+        magazine: {
+          AND: [
+            { deletedAt: null },
+            this.getActivatedAtFilterWhereClause(input.activated),
+          ],
+        },
       },
       orderBy: this.getOrderByClause(input),
       take: input.take,

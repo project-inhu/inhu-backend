@@ -5,6 +5,8 @@ import { CreateMagazineInput } from './inputs/create-magazine.input';
 import { GetAllMagazineInput } from './inputs/get-all-magazine.input';
 import { MagazineOverviewModel } from './model/magazine-overview.model';
 import { UpdateMagazineInput } from './inputs/update-magazine.input';
+import { LikedMagazineOverviewModel } from './model/liked-magazine-overview.model';
+import { GetAllLikedMagazineInput } from './inputs/get-all-liked-magazine.input';
 
 /**
  * @publicApi
@@ -37,6 +39,19 @@ export class MagazineCoreService {
     return (await this.magazineCoreRepository.selectMagazineAll(input)).map(
       MagazineOverviewModel.fromPrisma,
     );
+  }
+
+  /**
+   * 좋아요한 모든 매거진 조회
+   *
+   * @author 이수인
+   */
+  public async getLikedMagazineAllByUserIdx(
+    input: GetAllLikedMagazineInput,
+  ): Promise<LikedMagazineOverviewModel[]> {
+    return await this.magazineCoreRepository
+      .selectLikedMagazineAllByUserIdx(input)
+      .then((result) => result.map(LikedMagazineOverviewModel.fromPrisma));
   }
 
   /**
