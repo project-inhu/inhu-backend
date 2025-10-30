@@ -546,130 +546,133 @@ describe('Magazine e2e test', () => {
     });
   });
 
-  // describe('POST /magazine/:idx/activate', () => {
-  //   it('200 - successfully activate magazine', async () => {
-  //     const loginUser = testHelper.loginAdmin.admin1;
-  //     const magazineSeed = await magazineSeedHelper.seed({
-  //       deletedAt: null,
-  //       activatedAt: null,
-  //     });
+  describe('POST /magazine/:idx/activate', () => {
+    it('200 - successfully activate magazine', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: null,
+      });
 
-  //     const response = await testHelper
-  //       .test()
-  //       .post(`/magazine/${magazineSeed.idx}/activate`)
-  //       .set('Cookie', `token=Bearer ${loginUser.token}`)
-  //       .expect(200);
+      const response = await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ activate: true })
+        .expect(200);
 
-  //     expect(response.body).toEqual({});
+      expect(response.body).toEqual({});
 
-  //     const updatedMagazine = await testHelper
-  //       .getPrisma()
-  //       .magazine.findUniqueOrThrow({
-  //         where: { idx: magazineSeed.idx },
-  //       });
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .magazine.findUniqueOrThrow({
+          where: { idx: magazineSeed.idx },
+        });
 
-  //     expect(updatedMagazine.activatedAt).not.toBeNull();
-  //   });
+      expect(updatedMagazine.activatedAt).not.toBeNull();
+    });
 
-  //   it('400 - invalid magazine idx', async () => {
-  //     const loginUser = testHelper.loginAdmin.admin1;
-  //     const invalidMagazineIdx = 'invalid-magazine-idx';
+    it('200 - successfully deactivate magazine', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
 
-  //     await testHelper
-  //       .test()
-  //       .post(`/magazine/${invalidMagazineIdx}/activate`)
-  //       .set('Cookie', `token=Bearer ${loginUser.token}`)
-  //       .expect(400);
-  //   });
+      const response = await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ activate: false })
+        .expect(200);
 
-  //   it('404 - magazine not found', async () => {
-  //     const loginUser = testHelper.loginAdmin.admin1;
-  //     const nonExistentMagazineIdx = 9999999;
+      expect(response.body).toEqual({});
 
-  //     await testHelper
-  //       .test()
-  //       .post(`/magazine/${nonExistentMagazineIdx}/activate`)
-  //       .set('Cookie', `token=Bearer ${loginUser.token}`)
-  //       .expect(404);
-  //   });
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .magazine.findUniqueOrThrow({
+          where: { idx: magazineSeed.idx },
+        });
 
-  //   it('409 - magazine is already activated', async () => {
-  //     const loginUser = testHelper.loginAdmin.admin1;
-  //     const magazineSeed = await magazineSeedHelper.seed({
-  //       deletedAt: null,
-  //       activatedAt: new Date(),
-  //     });
+      expect(updatedMagazine.activatedAt).toBeNull();
+    });
 
-  //     await testHelper
-  //       .test()
-  //       .post(`/magazine/${magazineSeed.idx}/activate`)
-  //       .set('Cookie', `token=Bearer ${loginUser.token}`)
-  //       .expect(409);
-  //   });
-  // });
+    it('400 - invalid magazine idx (activate)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const invalidMagazineIdx = 'invalid-magazine-idx';
 
-  // describe('POST /magazine/:idx/deactivate', () => {
-  //   it('200 - successfully deactivate magazine', async () => {
-  //     const loginUser = testHelper.loginAdmin.admin1;
-  //     const magazineSeed = await magazineSeedHelper.seed({
-  //       deletedAt: null,
-  //       activatedAt: new Date(),
-  //     });
+      await testHelper
+        .test()
+        .post(`/magazine/${invalidMagazineIdx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(400);
+    });
 
-  //     const response = await testHelper
-  //       .test()
-  //       .post(`/magazine/${magazineSeed.idx}/deactivate`)
-  //       .set('Cookie', `token=Bearer ${loginUser.token}`)
-  //       .send({ activate: false })
-  //       .expect(200);
+    it('400 - invalid magazine idx (deactivate)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const invalidMagazineIdx = 'invalid-magazine-idx';
 
-  //     expect(response.body).toEqual({});
+      await testHelper
+        .test()
+        .post(`/magazine/${invalidMagazineIdx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(400);
+    });
 
-  //     const updatedMagazine = await testHelper
-  //       .getPrisma()
-  //       .magazine.findUniqueOrThrow({
-  //         where: { idx: magazineSeed.idx },
-  //       });
+    it('404 - magazine not found (activate)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const nonExistentMagazineIdx = 9999999;
 
-  //     expect(updatedMagazine.activatedAt).toBeNull();
-  //   });
+      await testHelper
+        .test()
+        .post(`/magazine/${nonExistentMagazineIdx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ activate: true })
+        .expect(404);
+    });
 
-  //   it('400 - invalid magazine idx', async () => {
-  //     const loginUser = testHelper.loginAdmin.admin1;
-  //     const invalidMagazineIdx = 'invalid-magazine-idx';
+    it('404 - magazine not found (deactivate)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const nonExistentMagazineIdx = 9999999;
 
-  //     await testHelper
-  //       .test()
-  //       .post(`/magazine/${invalidMagazineIdx}/deactivate`)
-  //       .set('Cookie', `token=Bearer ${loginUser.token}`)
-  //       .expect(400);
-  //   });
+      await testHelper
+        .test()
+        .post(`/magazine/${nonExistentMagazineIdx}/deactivate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ activate: false })
+        .expect(404);
+    });
 
-  //   it('404 - magazine not found', async () => {
-  //     const loginUser = testHelper.loginAdmin.admin1;
-  //     const nonExistentMagazineIdx = 9999999;
+    it('409 - magazine is already activated', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
 
-  //     await testHelper
-  //       .test()
-  //       .post(`/magazine/${nonExistentMagazineIdx}/deactivate`)
-  //       .set('Cookie', `token=Bearer ${loginUser.token}`)
-  //       .expect(404);
-  //   });
+      await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ activate: true })
+        .expect(409);
+    });
 
-  //   it('409 - magazine is not activated', async () => {
-  //     const loginUser = testHelper.loginAdmin.admin1;
-  //     const magazineSeed = await magazineSeedHelper.seed({
-  //       deletedAt: null,
-  //       activatedAt: null,
-  //     });
+    it('409 - magazine is not activated', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: null,
+      });
 
-  //     await testHelper
-  //       .test()
-  //       .post(`/magazine/${magazineSeed.idx}/deactivate`)
-  //       .set('Cookie', `token=Bearer ${loginUser.token}`)
-  //       .expect(409);
-  //   });
-  // });
+      await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ activate: false })
+        .expect(409);
+    });
+  });
 
   describe('DELETE /magazine/:idx', () => {
     it('200 - successfully delete magazine', async () => {
