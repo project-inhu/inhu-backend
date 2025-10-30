@@ -153,7 +153,7 @@ export class MagazineCoreRepository {
   }
 
   private getOrderByClause({
-    orderBy = 'like',
+    orderBy,
   }: Pick<
     GetAllMagazineInput,
     'orderBy'
@@ -165,7 +165,7 @@ export class MagazineCoreRepository {
     } else if (orderBy === 'time') {
       return { createdAt: 'desc' };
     } else {
-      return { likeCount: 'desc' };
+      return { createdAt: 'desc' };
     }
   }
 }

@@ -16,6 +16,7 @@ import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { GetAllMagazineDto } from './dto/request/get-all-magazine.dto';
 import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine.response.dto';
 import { Exception } from '@libs/common/decorator/exception.decorator';
+import { ActivateMagazineByIdxDto } from './dto/request/activate-magazine-by-idx.dto';
 
 @Controller('magazine')
 export class MagazineController {
@@ -71,29 +72,17 @@ export class MagazineController {
   @Post(':idx/activate')
   @Exception(400, 'Invalid magazine idx')
   @Exception(404, 'Magazine not found')
-  @Exception(409, 'Magazine is already activated')
+  @Exception(
+    409,
+    `- activate: true - Magazine is already activated
+    - activate: false - Magazine is not activated`,
+  )
   @HttpCode(200)
   public async activateMagazineByIdx(
     @Param('idx', ParseIntPipe) idx: number,
+    @Body() dto: ActivateMagazineByIdxDto,
   ): Promise<void> {
-    await this.magazineService.activateMagazineByIdx(idx);
-  }
-
-  /**
-   * 매거진 비활성화
-   *
-   * @author 이수인
-   */
-  @AdminAuth()
-  @Post(':idx/deactivate')
-  @Exception(400, 'Invalid magazine idx')
-  @Exception(404, 'Magazine not found')
-  @Exception(409, 'Magazine is not activated')
-  @HttpCode(200)
-  public async deactivateMagazineByIdx(
-    @Param('idx', ParseIntPipe) idx: number,
-  ): Promise<void> {
-    await this.magazineService.deactivateMagazineByIdx(idx);
+    await this.magazineService.activateMagazineByIdx(idx, dto);
   }
 
   /**
