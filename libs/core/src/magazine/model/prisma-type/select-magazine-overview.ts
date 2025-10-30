@@ -8,6 +8,8 @@ export const SELECT_MAGAZINE_OVERVIEW =
       description: true,
       thumbnailImagePath: true,
       isTitleVisible: true,
+      likeCount: true,
+      viewCount: true,
       createdAt: true,
       activatedAt: true,
     },

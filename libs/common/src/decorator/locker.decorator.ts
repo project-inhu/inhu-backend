@@ -5,7 +5,7 @@ import {
   WrapParams,
 } from '@toss/nestjs-aop';
 import { RedlockService } from '../modules/redlock/redlock.service';
-import { BadRequestException } from '@nestjs/common';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Lock } from 'redlock';
 
 export const LOCKER_DECORATOR = Symbol('LOCKER_DECORATOR');
@@ -56,7 +56,7 @@ export class LockerDecorator implements LazyDecorator<any, LockOptions> {
         console.error(
           `키 ${lockKey}에 대한 락 획득 중 오류 발생: ${error.message}`,
         );
-        throw new BadRequestException(
+        throw new InternalServerErrorException(
           `키 ${lockKey}에 대한 락을 획득할 수 없습니다.`,
         );
       }

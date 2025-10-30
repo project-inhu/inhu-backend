@@ -9,6 +9,8 @@ export const SELECT_MAGAZINE = Prisma.validator<Prisma.MagazineDefaultArgs>()({
     content: true,
     thumbnailImagePath: true,
     isTitleVisible: true,
+    likeCount: true,
+    viewCount: true,
     createdAt: true,
     activatedAt: true,
     placeList: SELECT_MAGAZINE_PLACE,
