@@ -22,7 +22,10 @@ import { UpdateMagazineByIdxDto } from './dto/request/update-magazine-by-idx.dto
 
 @Controller('magazine')
 export class MagazineController {
-  constructor(private readonly magazineService: MagazineService) {}
+  constructor(
+    private readonly magazineService: MagazineService,
+    private readonly openAIService: OpenAIService,
+  ) {}
 
   /**
    * 모든 매거진 조회
@@ -117,5 +120,14 @@ export class MagazineController {
     @Param('idx', ParseIntPipe) idx: number,
   ): Promise<void> {
     await this.magazineService.deleteMagazineByIdx(idx);
+  }
+
+  @Post('/description/recommend')
+  public async recommendDescriptionWithOpenAI(dto: RecommendDescriptionDto) {
+    return await this.openAIService.recommendDescription(
+      dto.title,
+      dto.content,
+      dto.thumbnailImagePath,
+    );
   }
 }
