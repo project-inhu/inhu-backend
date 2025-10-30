@@ -46,18 +46,22 @@ export class MagazineService {
   public async getMagazineAll(
     dto: GetAllMagazineDto,
   ): Promise<GetAllMagazineResponseDto> {
-    const input: GetAllMagazineInput = {
-      take: 10,
-      skip: (dto.page - 1) * 10,
-      activated: true,
-      orderBy: dto.orderBy,
-    };
+    const TAKE = 10;
+    const SKIP = (dto.page - 1) * TAKE;
+
+    const magazineOverviewModelList =
+      await this.magazineCoreService.getMagazineAll({
+        take: TAKE + 1,
+        skip: SKIP,
+        activated: true,
+        orderBy: dto.orderBy,
+      });
 
     return {
-      magazineList: (await this.magazineCoreService.getMagazineAll(input)).map(
-        MagazineOverviewEntity.fromModel,
-      ),
-      count: await this.magazineCoreService.getMagazineCount(input),
+      magazineList: magazineOverviewModelList
+        .slice(0, TAKE)
+        .map(MagazineOverviewEntity.fromModel),
+      hasNext: magazineOverviewModelList.length > TAKE,
     };
   }
 

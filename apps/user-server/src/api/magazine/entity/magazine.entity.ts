@@ -66,13 +66,6 @@ export class MagazineEntity {
   public createdAt: Date;
 
   /**
-   * 활성화 시간
-   *
-   * @example "2025-10-10T12:00:00Z"
-   */
-  public activatedAt: Date | null;
-
-  /**
    * 매거진 장소 리스트
    */
   public placeList: MagazinePlaceEntity[];
@@ -95,7 +88,6 @@ export class MagazineEntity {
       likeCount: model.likeCount,
       viewCount: model.viewCount,
       createdAt: model.createdAt,
-      activatedAt: model.activatedAt,
       placeList: model.placeList.map((model) =>
         MagazinePlaceEntity.fromModel(model, userBookmarkedPlaceList),
       ),
