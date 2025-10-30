@@ -20,10 +20,10 @@ export class MagazineService {
   public async getMagazineByIdx(
     idx: number,
     loginUser?: LoginUser,
-  ): Promise<MagazineEntity | null> {
+  ): Promise<MagazineEntity> {
     const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
     if (!magazine) {
-      return null;
+      throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
 
     await this.magazineCoreService.increaseMagazineViewCount(idx);
@@ -40,7 +40,7 @@ export class MagazineService {
       })
       .then((bookmarks) => bookmarks.map((bookmark) => bookmark.placeIdx));
 
-    return magazine && MagazineEntity.fromModel(magazine, bookmarkedPlaceList);
+    return MagazineEntity.fromModel(magazine, bookmarkedPlaceList);
   }
 
   public async getMagazineAll(

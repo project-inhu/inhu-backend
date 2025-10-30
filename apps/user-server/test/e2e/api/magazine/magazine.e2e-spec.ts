@@ -133,18 +133,14 @@ describe('Menu E2E test', () => {
       expect(magazine.placeList[1].bookmark).toBe(false);
     });
 
-    it('200 - magazine not exists', async () => {
+    it('404 - magazine not exists', async () => {
       const loginUser = testHelper.loginUsers.user1;
 
-      const response = await testHelper
+      await testHelper
         .test()
         .get(`/magazine/999999`)
         .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
-        .expect(200);
-
-      const magazine: MagazineEntity = response.body;
-
-      expect(magazine).toEqual({});
+        .expect(404);
     });
 
     it('400 - invalid idx', async () => {

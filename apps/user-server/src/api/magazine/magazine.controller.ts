@@ -28,10 +28,12 @@ export class MagazineController {
   }
 
   @Get('/:idx')
+  @Exception(400, 'Invalid magazine idx')
+  @Exception(404, 'Magazine not found for idx: {idx}')
   public async getMagazineByIdx(
     @Param('idx', ParseIntPipe) idx: number,
     @User() loginUser?: LoginUser,
-  ): Promise<MagazineEntity | null> {
+  ): Promise<MagazineEntity> {
     return await this.magazineService.getMagazineByIdx(idx, loginUser);
   }
 
