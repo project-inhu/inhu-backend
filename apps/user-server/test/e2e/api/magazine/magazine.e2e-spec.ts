@@ -66,10 +66,6 @@ describe('Menu E2E test', () => {
       expect(magazine.isTitleVisible).toBe(magazineSeed.isTitleVisible);
       expect(magazine.likeCount).toBe(0);
       expect(magazine.viewCount).toBe(1);
-      expect(magazine.activatedAt).not.toBeNull();
-      expect(magazine.activatedAt).toEqual(
-        magazineSeed.activatedAt?.toISOString(),
-      );
       expect(Array.isArray(magazine.placeList)).toBe(true);
       expect(magazine.placeList.length).toBe(1);
       expect(magazine.placeList[0].idx).toBe(placeSeed.idx);
@@ -181,11 +177,11 @@ describe('Menu E2E test', () => {
         .expect(200);
 
       const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
-      const count: number = response.body.count;
+      const hasNext: boolean = response.body.hasNext;
 
       expect(Array.isArray(magazineList)).toBe(true);
       expect(magazineList.length).toBe(1);
-      expect(count).toBe(1);
+      expect(hasNext).toBe(false);
 
       const magazine = magazineList[0];
 
@@ -193,10 +189,6 @@ describe('Menu E2E test', () => {
       expect(magazine.title).toBe(magazineSeed.title);
       expect(magazine.description).toBe(magazineSeed.description);
       expect(magazine.thumbnailImagePath).toBe(magazineSeed.thumbnailPath);
-      expect(magazine.activatedAt).not.toBeNull();
-      expect(magazine.activatedAt).toEqual(
-        magazineSeed.activatedAt?.toISOString(),
-      );
     });
 
     it('200 - not select magazine that is not activated', async () => {
@@ -212,11 +204,11 @@ describe('Menu E2E test', () => {
         .expect(200);
 
       const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
-      const count: number = response.body.count;
+      const hasNext: boolean = response.body.hasNext;
 
       expect(Array.isArray(magazineList)).toBe(true);
       expect(magazineList.length).toBe(0);
-      expect(count).toBe(0);
+      expect(hasNext).toBe(false);
     });
 
     it('200 - not select magazine that is deleted', async () => {
@@ -232,11 +224,11 @@ describe('Menu E2E test', () => {
         .expect(200);
 
       const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
-      const count: number = response.body.count;
+      const hasNext: boolean = response.body.hasNext;
 
       expect(Array.isArray(magazineList)).toBe(true);
       expect(magazineList.length).toBe(0);
-      expect(count).toBe(0);
+      expect(hasNext).toBe(false);
     });
 
     it('200 - no magazine', async () => {
@@ -247,11 +239,11 @@ describe('Menu E2E test', () => {
         .expect(200);
 
       const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
-      const count: number = response.body.count;
+      const hasNext: boolean = response.body.hasNext;
 
       expect(Array.isArray(magazineList)).toBe(true);
       expect(magazineList.length).toBe(0);
-      expect(count).toBe(0);
+      expect(hasNext).toBe(false);
     });
 
     it('200 - order by check(like)', async () => {
