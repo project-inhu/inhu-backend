@@ -19,10 +19,15 @@ import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine.respo
 import { Exception } from '@libs/common/decorator/exception.decorator';
 import { ActivateMagazineByIdxDto } from './dto/request/activate-magazine-by-idx.dto';
 import { UpdateMagazineByIdxDto } from './dto/request/update-magazine-by-idx.dto';
+import { OpenAIService } from '@libs/common/modules/openAI/openAI.service';
+import { RecommendDescriptionDto } from './dto/request/recommend-description.dto';
 
 @Controller('magazine')
 export class MagazineController {
-  constructor(private readonly magazineService: MagazineService) {}
+  constructor(
+    private readonly magazineService: MagazineService,
+    private readonly openAIService: OpenAIService,
+  ) {}
 
   /**
    * 모든 매거진 조회
@@ -77,7 +82,7 @@ export class MagazineController {
   @Exception(
     409,
     `- activate: true - Magazine is already activated
-    - activate: false - Magazine is not activated`,
+   - activate: false - Magazine is not activated`,
   )
   @HttpCode(200)
   public async activateMagazineByIdx(
@@ -85,6 +90,20 @@ export class MagazineController {
     @Body() dto: ActivateMagazineByIdxDto,
   ): Promise<void> {
     await this.magazineService.activateMagazineByIdx(idx, dto);
+  }
+
+  /**
+   * 추천 소개말 생성
+   *
+   * @author 이수인
+   */
+  @Post('/description/recommend')
+  public async recommendDescriptionWithOpenAI(dto: RecommendDescriptionDto) {
+    return await this.openAIService.recommendDescription(
+      dto.title,
+      dto.content,
+      dto.thumbnailImagePath,
+    );
   }
 
   /**
