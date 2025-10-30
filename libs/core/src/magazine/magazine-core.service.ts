@@ -62,7 +62,7 @@ export class MagazineCoreService {
   }
 
   /**
-   * 매거진 활성화/비활성화 업데이트
+   * 매거진 수정
    *
    * @author 이수인
    */
