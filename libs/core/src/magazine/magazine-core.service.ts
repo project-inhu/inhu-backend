@@ -4,7 +4,6 @@ import { MagazineModel } from './model/magazine.model';
 import { CreateMagazineInput } from './inputs/create-magazine.input';
 import { GetAllMagazineInput } from './inputs/get-all-magazine.input';
 import { MagazineOverviewModel } from './model/magazine-overview.model';
-import { Locker } from '@libs/common/decorator/locker.decorator';
 
 /**
  * @publicApi
@@ -87,7 +86,6 @@ export class MagazineCoreService {
    *
    * @author 이수인
    */
-  @Locker({ key: (idx: number) => `magazine:${idx}:like_count` })
   public async increaseMagazineLikeCount(idx: number): Promise<void> {
     await this.magazineCoreRepository.increaseMagazineLikeCount(idx, 1);
   }
@@ -97,7 +95,6 @@ export class MagazineCoreService {
    *
    * @author 이수인
    */
-  @Locker({ key: (idx: number) => `magazine:${idx}:like_count` })
   public async decreaseMagazineLikeCount(idx: number): Promise<void> {
     await this.magazineCoreRepository.decreaseMagazineLikeCount(idx, 1);
   }
@@ -107,7 +104,6 @@ export class MagazineCoreService {
    *
    * @author 이수인
    */
-  @Locker({ key: (idx: number) => `magazine:${idx}:view_count` })
   public async increaseMagazineViewCount(idx: number): Promise<void> {
     await this.magazineCoreRepository.increaseMagazineViewCount(idx, 1);
   }
