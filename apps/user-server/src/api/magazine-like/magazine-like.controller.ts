@@ -35,6 +35,7 @@ export class MagazineLikeController {
   @Delete('magazine/:idx/like')
   @Exception(400, 'Invalid magazine idx')
   @Exception(404, 'Magazine not found for idx: {idx}')
+  @Exception(409, 'Magazine like does not exist')
   @HttpCode(200)
   @LoginAuth()
   public async unlikeMagazineByIdx(

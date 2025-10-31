@@ -44,8 +44,8 @@ export class MagazineLikeService {
     }
 
     await this.magazineLikeCoreService.deleteMagazineLikeByIdx(
-      loginUser.idx,
       magazineIdx,
+      loginUser.idx,
     );
   }
 }
