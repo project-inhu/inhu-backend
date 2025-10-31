@@ -11,6 +11,7 @@ export class MagazineOverviewEntity extends PickType(MagazineEntity, [
   'likeCount',
   'viewCount',
   'createdAt',
+  'isLiked',
 ]) {
   constructor(data: MagazineOverviewEntity) {
     super();
@@ -19,6 +20,7 @@ export class MagazineOverviewEntity extends PickType(MagazineEntity, [
 
   public static fromModel(
     model: MagazineOverviewModel,
+    isLiked: boolean,
   ): MagazineOverviewEntity {
     return new MagazineOverviewEntity({
       idx: model.idx,
@@ -29,6 +31,7 @@ export class MagazineOverviewEntity extends PickType(MagazineEntity, [
       likeCount: model.likeCount,
       viewCount: model.viewCount,
       createdAt: model.createdAt,
+      isLiked,
     });
   }
 }

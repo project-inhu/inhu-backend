@@ -70,6 +70,13 @@ export class MagazineEntity {
    */
   public placeList: MagazinePlaceEntity[];
 
+  /**
+   * 사용자 좋아요 여부
+   *
+   * @example true
+   */
+  public isLiked: boolean;
+
   constructor(data: MagazineEntity) {
     Object.assign(this, data);
   }
@@ -77,6 +84,7 @@ export class MagazineEntity {
   public static fromModel(
     model: MagazineModel,
     userBookmarkedPlaceList: number[],
+    isLiked: boolean,
   ): MagazineEntity {
     return new MagazineEntity({
       idx: model.idx,
@@ -91,6 +99,7 @@ export class MagazineEntity {
       placeList: model.placeList.map((model) =>
         MagazinePlaceEntity.fromModel(model, userBookmarkedPlaceList),
       ),
+      isLiked,
     });
   }
 }
