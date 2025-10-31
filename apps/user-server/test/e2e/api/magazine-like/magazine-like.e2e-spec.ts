@@ -1,16 +1,10 @@
-import { BookmarkSeedHelper } from '@libs/testing/seed/bookmark/bookmark.seed';
 import { MagazineLikeSeedHelper } from '@libs/testing/seed/magazine-like/magazine-like.seed';
 import { MagazineSeedHelper } from '@libs/testing/seed/magazine/magazine.seed';
-import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
-import { MagazineOverviewEntity } from '@user/api/magazine/entity/magazine-overview.entity';
-import { MagazineEntity } from '@user/api/magazine/entity/magazine.entity';
 import { AppModule } from '@user/app.module';
 import { TestHelper } from 'apps/user-server/test/e2e/setup/test.helper';
 
 describe('Menu Like E2E test', () => {
   const testHelper = TestHelper.create(AppModule);
-  const placeSeedHelper = testHelper.seedHelper(PlaceSeedHelper);
-  const bookmarkSeedHelper = testHelper.seedHelper(BookmarkSeedHelper);
   const magazineSeedHelper = testHelper.seedHelper(MagazineSeedHelper);
   const magazineLikeSeedHelper = testHelper.seedHelper(MagazineLikeSeedHelper);
 
@@ -71,6 +65,12 @@ describe('Menu Like E2E test', () => {
         deletedAt: null,
       });
 
+      const prisma = testHelper.getPrisma();
+      const magazineBefore = await prisma.magazine.findUnique({
+        where: { idx: magazineSeed.idx },
+      });
+      expect(magazineBefore?.likeCount).toBe(0);
+
       // First like
       await testHelper
         .test()
@@ -84,6 +84,11 @@ describe('Menu Like E2E test', () => {
         .post(`/magazine/${magazineSeed.idx}/like`)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(409);
+
+      const magazineAfter = await prisma.magazine.findUnique({
+        where: { idx: magazineSeed.idx },
+      });
+      expect(magazineAfter?.likeCount).toBe(1);
     });
 
     it('409 - magazine like already exists(at the same time)', async () => {
@@ -92,6 +97,12 @@ describe('Menu Like E2E test', () => {
         activatedAt: new Date(),
         deletedAt: null,
       });
+
+      const prisma = testHelper.getPrisma();
+      const magazineBefore = await prisma.magazine.findUnique({
+        where: { idx: magazineSeed.idx },
+      });
+      expect(magazineBefore?.likeCount).toBe(0);
 
       // Simulate concurrent like attempts
       await Promise.all([
@@ -108,6 +119,11 @@ describe('Menu Like E2E test', () => {
         expect(statusCodes).toContain(200);
         expect(statusCodes).toContain(409);
       });
+
+      const magazineAfter = await prisma.magazine.findUnique({
+        where: { idx: magazineSeed.idx },
+      });
+      expect(magazineAfter?.likeCount).toBe(1);
     });
   });
 
@@ -117,21 +133,31 @@ describe('Menu Like E2E test', () => {
       const magazineSeed = await magazineSeedHelper.seed({
         activatedAt: new Date(),
         deletedAt: null,
-        likeCount: 5,
       });
+
+      await magazineLikeSeedHelper.seed({
+        magazineIdx: magazineSeed.idx,
+        userIdx: loginUser.idx,
+      });
+
+      const prisma = testHelper.getPrisma();
+
+      const magazineBefore = await prisma.magazine.findUnique({
+        where: { idx: magazineSeed.idx },
+      });
+      expect(magazineBefore?.likeCount).toBe(1);
 
       await testHelper
         .test()
         .delete(`/magazine/${magazineSeed.idx}/like`)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
         .expect(200);
 
-      const prisma = testHelper.getPrisma();
-      const magazine = await prisma.magazine.findUnique({
+      const magazineAfter = await prisma.magazine.findUnique({
         where: { idx: magazineSeed.idx },
       });
 
-      expect(magazine?.likeCount).toBe(4);
+      expect(magazineAfter?.likeCount).toBe(0);
     });
 
     it('200 - unlike magazine when likeCount is 0 (no effect)', async () => {
@@ -179,6 +205,7 @@ describe('Menu Like E2E test', () => {
     it('409 - magazine like does not exist(not at the same time)', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({
+        likeCount: 1,
         activatedAt: new Date(),
         deletedAt: null,
       });
@@ -187,6 +214,12 @@ describe('Menu Like E2E test', () => {
         magazineIdx: magazineSeed.idx,
         userIdx: loginUser.idx,
       });
+
+      const prisma = testHelper.getPrisma();
+      const magazineBefore = await prisma.magazine.findUnique({
+        where: { idx: magazineSeed.idx },
+      });
+      expect(magazineBefore?.likeCount).toBe(2);
 
       await testHelper
         .test()
@@ -199,6 +232,11 @@ describe('Menu Like E2E test', () => {
         .delete(`/magazine/${magazineSeed.idx}/like`)
         .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
         .expect(409);
+
+      const magazineAfter = await prisma.magazine.findUnique({
+        where: { idx: magazineSeed.idx },
+      });
+      expect(magazineAfter?.likeCount).toBe(1);
     });
 
     it('409 - magazine like does not exist(at the same time)', async () => {
@@ -213,6 +251,12 @@ describe('Menu Like E2E test', () => {
         magazineIdx: magazineSeed.idx,
         userIdx: loginUser.idx,
       });
+
+      const prisma = testHelper.getPrisma();
+      const magazineBefore = await prisma.magazine.findUnique({
+        where: { idx: magazineSeed.idx },
+      });
+      expect(magazineBefore?.likeCount).toBe(2);
 
       // Simulate concurrent unlike attempts
       await Promise.all([
@@ -229,6 +273,11 @@ describe('Menu Like E2E test', () => {
         expect(statusCodes).toContain(200);
         expect(statusCodes).toContain(409);
       });
+
+      const magazineAfter = await prisma.magazine.findUnique({
+        where: { idx: magazineSeed.idx },
+      });
+      expect(magazineAfter?.likeCount).toBe(1);
     });
   });
 });
