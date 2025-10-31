@@ -36,12 +36,14 @@ export class MagazineLikeCoreService {
    *
    * @author 이수인
    */
-  public async getMagazineLikeAllByUserIdx(
+  public async getMagazineLikeAllByUserIdxAndMagazineIdxList(
     userIdx: number,
+    magazineIdxList: number[],
   ): Promise<MagazineLikeModel[]> {
     return (
-      await this.magazineLikeCoreRepository.selectMagazineLikeAllByUserIdx(
+      await this.magazineLikeCoreRepository.selectMagazineLikeAllByUserIdxAndMagazineIdxList(
         userIdx,
+        magazineIdxList,
       )
     ).map(MagazineLikeModel.fromPrisma);
   }

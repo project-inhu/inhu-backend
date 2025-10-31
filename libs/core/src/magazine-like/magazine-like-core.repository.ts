@@ -27,14 +27,16 @@ export class MagazineLikeCoreRepository {
     });
   }
 
-  public async selectMagazineLikeAllByUserIdx(
+  public async selectMagazineLikeAllByUserIdxAndMagazineIdxList(
     userIdx: number,
+    magazineIdxList: number[],
   ): Promise<SelectMagazineLike[]> {
     return await this.txHost.tx.magazineLike.findMany({
       ...SELECT_MAGAZINE_LIKE,
       where: {
         magazine: { deletedAt: null },
         userIdx,
+        magazineIdx: { in: magazineIdxList },
       },
     });
   }

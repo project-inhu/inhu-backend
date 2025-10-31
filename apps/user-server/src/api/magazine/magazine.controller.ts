@@ -17,8 +17,9 @@ export class MagazineController {
   @Get('/all')
   public async getMagazineAll(
     @Query() dto: GetAllMagazineDto,
+    @User() loginUser?: LoginUser,
   ): Promise<GetAllMagazineResponseDto> {
-    return await this.magazineService.getMagazineAll(dto);
+    return await this.magazineService.getMagazineAll(dto, loginUser);
   }
 
   @Get('/:idx')

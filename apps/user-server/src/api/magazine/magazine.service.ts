@@ -9,29 +9,32 @@ import { Transactional } from '@nestjs-cls/transactional';
 import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine-response.dto';
 import { GetAllLikedMagazineDto } from './dto/request/get-all-liked-magazine.dto';
 import { GetAllLikedMagazineResponseDto } from './dto/response/get-all-liked-magazine-response.dto';
+import { MagazineLikeCoreService } from '@libs/core/magazine-like/magazine-like-core.service';
 
 @Injectable()
 export class MagazineService {
   constructor(
     private readonly magazineCoreService: MagazineCoreService,
     private readonly bookmarkCoreService: BookmarkCoreService,
+    private readonly magazineLikeCoreService: MagazineLikeCoreService,
   ) {}
 
   @Transactional()
   public async getMagazineByIdx(
-    idx: number,
+    magazineIdx: number,
     loginUser?: LoginUser,
   ): Promise<MagazineEntity> {
-    const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
+    const magazine =
+      await this.magazineCoreService.getMagazineByIdx(magazineIdx);
     if (!magazine) {
-      throw new NotFoundException(`Magazine not found for idx: ${idx}`);
+      throw new NotFoundException(`Magazine not found for idx: ${magazineIdx}`);
     }
 
-    await this.magazineCoreService.increaseMagazineViewCount(idx);
+    await this.magazineCoreService.increaseMagazineViewCount(magazineIdx);
     magazine.viewCount += 1;
 
-    if (!loginUser) {
-      return MagazineEntity.fromModel(magazine, []);
+    if (!loginUser?.idx) {
+      return MagazineEntity.fromModel(magazine, [], false);
     }
 
     const bookmarkedPlaceList = await this.bookmarkCoreService
@@ -41,11 +44,22 @@ export class MagazineService {
       })
       .then((bookmarks) => bookmarks.map((bookmark) => bookmark.placeIdx));
 
-    return MagazineEntity.fromModel(magazine, bookmarkedPlaceList);
+    const magazineLikeModel =
+      await this.magazineLikeCoreService.getMagazineLikeByIdx(
+        loginUser.idx,
+        magazineIdx,
+      );
+
+    return MagazineEntity.fromModel(
+      magazine,
+      bookmarkedPlaceList,
+      magazineLikeModel !== null,
+    );
   }
 
   public async getMagazineAll(
     dto: GetAllMagazineDto,
+    loginUser?: LoginUser,
   ): Promise<GetAllMagazineResponseDto> {
     const TAKE = 10;
     const SKIP = (dto.page - 1) * TAKE;
@@ -58,11 +72,35 @@ export class MagazineService {
         orderBy: dto.orderBy,
       });
 
+    const paginatedList = magazineOverviewModelList.slice(0, TAKE);
+    const hasNext = magazineOverviewModelList.length > TAKE;
+
+    if (!loginUser?.idx) {
+      return {
+        magazineList: paginatedList.map((magazine) =>
+          MagazineOverviewEntity.fromModel(magazine, false),
+        ),
+        hasNext,
+      };
+    }
+
+    const magazineLikeIdxList = await this.magazineLikeCoreService
+      .getMagazineLikeAllByUserIdxAndMagazineIdxList(
+        loginUser.idx,
+        paginatedList.map((magazine) => magazine.idx),
+      )
+      .then((likes) => likes.map((like) => like.magazineIdx));
+
     return {
       magazineList: magazineOverviewModelList
         .slice(0, TAKE)
-        .map(MagazineOverviewEntity.fromModel),
-      hasNext: magazineOverviewModelList.length > TAKE,
+        .map((magazine) =>
+          MagazineOverviewEntity.fromModel(
+            magazine,
+            magazineLikeIdxList.includes(magazine.idx),
+          ),
+        ),
+      hasNext: hasNext,
     };
   }
 
@@ -85,7 +123,7 @@ export class MagazineService {
     return {
       magazineList: likedMagazineOverviewModelList
         .slice(0, TAKE)
-        .map(MagazineOverviewEntity.fromModel),
+        .map((magazine) => MagazineOverviewEntity.fromModel(magazine, true)),
       hasNext: likedMagazineOverviewModelList.length > TAKE,
     };
   }
