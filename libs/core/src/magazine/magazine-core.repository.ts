@@ -68,7 +68,9 @@ export class MagazineCoreRepository {
           ],
         },
       },
-      orderBy: this.getOrderByClause(input),
+      orderBy: {
+        createdAt: 'desc',
+      },
       take: input.take,
       skip: input.skip,
     });
