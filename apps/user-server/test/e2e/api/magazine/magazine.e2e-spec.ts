@@ -1,4 +1,5 @@
 import { BookmarkSeedHelper } from '@libs/testing/seed/bookmark/bookmark.seed';
+import { MagazineLikeSeedHelper } from '@libs/testing/seed/magazine-like/magazine-like.seed';
 import { MagazineSeedHelper } from '@libs/testing/seed/magazine/magazine.seed';
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { MagazineOverviewEntity } from '@user/api/magazine/entity/magazine-overview.entity';
@@ -11,6 +12,7 @@ describe('Menu E2E test', () => {
   const placeSeedHelper = testHelper.seedHelper(PlaceSeedHelper);
   const bookmarkSeedHelper = testHelper.seedHelper(BookmarkSeedHelper);
   const magazineSeedHelper = testHelper.seedHelper(MagazineSeedHelper);
+  const magazineLikeSeedHelper = testHelper.seedHelper(MagazineLikeSeedHelper);
 
   beforeEach(async () => {
     await testHelper.init();
@@ -49,6 +51,10 @@ describe('Menu E2E test', () => {
         deletedAt: null,
         placeIdxList: [placeSeed.idx],
       });
+      await magazineLikeSeedHelper.seed({
+        magazineIdx: magazineSeed.idx,
+        userIdx: loginUser.idx,
+      });
 
       const response = await testHelper
         .test()
@@ -64,7 +70,7 @@ describe('Menu E2E test', () => {
       expect(magazine.content).toBe(magazineSeed.content);
       expect(magazine.thumbnailImagePath).toBe(magazineSeed.thumbnailPath);
       expect(magazine.isTitleVisible).toBe(magazineSeed.isTitleVisible);
-      expect(magazine.likeCount).toBe(0);
+      expect(magazine.likeCount).toBe(1);
       expect(magazine.viewCount).toBe(1);
       expect(Array.isArray(magazine.placeList)).toBe(true);
       expect(magazine.placeList.length).toBe(1);
@@ -81,6 +87,7 @@ describe('Menu E2E test', () => {
         placeSeed.placeImgList,
       );
       expect(magazine.placeList[0].bookmark).toBe(true);
+      expect(magazine.isLiked).toBe(true);
     });
 
     it('200 - bookmark check when not bookmarked', async () => {
@@ -133,6 +140,40 @@ describe('Menu E2E test', () => {
       expect(magazine.placeList[1].bookmark).toBe(false);
     });
 
+    it('200 - isLiked check when not liked', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        activatedAt: new Date(),
+        deletedAt: null,
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/magazine/${magazineSeed.idx}`)
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .expect(200);
+
+      const magazine: MagazineEntity = response.body;
+
+      expect(magazine.isLiked).toBe(false);
+    });
+
+    it('200 - isLiked check when not login', async () => {
+      const magazineSeed = await magazineSeedHelper.seed({
+        activatedAt: new Date(),
+        deletedAt: null,
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/magazine/${magazineSeed.idx}`)
+        .expect(200);
+
+      const magazine: MagazineEntity = response.body;
+
+      expect(magazine.isLiked).toBe(false);
+    });
+
     it('404 - magazine not exists', async () => {
       const loginUser = testHelper.loginUsers.user1;
 
@@ -156,6 +197,7 @@ describe('Menu E2E test', () => {
 
   describe('GET /magazine/all', () => {
     it('200 - field check', async () => {
+      const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({
         title: 'Test Magazine',
         description: 'Test Description',
@@ -166,9 +208,15 @@ describe('Menu E2E test', () => {
         deletedAt: null,
       });
 
+      await magazineLikeSeedHelper.seed({
+        magazineIdx: magazineSeed.idx,
+        userIdx: loginUser.idx,
+      });
+
       const response = await testHelper
         .test()
         .get('/magazine/all')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
         .query({ page: 1 })
         .expect(200);
 
@@ -184,7 +232,11 @@ describe('Menu E2E test', () => {
       expect(magazine.idx).toBe(magazineSeed.idx);
       expect(magazine.title).toBe(magazineSeed.title);
       expect(magazine.description).toBe(magazineSeed.description);
+      expect(magazine.isTitleVisible).toBe(magazineSeed.isTitleVisible);
+      expect(magazine.likeCount).toBe(1);
+      expect(magazine.viewCount).toBe(0);
       expect(magazine.thumbnailImagePath).toBe(magazineSeed.thumbnailPath);
+      expect(magazine.isLiked).toBe(true);
     });
 
     it('200 - not select magazine that is not activated', async () => {
@@ -343,114 +395,158 @@ describe('Menu E2E test', () => {
         magazine1.idx,
       ]);
     });
+
+    it('200 - isLiked check when no login', async () => {
+      const [magazine1, magazine2] = await magazineSeedHelper.seedAll([
+        {
+          activatedAt: new Date(),
+          deletedAt: null,
+        },
+        {
+          activatedAt: new Date(),
+          deletedAt: null,
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .query({ page: 1 })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+
+      expect(magazineList[0].isLiked).toBe(false);
+      expect(magazineList[1].isLiked).toBe(false);
+    });
+
+    it('200 - isLiked check when one liked and one not liked', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const [magazine1, magazine2] = await magazineSeedHelper.seedAll([
+        {
+          activatedAt: new Date(),
+          deletedAt: null,
+        },
+        {
+          activatedAt: new Date(),
+          deletedAt: null,
+        },
+      ]);
+
+      await magazineLikeSeedHelper.seed({
+        magazineIdx: magazine1.idx,
+        userIdx: loginUser.idx,
+      });
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .query({ page: 1, orderBy: 'like' })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+
+      expect(magazineList[0].isLiked).toBe(true);
+      expect(magazineList[1].isLiked).toBe(false);
+    });
   });
 
-  describe('POST /magazine/:idx/like', () => {
-    it('200 - successfully like magazine', async () => {
+  describe('GET /magazine/liked/all', () => {
+    it('200 - field check', async () => {
       const loginUser = testHelper.loginUsers.user1;
-      const magazineSeed = await magazineSeedHelper.seed({
-        activatedAt: new Date(),
-        deletedAt: null,
-      });
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          {
+            likeCount: 5,
+            activatedAt: new Date(),
+            deletedAt: null,
+          },
+          {
+            likeCount: 10,
+            activatedAt: new Date(),
+            deletedAt: null,
+          },
+          {
+            likeCount: 3,
+            activatedAt: new Date(),
+            deletedAt: null,
+          },
+        ]);
 
-      await testHelper
+      await magazineLikeSeedHelper.seedAll([
+        {
+          magazineIdx: magazine1.idx,
+          userIdx: loginUser.idx,
+        },
+        {
+          magazineIdx: magazine2.idx,
+          userIdx: loginUser.idx,
+        },
+      ]);
+
+      const response = await testHelper
         .test()
-        .post(`/magazine/${magazineSeed.idx}/like`)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .get('/magazine/liked/all')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .query({ page: 1, orderBy: 'like' })
         .expect(200);
 
-      const prisma = testHelper.getPrisma();
-      const magazine = await prisma.magazine.findUnique({
-        where: { idx: magazineSeed.idx },
-      });
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+      const hasNext: boolean = response.body.hasNext;
 
-      expect(magazine?.likeCount).toBe(1);
+      expect(Array.isArray(magazineList)).toBe(true);
+      expect(magazineList.length).toBe(2);
+      expect(hasNext).toBe(false);
+
+      expect(magazineList[0].idx).toBe(magazine2.idx);
+      expect(magazineList[0].title).toBe(magazine2.title);
+      expect(magazineList[0].description).toBe(magazine2.description);
+      expect(magazineList[0].thumbnailImagePath).toBe(magazine2.thumbnailPath);
+      expect(magazineList[0].likeCount).toBe(magazine2.likeCount + 1);
+      expect(magazineList[0].viewCount).toBe(magazine2.viewCount);
+      expect(magazineList[0].isLiked).toBe(true);
+
+      expect(magazineList[1].idx).toBe(magazine1.idx);
+      expect(magazineList[1].title).toBe(magazine1.title);
+      expect(magazineList[1].description).toBe(magazine1.description);
+      expect(magazineList[1].thumbnailImagePath).toBe(magazine1.thumbnailPath);
+      expect(magazineList[1].likeCount).toBe(magazine1.likeCount + 1);
+      expect(magazineList[1].viewCount).toBe(magazine1.viewCount);
+      expect(magazineList[1].isLiked).toBe(true);
+
+      expect(magazineList.map(({ idx }) => idx)).toStrictEqual([
+        magazine2.idx,
+        magazine1.idx,
+      ]);
     });
 
-    it('400 - invalid idx', async () => {
+    it('200 - no liked magazine', async () => {
       const loginUser = testHelper.loginUsers.user1;
+      const [magazine1, magazine2] = await magazineSeedHelper.seedAll([
+        {
+          activatedAt: new Date(),
+          deletedAt: null,
+        },
+        {
+          activatedAt: new Date(),
+          deletedAt: null,
+        },
+      ]);
 
-      await testHelper
+      const response = await testHelper
         .test()
-        .post(`/magazine/invalid-idx/like`)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .expect(400);
-    });
-
-    it('404 - magazine not found', async () => {
-      const loginUser = testHelper.loginUsers.user1;
-
-      await testHelper
-        .test()
-        .post(`/magazine/9999999/like`)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .expect(404);
-    });
-  });
-
-  describe('POST /magazine/:idx/unlike', () => {
-    it('200 - successfully unlike magazine', async () => {
-      const loginUser = testHelper.loginUsers.user1;
-      const magazineSeed = await magazineSeedHelper.seed({
-        activatedAt: new Date(),
-        deletedAt: null,
-        likeCount: 5,
-      });
-
-      await testHelper
-        .test()
-        .post(`/magazine/${magazineSeed.idx}/unlike`)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .get('/magazine/liked/all')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .query({ page: 1, orderBy: 'like' })
         .expect(200);
 
-      const prisma = testHelper.getPrisma();
-      const magazine = await prisma.magazine.findUnique({
-        where: { idx: magazineSeed.idx },
-      });
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+      const hasNext: boolean = response.body.hasNext;
 
-      expect(magazine?.likeCount).toBe(4);
-    });
-
-    it('200 - unlike magazine when likeCount is 0 (no effect)', async () => {
-      const loginUser = testHelper.loginUsers.user1;
-      const magazineSeed = await magazineSeedHelper.seed({
-        activatedAt: new Date(),
-        deletedAt: null,
-        likeCount: 0,
-      });
-
-      await testHelper
-        .test()
-        .post(`/magazine/${magazineSeed.idx}/unlike`)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .expect(200);
-
-      const prisma = testHelper.getPrisma();
-      const magazine = await prisma.magazine.findUnique({
-        where: { idx: magazineSeed.idx },
-      });
-
-      expect(magazine?.likeCount).toBe(0);
-    });
-
-    it('400 - invalid idx', async () => {
-      const loginUser = testHelper.loginUsers.user1;
-
-      await testHelper
-        .test()
-        .post(`/magazine/invalid-idx/unlike`)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .expect(400);
-    });
-
-    it('404 - magazine not found', async () => {
-      const loginUser = testHelper.loginUsers.user1;
-
-      await testHelper
-        .test()
-        .post(`/magazine/9999999/unlike`)
-        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
-        .expect(404);
+      expect(Array.isArray(magazineList)).toBe(true);
+      expect(magazineList.length).toBe(0);
+      expect(hasNext).toBe(false);
     });
   });
 });

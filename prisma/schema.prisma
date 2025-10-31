@@ -257,6 +257,7 @@ model User {
   deletedAt                 DateTime?               @map("deleted_at") @db.Timestamptz(6)
   adminAccount              AdminAccount?
   bookmarkList              Bookmark[]
+  magazineLike              MagazineLike[]
   placeOwnerList            PlaceOwner[]
   reviewList                Review[]
   service1ResultList        Service1Result[]
@@ -359,28 +360,40 @@ model MenuReview {
 }
 
 model MagazinePlace {
-  magazineIdx Int        @map("magazine_idx")
-  placeIdx    Int        @map("place_idx")
-  magazine    Magazine   @relation(fields: [magazineIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_magazine_tb_to_magazine_place_tb")
-  place       Place      @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_magazine_place_tb")
+  magazineIdx Int      @map("magazine_idx")
+  placeIdx    Int      @map("place_idx")
+  magazine    Magazine @relation(fields: [magazineIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_magazine_tb_to_magazine_place_tb")
+  place       Place    @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_magazine_place_tb")
 
   @@id([magazineIdx, placeIdx])
   @@map("magazine_place_tb")
 }
 
 model Magazine {
-  idx                Int               @id @default(autoincrement())
-  title              String            @db.VarChar
-  description        String?           @db.VarChar
-  content            String            @db.VarChar
-  thumbnailImagePath String?           @map("thumbnail_image_path") @db.VarChar
-  isTitleVisible     Boolean           @default(false) @map("is_title_visible")
-  likeCount          Int               @default(0) @map("like_count")
-  viewCount          Int               @default(0) @map("view_count")
-  createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
-  activatedAt        DateTime?         @map("activated_at") @db.Timestamptz(6)
-  deletedAt          DateTime?         @map("deleted_at") @db.Timestamptz(6)
+  idx                Int             @id @default(autoincrement())
+  title              String          @db.VarChar
+  description        String?         @db.VarChar
+  content            String          @db.VarChar
+  thumbnailImagePath String?         @map("thumbnail_image_path") @db.VarChar
+  isTitleVisible     Boolean         @default(false) @map("is_title_visible")
+  likeCount          Int             @default(0) @map("like_count")
+  viewCount          Int             @default(0) @map("view_count")
+  createdAt          DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  activatedAt        DateTime?       @map("activated_at") @db.Timestamptz(6)
+  deletedAt          DateTime?       @map("deleted_at") @db.Timestamptz(6)
+  magazineLike       MagazineLike[]
   placeList          MagazinePlace[]
 
   @@map("magazine_tb")
+}
+
+model MagazineLike {
+  magazineIdx Int      @map("magazine_idx")
+  userIdx     Int      @map("user_idx")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  magazine    Magazine @relation(fields: [magazineIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_magazine_tb_to_magazine_like_tb")
+  user        User     @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_magazine_like_tb")
+
+  @@id([magazineIdx, userIdx])
+  @@map("magazine_like_tb")
 }

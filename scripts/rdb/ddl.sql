@@ -36,6 +36,14 @@ CREATE TABLE keyword_tb
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE magazine_like_tb
+(
+  magazine_idx int                      NOT NULL,
+  user_idx     int                      NOT NULL,
+  created_at   timestamp with time zone NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (magazine_idx, user_idx)
+);
+
 CREATE TABLE magazine_place_tb
 (
   magazine_idx int NOT NULL,
@@ -473,3 +481,13 @@ ALTER TABLE magazine_place_tb
   ADD CONSTRAINT FK_place_tb_TO_magazine_place_tb
     FOREIGN KEY (place_idx)
     REFERENCES place_tb (idx);
+
+ALTER TABLE magazine_like_tb
+  ADD CONSTRAINT FK_magazine_tb_TO_magazine_like_tb
+    FOREIGN KEY (magazine_idx)
+    REFERENCES magazine_tb (idx);
+
+ALTER TABLE magazine_like_tb
+  ADD CONSTRAINT FK_user_tb_TO_magazine_like_tb
+    FOREIGN KEY (user_idx)
+    REFERENCES user_tb (idx);
