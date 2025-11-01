@@ -46,6 +46,7 @@ export class MagazineCoreRepository {
         AND: [
           { deletedAt: null },
           this.getActivatedAtFilterWhereClause(input.activated),
+          this.getPinnedAtFilterWhereClause(input.pinned),
         ],
       },
       orderBy: this.getOrderByClause(input),
@@ -198,6 +199,20 @@ export class MagazineCoreRepository {
     return { activatedAt: null };
   }
 
+  private getPinnedAtFilterWhereClause(
+    pinned?: boolean,
+  ): Prisma.MagazineWhereInput {
+    if (pinned === undefined) {
+      return {};
+    }
+
+    if (pinned) {
+      return { pinnedAt: { not: null } };
+    }
+
+    return { pinnedAt: null };
+  }
+
   private getOrderByClause({
     orderBy,
     pinned,
@@ -214,7 +229,7 @@ export class MagazineCoreRepository {
     const orderByClause = orderByMap[orderBy ?? 'time'];
 
     if (pinned == undefined) {
-      return [{ pinnedAt: 'desc' }, orderByClause];
+      return [{ pinnedAt: { sort: 'desc', nulls: 'last' } }, orderByClause];
     }
     return orderByClause;
   }
