@@ -15,6 +15,7 @@ export const SELECT_LIKED_MAGAZINE_OVERVIEW =
           viewCount: true,
           createdAt: true,
           activatedAt: true,
+          pinnedAt: true,
         },
       },
     },
