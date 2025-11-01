@@ -10,6 +10,7 @@ import { GetAllMagazineResponseDto } from './dto/response/get-all-magazine-respo
 import { GetAllLikedMagazineDto } from './dto/request/get-all-liked-magazine.dto';
 import { GetAllLikedMagazineResponseDto } from './dto/response/get-all-liked-magazine-response.dto';
 import { MagazineLikeCoreService } from '@libs/core/magazine-like/magazine-like-core.service';
+import { MagazineLikeEntity } from './entity/magazine-like.entity';
 
 @Injectable()
 export class MagazineService {
@@ -126,5 +127,43 @@ export class MagazineService {
         .map((magazine) => MagazineOverviewEntity.fromModel(magazine, true)),
       hasNext: likedMagazineOverviewModelList.length > TAKE,
     };
+  }
+
+  public async likeMagazineByIdx(
+    loginUser: LoginUser,
+    magazineIdx: number,
+  ): Promise<MagazineLikeEntity> {
+    const magazine =
+      await this.magazineCoreService.getMagazineByIdx(magazineIdx);
+    if (!magazine) {
+      throw new NotFoundException(`Magazine not found for idx: ${magazineIdx}`);
+    }
+
+    return MagazineLikeEntity.fromModel(
+      await this.magazineLikeCoreService.createMagazineLikeByIdx(
+        magazineIdx,
+        loginUser.idx,
+      ),
+    );
+  }
+
+  public async unlikeMagazineByIdx(
+    loginUser: LoginUser,
+    magazineIdx: number,
+  ): Promise<void> {
+    const magazine =
+      await this.magazineCoreService.getMagazineByIdx(magazineIdx);
+    if (!magazine) {
+      throw new NotFoundException(`Magazine not found for idx: ${magazineIdx}`);
+    }
+
+    if (magazine.likeCount === 0) {
+      return;
+    }
+
+    await this.magazineLikeCoreService.deleteMagazineLikeByIdx(
+      magazineIdx,
+      loginUser.idx,
+    );
   }
 }

@@ -20,7 +20,6 @@ import { RedlockModule } from '@libs/common/modules/redlock/redlock.module';
 import { AopModule } from '@toss/nestjs-aop';
 import { BlogReviewModule } from '@user/api/blog-review/blog-review.module';
 import { MagazineModule } from './api/magazine/magazine.module';
-import { MagazineLikeModule } from './api/magazine-like/magazine-like.module';
 import { PinnedMagazineModule } from './api/pinned-magazine/pinned-magazine.module';
 
 @Module({
@@ -52,7 +51,6 @@ import { PinnedMagazineModule } from './api/pinned-magazine/pinned-magazine.modu
     BlogReviewModule,
     AopModule,
     MagazineModule,
-    MagazineLikeModule,
     PinnedMagazineModule,
   ],
   controllers: [],

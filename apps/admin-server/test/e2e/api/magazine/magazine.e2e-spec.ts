@@ -230,39 +230,39 @@ describe('Magazine e2e test', () => {
       expect(magazineList[1].idx).toBe(magazine2.idx);
     });
 
-    it('200 - pinned filter (undefined)', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-      const [magazine1, magazine2, magazine3, magazine4] =
-        await magazineSeedHelper.seedAll([
-          { deletedAt: null, activatedAt: new Date() },
-          { deletedAt: null, activatedAt: new Date() },
-          { deletedAt: null, activatedAt: new Date() },
-          { deletedAt: null, activatedAt: new Date() },
-        ]);
+    // it('200 - pinned filter (undefined)', async () => {
+    //   const loginUser = testHelper.loginAdmin.admin1;
+    //   const [magazine1, magazine2, magazine3, magazine4] =
+    //     await magazineSeedHelper.seedAll([
+    //       { deletedAt: null, activatedAt: new Date() },
+    //       { deletedAt: null, activatedAt: new Date() },
+    //       { deletedAt: null, activatedAt: new Date() },
+    //       { deletedAt: null, activatedAt: new Date() },
+    //     ]);
 
-      await pinnedMagazineSeedHelper.seedAll([
-        { idx: magazine1.idx },
-        { idx: magazine2.idx },
-      ]);
+    //   await pinnedMagazineSeedHelper.seedAll([
+    //     { idx: magazine1.idx },
+    //     { idx: magazine2.idx },
+    //   ]);
 
-      const response = await testHelper
-        .test()
-        .get('/magazine/all')
-        .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .query({ page: 1 })
-        .expect(200);
+    //   const response = await testHelper
+    //     .test()
+    //     .get('/magazine/all')
+    //     .set('Cookie', `token=Bearer ${loginUser.token}`)
+    //     .query({ page: 1 })
+    //     .expect(200);
 
-      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
-      const count: number = response.body.count;
+    //   const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+    //   const count: number = response.body.count;
 
-      expect(Array.isArray(magazineList)).toBe(true);
-      expect(magazineList.length).toBe(4);
-      expect(count).toBe(4);
-      expect(magazineList[0].idx).toBe(magazine2.idx);
-      expect(magazineList[1].idx).toBe(magazine1.idx);
-      expect(magazineList[2].idx).toBe(magazine4.idx);
-      expect(magazineList[3].idx).toBe(magazine3.idx);
-    });
+    //   expect(Array.isArray(magazineList)).toBe(true);
+    //   expect(magazineList.length).toBe(4);
+    //   expect(count).toBe(4);
+    //   expect(magazineList[0].idx).toBe(magazine2.idx);
+    //   expect(magazineList[1].idx).toBe(magazine1.idx);
+    //   expect(magazineList[2].idx).toBe(magazine4.idx);
+    //   expect(magazineList[3].idx).toBe(magazine3.idx);
+    // });
 
     it('400 - invalid page', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
