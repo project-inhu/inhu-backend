@@ -42,7 +42,7 @@ export class PinnedMagazineCoreRepository {
     });
   }
 
-  public async insertPinnedMagazine(
+  public async insertPinnedMagazineByIdx(
     magazineIdx: number,
   ): Promise<SelectPinnedMagazine> {
     return await this.txHost.tx.pinnedMagazine.create({

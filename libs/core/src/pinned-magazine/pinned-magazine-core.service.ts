@@ -28,11 +28,13 @@ export class PinnedMagazineCoreService {
     );
   }
 
-  public async createPinnedMagazine(
+  public async createPinnedMagazineByIdx(
     magazineIdx: number,
   ): Promise<PinnedMagazineModel> {
     return PinnedMagazineModel.fromPrisma(
-      await this.pinnedMagazineCoreRepository.insertPinnedMagazine(magazineIdx),
+      await this.pinnedMagazineCoreRepository.insertPinnedMagazineByIdx(
+        magazineIdx,
+      ),
     );
   }
 
