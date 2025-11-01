@@ -9,12 +9,4 @@ export class UpdateMagazineInput extends PartialType(CreateMagazineInput) {
    * - false: 비활성화
    */
   activate?: boolean;
-
-  /**
-   * 고정 여부
-   *
-   * - true: 고정
-   * - false: 고정 해제
-   */
-  pinned?: boolean;
 }

@@ -22,6 +22,5 @@ export type MagazineSeedInput = {
   viewCount?: number;
   activatedAt?: Date | null;
   deletedAt?: Date | null;
-  pinnedAt?: Date | null;
   placeIdxList?: [number, ...number[]] | null;
 };

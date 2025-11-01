@@ -127,7 +127,6 @@ export class MagazineCoreRepository {
         thumbnailImagePath: input.thumbnailImagePath,
         isTitleVisible: input.isTitleVisible,
         activatedAt: input.activate ? new Date() : null,
-        pinnedAt: input.pinned ? new Date() : null,
         placeList: input.placeIdxList
           ? {
               deleteMany: {},
@@ -205,12 +204,10 @@ export class MagazineCoreRepository {
     if (pinned === undefined) {
       return {};
     }
-
     if (pinned) {
-      return { pinnedAt: { not: null } };
+      return { pinnedMagazine: { isNot: null } };
     }
-
-    return { pinnedAt: null };
+    return { pinnedMagazine: null };
   }
 
   private getOrderByClause({
@@ -229,8 +226,11 @@ export class MagazineCoreRepository {
     const orderByClause = orderByMap[orderBy ?? 'time'];
 
     if (pinned == undefined) {
-      return [{ pinnedAt: { sort: 'desc', nulls: 'last' } }, orderByClause];
+      return [{ pinnedMagazine: { createdAt: 'desc' } }, orderByClause];
     }
+    // if (pinned == undefined) {
+    //   return [{ pinnedAt: { sort: 'desc', nulls: 'last' } }, orderByClause];
+    // }
     return orderByClause;
   }
 }
