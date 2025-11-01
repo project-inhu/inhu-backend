@@ -64,6 +64,7 @@ CREATE TABLE magazine_tb
   created_at           timestamp with time zone NOT NULL DEFAULT NOW(),
   activated_at         timestamp with time zone,
   deleted_at           timestamp with time zone,
+  pinned_at            timestamp with time zone,
   PRIMARY KEY (idx)
 );
 

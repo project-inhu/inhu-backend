@@ -26,4 +26,13 @@ export class GetAllMagazineInput {
    * time = 시간순
    */
   orderBy?: 'like' | 'view' | 'time';
+
+  /**
+   * 고정된 매거진만 조회 여부
+   *
+   * - true: 고정된 매거진만
+   * - false: 고정되지 않은 매거진만
+   * - undefined: 전체 매거진
+   */
+  pinned?: boolean;
 }

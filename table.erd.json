@@ -10,7 +10,7 @@
     "show": 511,
     "database": 16,
     "databaseName": "inhu",
-    "canvasType": "@dineug/erd-editor/builtin-schema-sql",
+    "canvasType": "ERD",
     "language": 1,
     "tableNameCase": 4,
     "columnNameCase": 2,
@@ -1062,7 +1062,8 @@
           "g4djUqsm_FcAbT__hz1f-",
           "n0VWuORzaeP25qiXSmQW3",
           "i8GEdLZ8Yc5tdwwdt3CER",
-          "_twa5upJWi5v3qOOwQFSP"
+          "_twa5upJWi5v3qOOwQFSP",
+          "ESCLkDRIygSPCTWCCIloY"
         ],
         "seqColumnIds": [
           "PlNQjPMJUtDU410lw4-2E",
@@ -1075,18 +1076,19 @@
           "g4djUqsm_FcAbT__hz1f-",
           "n0VWuORzaeP25qiXSmQW3",
           "i8GEdLZ8Yc5tdwwdt3CER",
-          "_twa5upJWi5v3qOOwQFSP"
+          "_twa5upJWi5v3qOOwQFSP",
+          "ESCLkDRIygSPCTWCCIloY"
         ],
         "ui": {
-          "x": 2512,
-          "y": 944.714,
+          "x": 2511,
+          "y": 907.714,
           "zIndex": 539,
           "widthName": 75,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1761655867397,
+          "updateAt": 1761970790353,
           "createAt": 1759904721721
         }
       },
@@ -5466,6 +5468,26 @@
           "updateAt": 1761817344241,
           "createAt": 1761817333338
         }
+      },
+      "ESCLkDRIygSPCTWCCIloY": {
+        "id": "ESCLkDRIygSPCTWCCIloY",
+        "tableId": "ivhf5YI3Sbge6ZHmkEvU3",
+        "name": "pinned_at",
+        "comment": "",
+        "dataType": "timestamp with time zone",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 147,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1761970833240,
+          "createAt": 1761970774343
+        }
       }
     },
     "relationshipEntities": {
@@ -6375,8 +6397,8 @@
           "columnIds": [
             "PlNQjPMJUtDU410lw4-2E"
           ],
-          "x": 3134,
-          "y": 1104.714,
+          "x": 3133,
+          "y": 1079.714,
           "direction": 2
         },
         "end": {
@@ -6431,8 +6453,8 @@
           "columnIds": [
             "PlNQjPMJUtDU410lw4-2E"
           ],
-          "x": 2823,
-          "y": 944.714,
+          "x": 2822,
+          "y": 907.714,
           "direction": 4
         },
         "end": {

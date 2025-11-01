@@ -46,6 +46,7 @@ export class MagazineCoreRepository {
         AND: [
           { deletedAt: null },
           this.getActivatedAtFilterWhereClause(input.activated),
+          this.getPinnedAtFilterWhereClause(input.pinned),
         ],
       },
       orderBy: this.getOrderByClause(input),
@@ -126,6 +127,7 @@ export class MagazineCoreRepository {
         thumbnailImagePath: input.thumbnailImagePath,
         isTitleVisible: input.isTitleVisible,
         activatedAt: input.activate ? new Date() : null,
+        pinnedAt: input.pinned ? new Date() : null,
         placeList: input.placeIdxList
           ? {
               deleteMany: {},
@@ -197,20 +199,38 @@ export class MagazineCoreRepository {
     return { activatedAt: null };
   }
 
+  private getPinnedAtFilterWhereClause(
+    pinned?: boolean,
+  ): Prisma.MagazineWhereInput {
+    if (pinned === undefined) {
+      return {};
+    }
+
+    if (pinned) {
+      return { pinnedAt: { not: null } };
+    }
+
+    return { pinnedAt: null };
+  }
+
   private getOrderByClause({
     orderBy,
-  }: Pick<
-    GetAllMagazineInput,
-    'orderBy'
-  >): Prisma.MagazineOrderByWithRelationInput {
-    if (orderBy === 'like') {
-      return { likeCount: 'desc' };
-    } else if (orderBy === 'view') {
-      return { viewCount: 'desc' };
-    } else if (orderBy === 'time') {
-      return { createdAt: 'desc' };
-    } else {
-      return { createdAt: 'desc' };
+    pinned,
+  }: Pick<GetAllMagazineInput, 'orderBy' | 'pinned'>):
+    | Prisma.MagazineOrderByWithRelationInput
+    | Prisma.MagazineOrderByWithRelationInput[] {
+    const orderByMap: Record<string, Prisma.MagazineOrderByWithRelationInput> =
+      {
+        like: { likeCount: 'desc' },
+        view: { viewCount: 'desc' },
+        time: { createdAt: 'desc' },
+      };
+
+    const orderByClause = orderByMap[orderBy ?? 'time'];
+
+    if (pinned == undefined) {
+      return [{ pinnedAt: { sort: 'desc', nulls: 'last' } }, orderByClause];
     }
+    return orderByClause;
   }
 }

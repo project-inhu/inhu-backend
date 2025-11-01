@@ -21,6 +21,7 @@ import { ActivateMagazineByIdxDto } from './dto/request/activate-magazine-by-idx
 import { UpdateMagazineByIdxDto } from './dto/request/update-magazine-by-idx.dto';
 import { OpenAIService } from '@libs/common/modules/openAI/openAI.service';
 import { RecommendDescriptionDto } from './dto/request/recommend-description.dto';
+import { PinMagazineByIdxDto } from './dto/request/pin-magazine-by-idx.dto';
 
 @Controller('magazine')
 export class MagazineController {
@@ -90,6 +91,28 @@ export class MagazineController {
     @Body() dto: ActivateMagazineByIdxDto,
   ): Promise<void> {
     await this.magazineService.activateMagazineByIdx(idx, dto);
+  }
+
+  /**
+   * 매거진 고정/고정해제
+   *
+   * @author 이수인
+   */
+  @AdminAuth()
+  @Post(':idx/pin')
+  @Exception(400, 'Invalid magazine idx')
+  @Exception(404, 'Magazine not found')
+  @Exception(
+    409,
+    `- pin: true - Magazine is already pinned
+   - pin: false - Magazine is not pinned`,
+  )
+  @HttpCode(200)
+  public async pinMagazineByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+    @Body() dto: PinMagazineByIdxDto,
+  ): Promise<void> {
+    return await this.magazineService.pinMagazineByIdx(idx, dto);
   }
 
   /**
