@@ -381,6 +381,7 @@ model Magazine {
   createdAt          DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
   activatedAt        DateTime?       @map("activated_at") @db.Timestamptz(6)
   deletedAt          DateTime?       @map("deleted_at") @db.Timestamptz(6)
+  pinnedAt           DateTime?       @map("pinned_at") @db.Timestamptz(6)
   magazineLike       MagazineLike[]
   placeList          MagazinePlace[]
 
