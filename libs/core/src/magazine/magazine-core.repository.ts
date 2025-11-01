@@ -126,6 +126,7 @@ export class MagazineCoreRepository {
         thumbnailImagePath: input.thumbnailImagePath,
         isTitleVisible: input.isTitleVisible,
         activatedAt: input.activate ? new Date() : null,
+        pinnedAt: input.pinned ? new Date() : null,
         placeList: input.placeIdxList
           ? {
               deleteMany: {},
@@ -199,18 +200,22 @@ export class MagazineCoreRepository {
 
   private getOrderByClause({
     orderBy,
-  }: Pick<
-    GetAllMagazineInput,
-    'orderBy'
-  >): Prisma.MagazineOrderByWithRelationInput {
-    if (orderBy === 'like') {
-      return { likeCount: 'desc' };
-    } else if (orderBy === 'view') {
-      return { viewCount: 'desc' };
-    } else if (orderBy === 'time') {
-      return { createdAt: 'desc' };
-    } else {
-      return { createdAt: 'desc' };
+    pinned,
+  }: Pick<GetAllMagazineInput, 'orderBy' | 'pinned'>):
+    | Prisma.MagazineOrderByWithRelationInput
+    | Prisma.MagazineOrderByWithRelationInput[] {
+    const orderByMap: Record<string, Prisma.MagazineOrderByWithRelationInput> =
+      {
+        like: { likeCount: 'desc' },
+        view: { viewCount: 'desc' },
+        time: { createdAt: 'desc' },
+      };
+
+    const orderByClause = orderByMap[orderBy ?? 'time'];
+
+    if (pinned == undefined) {
+      return [{ pinnedAt: 'desc' }, orderByClause];
     }
+    return orderByClause;
   }
 }

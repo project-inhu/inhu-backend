@@ -25,4 +25,16 @@ export class GetAllMagazineDto {
   @ToBoolean()
   @IsBoolean()
   activated?: boolean;
+
+  /**
+   * 고정된 매거진만 조회 여부
+   *
+   * - true: 고정된 매거진만
+   * - false: 고정되지 않은 매거진만
+   * - undefined: 전체 매거진 (고정된 매거진 먼저 조회 후 고정되지 않은 매거진 조회. 고정된 매거진은 고정날짜 내림차순)
+   */
+  @IsOptional()
+  @ToBoolean()
+  @IsBoolean()
+  pinned?: boolean;
 }
