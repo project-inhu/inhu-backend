@@ -1,9 +1,17 @@
-import { PinnedMagazineCoreService } from '@libs/core/pinned-magazine/pinned-magazine-core.service';
-import { Controller } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
+import { PinnedMagazineOverviewEntity } from './entity/pinned-magazine-overview.entity';
+import { PinnedMagazineService } from './pinned-magazine.service';
+import { User } from '@user/common/decorator/user.decorator';
+import { LoginUser } from '@user/common/types/LoginUser';
 
-@Controller()
+@Controller('pinned-magazine')
 export class PinnedMagazineController {
-  constructor(
-    private readonly pinnedMagazineCoreService: PinnedMagazineCoreService,
-  ) {}
+  constructor(private readonly pinnedMagazineService: PinnedMagazineService) {}
+
+  @Get('/all')
+  public async getPinnedMagazineAll(
+    @User() loginUser: LoginUser,
+  ): Promise<PinnedMagazineOverviewEntity[]> {
+    return await this.pinnedMagazineService.getPinnedMagazineAll(loginUser);
+  }
 }

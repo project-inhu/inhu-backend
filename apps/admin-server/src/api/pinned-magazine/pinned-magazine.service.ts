@@ -18,17 +18,18 @@ export class PinnedMagazineService {
     idx: number,
     dto: PinMagazineByIdxDto,
   ): Promise<void> {
-    const magazine =
-      await this.pinnedMagazineCoreService.getPinnedMagazineByIdx(idx);
-    const isPin = dto.pinned;
+    const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
     if (!magazine) {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
 
-    if (isPin && magazine) {
+    const pinnedMagazine =
+      await this.pinnedMagazineCoreService.getPinnedMagazineByIdx(idx);
+    const isPin = dto.pinned;
+    if (isPin && pinnedMagazine) {
       throw new ConflictException(`Magazine is already pinned: ${idx}`);
     }
-    if (!isPin && !magazine) {
+    if (!isPin && !pinnedMagazine) {
       throw new ConflictException(`Magazine is not pinned: ${idx}`);
     }
 
