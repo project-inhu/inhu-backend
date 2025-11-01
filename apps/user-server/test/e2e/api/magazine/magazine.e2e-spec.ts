@@ -174,6 +174,52 @@ describe('Menu E2E test', () => {
       expect(magazine.isLiked).toBe(false);
     });
 
+    it('200 - viewCount increment check(multiple calls && not login)', async () => {
+      const magazineSeed = await magazineSeedHelper.seed({
+        activatedAt: new Date(),
+        deletedAt: null,
+      });
+
+      const callCount = 5;
+      for (let i = 0; i < callCount; i++) {
+        await testHelper
+          .test()
+          .get(`/magazine/${magazineSeed.idx}`)
+          .expect(200);
+      }
+
+      const prisma = testHelper.getPrisma();
+      const magazineAfter = await prisma.magazine.findUnique({
+        where: { idx: magazineSeed.idx },
+      });
+
+      expect(magazineAfter?.viewCount).toBe(callCount);
+    });
+
+    it('200 - viewCount increment check(multiple calls && login)', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        activatedAt: new Date(),
+        deletedAt: null,
+      });
+
+      const callCount = 5;
+      for (let i = 0; i < callCount; i++) {
+        await testHelper
+          .test()
+          .get(`/magazine/${magazineSeed.idx}`)
+          .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+          .expect(200);
+      }
+
+      const prisma = testHelper.getPrisma();
+      const magazineAfter = await prisma.magazine.findUnique({
+        where: { idx: magazineSeed.idx },
+      });
+
+      expect(magazineAfter?.viewCount).toBe(callCount);
+    });
+
     it('404 - magazine not exists', async () => {
       const loginUser = testHelper.loginUsers.user1;
 
