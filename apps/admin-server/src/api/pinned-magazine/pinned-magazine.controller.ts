@@ -10,8 +10,10 @@ import { PinnedMagazineService } from './pinned-magazine.service';
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { Exception } from '@libs/common/decorator/exception.decorator';
 import { PinMagazineByIdxDto } from './dto/request/pin-magazine-by-idx.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller()
+@ApiTags('Pinned Magazine')
 export class PinnedMagazineController {
   constructor(private readonly pinnedMagazineService: PinnedMagazineService) {}
 
@@ -21,7 +23,7 @@ export class PinnedMagazineController {
    * @author 이수인
    */
   @AdminAuth()
-  @Post(':idx/pin')
+  @Post('/magazine/:idx/pin')
   @Exception(400, 'Invalid magazine idx')
   @Exception(404, 'Magazine not found')
   @Exception(
