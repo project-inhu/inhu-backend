@@ -15,7 +15,6 @@ import { MagazineOverviewEntity } from './entity/magazine-overview.entity';
 import { GetAllMagazineInput } from '@libs/core/magazine/inputs/get-all-magazine.input';
 import { ActivateMagazineByIdxDto } from './dto/request/activate-magazine-by-idx.dto';
 import { UpdateMagazineByIdxDto } from './dto/request/update-magazine-by-idx.dto';
-import { PinMagazineByIdxDto } from './dto/request/pin-magazine-by-idx.dto';
 
 @Injectable()
 export class MagazineService {
@@ -130,28 +129,6 @@ export class MagazineService {
       thumbnailImagePath: dto.thumbnailImagePath,
       isTitleVisible: dto.isTitleVisible,
       placeIdxList: validPlaceList,
-    });
-  }
-
-  public async pinMagazineByIdx(
-    idx: number,
-    dto: PinMagazineByIdxDto,
-  ): Promise<void> {
-    const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
-    const isPin = dto.pinned;
-    if (!magazine) {
-      throw new NotFoundException(`Magazine not found for idx: ${idx}`);
-    }
-
-    if (isPin && magazine.pinnedAt) {
-      throw new ConflictException(`Magazine is already pinned: ${idx}`);
-    }
-    if (!isPin && !magazine.pinnedAt) {
-      throw new ConflictException(`Magazine is not pinned: ${idx}`);
-    }
-
-    await this.magazineCoreService.updateMagazineByIdx(idx, {
-      pinned: isPin,
     });
   }
 

@@ -64,7 +64,6 @@ CREATE TABLE magazine_tb
   created_at           timestamp with time zone NOT NULL DEFAULT NOW(),
   activated_at         timestamp with time zone,
   deleted_at           timestamp with time zone,
-  pinned_at            timestamp with time zone,
   PRIMARY KEY (idx)
 );
 
@@ -142,6 +141,13 @@ CREATE TABLE place_tb
   deleted_at            timestamp with time zone,
   permanently_closed_at timestamp with time zone,
   activated_at          timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+
+CREATE TABLE pinned_magazine_tb
+(
+  idx        int                      NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   PRIMARY KEY (idx)
 );
 
@@ -492,3 +498,8 @@ ALTER TABLE magazine_like_tb
   ADD CONSTRAINT FK_user_tb_TO_magazine_like_tb
     FOREIGN KEY (user_idx)
     REFERENCES user_tb (idx);
+
+ALTER TABLE pinned_magazine_tb
+  ADD CONSTRAINT FK_magazine_tb_TO_pinned_magazine_tb
+    FOREIGN KEY (idx)
+    REFERENCES magazine_tb (idx);

@@ -14,7 +14,6 @@ export class LikedMagazineOverviewModel extends PickType(
     'viewCount',
     'createdAt',
     'activatedAt',
-    'pinnedAt',
   ],
 ) {
   constructor(data: LikedMagazineOverviewModel) {
@@ -35,7 +34,6 @@ export class LikedMagazineOverviewModel extends PickType(
       viewCount: likedMagazine.magazine.viewCount,
       createdAt: likedMagazine.magazine.createdAt,
       activatedAt: likedMagazine.magazine.activatedAt,
-      pinnedAt: likedMagazine.magazine.pinnedAt,
     });
   }
 }
