@@ -12,7 +12,6 @@ export const SELECT_MAGAZINE_OVERVIEW =
       viewCount: true,
       createdAt: true,
       activatedAt: true,
-      pinnedAt: true,
     },
   });
 

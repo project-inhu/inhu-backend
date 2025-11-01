@@ -12,7 +12,6 @@ export class MagazineOverviewModel extends PickType(MagazineModel, [
   'viewCount',
   'createdAt',
   'activatedAt',
-  'pinnedAt',
 ]) {
   constructor(data: MagazineOverviewModel) {
     super();
@@ -32,7 +31,6 @@ export class MagazineOverviewModel extends PickType(MagazineModel, [
       viewCount: magazine.viewCount,
       createdAt: magazine.createdAt,
       activatedAt: magazine.activatedAt,
-      pinnedAt: magazine.pinnedAt,
     });
   }
 }
