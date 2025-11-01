@@ -225,11 +225,8 @@ export class MagazineCoreRepository {
 
     const orderByClause = orderByMap[orderBy ?? 'time'];
 
-    if (pinned == undefined) {
-      return [{ pinnedMagazine: { createdAt: 'desc' } }, orderByClause];
-    }
     // if (pinned == undefined) {
-    //   return [{ pinnedAt: { sort: 'desc', nulls: 'last' } }, orderByClause];
+    //   return [{ pinnedMagazine: { createdAt: 'desc' } }, orderByClause];
     // }
     return orderByClause;
   }
