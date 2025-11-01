@@ -53,6 +53,11 @@ export class MagazineModel {
   public activatedAt: Date | null;
 
   /**
+   * 고정 시간
+   */
+  public pinnedAt: Date | null;
+
+  /**
    * 매거진 장소 리스트
    */
   public placeList: MagazinePlaceModel[];
@@ -73,6 +78,7 @@ export class MagazineModel {
       viewCount: magazine.viewCount,
       createdAt: magazine.createdAt,
       activatedAt: magazine.activatedAt,
+      pinnedAt: magazine.pinnedAt,
       placeList: magazine.placeList.map((mp) =>
         MagazinePlaceModel.fromPrisma(mp),
       ),
